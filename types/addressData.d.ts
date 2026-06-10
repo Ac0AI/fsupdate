@@ -52,10 +52,7 @@ declare type FormValuesCommon = {
 
 declare type FormValuesOnboarding = FormValuesCommon & {
   showToAddressInput: boolean
-  fromAddressResidenceSqm: number
-  toAddressResidenceSqm: number
-  // Because Radix requires string values for radio buttons
-  hasNewToAddress: 'false' | 'true'
+  hasNewToAddress: boolean
 }
 
 declare type FormValuesOnboardingDates = {

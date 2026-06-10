@@ -9,10 +9,9 @@ import { languageSelectorWrapperVariants, noAddressBackgroundVariants } from './
 
 export interface OnboardingDataSectionProps {
   code: string
-  setShowDataSection?: (arg0: boolean) => void
 }
 
-export const OnboardingDataSection = ({ code, setShowDataSection }: OnboardingDataSectionProps) => {
+export const OnboardingDataSection = ({ code }: OnboardingDataSectionProps) => {
   const [coordinates, setCoordinates] = useState<Record<string, number | undefined>>({ lat: undefined, lng: undefined })
   const [isVisible, setIsVisible] = useState(false)
   const {
@@ -55,7 +54,7 @@ export const OnboardingDataSection = ({ code, setShowDataSection }: OnboardingDa
   }, [inviterLogoUrl, leadDetails, partnerDetails, code])
 
   return (
-    <div style={{ width: '100vw', height: '100%', overflow: 'hidden', position: 'fixed' }}>
+    <div className="fixed inset-0 w-screen h-full overflow-hidden">
       <div className="relative w-full h-full">
         {coordinates?.lat && coordinates?.lng ? <GoogleMapWithPin lat={coordinates?.lat} lng={coordinates?.lng} /> : <div className={noAddressBackgroundVariants()} />}
 
@@ -85,7 +84,7 @@ export const OnboardingDataSection = ({ code, setShowDataSection }: OnboardingDa
             ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
           `}
         >
-          <OnboardingModal onSaveAddress={(leadAddress: Record<string, string>) => setCoordinatesFn(leadAddress)} setShowDataSection={setShowDataSection} />
+          <OnboardingModal onSaveAddress={(leadAddress: Record<string, string>) => setCoordinatesFn(leadAddress)} />
         </div>
       </div>
 
@@ -97,7 +96,7 @@ export const OnboardingDataSection = ({ code, setShowDataSection }: OnboardingDa
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
         `}
       >
-        <OnboardingModal onSaveAddress={(leadAddress: Record<string, string>) => setCoordinatesFn(leadAddress)} setShowDataSection={setShowDataSection} />
+        <OnboardingModal onSaveAddress={(leadAddress: Record<string, string>) => setCoordinatesFn(leadAddress)} />
       </div>
 
       {/* Language selector */}

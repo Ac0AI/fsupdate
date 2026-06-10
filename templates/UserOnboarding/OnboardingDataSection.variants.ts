@@ -17,7 +17,7 @@ export const noAddressBackgroundVariants = cva([
   'w-screen h-screen flex justify-center items-center',
   'absolute top-0 left-0 bottom-0 right-0',
   'bg-[url(/images/bg_onboarding_mobile.jpg)]',
-  'bg-no-repeat bg-contain',
+  'bg-no-repeat bg-cover bg-center',
   'md:bg-[url(/images/bg_onboarding_desktop.jpg)]',
   'md:bg-no-repeat md:bg-cover',
 ])

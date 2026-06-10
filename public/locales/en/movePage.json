@@ -33,7 +33,9 @@
     "save": "Save",
     "twoMovingDates": "I move out and in on different dates",
     "movingOutDate": "Date moving out:",
-    "movingInDate": "Date moving in:"
+    "movingInDate": "Date moving in:",
+    "stepOf": "Step {{current}} of {{total}}",
+    "back": "Back"
   },
   "CONTACT": {
     "contactViaFlyttsmart": "Contact us at Flyttsmart"

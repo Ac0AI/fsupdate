@@ -16,9 +16,13 @@
   "recommendedBy": "Recommended by",
   "verifiedPartner": "Verified partner",
   "recommendedForYourMove": "Recommends Flyttsmart for your move",
-  "loadingTitle": "Welcome to your move",
-  "verifyingBroker": "Verifying your broker connection...",
   "secureService": "Secure service",
   "trustedByThousands": "200,000+ moves since 2020",
-  "invitedBy": "Invited by"
+  "invitedBy": "Invited by",
+  "fetchingYourDetails": "Getting your details",
+  "coordinatorsIntro": "Andreas, Joel and Nina will guide you through your move",
+  "invitationNotFoundTitle": "We could not find your invitation",
+  "invitationNotFoundText": "Contact your broker if you are expecting an invitation. You can also continue without one, it works just as well.",
+  "tryAgain": "Try again",
+  "continueWithout": "Continue without invitation"
 }

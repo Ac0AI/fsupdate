@@ -41,13 +41,13 @@ export const BrokerTrustBadge = ({
       <div
         className={clsx(
           'flex flex-col items-center gap-3 p-5 rounded-2xl',
-          'bg-gradient-to-b from-white to-[#f8faf9]',
-          'border border-[#51c8b4]/20',
-          'shadow-[0_4px_20px_rgba(81,200,180,0.08)]',
+          'bg-gradient-to-b from-white to-background-default',
+          'border border-primary-main/20',
+          'shadow-md',
           className
         )}
       >
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#51c8b4]">
+        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-primary-main">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
           </svg>
@@ -65,7 +65,7 @@ export const BrokerTrustBadge = ({
         </div>
 
         {brokerOfficeName && (
-          <p className="text-xs text-[#767678] text-center">
+          <p className="text-xs text-inactive-dark text-center">
             {t('recommendedForYourMove', 'Rekommenderar Flyttsmart för din flytt')}
           </p>
         )}
@@ -80,17 +80,17 @@ export const BrokerTrustBadge = ({
         'flex items-center gap-3 px-4 py-2.5',
         'bg-white rounded-xl',
         'shadow-[0_2px_12px_rgba(0,0,0,0.06)]',
-        'border border-[#e1e1e3]',
+        'border border-inactive-main',
         className
       )}
     >
-      <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-[#767678]">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="#51c8b4">
+      <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-inactive-dark">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--color-primary-main)">
           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
         </svg>
-        {t('recommendedBy', 'Via')}
+        {t('invitedBy', 'Inbjuden av')}
       </div>
-      <div className="w-px h-5 bg-[#e1e1e3]" />
+      <div className="w-px h-5 bg-inactive-main" />
       <div className="relative w-[100px] h-[32px]">
         <Image
           src={brokerAgencyLogo}

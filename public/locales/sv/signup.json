@@ -16,9 +16,13 @@
   "recommendedBy": "Rekommenderad av",
   "verifiedPartner": "Verifierad partner",
   "recommendedForYourMove": "Rekommenderar Flyttsmart för din flytt",
-  "loadingTitle": "Välkommen till din flytt",
-  "verifyingBroker": "Verifierar din mäklarkoppling...",
   "secureService": "Säker tjänst",
   "trustedByThousands": "200 000+ flyttar sedan 2020",
-  "invitedBy": "Inbjuden av"
+  "invitedBy": "Inbjuden av",
+  "fetchingYourDetails": "Hämtar dina uppgifter",
+  "coordinatorsIntro": "Andreas, Joel och Nina hjälper dig genom flytten",
+  "invitationNotFoundTitle": "Vi kunde inte hitta din inbjudan",
+  "invitationNotFoundText": "Kontakta din mäklare om du väntar på en inbjudan. Du kan också fortsätta utan, det går lika bra.",
+  "tryAgain": "Försök igen",
+  "continueWithout": "Fortsätt utan inbjudan"
 }

@@ -33,7 +33,9 @@
     "save": "Spara",
     "twoMovingDates": "Jag flyttar ut- och in på olika datum",
     "movingOutDate": "Datum för utflytt:",
-    "movingInDate": "Datum för inflytt:"
+    "movingInDate": "Datum för inflytt:",
+    "stepOf": "Steg {{current}} av {{total}}",
+    "back": "Tillbaka"
   },
   "recommendedForYou": "Rekommenderat för dig [price] [priceUnit]",
   "WELCOME_SECTION": {

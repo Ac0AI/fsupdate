@@ -53,6 +53,10 @@ const defaultValue: LeadContextType = {
   setIsLoadingCreateUser: () => {},
   setTriggerCreateUser: () => {},
   setWithoutNewAddress: () => {},
+  leadFetchFailed: false,
+  retryLeadFetch: () => {},
+  createUserFailed: false,
+  retryCreateUser: () => {},
 }
 
 export type LeadContextType = {
@@ -65,6 +69,10 @@ export type LeadContextType = {
   setIsLoadingCreateUser: (arg0: boolean) => void
   setTriggerCreateUser: (arg0: boolean) => void
   setWithoutNewAddress: (arg0: boolean) => void
+  leadFetchFailed: boolean
+  retryLeadFetch: () => void
+  createUserFailed: boolean
+  retryCreateUser: () => void
 }
 
 export type UserProviderProps = {
@@ -85,6 +93,7 @@ export const LeadProvider = ({ children }: UserProviderProps) => {
   const [channel, setChannel] = useState<string | undefined>(undefined)
   const { update, trackEvent } = useIntercom()
   const [withoutNewAddress, setWithoutNewAddress] = useState<boolean>(false)
+  const [leadFetchFailed, setLeadFetchFailed] = useState<boolean>(false)
 
   useEffect(() => {
     const getLeadResponse = async () => {
@@ -151,6 +160,9 @@ export const LeadProvider = ({ children }: UserProviderProps) => {
             }
 
             setCurrentLeadState({ ...leadResponse, hasFetchedData: true })
+          } else {
+            setLeadFetchFailed(true)
+            setCurrentLeadState({ ...defaultValue.lead, hasFetchedData: true })
           }
         }
       } catch (er: unknown) {
@@ -161,6 +173,7 @@ export const LeadProvider = ({ children }: UserProviderProps) => {
           } else if (statusCode === 410) {
             router.push('/login?oldNewUser=true')
           } else {
+            setLeadFetchFailed(true)
             setCurrentLeadState({ ...defaultValue.lead, hasFetchedData: true })
           }
         }
@@ -224,7 +237,9 @@ export const LeadProvider = ({ children }: UserProviderProps) => {
       }
     } catch (e: unknown) {
       const castedError = e as ErrorType
-      if (!!castedError.statusCode) setErrorCode(castedError.statusCode)
+      setErrorCode(castedError.statusCode ?? 500)
+      setTriggerCreateUser(false)
+      setIsLoadingCreateUser(false)
     }
   }, [leadAddressData, invitationCode, fakeInvitationCode, withoutNewAddress])
 
@@ -247,6 +262,17 @@ export const LeadProvider = ({ children }: UserProviderProps) => {
     }
   }, [triggerCreateUser, createUser])
 
+  const retryLeadFetch = useCallback(() => {
+    setLeadFetchFailed(false)
+    setCurrentLeadState((prev) => ({ ...prev, hasFetchedData: false }))
+  }, [])
+
+  const retryCreateUser = useCallback(() => {
+    setErrorCode(undefined)
+    setIsLoadingCreateUser(true)
+    setTriggerCreateUser(true)
+  }, [])
+
   const contextValue: LeadContextType = {
     lead: currentLeadState,
     setInvitationCode: setInvitationCode,
@@ -257,6 +283,10 @@ export const LeadProvider = ({ children }: UserProviderProps) => {
     setTriggerCreateUser,
     setIsLoadingCreateUser: setIsLoadingCreateUser,
     setWithoutNewAddress,
+    leadFetchFailed,
+    retryLeadFetch,
+    createUserFailed: !!errorCode && errorCode !== 410,
+    retryCreateUser,
   }
 
   return <LeadContext.Provider value={contextValue}>{children}</LeadContext.Provider>

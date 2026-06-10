@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { useLeadContext } from '@/common/context/lead/LeadProvider'
 import useResponsive from '@/common/hooks/useResponsive'
 import Flex from '@/components/atoms/Flex'
-import Spinner from '@/components/atoms/Spinner'
 import TrustIndicatorsStrip from '@/components/molecules/TrustIndicatorsStrip'
+import ArrowLeft from '@/public/images/ArrowLeft.svg'
 import MapPin from '@/public/images/MapPin_filled.svg'
 import { OnboardingFormAddress } from './OnboardingForm/OnboardingForm'
 import { OnboardingFormDates } from './OnboardingForm/OnboardingFormDates'
@@ -18,30 +18,30 @@ import {
   termsTextVariants,
   termsTextLinkVariants,
   termsWrapperVariants,
-  dragHandleVariants,
   introSectionVariants,
   introTitleVariants,
   introDescriptionVariants,
+  stepBarVariants,
+  stepBackButtonVariants,
+  stepIndicatorVariants,
+  stepAddressSummaryVariants,
 } from './OnboardingModal.variants'
 
 export interface OnboardingModalProps {
   onSaveAddress: (address: Record<string, string>) => void
-  setShowDataSection?: (show: boolean) => void
 }
 
 const TERMS_URL = 'https://flyttsmart.se/terms'
+const TOTAL_STEPS = 2
 
-const OnboardingModal = ({ onSaveAddress, setShowDataSection }: OnboardingModalProps) => {
+const OnboardingModal = ({ onSaveAddress }: OnboardingModalProps) => {
   const { t } = useTranslation(['signup', 'movePage', 'common'])
   const { isTabletPortraitOrGreater } = useResponsive()
   const [currentStep, setCurrentStep] = useState(1)
   const [fullHeight, setFullHeight] = useState(false)
   const [showMovingInDate, setShowMovingInDate] = useState(false)
 
-  const {
-    lead: { hasFetchedData },
-    leadAddressData,
-  } = useLeadContext()
+  const { leadAddressData } = useLeadContext()
 
   const isMobile = !isTabletPortraitOrGreater
 
@@ -55,6 +55,7 @@ const OnboardingModal = ({ onSaveAddress, setShowDataSection }: OnboardingModalP
   }, [fullHeight, isMobile])
 
   const headerText = currentStep === 1 ? t('whereToMove') : t('whenToMove')
+  const hasAddressSummary = currentStep === 2 && !!leadAddressData.toStreet?.length
 
   return (
     <div
@@ -64,11 +65,22 @@ const OnboardingModal = ({ onSaveAddress, setShowDataSection }: OnboardingModalP
         isStepTwoAndTwoDates: currentStep === 2 && showMovingInDate,
       })}
     >
-      {/* Drag handle for mobile bottom sheet */}
-      {isMobile && <div className={dragHandleVariants()} />}
-
       <Flex direction="column" justifyContent="start" alignItems="stretch">
         <TrustIndicatorsStrip className="mb-4 -mx-2" />
+
+        <div className={stepBarVariants()}>
+          {currentStep === 2 ? (
+            <button type="button" className={stepBackButtonVariants()} onClick={() => setCurrentStep(1)}>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              {t('movePage:ONBOARDINGMODAL.back')}
+            </button>
+          ) : (
+            <span />
+          )}
+          <span className={stepIndicatorVariants()}>
+            {t('movePage:ONBOARDINGMODAL.stepOf', { current: currentStep, total: TOTAL_STEPS })}
+          </span>
+        </div>
 
         {/* Intro section - only show on step 1 */}
         {currentStep === 1 && (
@@ -83,16 +95,19 @@ const OnboardingModal = ({ onSaveAddress, setShowDataSection }: OnboardingModalP
           <h2 className={styledHeaderVariants()}>{headerText}</h2>
         </div>
 
-        <div className={modalDividerVariants()} />
+        {hasAddressSummary && (
+          <p className={stepAddressSummaryVariants()}>
+            {leadAddressData.toStreet}, {leadAddressData.toZip} {leadAddressData.toCity}
+          </p>
+        )}
 
-        {!hasFetchedData && <Spinner />}
+        <div className={modalDividerVariants()} />
 
         {currentStep === 1 && (
           <OnboardingFormAddress
             setFullHeight={setFullHeight}
             setCurrentStep={setCurrentStep}
             leadAddress={leadAddressData}
-            setShowDataSection={setShowDataSection}
             onSubmitCallback={onSaveAddress}
           />
         )}
@@ -102,7 +117,6 @@ const OnboardingModal = ({ onSaveAddress, setShowDataSection }: OnboardingModalP
             setShowMovingInDate={setShowMovingInDate}
             showMovingInDate={showMovingInDate}
             leadAddress={leadAddressData}
-            setShowDataSection={setShowDataSection}
           />
         )}
 

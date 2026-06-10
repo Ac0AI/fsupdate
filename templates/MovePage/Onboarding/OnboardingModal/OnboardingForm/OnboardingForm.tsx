@@ -9,7 +9,6 @@ import Text from '@/components/atoms/Text'
 import CommonAddressFormI18N from '@/components/organisms/CommonAddressFormI18N'
 import ArrowRight from '@/public/images/ArrowRight_white.svg'
 import PencilSimple from '@/public/images/PencilSimple.svg'
-import PlusGreen from '@/public/images/Plus_green.svg'
 import { createAddressSchema } from './OnboardingForm.schema'
 import {
   buttonWrapperVariants,
@@ -18,12 +17,10 @@ import {
   confirmButtonWrapperVariants,
   penWrapperVariants,
   addressSectionHeaderTextVariants,
-  addressSectionAddAddressVariants,
   noNewAddressVariants,
   formContainerVariants,
   buttonRowVariants,
   buttonGroupVariants,
-  addressDisplayVariants,
 } from './OnboardingForm.variants'
 
 interface OnboardingFormAddressProps {
@@ -31,7 +28,6 @@ interface OnboardingFormAddressProps {
   onSubmitCallback: (address: Record<string, string>) => void
   setCurrentStep: (step: number) => void
   setFullHeight: (fullHeight: boolean) => void
-  setShowDataSection?: (arg0: boolean) => void
 }
 
 export const OnboardingFormAddress = ({
@@ -39,10 +35,9 @@ export const OnboardingFormAddress = ({
   onSubmitCallback,
   setCurrentStep,
   setFullHeight,
-  setShowDataSection,
 }: OnboardingFormAddressProps) => {
   const { t } = useTranslation(['movePage', 'common', 'error'])
-  const { leadAddressData, setLeadAddressData, setTriggerCreateUser, setIsLoadingCreateUser, setWithoutNewAddress } = useLeadContext()
+  const { leadAddressData, setLeadAddressData, setWithoutNewAddress } = useLeadContext()
 
   const [showInputs, setShowInputs] = useState(false)
 
@@ -65,7 +60,7 @@ export const OnboardingFormAddress = ({
     resolver: yupResolver(schema),
     defaultValues: {
       showToAddressInput: !hasToAddress,
-      hasNewToAddress: 'false',
+      hasNewToAddress: true,
       autoCompleteAddress: currentMove.toAddress?.street,
       street: currentMove.toAddress?.street || '',
       zip: currentMove.toAddress?.zip || '',
@@ -74,7 +69,6 @@ export const OnboardingFormAddress = ({
   })
 
   const {
-    watch,
     handleSubmit,
     formState: { errors, dirtyFields },
   } = methods
@@ -82,6 +76,7 @@ export const OnboardingFormAddress = ({
   const handleAddressSubmit = handleSubmit((data: FormValuesOnboarding) => {
     const street = `${data.street || ''} ${data.streetNumber || ''}`.trim()
     setLeadAddressData({ ...leadAddressData, toStreet: street, toCity: data.city, toZip: data.zip })
+    setWithoutNewAddress(false)
     onSubmitCallback({ street, city: data.city, zip: data.zip })
     setShowInputs(false)
     setFullHeight(false)
@@ -89,9 +84,12 @@ export const OnboardingFormAddress = ({
 
   const handleNoNewAddress = () => {
     setWithoutNewAddress(true)
-    setIsLoadingCreateUser(true)
-    setShowDataSection?.(false)
-    setTriggerCreateUser(true)
+    setCurrentStep(2)
+  }
+
+  const handleContinue = () => {
+    setWithoutNewAddress(false)
+    setCurrentStep(2)
   }
 
   const handleShowInputs = () => {
@@ -104,11 +102,7 @@ export const OnboardingFormAddress = ({
     setFullHeight(false)
   }
 
-  const touchedAllFields =
-    (watch('hasNewToAddress') === 'false' || Boolean(dirtyFields.toAddressResidenceSqm)) &&
-    (watch('hasNewToAddress') === 'false' || Boolean(dirtyFields.autoCompleteAddress))
-
-  const isValid = touchedAllFields && Object.keys(errors).length === 0
+  const canSaveAddress = Boolean(dirtyFields.autoCompleteAddress) && Object.keys(errors).length === 0
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
     if (e.key === 'Enter') {
@@ -119,14 +113,13 @@ export const OnboardingFormAddress = ({
   return (
     <FormProvider {...methods}>
       <form onKeyDown={handleKeyDown} className={formContainerVariants()}>
-        {/* No address - show add button */}
+        {/* No address yet - adding it is the primary action */}
         {!hasToAddress && !showInputs && (
           <div className={styledToAddressSectionVariants({ isFirstStep: true })}>
             <Flex direction="column" alignItems="center" justifyContent="center">
-              <Text className={addressSectionAddAddressVariants()} onClick={handleShowInputs} spacing="none">
-                <PlusGreen className="mr-2.5" />
-                {t('ONBOARDINGMODAL.newAddress')}
-              </Text>
+              <div className={confirmButtonWrapperVariants()}>
+                <Button text={t('ONBOARDINGMODAL.newAddress')} onClick={handleShowInputs} />
+              </div>
               <Text className={noNewAddressVariants()} onClick={handleNoNewAddress} spacing="none">
                 {t('ONBOARDINGMODAL.noNewAddress')}
               </Text>
@@ -164,28 +157,29 @@ export const OnboardingFormAddress = ({
         )}
 
         {/* Action buttons */}
-        <div className={buttonRowVariants()}>
-          {showInputs ? (
-            <div className={buttonGroupVariants()}>
-              <div className={buttonWrapperVariants()}>
-                <Button text={t('ONBOARDINGMODAL.abort')} variant="ghost" withFullWidth onClick={handleHideInputs} />
+        {(showInputs || hasToAddress) && (
+          <div className={buttonRowVariants()}>
+            {showInputs ? (
+              <div className={buttonGroupVariants()}>
+                <div className={buttonWrapperVariants()}>
+                  <Button text={t('ONBOARDINGMODAL.abort')} variant="ghost" withFullWidth onClick={handleHideInputs} />
+                </div>
+                <div className={buttonWrapperVariants()}>
+                  <Button text={t('ONBOARDINGMODAL.save')} disabled={!canSaveAddress} onClick={handleAddressSubmit} withFullWidth />
+                </div>
               </div>
-              <div className={buttonWrapperVariants()}>
-                <Button text={t('ONBOARDINGMODAL.save')} disabled={!isValid} onClick={handleAddressSubmit} withFullWidth />
+            ) : (
+              <div className={confirmButtonWrapperVariants()}>
+                <Button
+                  text={t('ONBOARDINGMODAL.continueStep')}
+                  onClick={handleContinue}
+                  largerArrowRight
+                  iconRight={<ArrowRight color="white" />}
+                />
               </div>
-            </div>
-          ) : (
-            <div className={confirmButtonWrapperVariants()}>
-              <Button
-                text={`${t('ONBOARDINGMODAL.continueStep')} 1/2`}
-                disabled={!isValid}
-                onClick={() => setCurrentStep(2)}
-                largerArrowRight
-                iconRight={<ArrowRight color="white" />}
-              />
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </form>
     </FormProvider>
   )

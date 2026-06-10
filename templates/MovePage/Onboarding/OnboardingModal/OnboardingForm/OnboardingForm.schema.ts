@@ -46,6 +46,6 @@ export const createDatesSchema = () =>
   yup
     .object({
       movingOutDate: yup.date().required(),
-      movingInDate: yup.date(),
+      movingInDate: yup.date().min(yup.ref('movingOutDate')),
     })
     .required()

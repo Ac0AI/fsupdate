@@ -54,14 +54,12 @@ const DatePickerField = ({ label, value, defaultValue, onChange, placeholder }: 
 
 interface OnboardingFormDatesProps {
   leadAddress: LeadAddressData
-  setShowDataSection?: (arg0: boolean) => void
   setShowMovingInDate: (arg0: boolean) => void
   showMovingInDate: boolean
 }
 
 export const OnboardingFormDates = ({
   leadAddress,
-  setShowDataSection,
   setShowMovingInDate,
   showMovingInDate,
 }: OnboardingFormDatesProps) => {
@@ -83,7 +81,6 @@ export const OnboardingFormDates = ({
 
   const handleSubmit = methods.handleSubmit((data: FormValuesOnboardingDates) => {
     setIsLoadingCreateUser(true)
-    setShowDataSection?.(false)
     setLeadAddressData({
       ...leadAddressData,
       movingOutDate: data.movingOutDate,
@@ -95,6 +92,19 @@ export const OnboardingFormDates = ({
   const handleShowMovingInDate = () => {
     setLeadAddressData({ ...leadAddressData, hasMovingInDate: true })
     setShowMovingInDate(true)
+  }
+
+  const handleMovingOutDateChange = (date: Date) => {
+    setValue('movingOutDate', date)
+    const currentMovingInDate = getValues('movingInDate')
+    if (!currentMovingInDate || new Date(currentMovingInDate) < date) {
+      setValue('movingInDate', date)
+    }
+  }
+
+  const handleMovingInDateChange = (date: Date) => {
+    const currentMovingOutDate = getValues('movingOutDate')
+    setValue('movingInDate', currentMovingOutDate && date < new Date(currentMovingOutDate) ? new Date(currentMovingOutDate) : date)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -117,7 +127,7 @@ export const OnboardingFormDates = ({
               <DatePickerField
                 value={watch('movingOutDate') ? new Date(watch('movingOutDate')) : undefined}
                 defaultValue={defaultMovingOutDate}
-                onChange={(date) => setValue('movingOutDate', date)}
+                onChange={handleMovingOutDateChange}
                 placeholder={t('external:chooseDate')}
               />
               <Text className={noNewAddressVariants()} onClick={handleShowMovingInDate} spacing="none">
@@ -134,14 +144,14 @@ export const OnboardingFormDates = ({
               label={t('ONBOARDINGMODAL.movingOutDate')}
               value={movingOutDate ? new Date(movingOutDate) : undefined}
               defaultValue={movingOutDate ? new Date(movingOutDate) : undefined}
-              onChange={(date) => setValue('movingOutDate', date)}
+              onChange={handleMovingOutDateChange}
               placeholder={t('external:chooseDate')}
             />
             <DatePickerField
               label={t('ONBOARDINGMODAL.movingInDate')}
               value={movingInDate ? new Date(movingInDate) : undefined}
-              defaultValue={movingOutDate ? new Date(movingOutDate) : undefined}
-              onChange={(date) => setValue('movingInDate', date)}
+              defaultValue={movingInDate ? new Date(movingInDate) : undefined}
+              onChange={handleMovingInDateChange}
               placeholder={t('external:chooseDate')}
             />
           </div>

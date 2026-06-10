@@ -1,14 +1,12 @@
-import { act } from 'react'
 import { Context as ResponsiveContext } from 'react-responsive'
-import { http, HttpResponse } from 'msw'
+import { http, HttpResponse, delay } from 'msw'
 import { setupServer } from 'msw/node'
-import { useRouter } from 'next/navigation'
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import SingelSignOnTemplate from './UserOnboarding'
+import { LeadProvider } from '@/common/context/lead/LeadProvider'
+import NoBankIdUserTemplate from './UserOnboarding'
 
 const mockRouterPush = jest.fn()
-const mockReplace = jest.fn()
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -17,147 +15,107 @@ jest.mock('next/navigation', () => ({
     push: mockRouterPush,
     refresh: jest.fn(),
     prefetch: () => null,
-    replace: mockReplace,
+    replace: jest.fn(),
   }),
   useSearchParams: () => new URLSearchParams(),
+  usePathname: () => '/',
 }))
 
-describe('SingelSignOnTemplate', () => {
-  const server = setupServer(
-    ...[
-      http.post('*/auth/users/login/sso/accept', () => {
-        return new HttpResponse(null, { status: 200 })
-      }),
-      http.post('*/auth/users/login/sso/validate', () => {
-        return new HttpResponse(null, { status: 200 })
-      }),
-      http.post('*/auth/users/login/sso', () => {
-        return HttpResponse.json({
-          accessToken: 'test_1231123',
-        })
-      }),
-    ],
-  )
-  const serverError = setupServer(
-    ...[
-      http.post('*/auth/users/login/sso/accept', () => {
-        return new HttpResponse(null, { status: 200 })
-      }),
-      http.post('*/auth/users/login/sso/validate', () => {
-        return HttpResponse.json(
-          {
-            statusCode: 401,
-            messageKey: 'failed',
-          },
-          { status: 401 },
-        )
-      }),
-      http.post('*/auth/users/login/sso', () => {
-        return HttpResponse.json(
-          {
-            statusCode: 401,
-            messageKey: 'failed',
-          },
-          { status: 401 },
-        )
-      }),
-    ],
-  )
+const leadResponse = {
+  leadDetails: {
+    brokerOfficeId: 'office-1',
+    brokerOfficeName: 'Testmäklarna',
+    brokerOfficePersonName: 'Test Person',
+    brokerAgencyLogo: '',
+    pno: '',
+    sourceSystem: 'test',
+    type: null,
+    id: 'lead-1',
+    movingDate: '2026-08-01',
+    inviteCode: '1234',
+    address: null,
+  },
+  partnerDetails: {
+    partnerId: 'partner-1',
+    partnerName: 'Test Partner',
+    agentName: 'Test Agent',
+  },
+}
 
-  const serverAllvalid = setupServer(
-    ...[
-      http.post('*/auth/users/login/sso/validate', () => {
-        return HttpResponse.json(true)
-      }),
-      http.post('*/auth/users/login/sso', () => {
-        return HttpResponse.json({
-          accessToken: 'test_1231123',
-        })
-      }),
-    ],
-  )
-
-  beforeAll(() => server.listen())
-  afterEach(() => server.resetHandlers())
-  afterAll(() => server.close())
-
-  const desktopWidth = 1500
-  const renderComponent = (simulatedWidth = desktopWidth) => {
-    const width = { width: simulatedWidth }
-    const utils = render(
-      <ResponsiveContext.Provider value={width}>
-        <SingelSignOnTemplate code={'1234'} />
+describe('NoBankIdUserTemplate (onboarding)', () => {
+  const renderComponent = (simulatedWidth = 1500) => {
+    return render(
+      <ResponsiveContext.Provider value={{ width: simulatedWidth }}>
+        <LeadProvider context={null as never}>
+          <NoBankIdUserTemplate code={'1234'} />
+        </LeadProvider>
       </ResponsiveContext.Provider>,
     )
-    return { ...utils }
   }
+
   afterEach(() => {
     jest.clearAllMocks()
   })
 
-  it('renders.', async () => {
-    expect.assertions(1)
-    const { container } = renderComponent()
-    await act(() => {
-      expect(container.firstChild).not.toBeNull()
-    })
-  })
-  it('should render spinner and prepair movepage text as default', async () => {
-    expect.assertions(2)
-    const { getByTestId, getByText } = renderComponent()
-    await act(() => {
-      expect(getByTestId('spinner')).not.toBeNull()
-      expect(getByText('prepareMovepage')).not.toBeNull()
-    })
-  })
-  it('should get the token from query and validate it and render modal if token is valid and it is a new user', async () => {
-    const { getByText } = renderComponent()
-    await waitFor(() => expect(getByText('welcomeTo')).toBeInTheDocument())
-  })
-  it('should redirect user to startpage (startpage is on url / ) if modal for accepting terms is closed without accepting terms', async () => {
-    const { getByText, getByRole } = renderComponent()
-    const router = useRouter()
-    await waitFor(() => {
-      expect(getByText('welcomeTo')).toBeInTheDocument()
-      const button = getByRole('button', {
-        name: /close/i,
-      })
-      fireEvent.click(button)
-      expect(router.push).toHaveBeenCalledWith('/')
-    })
-  })
-  it('if token isnt valid, render error section with texts and button', async () => {
-    server.close()
-    serverError.listen()
-    await act(async () => {
+  describe('while the invitation is being fetched', () => {
+    const server = setupServer(
+      http.get('*/users/code/*', async () => {
+        await delay('infinite')
+        return HttpResponse.json(leadResponse)
+      }),
+    )
+    beforeAll(() => server.listen())
+    afterAll(() => server.close())
+
+    it('shows the coordinators and an honest fetching message, tied to the real request', async () => {
       renderComponent()
+      expect(await screen.findByText('coordinatorsIntro')).toBeInTheDocument()
+      expect(screen.getByText('fetchingYourDetails')).toBeInTheDocument()
+    })
+  })
+
+  describe('when the invitation is found', () => {
+    const server = setupServer(
+      http.get('*/users/code/*', () => {
+        return HttpResponse.json(leadResponse)
+      }),
+    )
+    beforeAll(() => server.listen())
+    afterEach(() => server.resetHandlers())
+    afterAll(() => server.close())
+
+    it('shows the onboarding form without artificial delay', async () => {
+      renderComponent()
+      // The modal renders twice (desktop + mobile variant, toggled via CSS)
+      expect((await screen.findAllByText('whereToMove')).length).toBeGreaterThan(0)
+      expect(screen.getAllByText('introTitle').length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('when fetching the invitation fails', () => {
+    const server = setupServer(
+      http.get('*/users/code/*', () => {
+        return HttpResponse.json({ statusCode: 500, messageKey: 'failed' }, { status: 500 })
+      }),
+    )
+    beforeAll(() => server.listen())
+    afterEach(() => server.resetHandlers())
+    afterAll(() => server.close())
+
+    it('shows an honest error state instead of pretending the fetch succeeded', async () => {
+      renderComponent()
+      expect(await screen.findByText('invitationNotFoundTitle')).toBeInTheDocument()
+      expect(screen.getByText('invitationNotFoundText')).toBeInTheDocument()
+      expect(screen.getByText('tryAgain')).toBeInTheDocument()
+      expect(screen.getByText('continueWithout')).toBeInTheDocument()
     })
 
-    await waitFor(() => {
-      expect(screen.getByText('loginFailed')).toBeInTheDocument()
-      expect(screen.getByText('loginFailedText')).toBeInTheDocument()
-      const button = screen.getByRole('button', {
-        name: /login/i,
-      })
-      expect(button).toBeInTheDocument()
-    })
-    serverError.resetHandlers()
-    serverError.close()
-  })
-  it('if token is valid and user already exist, redirect user directly to movepage', async () => {
-    server.resetHandlers()
-    server.close()
-    serverError.resetHandlers()
-    serverError.close()
-    serverAllvalid.listen()
-    const router = useRouter()
-    act(() => {
+    it('lets the user continue to the onboarding form without an invitation', async () => {
       renderComponent()
+      fireEvent.click(await screen.findByText('continueWithout'))
+      await waitFor(() => {
+        expect(screen.getAllByText('whereToMove').length).toBeGreaterThan(0)
+      })
     })
-    await waitFor(() => {
-      expect(router.push).toHaveBeenCalledWith('/app/movepage')
-    })
-    serverAllvalid.resetHandlers()
-    serverAllvalid.close()
   })
 })
