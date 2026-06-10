@@ -26,12 +26,12 @@ const LandingHero = () => {
       // Show floating CTA after scrolling past 70% of viewport height
       setShowFloatingCta(window.scrollY > window.innerHeight * 0.7)
     }
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
-    <section className="relative min-h-[100vh] md:min-h-[90vh] flex items-center py-8 md:py-16 bg-gradient-to-br from-[#1a3a52] via-[var(--color-secondary-main)] to-[#2d5a7b]">
+    <section className="relative min-h-[100vh] md:min-h-[90vh] flex items-center py-6 md:py-16 bg-gradient-to-br from-[#1a3a52] via-[var(--color-secondary-main)] to-[#2d5a7b]">
       {/* Subtle decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-[var(--color-primary-main)]/10 rounded-full blur-3xl" />
@@ -42,20 +42,20 @@ const LandingHero = () => {
           {/* Content */}
           <div className="text-center lg:text-left order-1">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#51c8b4]/20 to-white/10 backdrop-blur-sm border border-[#51c8b4]/30 rounded-full px-5 py-2.5 mb-8">
+            <div className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#51c8b4]/20 to-white/10 backdrop-blur-sm border border-[#51c8b4]/30 rounded-full px-5 py-2.5 mb-5 md:mb-8">
               <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#51c8b4] opacity-75" />
+                <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-[#51c8b4] opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#51c8b4]" />
               </span>
               <span className="text-sm font-semibold text-white tracking-wide">
-                200 000+ nöjda flyttare
+                Inbjuden av din mäklare? Allt är förberett
               </span>
             </div>
 
             {/* Headline */}
-            <h1 className="text-white mb-6">
+            <h1 className="text-white mb-4 md:mb-6">
               <span className="block text-[42px] md:text-[56px] lg:text-[64px] font-bold leading-[1.1]">
-                Slipp stressen -
+                Slipp stressen –
               </span>
               <span className="block text-[42px] md:text-[56px] lg:text-[64px] font-bold leading-[1.1]">
                 <span className="text-[var(--color-accent-main)]">vi fixar</span> flytten
@@ -63,8 +63,8 @@ const LandingHero = () => {
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-white/80 mb-10 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">
-              Det självklara sättet att flytta. Personlig service, utvalda leverantörer och support genom hela flytten - helt gratis.
+            <p className="text-lg md:text-xl text-white/80 mb-7 md:mb-10 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">
+              Din mäklare har bjudit in dig till Sveriges smidigaste flytt. Fem minuter, sen sköter vi resten.
             </p>
 
             {/* CTA */}
@@ -86,7 +86,7 @@ const LandingHero = () => {
                     padding="16px 32px"
                     variant="primaryAltInverted"
                     iconRight={<BankId className="w-6 h-6" />}
-                    text="KOM IGÅNG"
+                    text="STARTA DIN FLYTT"
                     onClick={() => router.push(loginUrl)}
                   />
                 </div>
@@ -101,17 +101,20 @@ const LandingHero = () => {
               </button>
             </div>
             <span className="text-sm text-white/60 mt-4 block text-center lg:text-left">
-              Kostnadsfritt &bull; Tar 2 min
+              Logga in med BankID &bull; Ingår via din mäklare
+            </span>
+            <span className="text-[13px] text-white/40 mt-1.5 block text-center lg:text-left max-w-[480px] mx-auto lg:mx-0">
+              Inte inbjuden än? Logga in ändå och lägg upp din flytt själv – lika kostnadsfritt, bara ett par minuter extra.
             </span>
 
             {/* Press - Som sett i */}
-            <div className="flex items-center gap-4 mt-8 justify-center lg:justify-start">
-              <span className="text-white/25 text-[10px] font-medium uppercase tracking-widest shrink-0">Som sett i</span>
+            <div className="flex items-center gap-4 mt-6 md:mt-8 justify-center lg:justify-start">
+              <span className="text-white/35 text-[10px] font-medium uppercase tracking-widest shrink-0">Som sett i</span>
               <div className="flex items-center gap-6">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/press/di-logo.svg" alt="Dagens industri" className="h-4 md:h-5 brightness-0 invert opacity-25" />
+                <img src="/images/press/di-logo.svg" alt="Dagens industri" className="h-4 md:h-5 brightness-0 invert opacity-40" />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/press/breakit-logo.svg" alt="Breakit" className="h-3.5 md:h-4 brightness-0 invert opacity-25" />
+                <img src="/images/press/breakit-logo.svg" alt="Breakit" className="h-3.5 md:h-4 brightness-0 invert opacity-40" />
               </div>
             </div>
           </div>
@@ -167,7 +170,7 @@ const LandingHero = () => {
           padding="16px 32px"
           variant="primaryAltInverted"
           iconRight={<BankId className="w-6 h-6" />}
-          text="KOM IGÅNG"
+          text="STARTA DIN FLYTT"
           onClick={() => router.push(loginUrl)}
           withFullWidth
         />
