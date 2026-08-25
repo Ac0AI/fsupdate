@@ -99,6 +99,12 @@ const Footer = ({ flyttsmartGoogleReviewCountAndRating, googleReviews, showBackg
               justifyContent={!isTabletPortraitOrGreater ? 'center' : 'end'}
             >
               <div className={linkButtonVariants()}>
+                <Link href="/blogg">{t('blog')}</Link>
+              </div>
+              <div className={linkButtonVariants()}>
+                <Link href="/flytta-utomlands">{t('abroad')}</Link>
+              </div>
+              <div className={linkButtonVariants()}>
                 <Link href={'/terms'}>{t('termsLinkText')}</Link>
               </div>
               <div className={linkButtonVariants()}>
