@@ -27,10 +27,20 @@ export const TrustedLoadingState = ({ brokerOfficeName, brokerAgencyLogo, mode =
 
   const title =
     mode === 'creating'
-      ? t('creatingMovepage', 'Sätter ihop din personliga flyttsida')
+      ? t('creatingMovepage', 'Vi sätter ihop din flytt')
       : brokerOfficeName
-        ? `${t('fetchingProvider', 'Hämtar din flytt från')} ${brokerOfficeName}`
-        : t('fetchingYourDetails', 'Hämtar dina uppgifter')
+        ? t('fetchingWithBroker', 'Din flytt är redan påbörjad')
+        : t('fetchingYourDetails', 'Vi hämtar din flytt')
+
+  const subtitle =
+    mode === 'creating'
+      ? t('creatingMovepageSubtitle', 'Checklistan anpassas efter din adress.')
+      : brokerOfficeName
+        ? t('fetchingWithBrokerSubtitle', {
+            defaultValue: '{{office}} har skickat över dina uppgifter. Du slipper fylla i dem igen.',
+            office: brokerOfficeName,
+          })
+        : t('fetchingYourDetailsSubtitle', 'Du behöver inte fylla i något än.')
 
   return (
     <div
@@ -101,6 +111,7 @@ export const TrustedLoadingState = ({ brokerOfficeName, brokerAgencyLogo, mode =
           )}
         >
           <h2 className="text-xl font-bold text-secondary-main mb-2">{title}</h2>
+          <p className="text-sm text-inactive-dark max-w-[320px] mx-auto">{subtitle}</p>
         </div>
 
         {/* Activity indicator */}
@@ -124,7 +135,7 @@ export const TrustedLoadingState = ({ brokerOfficeName, brokerAgencyLogo, mode =
         {/* Trust footer */}
         <div
           className={clsx(
-            'mt-12 flex items-center gap-6 text-xs text-inactive-dark transition-all duration-700 delay-700',
+            'mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-inactive-dark transition-all duration-700 delay-700',
             fadeIn ? 'opacity-100' : 'opacity-0'
           )}
         >
@@ -132,7 +143,7 @@ export const TrustedLoadingState = ({ brokerOfficeName, brokerAgencyLogo, mode =
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1ZM10 17L6 13L7.41 11.59L10 14.17L16.59 7.58L18 9L10 17Z" fill="var(--color-primary-main)" />
             </svg>
-            <span>{t('secureService', 'Säker tjänst')}</span>
+            <span>{t('weTakeResponsibility', 'Vi tar ansvar om något går fel')}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">

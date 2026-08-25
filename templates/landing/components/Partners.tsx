@@ -10,7 +10,7 @@ const LogoItem = ({ src, alt }: { src: string; alt: string }) => (
       alt={alt}
       loading="lazy"
       decoding="async"
-      className="max-h-full max-w-full object-contain grayscale opacity-80 hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+      className="max-h-full max-w-full object-contain"
     />
   </div>
 )
@@ -27,7 +27,7 @@ const Partners = () => {
             Samarbeten
           </p>
           <h2 className="text-2xl md:text-3xl font-semibold text-gray-900">
-            Betrodda av Sveriges främsta mäklarkedjor och varumärken
+            Används av hälften av Sveriges mäklarkedjor
           </h2>
         </div>
       </div>

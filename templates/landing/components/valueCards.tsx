@@ -23,9 +23,9 @@ const heroCards: HeroCard[] = [
       'Inga bindningstider eller dolda avgifter',
       'Vi förhandlar med Sveriges elbolag åt dig',
     ],
-    linkText: 'Jämför elavtal',
+    linkText: 'Visa mitt elpris',
     ariaLabel:
-      'Elavtal: spara på elen utan bindning med 800 kronor välkomstrabatt. Logga in för att jämföra.',
+      'Elavtal: spara på elen utan bindning med 800 kronor välkomstrabatt. Logga in för att se ditt pris.',
   },
   {
     key: 'flytt',
@@ -36,9 +36,9 @@ const heroCards: HeroCard[] = [
       'Bara kvalitetssäkrade firmor, vi har testat dem',
       'Vi tar ansvaret om något krånglar',
     ],
-    linkText: 'Få flytthjälp',
+    linkText: 'Boka flytthjälp',
     ariaLabel:
-      'Flytthjälp och flyttstäd: vi bokar flyttfirma och städ åt dig med personlig rådgivare. Logga in för att komma igång.',
+      'Flytthjälp och flyttstäd: vi bokar flyttfirma och städ åt dig med personlig rådgivare. Logga in för att boka.',
     featured: true,
   },
   {
@@ -46,13 +46,13 @@ const heroCards: HeroCard[] = [
     eyebrow: 'BREDBAND',
     headline: 'Hitta bästa bredbandet för din adress',
     bullets: [
-      'Vi jämför alla operatörer på din gata',
+      'Vi har redan gått igenom operatörerna på din gata',
       'Oberoende, inga provisioner styr förslagen',
       'Förslag på 30 sekunder, bara skriv adressen',
     ],
-    linkText: 'Jämför bredband',
+    linkText: 'Visa mitt bredband',
     ariaLabel:
-      'Bredband: vi hittar bästa bredbandet för din adress. Logga in för att jämföra.',
+      'Bredband: vi hittar bästa bredbandet för din adress. Logga in för att se ditt förslag.',
   },
 ]
 
@@ -72,7 +72,7 @@ const ValueCards = () => {
         {/* Section header */}
         <div className="text-center mb-12 md:mb-16">
           <span className="inline-block text-[var(--color-primary-main)] text-sm font-semibold uppercase tracking-wider mb-4">
-            Våra tjänster
+            Ingår i din flytt
           </span>
           <h2
             id="value-cards-heading"

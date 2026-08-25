@@ -145,6 +145,23 @@
   --breakpoint-xl: 1440px;
   --breakpoint-xxl: 1600px;
 
+  /* Easing
+     Tre kurvor, definierade på Rörelse-artboarden i Paper (sidan Grunder).
+     Ändra dem där först, sedan här. Tailwinds inbyggda ease-out är
+     cubic-bezier(0, 0, 0.2, 1) och för svag för att kännas avsiktlig.
+
+     entry      Rusar iväg och landar mjukt. Allt som kommer in på skärmen.
+     openclose  Trög i båda ändarna, snabb i mitten. För höjd som ändras.
+     standard   Den neutrala. Flyttar sig utan att komma eller gå.
+                Vet du inte, ta den här.
+
+     Använd aldrig ease-in på UI. Den fördröjer första rörelsen, precis i den
+     millisekund användaren tittar som hårdast, och får gränssnittet att kännas
+     trögt även när det är lika snabbt. */
+  --ease-entry: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-openclose: cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
   /* Shapes */
   --checkmark-path: path(
     'M12.9017 1.13434C13.3798 1.63235 13.3637 2.42364 12.8657 2.90174L6.61567 8.90174C6.13196 9.36609 5.36804 9.36609 4.88434 8.90174L1.13434 5.30174C0.636323 4.82364 0.620174 4.03235 1.09827 3.53434C1.57636 3.03632 2.36765 3.02017 2.86567 3.49827L5.75 6.26723L11.1343 1.09827C11.6324 0.620174 12.4236 0.636323 12.9017 1.13434Z'
@@ -1024,111 +1041,6 @@ html {
   }
 }
 
-/* CTA shimmer - rotating conic gradient */
-@keyframes cta-spin {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-.cta-shimmer-spin {
-  animation: cta-spin 3s linear infinite;
-}
-
-@keyframes cta-spin-reverse {
-  from { transform: translate(-50%, -50%) rotate(360deg); }
-  to { transform: translate(-50%, -50%) rotate(0deg); }
-}
-
-@keyframes cta-spark-flicker {
-  0%, 100% {
-    opacity: 0.28;
-    filter: brightness(1);
-  }
-  16% {
-    opacity: 0.95;
-    filter: brightness(1.5);
-  }
-  34% {
-    opacity: 0.4;
-    filter: brightness(1.05);
-  }
-  58% {
-    opacity: 0.82;
-    filter: brightness(1.35);
-  }
-  76% {
-    opacity: 1;
-    filter: brightness(1.65);
-  }
-}
-
-.cta-metal-ring {
-  animation: cta-spin 4.8s linear infinite;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg 30deg,
-    rgba(160, 70, 15, 0.96) 42deg,
-    rgba(255, 180, 100, 0.98) 60deg,
-    rgba(200, 100, 30, 0.92) 74deg,
-    rgba(255, 255, 255, 0.98) 86deg,
-    rgba(255, 166, 95, 0.96) 92deg,
-    rgba(232, 128, 46, 0.94) 100deg,
-    rgba(180, 80, 20, 0.95) 110deg,
-    transparent 126deg 196deg,
-    rgba(150, 65, 12, 0.96) 212deg,
-    rgba(255, 192, 130, 0.98) 226deg,
-    rgba(255, 255, 255, 0.94) 238deg,
-    rgba(210, 110, 40, 0.92) 250deg,
-    transparent 264deg 360deg
-  );
-}
-
-.cta-metal-ring-soft {
-  animation: cta-spin 7.2s linear infinite;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg 24deg,
-    rgba(255, 150, 80, 0.42) 46deg,
-    rgba(255, 255, 255, 0.6) 62deg,
-    rgba(255, 166, 95, 0.58) 84deg,
-    rgba(232, 128, 46, 0.62) 96deg,
-    transparent 118deg 202deg,
-    rgba(255, 140, 70, 0.35) 226deg,
-    rgba(255, 255, 255, 0.55) 242deg,
-    rgba(255, 180, 100, 0.5) 252deg,
-    transparent 270deg 360deg
-  );
-}
-
-.cta-metal-sparks {
-  animation:
-    cta-spin-reverse 3.1s linear infinite,
-    cta-spark-flicker 1.15s steps(2, end) infinite;
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 1.1%, transparent 1.8%) 17% 48% / 16% 16% no-repeat,
-    radial-gradient(circle, rgba(255, 190, 120, 0.95) 0 1%, transparent 1.7%) 29% 18% / 12% 12% no-repeat,
-    radial-gradient(circle, rgba(255, 140, 60, 0.92) 0 1.1%, transparent 1.8%) 71% 22% / 14% 14% no-repeat,
-    radial-gradient(circle, rgba(255, 255, 255, 0.92) 0 1.05%, transparent 1.7%) 84% 50% / 18% 18% no-repeat,
-    radial-gradient(circle, rgba(255, 170, 90, 0.94) 0 1%, transparent 1.6%) 70% 80% / 13% 13% no-repeat,
-    radial-gradient(circle, rgba(255, 255, 255, 0.88) 0 0.9%, transparent 1.5%) 31% 82% / 12% 12% no-repeat;
-}
-
-.cta-metal-core {
-  background: linear-gradient(180deg, rgba(140, 55, 10, 0.94) 0%, rgba(180, 80, 25, 0.96) 52%, rgba(120, 45, 8, 0.98) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -10px 18px rgba(80, 30, 0, 0.26);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cta-metal-ring,
-  .cta-metal-ring-soft,
-  .cta-metal-sparks {
-    animation: none;
-    transform: translate(-50%, -50%);
-  }
-}
-
 /* Animated Dashboard (hero phone mockup) */
 /* 10s cycle: 7 items check off one by one (~5.9s), pause on the completed
    list (~0.7s), celebration (~3s), soft fade-out reveals a fresh list */
@@ -1226,6 +1138,27 @@ html {
   100% {
     opacity: 0;
     transform: scale(0.98);
+  }
+}
+
+@keyframes recent-move-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-recent-move-in {
+  animation: recent-move-in 400ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-recent-move-in {
+    animation: none;
   }
 }
 

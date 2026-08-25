@@ -53,6 +53,14 @@ export const activityDescriptionVariants = cva(['font-normal text-[13px] !text-[
   },
 })
 
+// Skälet eller siffran under beskrivningen - gör rekommendationen konkret
+export const activityHighlightVariants = cva([
+  'inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full',
+  'bg-[var(--color-primary-main)]/12 text-[var(--color-primary-dark)]',
+  'font-semibold text-[12px] leading-none w-fit',
+  'md:text-[13px]',
+])
+
 // Activity Icon styles
 export const activityIconVariants = cva(['p-[9px] w-7 h-7 relative mr-2', '[&_img]:h-full [&_img]:w-full', 'md:mr-[14px] md:ml-[14px] md:w-9 md:h-9'], {
   variants: {

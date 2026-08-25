@@ -11,8 +11,8 @@ export const useFormHelpers = <T extends FieldValues>(control: Control<T, object
      * There might be a better way of doing this without accessing the internals
      * as they might change in the future.
      */
-    const field = control._fields[name]
-    const ref = field?._f.ref
+    const field = control._fields[name] as { _f?: { ref?: unknown } } | undefined
+    const ref = field?._f?.ref
 
     if (!ref) {
       return

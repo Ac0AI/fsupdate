@@ -13,6 +13,8 @@ export type ChecklistItem = {
 
 declare type ChecklistCardItem = {
   name: string
+  /** Skälet eller siffran som gör rekommendationen konkret. Valfritt. */
+  highlight?: string
   linkText: string
   linkUrl: string
   MODAL_DESCRIPTION: string[]

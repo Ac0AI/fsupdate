@@ -17,7 +17,7 @@ import { ActivitiesIcons, IconsUrls } from '@/enums/ActivitiesIconsEnum'
 import ArrowDown from '@/public/images/Arrow-down-black.svg'
 import ArrowUp from '@/public/images/Arrow-up-black.svg'
 import ArrowRightThin from '@/public/images/ArrowRight_thin.svg'
-import { activityDescriptionVariants, activityIconVariants, activityTitleVariants } from '@/templates/MovePage/Sections/ActivitiesSection/ActivitiesSection.variants'
+import { activityDescriptionVariants, activityHighlightVariants, activityIconVariants, activityTitleVariants } from '@/templates/MovePage/Sections/ActivitiesSection/ActivitiesSection.variants'
 import { ActivityEnum } from '@/types/activity'
 import { isActivityLockedOrCompleted } from '@/utils/activity'
 import { ChecklistItem } from '../../../../../types/checklist'
@@ -53,7 +53,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
   } = useUserContext()
 
   const { theme } = useThemeContext()
-  const { activitiesList, startChecklistItem, skippedActivities } = useChecklistContext()
+  const { activitiesList, startChecklistItem, skippedActivities, hideItem } = useChecklistContext()
   const { movingDistanceTooFar } = movehelp
   const status = (item.type && activitiesList.find((activity) => activity.type === item.type)?.status) || ''
   const isMovehelpCombinedLockedOrCompleted = isActivityLockedOrCompleted(skippedActivities.find((activity) => activity.type === ActivityEnum.MOVEHELP_COMBINED)?.status as string)
@@ -78,7 +78,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
   const handleClickOnActivity = () => {
     if (!isUserExcludedFromService) {
       startChecklistItem(item.type, item.id)
-      router.push(translationItem?.linkUrl || '')
+      if (translationItem?.linkUrl) router.push(translationItem.linkUrl)
     } else {
       setIsOpened(!isOpened)
     }
@@ -134,6 +134,26 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                     </div>
                   )
                 })}
+              {!isUserExcludedFromService && (
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  {!!translationItem?.highlight && (
+                    <div className={activityHighlightVariants()}>
+                      <span aria-hidden className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--color-primary-main)] flex-shrink-0" />
+                      {translationItem.highlight}
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    className="mt-2 text-[11px] md:text-[12px] text-[var(--color-inactive-dark)]/80 hover:text-[var(--color-secondary-main)] hover:underline underline-offset-2 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      hideItem(item.type, item.id)
+                    }}
+                  >
+                    {t('CHECKLIST_SECTION.alreadyDone')}
+                  </button>
+                </div>
+              )}
             </div>
           </Flex>
         </div>
@@ -146,10 +166,16 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
               </div>
             </div>
           ) : (
-            <>
-              {isTabletPortraitOrGreater && <Text style={{ paddingRight: 4, textDecoration: 'underline' }}>{translationItem?.linkText}</Text>}
-              <ArrowRightThin />
-            </>
+            !!translationItem?.linkUrl && (
+              <>
+                {isTabletPortraitOrGreater && (
+                  <Text style={{ paddingRight: 6, color: 'var(--color-secondary-main)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                    {translationItem?.linkText}
+                  </Text>
+                )}
+                <ArrowRightThin />
+              </>
+            )
           )}
         </Flex>
       </Flex>

@@ -8,13 +8,13 @@ import { useUserContext } from '@/common/context/user/UserProvider'
 import { ActivityEnum } from '@/common/types/activity'
 import { Booking } from '@/types/booking'
 import Spinner, { SpinnerWrapper } from '@/components/atoms/Spinner'
-import ProgressBar from '@/components/atoms/ProgressBar'
 import { movePageWrapperClasses } from './MovePage.variants'
 import ActivitiesSection from './Sections/ActivitiesSection/ActivitiesSection'
 import CompletedItemsList from './Sections/CompletedItemsList'
 import CompletedBookingsSection from './Sections/CompletedBookingsSection'
 import TopSection from './Sections/TopSection'
 import WelcomeSection from './Sections/WelcomeSection'
+import MoveTimeline from './Components/MoveTimeline'
 import UrgentServicesModal from './Components/UrgentServicesModal/UrgentServicesModal'
 
 interface MovePageProps {
@@ -37,7 +37,7 @@ const MovePage: React.FC<MovePageProps> = ({ completedBookings }) => {
   const {
     user: {
       profile: { phone, email, fullName, leadDetails },
-      currentMove: { toAddress, movingDate, power, internet, movehelp, moveclean, insurance },
+      currentMove: { toAddress, movingDate, createdAt, power, internet, movehelp, moveclean, insurance },
       hasFetchedData,
     },
   } = userData
@@ -140,12 +140,7 @@ const MovePage: React.FC<MovePageProps> = ({ completedBookings }) => {
         {showWelcomeSection && toAddress?.street?.length && !skippedActivities.find((item) => item.type === ActivityEnum.MOVEHELP) && (
           <WelcomeSection setShowWelcomeSection={setShowWelcomeSection} assignedMcAdminId={assignedMcAdmin?.id} assignedMcAdminName={assignedMcAdmin?.name} />
         )}
-        <ProgressBar
-          title={t('movePage:CHECKLIST_SECTION.progressTitle')}
-          completed={completedTasks}
-          total={totalTasks}
-          countText={t('movePage:CHECKLIST_SECTION.progressCount', { completed: completedTasks, total: totalTasks })}
-        />
+        <MoveTimeline movingDate={movingDate} startedAt={createdAt} completed={completedTasks} total={totalTasks} />
         <ActivitiesSection checklistItems={checklistItems} />
         <CompletedBookingsSection initialBookings={completedBookings} />
         <CompletedItemsList checklistItems={checklistItemsCompleted} />

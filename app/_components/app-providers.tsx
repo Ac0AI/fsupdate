@@ -19,10 +19,21 @@ const contextObject = CreateUserContext()
 const utilityObject = CreateUtilityContext()
 const themeObject = CreateThemeContext()
 
+/**
+ * Samma provider-träd som skarpa appen, minus Intercom-autoboot. Tjänstevyerna
+ * kräver utility, infoMissing och autocomplete - saknas någon kastar templaten
+ * i stället för att rendera, så listan måste hållas i takt med den nedan.
+ */
 const DemoProviders = ({ children }: { children: React.ReactNode }) => (
   <IntercomProvider appId={process.env.NEXT_PUBLIC_INTERCOM_ID as string} autoBoot={false}>
     <UserProvider context={contextObject}>
-      <ColourModeProvider context={themeObject}>{children}</ColourModeProvider>
+      <ColourModeProvider context={themeObject}>
+        <MemoizedUtilityProvider context={utilityObject}>
+          <InfoMissingProvider>
+            <AutocompleteServiceProvider>{children}</AutocompleteServiceProvider>
+          </InfoMissingProvider>
+        </MemoizedUtilityProvider>
+      </ColourModeProvider>
     </UserProvider>
   </IntercomProvider>
 )

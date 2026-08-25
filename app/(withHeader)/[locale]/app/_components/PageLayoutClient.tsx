@@ -5,6 +5,7 @@ import { useIntercom } from 'react-use-intercom'
 import { GoogleReviewCountAndRating, GoogleReview } from 'app/_actions/googleReviews'
 import Footer from 'app/_components/footer/FooterClient'
 import clsx from 'clsx'
+import i18nConfig from 'i18nConfig'
 import Cookies from 'js-cookie'
 import { usePathname } from 'next/navigation'
 import { useUserContext } from '@/common/context/user/UserProvider'
@@ -25,8 +26,9 @@ export function PageLayoutClient({
   const { boot } = useIntercom()
   const pathname = usePathname()
   const withInneHeight = pathname?.includes('fixarenovera')
-  const noFooter =
-    ['/sso', '/movehelp-quotation', '/electricity-external', '/en/electricity-external'].includes(pathname) || pathname === '/' || pathname === '/en' || pathname.includes('/i/')
+  // Standardspråket saknar prefix i URL:en men /sv/... är fortfarande nåbart, så matcha utan locale.
+  const pathWithoutLocale = (pathname ?? '/').replace(new RegExp(`^/(${i18nConfig.locales.join('|')})(?=/|$)`), '')
+  const noFooter = ['', '/', '/sso', '/movehelp-quotation', '/electricity-external'].includes(pathWithoutLocale) || pathWithoutLocale.includes('/i/')
   const backgroundRef = useRef<HTMLDivElement>(null)
   const { isTabletLandscapeOrGreater } = useResponsive()
   const [showBackground, setShowBackground] = useState(false)

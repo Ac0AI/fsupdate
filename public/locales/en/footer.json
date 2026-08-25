@@ -18,7 +18,7 @@
   "termsLinkText": "Terms",
   "jobs": "Jobs",
   "cookie": "Cookie policy",
-  "copyRight": "Copyright © 2025 Flyttsmart Sverige AB",
+  "copyRight": "Copyright © {{year}} Flyttsmart Sverige AB",
   "companyAddres": "Sankt Eriksterrassen 72B, 112 34 Stockholm",
   "orgNumber": "Organisation number: 559218-5846",
   "specialRequests": "Do you have specific requests?",

@@ -10,13 +10,13 @@
   "showLess": "Visa färre",
   "quotationsRequested": "Offerter efterfrågade",
   "SELLERMODAL": {
-    "welcome": "Välkommen till Flyttsmart",
+    "welcome": "Välkommen till din flyttsida",
     "whereToMove": "Vet du vart du ska flytta?",
     "noNewAddress": "Jag saknar ny adress/ska ej flytta",
     "newAddress": "Jag har en ny adress att flytta till"
   },
   "ONBOARDINGMODAL": {
-    "welcome": "Välkommen till Flyttsmart!",
+    "welcome": "Välkommen till din flyttsida",
     "whereToMove": "Vet du vart du ska flytta?",
     "noNewAddress": "Jag har inte en ny adress ännu",
     "newAddress": "Lägg till adress",
@@ -39,9 +39,9 @@
   },
   "recommendedForYou": "Rekommenderat för dig [price] [priceUnit]",
   "WELCOME_SECTION": {
-    "welcome": "Välkommen till din flyttsida!",
-    "welcomeText": "Dags att göra din flytt smidig och stressfri.",
-    "welcomeTextSubSection": "Börja med att få kostnadsfria offerter från lokala flyttfirmor!",
+    "welcome": "Välkommen till din flyttsida",
+    "welcomeText": "Vi har redan valt leverantörerna och förhandlat priserna.",
+    "welcomeTextSubSection": "Börja med elavtalet, det är där du tjänar mest.",
     "getQuotations": "Få kostnadsfria offerter",
     "currentForYourMove": "Aktuellt för din flytt",
     "movingCoordinator": "/{{name}}, flyttkoordinator"
@@ -72,7 +72,13 @@
     "personalMovecleanOfferDescription": "Klicka <1>här</1> för att komma till erbjuandet.",
     "cleaningGiant": "Om Städgiganten",
     "cleaningGiantHeader": "\"När du väljer oss, väljer du kostnadseffektiv och pålitlig städning som är utförd med precision och omtanke.\"",
-    "cleaningGiantDescription": "\"Självfallet följer vi strikta städrutiner för att säkerställa bästa möjliga effektivitet och säkerhet i allt vi gör. Våra städteam består av skickliga proffs med många års erfarenhet inom branschen, så du kan känna dig trygg med att ditt hem är i professionella händer.\""
+    "cleaningGiantDescription": "\"Självfallet följer vi strikta städrutiner för att säkerställa bästa möjliga effektivitet och säkerhet i allt vi gör. Våra städteam består av skickliga proffs med många års erfarenhet inom branschen, så du kan känna dig trygg med att ditt hem är i professionella händer.\"",
+    "timelineToday": "Idag",
+    "daysUntilMoveIn_one": "{{count}} dag till inflytt",
+    "daysUntilMoveIn_other": "{{count}} dagar till inflytt",
+    "alreadyDone": "Redan fixat",
+    "addOwn": "Lägg till något eget",
+    "addOwnHint": "Saknas något? Lägg till det i din lista."
   },
   "STARTNEWMOVEMODAL": {
     "startNewMoveTitle": "Starta ny flytt",
@@ -87,9 +93,17 @@
     "cancelButton": "Avbryt"
   },
   "URGENT_SERVICES": {
-    "title": "Din flytt närmar sig!",
+    "title": "Din flytt närmar sig",
     "description": "Du flyttar inom 7 dagar och har ännu inte beställt några tjänster. Om du vill beställa tjänster för din flytt rekommenderar vi att du gör det så snart som möjligt.",
     "contactSupport": "Om det är mycket bråttom, kontakta vår support direkt för hjälp.",
     "contactButton": "Kontakta support"
+  },
+  "TODO_LABELS": {
+    "mail": "Eftersändning av post",
+    "tv": "TV-abonnemang",
+    "parking": "Parkeringsplats",
+    "waste": "Sophämtning",
+    "alarm": "Hemlarm",
+    "school": "Skola och förskola"
   }
 }

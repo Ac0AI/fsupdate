@@ -4,6 +4,7 @@ import { useEffect, useCallback, useState, useRef } from 'react'
 import { useIntercom } from 'react-use-intercom'
 import Footer from 'app/_components/footer/FooterClient'
 import clsx from 'clsx'
+import i18nConfig from 'i18nConfig'
 import Cookies from 'js-cookie'
 import { usePathname } from 'next/navigation'
 import { isClientDemoMode } from '@/common/utils/demoMode'
@@ -17,7 +18,9 @@ export function PageLayoutClient({ children }: { children: React.ReactNode }) {
   const isDemoMode = isClientDemoMode()
   const pathname = usePathname()
   const withInneHeight = pathname?.includes('fixarenovera')
-  const noFooter = ['/sso', '/en/sso', '/login', '/en/login'].includes(pathname) || pathname === '/' || pathname === '/en'
+  // Standardspråket saknar prefix i URL:en men /sv/... är fortfarande nåbart, så matcha utan locale.
+  const pathWithoutLocale = (pathname ?? '/').replace(new RegExp(`^/(${i18nConfig.locales.join('|')})(?=/|$)`), '')
+  const noFooter = ['', '/', '/login', '/sso'].includes(pathWithoutLocale)
   const backgroundRef = useRef<HTMLDivElement>(null)
   const { isTabletLandscapeOrGreater } = useResponsive()
   const [showBackground, setShowBackground] = useState(false)

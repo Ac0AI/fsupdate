@@ -3,12 +3,13 @@ import { cva, type VariantProps } from 'class-variance-authority'
 // Activity Item styles
 export const activityItemVariants = cva(
   [
-    'p-3 rounded-[var(--radius-small)] shadow-[0px_4px_8px_rgba(0,0,0,0.08)]',
-    'bg-white border-2 border-white mb-2 flex flex-col h-22 md:h-20 relative cursor-pointer',
+    'p-3 md:p-4 rounded-[var(--radius-small)] shadow-[0px_2px_6px_rgba(1,22,39,0.06)]',
+    'bg-white border-2 border-white mb-2 flex flex-col min-h-22 md:min-h-20 relative cursor-pointer',
+    'transition-shadow duration-200 hover:shadow-[0px_6px_18px_rgba(1,22,39,0.10)]',
     'last:mb-2',
     '[&.ghostClass]:bg-[var(--color-ghost-background)] [&.ghostClass]:border-[var(--color-ghost-background)]',
     '[&.ghostClass]_*:hidden',
-    'md:h-[84px]',
+    'md:min-h-[84px]',
     'hover:[&_.activity-title]:underline',
     'flex ',
   ],

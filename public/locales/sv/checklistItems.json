@@ -137,30 +137,34 @@
     {
       "name": "addresschange",
       "title": "Flyttanmälan",
-      "subtitle": "Anmäl din flytt till Skatteverket här",
-      "linkText": "Anmäl din flytt",
-      "linkUrl": "/app/addresschange"
+      "subtitle": "Vi förbereder anmälan till Skatteverket. Du signerar med BankID.",
+      "linkText": "Anmäl flytten",
+      "linkUrl": "/app/addresschange",
+      "highlight": "Du signerar, vi skickar"
     },
     {
       "name": "power",
       "title": "Elavtal",
-      "subtitle": "Jämför, teckna och säg upp elavtal {{break}} - Allt på ett ställe",
-      "linkText": "Hantera elavtal",
-      "linkUrl": "/app/electricity"
+      "subtitle": "Elavtal som passar just din bostad. Rabatten finns bara via oss.",
+      "linkText": "Visa mitt förslag",
+      "linkUrl": "/app/electricity",
+      "highlight": "Spara 1 035 kr första året"
     },
     {
       "name": "internet",
       "title": "Bredband",
-      "subtitle": "Se och jämför tillgängliga bredband till {{address}}",
-      "linkText": "Hantera bredband",
-      "linkUrl": "/app/broadband"
+      "subtitle": "Vi kollar vilka nät som finns på din adress och rekommenderar ett.",
+      "linkText": "Visa mitt förslag",
+      "linkUrl": "/app/broadband",
+      "highlight": "Ingår det redan säger vi till"
     },
     {
       "name": "insurance",
       "title": "Hemförsäkring",
-      "subtitle": "Få hjälp med din hemförsäkring till {{address}}",
-      "linkText": "Flytta hemförsäkring",
-      "linkUrl": "/app/insurance"
+      "subtitle": "Vi flyttar försäkringen så det inte blir ett glapp mellan bostäderna.",
+      "linkText": "Flytta försäkringen",
+      "linkUrl": "/app/insurance",
+      "highlight": "Skyddad från dag 1"
     },
     {
       "name": "showCleaning",
@@ -172,16 +176,60 @@
     {
       "name": "movehelp",
       "title": "Flytthjälp",
-      "subtitle": "Få en prisvärd flyttoffert - anpassad för just din flytt.",
-      "linkText": "Få offert",
-      "linkUrl": "/app/movehelp"
+      "subtitle": "Handplockade flyttgubbar som kommer i tid och bär varsamt.",
+      "linkText": "Boka flytthjälp",
+      "linkUrl": "/app/movehelp",
+      "highlight": "Helgen tillbaka, utan att fråga en kompis"
     },
     {
       "name": "moveclean",
       "title": "Flyttstädning",
-      "subtitle": "Jämför de bästa, mest prisvärda städfirmorna nära dig och boka direkt!",
+      "subtitle": "Städningen görs av folk vi kvalitetskontrollerat.",
       "linkText": "Boka flyttstädning",
-      "linkUrl": "/app/moveclean"
+      "linkUrl": "/app/moveclean",
+      "highlight": "Godkänd besiktning, med nöjd-kund-garanti"
+    },
+    {
+      "name": "mail",
+      "title": "Eftersändning av post",
+      "subtitle": "Beställ eftersändning så följer posten med.",
+      "linkText": "",
+      "linkUrl": ""
+    },
+    {
+      "name": "tv",
+      "title": "TV-abonnemang",
+      "subtitle": "Flytta eller säg upp abonnemanget.",
+      "linkText": "",
+      "linkUrl": ""
+    },
+    {
+      "name": "parking",
+      "title": "Parkeringsplats",
+      "subtitle": "Säg upp den gamla, ställ dig i kö till den nya.",
+      "linkText": "",
+      "linkUrl": ""
+    },
+    {
+      "name": "waste",
+      "title": "Sophämtning",
+      "subtitle": "Anmäl till kommunen i din nya adress.",
+      "linkText": "",
+      "linkUrl": ""
+    },
+    {
+      "name": "alarm",
+      "title": "Hemlarm",
+      "subtitle": "Flytta larmet eller avsluta avtalet.",
+      "linkText": "",
+      "linkUrl": ""
+    },
+    {
+      "name": "school",
+      "title": "Skola och förskola",
+      "subtitle": "Anmäl byte i god tid, köerna är långa.",
+      "linkText": "",
+      "linkUrl": ""
     }
   ]
 }

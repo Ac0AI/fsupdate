@@ -1,20 +1,19 @@
 'use client'
 
+import { ABOUT_STATS } from '@/constants/trustStats'
+
 // ---------------------------------------------------------------------------
 // Data
 // ---------------------------------------------------------------------------
 
-const stats = [
-  { value: '200 000+', label: 'Hjälpta flyttare' },
-  { value: '120+', label: 'Leverantörer' },
-  { value: '500+', label: 'Mäklarkontor' },
-  { value: '9,6/10', label: 'Kundbetyg' },
-]
+// Siffrorna bor i constants/trustStats.ts tillsammans med sin källa och sitt
+// datum. Ändra dem där, inte här.
+const stats = ABOUT_STATS
 
 const qualities = [
   {
     title: 'Kvalitetssäkrade leverantörer',
-    description: 'Varje leverantör granskas: försäkringar, trafikitillstånd, F-skatt, omdömen och Konsumentverket. Löpande uppföljning - de som inte håller måttet åker ut.',
+    description: 'Varje leverantör granskas: försäkringar, trafiktillstånd, F-skatt, omdömen och Konsumentverket. Löpande uppföljning - de som inte håller måttet åker ut.',
   },
   {
     title: 'Personlig koordinator',
@@ -78,7 +77,7 @@ const TeamSection = () => {
               Vi är inte en marknadsplats som skickar dig vidare. När du bokar genom Flyttsmart är vi din avtalspart. Vi har försäkringarna, vi har supporten, vi sköter faktureringen. Du har en person att ringa om något inte stämmer.
             </p>
             <p>
-              120+ kvalitetssäkrade leverantörer i hela Sverige. 16 personer i teamet. 190 000 hjälpta flyttare. Från 2 300 användare första året till Sveriges största digitala flyttjänst på under fem år.
+              120+ kvalitetssäkrade leverantörer i hela Sverige. 16 personer i teamet. 200 000 hjälpta flyttare. Från 2 300 användare första året till Sveriges största digitala flyttjänst på under fem år.
             </p>
           </div>
         </div>

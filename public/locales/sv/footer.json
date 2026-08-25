@@ -18,7 +18,7 @@
   "termsLinkText": "Villkor",
   "jobs": "Jobb",
   "cookie": "Cookiepolicy",
-  "copyRight": "Copyright © 2025 Flyttsmart Sverige AB",
+  "copyRight": "Copyright © {{year}} Flyttsmart Sverige AB",
   "companyAddres": "Sankt Eriksterrassen 72B, 112 34 Stockholm",
   "orgNumber": "Organisationsnummer: 559218-5846",
   "specialRequests": "Har du särskilda önskemål?",

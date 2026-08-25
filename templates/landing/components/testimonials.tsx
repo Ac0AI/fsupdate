@@ -81,7 +81,7 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
                 key={i}
                 onClick={() => goToPage(i)}
                 className={clsx(
-                  'h-1.5 rounded-full transition-all duration-300',
+                  'h-1.5 rounded-full transition-[width,background-color] duration-300 ease-standard',
                   i === page ? 'w-6 bg-[var(--color-primary-main)]' : 'w-1.5 bg-gray-200 hover:bg-gray-300'
                 )}
                 aria-label={`Sida ${i + 1}`}

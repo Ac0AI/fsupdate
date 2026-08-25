@@ -3,7 +3,7 @@
   "intro_2": "easiest",
   "intro_3": "way to move!",
   "start": "GET STARTED",
-  "testamonial_title": "We have helped more than 200,000 people to move",
+  "testamonial_title": "What people who have already moved say",
   "stats_title": "Not convinced yet?",
   "faq_title": "Frequently asked questions",
   "faq_link": "https://help.flyttsmart.se/en",
@@ -259,5 +259,24 @@
       "name": "Eline",
       "bio": "Moved to Johanneshov"
     }
-  ]
+  ],
+  "HOW_WE_HELP": {
+    "title": "Moving should not take ten decisions",
+    "subtitle": "We negotiated the prices and vetted the suppliers in advance. You just say yes.",
+    "step1": {
+      "title": "Your move, not a generic list",
+      "description": "We know what needs doing for your address and your moving date, and in what order. You see where you are now and what comes next.",
+      "benefit": "Done in 10 minutes"
+    },
+    "step2": {
+      "title": "We recommend. You choose.",
+      "description": "One recommended option per service with the reasoning spelled out. Prices already negotiated, no quotes to chase. More options are one click away.",
+      "benefit": "Prices already negotiated"
+    },
+    "step3": {
+      "title": "A person, not a phone queue",
+      "description": "Your moving coordinator answers in chat, by email and by phone. If something goes wrong you come to us, not to the supplier.",
+      "benefit": "We take responsibility"
+    }
+  }
 }

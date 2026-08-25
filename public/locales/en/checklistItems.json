@@ -137,32 +137,34 @@
     {
       "name": "addresschange",
       "title": "Registration of new address",
-      "subtitle": "Report your move to the Swedish Tax Agency here",
-      "linkText": "Report your move",
-      "linkUrl": "/app/addresschange"
+      "subtitle": "We prepare the notification to Skatteverket. You sign with BankID.",
+      "linkText": "Report the move",
+      "linkUrl": "/app/addresschange",
+      "highlight": "You sign, we send it"
     },
     {
       "name": "power",
       "title": "Electricity agreement",
-      "subtitle": "Compare, sign and cancel electricity contracts - All in one place",
-      "linkText": "Manage electricity contracts",
-
-      "linkUrl": "/app/electricity"
+      "subtitle": "An electricity contract that suits your particular home. The discount exists only through us.",
+      "linkText": "Show my option",
+      "linkUrl": "/app/electricity",
+      "highlight": "Save 1,035 kr the first year"
     },
     {
       "name": "internet",
       "title": "Internet",
-      "subtitle": "See and compare available broadband to {{address}}",
-      "linkText": "Manage broadband",
-
-      "linkUrl": "/app/broadband"
+      "subtitle": "We check which networks reach your address and recommend one.",
+      "linkText": "Show my option",
+      "linkUrl": "/app/broadband",
+      "highlight": "If it is already included we say so"
     },
     {
       "name": "insurance",
       "title": "Home insurance",
-      "subtitle": "Get help with your home insurance to {{address}}",
-      "linkText": "Move home insurance",
-      "linkUrl": "/app/insurance"
+      "subtitle": "We move your insurance so there is no gap between homes.",
+      "linkText": "Move the insurance",
+      "linkUrl": "/app/insurance",
+      "highlight": "Covered from day one"
     },
     {
       "name": "showCleaning",
@@ -174,20 +176,64 @@
     {
       "name": "movehelp",
       "title": "Move help",
-      "subtitle": "Get an affordable moving quote - tailored for your specific move.",
-      "linkText": "Get quote",
-      "linkUrl": "/app/movehelp"
+      "subtitle": "Hand-picked movers who show up on time and handle your things with care.",
+      "linkText": "Book movers",
+      "linkUrl": "/app/movehelp",
+      "highlight": "Your weekend back, without asking a friend"
     },
     {
       "name": "moveclean",
       "title": "Move cleaning",
-      "subtitle": "Compare the best, most affordable cleaning companies and book directly!",
-      "linkText": "Book move cleaning",
-      "linkUrl": "/app/moveclean"
+      "subtitle": "The cleaning is done by people we have vetted.",
+      "linkText": "Book cleaning",
+      "linkUrl": "/app/moveclean",
+      "highlight": "Passes inspection, with a satisfaction guarantee"
     },
     {
       "name": "movehelpCombined",
       "title": "Move help/Move cleaning"
+    },
+    {
+      "name": "mail",
+      "title": "Mail forwarding",
+      "subtitle": "Order forwarding so your post follows you.",
+      "linkText": "",
+      "linkUrl": ""
+    },
+    {
+      "name": "tv",
+      "title": "TV subscription",
+      "subtitle": "Move it or cancel it.",
+      "linkText": "",
+      "linkUrl": ""
+    },
+    {
+      "name": "parking",
+      "title": "Parking space",
+      "subtitle": "Cancel the old one, queue for the new one.",
+      "linkText": "",
+      "linkUrl": ""
+    },
+    {
+      "name": "waste",
+      "title": "Waste collection",
+      "subtitle": "Register with the municipality at your new address.",
+      "linkText": "",
+      "linkUrl": ""
+    },
+    {
+      "name": "alarm",
+      "title": "Home alarm",
+      "subtitle": "Move the alarm or end the contract.",
+      "linkText": "",
+      "linkUrl": ""
+    },
+    {
+      "name": "school",
+      "title": "School and preschool",
+      "subtitle": "Apply early, the queues are long.",
+      "linkText": "",
+      "linkUrl": ""
     }
   ]
 }

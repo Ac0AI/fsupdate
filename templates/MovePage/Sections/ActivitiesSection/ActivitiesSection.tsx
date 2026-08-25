@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChecklistCardItem } from 'types/checklist'
 import { useChecklistContext } from '@/common/context/checklist/checklistContext.provider'
@@ -14,6 +14,9 @@ import { Themes } from '@/constants/themes'
 import Activity from '@/templates/MovePage/Sections/ActivitiesSection/Activity/Activity'
 import { containerVariants, emptyListVariants, spinnerWrapperVariants } from './ActivitiesSection.variants'
 
+/** De vanligaste sakerna kunden lägger till själv. Typerna finns redan i backend. */
+const ADDABLE_TODOS = ['mail', 'tv', 'parking', 'waste', 'alarm', 'school'] as const
+
 interface ActivitiesSectionProps {
   checklistItems: ChecklistCardItem[]
 }
@@ -27,7 +30,8 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
   } = useUserContext()
   const { theme } = useThemeContext()
   const { t } = useTranslation(['serviceDenyList', 'movePage'])
-  const { activitiesList, hasFetchedActivites } = useChecklistContext()
+  const { activitiesList, hasFetchedActivites, addTodo } = useChecklistContext()
+  const [isAdding, setIsAdding] = useState(false)
 
   const partnerId = leadDetails?.brokerOfficeId ?? partnerDetails?.partnerId ?? ''
   const movingDistanceTooFar = movehelp?.movingDistanceTooFar ?? false
@@ -99,6 +103,39 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
               })}
             />
           ))}
+
+          {/* Lägg till något eget - listan är kundens, inte vår */}
+          <div className="mt-3">
+            {isAdding ? (
+              <div className="bg-white rounded-[var(--radius-small)] shadow-[0px_2px_6px_rgba(1,22,39,0.06)] p-4">
+                <p className="text-[13px] text-[var(--color-inactive-dark)] mb-3">{t('movePage:CHECKLIST_SECTION.addOwnHint')}</p>
+                <div className="flex flex-wrap gap-2">
+                  {ADDABLE_TODOS.map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => {
+                        addTodo(type)
+                        setIsAdding(false)
+                      }}
+                      className="px-3 py-2 rounded-full text-[13px] font-medium border border-[var(--color-inactive-main)] text-[var(--color-secondary-main)] hover:border-[var(--color-primary-main)] hover:bg-[var(--color-primary-main)]/8 transition-colors"
+                    >
+                      {t(`movePage:TODO_LABELS.${type}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsAdding(true)}
+                className="flex items-center gap-2 text-[14px] font-semibold text-[var(--color-secondary-main)] underline underline-offset-4 hover:text-[var(--color-primary-dark)] transition-colors"
+              >
+                <span aria-hidden className="text-[18px] leading-none">+</span>
+                {t('movePage:CHECKLIST_SECTION.addOwn')}
+              </button>
+            )}
+          </div>
         </>
       )}
     </div>

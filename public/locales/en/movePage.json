@@ -10,13 +10,13 @@
   "showLess": "Show less",
   "quotationsRequested": "Quotes requested",
   "SELLERMODAL": {
-    "welcome": "Welcome to Flyttsmart",
+    "welcome": "Welcome to your move",
     "whereToMove": "Do you know where to move?",
     "noNewAddress": "I don't have a new address/will not be moving",
     "newAddress": "I have a new address to move to"
   },
   "ONBOARDINGMODAL": {
-    "welcome": "Welcome to Flyttsmart!",
+    "welcome": "Welcome to your move",
     "whereToMove": "Do you have a new address?",
     "noNewAddress": "I don’t have a new address yet",
     "newAddress": "Add an address",
@@ -41,9 +41,9 @@
     "contactViaFlyttsmart": "Contact us at Flyttsmart"
   },
   "WELCOME_SECTION": {
-    "welcome": "Welcome to your move page!",
-    "welcomeText": "Time to make your move smooth and stress-free.",
-    "welcomeTextSubSection": "Get started by getting free quotes from local moving companies!",
+    "welcome": "Welcome to your move",
+    "welcomeText": "We have already picked the suppliers and negotiated the prices.",
+    "welcomeTextSubSection": "Start with electricity, that is where you save the most.",
     "getQuotations": "Get your quotes",
     "currentForYourMove": "Next step for your move",
     "movingCoordinator": "/{{name}}, movecoordinator"
@@ -75,7 +75,13 @@
     "personalMovecleanOfferDescription": "Click <1>here</1> to view the offer.",
     "cleaningGiant": "Om Städgiganten",
     "cleaningGiantHeader": "\"When you choose us, you choose cost-effective and reliable cleaning that is carried out with precision and care.\"",
-    "cleaningGiantDescription": "\"Of course, we follow strict cleaning procedures to ensure the best possible efficiency and safety in everything we do. Our cleaning teams are made up of skilled professionals with many years of experience in the industry, so you can feel confident that your home is in professional hands.\""
+    "cleaningGiantDescription": "\"Of course, we follow strict cleaning procedures to ensure the best possible efficiency and safety in everything we do. Our cleaning teams are made up of skilled professionals with many years of experience in the industry, so you can feel confident that your home is in professional hands.\"",
+    "timelineToday": "Today",
+    "daysUntilMoveIn_one": "{{count}} day until move-in",
+    "daysUntilMoveIn_other": "{{count}} days until move-in",
+    "alreadyDone": "Already done",
+    "addOwn": "Add something of your own",
+    "addOwnHint": "Missing something? Add it to your list."
   },
   "STARTNEWMOVEMODAL": {
     "startNewMoveTitle": "Start new move",
@@ -90,9 +96,17 @@
     "cancelButton": "Cancel"
   },
   "URGENT_SERVICES": {
-    "title": "Your move is approaching!",
+    "title": "Your move is approaching",
     "description": "You're moving within 7 days and haven't ordered any services yet. If you want to order services for your move, we recommend doing so as soon as possible.",
     "contactSupport": "If it's very urgent, contact our support directly for assistance.",
     "contactButton": "Contact support"
+  },
+  "TODO_LABELS": {
+    "mail": "Mail forwarding",
+    "tv": "TV subscription",
+    "parking": "Parking space",
+    "waste": "Waste collection",
+    "alarm": "Home alarm",
+    "school": "School and preschool"
   }
 }

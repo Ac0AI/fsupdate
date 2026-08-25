@@ -116,7 +116,7 @@ const Footer = ({ flyttsmartGoogleReviewCountAndRating, googleReviews, showBackg
             </Flex>
           </div>
           <Flex display="flex" direction="column" alignItems={!isTabletPortraitOrGreater ? 'center' : 'start'}>
-            <div className={copyrightItemVariants()}>{t('copyRight')}</div>
+            <div className={copyrightItemVariants()}>{t('copyRight', { year: new Date().getFullYear() })}</div>
             {!isTabletPortraitOrGreater ? (
               <>
                 <div className={copyrightItemVariants()}>{t('companyAddres')}</div>

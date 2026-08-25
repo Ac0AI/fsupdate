@@ -13,7 +13,7 @@ const customJestConfig = {
   preset: 'ts-jest',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js', '<rootDir>/.jest/setupEnvVars.ts'],
   moduleDirectories: ['node_modules', '<rootDir>'],
-  testEnvironment: 'jest-environment-jsdom',
+  testEnvironment: '<rootDir>/.jest/jsdom-env-msw.js',
   moduleNameMapper: {
     // Needs to be exact to override NextJs implementation
     '^.+\\.(svg)$': '<rootDir>/__mocks__/svg.tsx',
@@ -27,5 +27,17 @@ const customJestConfig = {
   },
 }
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig)
+// Wrap next/jest config to override transformIgnorePatterns (next/jest appends its own)
+const jestConfig = createJestConfig(customJestConfig)
+
+module.exports = async () => {
+  const config = await jestConfig()
+  // ESM packages that need to be transformed by Jest
+  const esmPackages = ['@radix-ui', 'geist', 'until-async', 'msw', '@mswjs']
+  config.transformIgnorePatterns = [
+    `/node_modules/(?!.pnpm)(?!(${esmPackages.join('|')})/)`,
+    `/node_modules/.pnpm/(?!(${esmPackages.join('|')})@)`,
+    '^.+\\.module\\.(css|sass|scss)$',
+  ]
+  return config
+}

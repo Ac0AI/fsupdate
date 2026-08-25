@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie'
+import { demoFetch, isDemoPath } from './demoApi'
 
 const createFetchInstance = (method: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT', withNoCache?: boolean, withoutAuth?: boolean) => {
   const baseURL = process.env.NEXT_PUBLIC_API_URL
@@ -9,6 +10,12 @@ const createFetchInstance = (method: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT'
   }
 
   const fetchInstance = async <T>(url: string, options: RequestInit = {}, params?: Record<string, string | number | undefined | boolean | string[]>): Promise<T> => {
+    // Demovyerna under /demo körs utan backend. Bara den sökvägen svarar med
+    // fixturer, allt annat går som vanligt.
+    if (isDemoPath()) {
+      return demoFetch<T>(method, url)
+    }
+
     const queryString = params
       ? '?' +
         new URLSearchParams(
@@ -35,10 +42,19 @@ const createFetchInstance = (method: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT'
     })
 
     if (!response.ok) {
-      const data = await response.json()
-      const statusCode = data?.statusCode
-      const messageKey = data?.messageKey || data?.message
-      const err: ErrorType = { statusCode, messageKey }
+      // Felsvaret är inte alltid JSON. Är det HTML (t.ex. en 404-sida) kastar json()
+      // ett SyntaxError som döljer den riktiga statuskoden, så vi läser texten först.
+      const body = await response.text().catch(() => '')
+      let data: Record<string, unknown> | null = null
+      try {
+        data = body ? (JSON.parse(body) as Record<string, unknown>) : null
+      } catch {
+        data = null
+      }
+      const err: ErrorType = {
+        statusCode: (data?.statusCode as number) ?? response.status,
+        messageKey: (data?.messageKey ?? data?.message ?? response.statusText) as ErrorType['messageKey'],
+      }
       return Promise.reject(err)
     }
 

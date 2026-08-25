@@ -2,8 +2,8 @@
   "intro_1": "Det",
   "intro_2": "enklaste",
   "intro_3": "sättet att flytta!",
-  "start": "KOM IGÅNG",
-  "testamonial_title": "Vi har hjälpt fler än 200 000 personer att flytta",
+  "start": "STARTA FLYTTEN",
+  "testamonial_title": "Det säger de som redan flyttat",
   "stats_title": "Inte övertygad än?",
   "faq_title": "Vanliga frågor",
   "faq_link": "https://help.flyttsmart.se/sv",
@@ -17,7 +17,7 @@
     "headline_2": "vi fixar",
     "headline_3": "flytten åt dig",
     "subheadline": "Personlig service och smart teknik som hjälper dig hela vägen. Kostnadsfritt.",
-    "cta": "KOM IGÅNG",
+    "cta": "STARTA FLYTTEN",
     "ctaSubtext": "Kostnadsfritt • 2 min"
   },
   "PRESS_AND_PARTNERS": {
@@ -25,22 +25,22 @@
     "partners": "Våra samarbetspartners"
   },
   "HOW_WE_HELP": {
-    "title": "Så funkar det",
-    "subtitle": "Personlig service och smart teknik - kombinationen som gör din flytt enkel",
+    "title": "Att flytta ska inte kräva tio beslut",
+    "subtitle": "Vi har förhandlat priserna och kvalitetskontrollerat leverantörerna i förväg. Du säger ja.",
     "step1": {
-      "title": "Få en personlig checklista",
-      "description": "Logga in med BankID för att få en översikt av vad du behöver ordna inför flytten. Börja bocka av din checklista direkt och bli klar på 10 minuter.",
+      "title": "Din flytt, inte en generell lista",
+      "description": "Vi vet vad som behöver göras för din adress och ditt flyttdatum, och i vilken ordning. Du ser var du är nu och vad som kommer härnäst.",
       "benefit": "Klar på 10 minuter"
     },
     "step2": {
-      "title": "Gör smarta och trygga val",
-      "description": "Våra leverantörer är noga utvalda och kvalitetssäkrade. Det kostar inte mer att boka via oss - vår tjänst är helt kostnadsfri.",
-      "benefit": "Alltid kostnadsfritt"
+      "title": "Vi rekommenderar. Du väljer.",
+      "description": "Ett rekommenderat val per tjänst med skälet utskrivet. Färdigförhandlade priser, inga offerter att begära. Vill du se fler alternativ ligger de ett klick bort.",
+      "benefit": "Färdigförhandlade priser"
     },
     "step3": {
-      "title": "Få hjälp hela vägen hem",
-      "description": "Glöm krångel och långa telefonköer. Våra flyttexperter svarar snabbt på dina frågor via chatt, mejl och telefon.",
-      "benefit": "Du är aldrig ensam"
+      "title": "En människa, inte en telefonkö",
+      "description": "Din flyttkoordinator svarar i chatten, på mejl och i telefon. Går något fel hör du av dig till oss, inte till leverantören.",
+      "benefit": "Vi tar ansvaret"
     }
   },
   "CONTACT": {
@@ -84,11 +84,11 @@
     },
     {
       "question": "Vad kostar det att använda Flyttsmart?",
-      "answer": "Tjänsten är gratis att använda och fri från dolda avgifter. Vi erbjuder samma priser som våra leverantörer - eller lägre. Priserna varierar mellan olika leverantörer och kan även påverkas av faktorer som hur långt du ska flytta och hur stort ditt boende är."
+      "answer": "Tjänsten är gratis att använda och fri från dolda avgifter. Du betalar samma pris som hos leverantören - eller lägre. Priserna varierar mellan olika leverantörer och kan även påverkas av faktorer som hur långt du ska flytta och hur stort ditt boende är."
     },
     {
       "question": "Vilka leverantörer samarbetar ni med?",
-      "answer": "Vi väljer noga ut en eller ett par riktigt bra leverantörer inom varje område - alltid med hållbara och prisvärda erbjudanden. Du kan med andra ord vara säker på att du gör trygga och smarta val i vår tjänst. "
+      "answer": "Vi väljer noga ut en eller ett par riktigt bra leverantörer inom varje område - alltid med hållbara villkor och priser vi har förhandlat i förväg. Du kan med andra ord vara säker på att du gör trygga och smarta val i vår tjänst. "
     }
   ],
   "HOWITWORKS": {

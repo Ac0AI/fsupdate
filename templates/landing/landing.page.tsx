@@ -10,9 +10,8 @@ import type { GoogleReview, GoogleReviewCountAndRating } from 'app/_actions/goog
 import FAQ from './components/faq'
 import HowItWorks from './components/howItWorks'
 import LandingHero from './components/landingHero'
-import Milestones from './components/milestones'
-import Partners from './components/Partners'
-import ValueCards from './components/valueCards'
+import ProofBar from './components/ProofBar'
+import RecentMoves from './components/RecentMoves'
 
 const Testimonials = dynamic(() => import('./components/testimonials'), { ssr: false })
 
@@ -34,8 +33,8 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
         {/* Hero Section - component handles its own background */}
         <LandingHero />
 
-        {/* Partners marquee */}
-        <Partners />
+        {/* Bevisraden - backar upp "vi har gjort researchen så du slipper" */}
+        <ProofBar />
 
         {/* Testimonials - white section */}
         <section className="w-screen flex justify-center bg-white py-10 md:py-14">
@@ -47,15 +46,8 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
         {/* How It Works Section */}
         <HowItWorks />
 
-        {/* Value Cards - what's behind the login */}
-        <ValueCards />
-
-        {/* Milestones - light, compact */}
-        <section className="w-screen flex justify-center bg-white border-t border-gray-100">
-          <div className="w-full px-4 md:px-8 max-w-[1232px]">
-            <Milestones />
-          </div>
-        </section>
+        {/* Flödet av genomförda tjänster */}
+        <RecentMoves />
 
         {/* FAQ Section */}
         <section

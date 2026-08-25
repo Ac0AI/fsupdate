@@ -37,7 +37,7 @@ const contentVariants = cva(
         true: ['min-w-[311px] w-auto', 'lg:w-[400px]'],
       },
       hoverFadeIn: {
-        true: 'animate-[fadeIn_0.2s_ease-in]',
+        true: 'animate-[fadeIn_0.2s_cubic-bezier(0.23,1,0.32,1)]',
       },
     },
   },

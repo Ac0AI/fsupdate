@@ -83,7 +83,7 @@ const AnimatedDashboard = () => {
         {CHECKLIST_ITEMS.map((item, i) => (
           <div
             key={i}
-            className="flex items-center gap-3 bg-white rounded-xl px-4 py-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+            className="flex items-center gap-3 bg-white rounded-xl px-4 py-[14px] shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
           >
             {/* Checkbox */}
             <div
@@ -121,13 +121,13 @@ const AnimatedDashboard = () => {
         <img
           src="/images/team-nina.webp"
           alt="Din flyttkoordinator"
-          className="w-11 h-11 rounded-full object-cover flex-shrink-0"
+          className="w-10 h-10 rounded-full object-cover flex-shrink-0"
         />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-bold text-[#214766]">Personlig kontakt</p>
-          <p className="text-[10px] text-[#214766]/50">Din flyttkoordinator hjälper dig</p>
+          <p className="text-[10px] leading-tight text-[#214766]/50">Din koordinator hjälper dig</p>
         </div>
-        <div className="w-8 h-8 rounded-full bg-[#51c8b4]/10 flex items-center justify-center flex-shrink-0">
+        <div className="w-7 h-7 rounded-full bg-[#51c8b4]/10 flex items-center justify-center flex-shrink-0">
           <svg className="w-4 h-4 text-[#51c8b4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>

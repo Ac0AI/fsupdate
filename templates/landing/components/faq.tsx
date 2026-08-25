@@ -53,7 +53,7 @@ const FAQ = ({ isServerIosOrSafari }: FAQProps) => {
           <div
             key={index}
             className={clsx(
-              'bg-white rounded-2xl border overflow-hidden transition-all duration-300',
+              'bg-white rounded-2xl border overflow-hidden transition-[border-color,box-shadow] duration-300 ease-standard',
               openIndex === index
                 ? 'border-[var(--color-primary-main)] shadow-lg'
                 : 'border-gray-200 shadow-sm hover:shadow-md'
@@ -85,7 +85,7 @@ const FAQ = ({ isServerIosOrSafari }: FAQProps) => {
             {/* Answer content */}
             <div
               className={clsx(
-                'overflow-hidden transition-all duration-300',
+                'overflow-hidden transition-[max-height,opacity] duration-300 ease-openclose',
                 openIndex === index ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
               )}
             >
