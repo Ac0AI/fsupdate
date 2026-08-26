@@ -12,6 +12,12 @@ import { clsx } from 'clsx'
  * förfrågningarna, annars tappar vi leads i tysthet.
  */
 
+const PROMISES = [
+  'Svar från en koordinator inom en arbetsdag',
+  'Fast pris med tull och försäkring inräknat',
+  'Din förfrågan stannar hos oss, vi säljer den aldrig vidare',
+]
+
 const VOLUMES = ['Helt bohag', 'Mindre lass', 'Pall eller paket']
 const SIZES = ['1–2 rum', '3–4 rum', '5+ rum']
 
@@ -60,7 +66,7 @@ const QuoteForm = ({ country }: Props) => {
             onClick={() => setSent(false)}
             className="text-sm font-semibold text-[var(--color-secondary-main)] underline underline-offset-4 hover:text-[var(--color-primary-main)]"
           >
-            Skicka en till
+            Räkna på en till flytt
           </button>
         </div>
       </div>
@@ -75,8 +81,10 @@ const QuoteForm = ({ country }: Props) => {
       }}
       className="w-full max-w-[480px] rounded-[var(--radius-border-radius-main)] bg-white p-6 md:p-8 shadow-[0_24px_48px_rgba(1,22,39,0.12)]"
     >
-      <h2 className="text-2xl font-bold text-[var(--color-secondary-main)]">{country ? `Skicka in din flytt till ${country}` : 'Skicka in din flytt'}</h2>
-      <p className="mt-2 text-[13px] text-[var(--color-inactive-dark)]">Tar under en minut. Du behöver inte veta detaljerna än.</p>
+      <h2 className="text-2xl font-bold text-[var(--color-secondary-main)]">{country ? `Få pris på din flytt till ${country}` : 'Få pris på din flytt'}</h2>
+      <p className="mt-2 text-[13px] leading-[20px] text-[var(--color-inactive-dark)]">
+        Ett pris från oss, inte sex offerter att jämföra. Tar under en minut, och du behöver inte veta detaljerna än.
+      </p>
 
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
@@ -144,13 +152,23 @@ const QuoteForm = ({ country }: Props) => {
             'hover:brightness-105 active:scale-[0.99]'
           )}
         >
-          Skicka in min flytt
+          Få mitt pris
         </button>
       </div>
 
-      <p className="mt-4 text-[13px] leading-relaxed text-[var(--color-inactive-dark)]">
-        Svar inom en arbetsdag. Din förfrågan stannar hos oss, vi säljer den aldrig vidare.
-      </p>
+      {/* Det här är hela anledningen att fylla i formuläret. Står det inte
+          utskrivet gissar besökaren, och gissningen är sex säljsamtal. */}
+      <ul className="mt-5 space-y-2">
+        {PROMISES.map((promise) => (
+          <li key={promise} className="flex gap-2.5 text-[13px] leading-[20px] text-[var(--color-inactive-dark)]">
+            <svg width="14" height="14" viewBox="0 0 18 18" fill="none" aria-hidden className="mt-[3px] shrink-0">
+              <circle cx="9" cy="9" r="9" fill="var(--color-primary-main)" />
+              <path d="M5 9.2L7.7 11.8L13 6.6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>{promise}</span>
+          </li>
+        ))}
+      </ul>
     </form>
   )
 }

@@ -1,0 +1,34 @@
+{
+  "styleSuffix": "flat vector editorial illustration, strictly limited palette of deep navy 214766, mint green 51C8B4, warm orange FFA65F and white on a pale blue EAF2F8 background, clean geometric shapes with rounded corners, generous negative space, one soft flat shadow per object, Scandinavian design sensibility, calm and reassuring, absolutely no text, no letters, no numbers, no words, no signage, no logos, no human faces, no photorealism",
+  "aspect": "16:9",
+  "images": [
+    {
+      "slug": "betala-el-for-tva-adresser",
+      "prompt": "Two simple houses side by side connected by a thin dotted line. The left house is dimmed and empty, the right house glows softly. A single electricity meter dial floats between them next to a small calendar page with one day marked by an orange dot."
+    },
+    {
+      "slug": "tio-saker-att-anmala",
+      "prompt": "A tall paper checklist with ten blank rows, several already ticked with mint checkmarks. Three envelopes arc through the air toward a rounded mailbox on the right. The envelopes leave thin dotted flight paths."
+    },
+    {
+      "slug": "vad-kostar-en-flyttfirma",
+      "prompt": "A boxy moving truck seen from the side with its rear door open. Beside it a staircase of four steps, and three blank price tags of different sizes hanging from thin strings above the truck."
+    },
+    {
+      "slug": "hemforsakringen-flyttar-inte-sjalv",
+      "prompt": "One large open umbrella sheltering two small houses that stand slightly apart, an older house on the left and a newer one on the right. A few simple raindrops fall outside the umbrella, none underneath."
+    },
+    {
+      "slug": "uppsagningstiden-pa-bredband",
+      "prompt": "A small wifi router with three curved signal arcs, and a fiber cable that loops gracefully from it across to a second apartment building. Beside them a calendar block with three months stacked, the third marked with an orange dot."
+    },
+    {
+      "slug": "stada-sjalv-eller-boka",
+      "prompt": "An empty room shown as a simple open box in perspective, spotless and bright. In the foreground a bucket with a mop leaning against it and a folded cloth. A round wall clock hangs on the back wall, its hands plain."
+    },
+    {
+      "slug": "vad-tullen-fragar-efter",
+      "prompt": "A clipboard holding a blank form with ruled lines, standing next to a sealed cardboard moving box. Behind them a simple striped border barrier lifted halfway, and a soft outline of the European coastline in the far background."
+    }
+  ]
+}

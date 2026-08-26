@@ -6,6 +6,10 @@
  * "flytta till Spanien" ska landa på landssidan, inte på ett blogginlägg. Se
  * artboarden "Sidstruktur och sök" i Paper (sidan Utland).
  *
+ * Bilderna är platshållare, genererade med nanobanana via
+ * `scripts/generate-blog-images.mjs`. De illustrerar ämnet och föreställer
+ * varken människor eller något som kan läsas som ett kundcase.
+ *
  * Texterna bygger på det koordinatorerna faktiskt får förklara för kunder.
  * Uppgifter som kan ändras, som uppsägningstider och tullregler, ska stämmas av
  * mot källan innan ett inlägg publiceras skarpt.
@@ -27,6 +31,8 @@ export type BlogPost = {
   lead: string
   readingMinutes: number
   published: string
+  /** Platshållarillustration, genererad med scripts/generate-blog-images.mjs. */
+  image: string
   /** Sätts på ett inlägg. Det får den stora platsen högst upp på /blogg. */
   featured?: boolean
   body: BlogBlock[]
@@ -53,6 +59,7 @@ export const BLOG_POSTS: BlogPost[] = [
     lead: 'Elavtalet följer inte med när du flyttar, och uppsägningstiden räknas sällan från den dag du tror. Här är tidslinjen, och datumet som avgör allt.',
     readingMinutes: 6,
     published: '18 augusti 2026',
+    image: '/images/blog/betala-el-for-tva-adresser.jpg',
     featured: true,
     body: [
       {
@@ -92,6 +99,7 @@ export const BLOG_POSTS: BlogPost[] = [
     lead: 'Adressändring är inte en sak utan tio, och de hänger ihop. Gör dem i fel ordning och posten hinner till fel adress innan du hunnit ikapp.',
     readingMinutes: 4,
     published: '11 augusti 2026',
+    image: '/images/blog/tio-saker-att-anmala.jpg',
     body: [
       {
         type: 'paragraph',
@@ -137,6 +145,7 @@ export const BLOG_POSTS: BlogPost[] = [
     lead: 'Timpriset är det du jämför. Slutnotan är något annat. Här är posterna som skiljer offerten från fakturan.',
     readingMinutes: 7,
     published: '4 augusti 2026',
+    image: '/images/blog/vad-kostar-en-flyttfirma.jpg',
     body: [
       {
         type: 'paragraph',
@@ -180,6 +189,7 @@ export const BLOG_POSTS: BlogPost[] = [
     lead: 'Mellan utflytt och inflytt finns ett glapp där dina saker står i en bil och två bostäder står tomma. Det är då försäkringen prövas.',
     readingMinutes: 5,
     published: '28 juli 2026',
+    image: '/images/blog/hemforsakringen-flyttar-inte-sjalv.jpg',
     body: [
       {
         type: 'paragraph',
@@ -214,6 +224,7 @@ export const BLOG_POSTS: BlogPost[] = [
     lead: 'Bredband är den tjänst med längst uppsägningstid av alla du har hemma. Räkna baklänges från flyttdagen, inte framåt från idag.',
     readingMinutes: 4,
     published: '21 juli 2026',
+    image: '/images/blog/uppsagningstiden-pa-bredband.jpg',
     body: [
       {
         type: 'paragraph',
@@ -252,6 +263,7 @@ export const BLOG_POSTS: BlogPost[] = [
     lead: 'Flyttstädning är den sista posten i budgeten och den första folk stryker. Här är vad den faktiskt kostar i tid.',
     readingMinutes: 6,
     published: '14 juli 2026',
+    image: '/images/blog/stada-sjalv-eller-boka.jpg',
     body: [
       {
         type: 'paragraph',
@@ -286,6 +298,7 @@ export const BLOG_POSTS: BlogPost[] = [
     lead: 'Flyttar du utanför EU ska bohaget deklareras. Det betyder inte att du betalar tull, men det betyder att pappersarbetet måste stämma.',
     readingMinutes: 8,
     published: '7 juli 2026',
+    image: '/images/blog/vad-tullen-fragar-efter.jpg',
     body: [
       {
         type: 'paragraph',

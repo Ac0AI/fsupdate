@@ -129,13 +129,59 @@ export const ABROAD_STEPS = [
   },
 ] as const
 
-/** Hubben: prisankaret */
+/**
+ * Hubben: prisankaret.
+ *
+ * Spannen är MARKNADSSPANN, inte Flyttsmarts priser. De kommer ur Offertas
+ * prisguide för utlandsflytt 2026 och står här för att en besökare annars inte
+ * har någon aning om storleksordningen. Byt mot våra egna siffror så snart vi
+ * har underlag som håller, men skriv aldrig ut ett tal utan att säga varifrån
+ * det kommer.
+ */
 export const PRICE_ANCHOR = {
   headline: 'Vad landar en utlandsflytt på?',
-  body: 'En tvåa till Spanien med samlast hamnar oftast på XX 000–XX 000 kr. Vad just din flytt kostar beror på volym, våning och hur bråttom du har.',
-  note: 'Du får en exakt siffra innan du bestämmer dig, och den ändras bara om du lägger till något efter att vi räknat.',
+  body: 'Du får en exakt siffra från oss innan du bestämmer dig, räknad på din volym och din sträcka. Tills dess: så här ser marknaden ut.',
+  bands: [
+    { route: 'Norden', small: '15 000–35 000 kr', large: '30 000–60 000 kr' },
+    { route: 'Övriga Europa', small: '25 000–55 000 kr', large: '50 000–90 000 kr' },
+    { route: 'Storbritannien', small: '30 000–60 000 kr', large: '55 000–100 000 kr' },
+  ],
+  bandNote: 'Dörr till dörr med packning. Vänster kolumn är 1–2 rum, höger 3–4 rum. Marknadsspann ur Offertas prisguide 2026, inte våra priser.',
+  lever: 'Samlast sänker priset med 30–50 procent mot en egen bil, för då betalar du för din volym i stället för hela lastutrymmet. Det är därför vi rekommenderar det till nio av tio.',
+  note: 'Vårt pris står skrivet innan du bestämmer dig och ändras bara om du lägger till något efter att vi räknat.',
   included: ['Transport dörr till dörr', 'Försäkring hela vägen', 'Tullhandlingar och pappersarbete', 'Lastning och bärning in i nya hemmet'],
   extra: ['Packning', 'Magasinering i endera änden', 'Piano och flygel', 'Bil och husdjur'],
+} as const
+
+/**
+ * Hubben: varför Flyttsmart och inte något av de andra två sätten.
+ *
+ * Det här blocket saknades helt och är hela svaret på varför någon ska lämna
+ * sina uppgifter här. Alternativ två beskriver jämförelsesajternas modell:
+ * förfrågan går vidare till upp till sex firmor som alla ringer. Det står
+ * ordagrant i deras egen marknadsföring, så påståendet håller.
+ */
+export const ABROAD_WHY = {
+  headline: 'Tre sätt att lösa en utlandsflytt',
+  body: 'Du har egentligen tre vägar. Den här sidan finns för att den tredje är kortast, men döm själv.',
+  options: [
+    {
+      label: 'Ringa runt själv',
+      cost: 'Kostar dig tid',
+      body: 'Du letar upp firmor, beskriver flytten fem gånger och jämför offerter som inte är byggda lika. Den billigaste saknar ofta hamnavgifter eller full försäkring, och det märks först på slutfakturan.',
+    },
+    {
+      label: 'Lämna förfrågan på en jämförelsesajt',
+      cost: 'Kostar dig sex samtal',
+      body: 'Din förfrågan går vidare till upp till sex flyttfirmor som alla hör av sig. Du får ett knippe spann i stället för ett pris, och jämförelsen ligger kvar hos dig.',
+    },
+    {
+      label: 'Flyttsmart',
+      cost: 'Ett pris, en kontakt',
+      body: 'Du beskriver flytten en gång. Vi väljer firman, sätter priset och äger flytten hela vägen. Går något fel ringer du oss, inte ett bolag i ett annat land på ett språk du inte pratar.',
+      ours: true,
+    },
+  ],
 } as const
 
 /** Hubben: ansvarsfördelningen */

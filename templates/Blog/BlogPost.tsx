@@ -1,3 +1,4 @@
+import NextImage from 'next/image'
 import NextLink from 'next/link'
 import { BLOG_CTA, BLOG_POSTS, type BlogPost as Post } from '@/constants/blog'
 
@@ -32,7 +33,11 @@ const BlogPost = ({ post }: { post: Post }) => {
 
         <div className="bg-white">
           <div className="mx-auto w-full max-w-[1200px] px-6 md:px-8 pt-10 md:pt-14">
-            <div aria-hidden className="aspect-[21/9] w-full rounded-[var(--radius-border-radius-main)] bg-[var(--color-secondary-extra-extra-light)]" />
+            {/* 16:9 för att matcha bildernas format. En 21:9-ruta hade beskurit
+                illustrationerna uppe och nere där motivet sitter. */}
+            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-border-radius-main)] bg-[var(--color-secondary-extra-extra-light)]">
+              <NextImage src={post.image} alt="" fill priority sizes="(max-width: 1200px) 100vw, 1136px" className="object-cover" />
+            </div>
           </div>
         </div>
 

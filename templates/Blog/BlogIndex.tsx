@@ -1,11 +1,14 @@
+import NextImage from 'next/image'
 import NextLink from 'next/link'
 import { BLOG_INTRO, featuredPost, otherPosts, type BlogPost } from '@/constants/blog'
 
 /**
  * /blogg. Ett utvalt inlägg högst upp, resten i rutnät under.
  *
- * Bildplatserna är tomma tills vi har riktiga bilder. En tonad yta i rätt
- * proportion är ärligare än en stockbild som inte hör hemma i texten.
+ * Bilderna är platshållarillustrationer, se scripts/generate-blog-images.mjs.
+ * De är dekor, inte innehåll, därför tomt alt-attribut: skärmläsaren ska läsa
+ * rubriken och hoppa över bilden i stället för att läsa upp en beskrivning som
+ * inte tillför något.
  */
 
 const Meta = ({ post }: { post: BlogPost }) => (
@@ -31,10 +34,16 @@ const BlogIndex = () => (
     <section className="bg-white">
       <div className="mx-auto w-full max-w-[1200px] px-6 md:px-8 py-12 md:py-16">
         <NextLink href={`/blogg/${featuredPost.slug}`} className="group grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">
-          <div
-            aria-hidden
-            className="aspect-[16/10] w-full rounded-[var(--radius-border-radius-main)] bg-[var(--color-secondary-extra-extra-light)] transition-transform duration-300 ease-[var(--ease-standard)] group-hover:scale-[1.01]"
-          />
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-border-radius-main)] bg-[var(--color-secondary-extra-extra-light)]">
+            <NextImage
+              src={featuredPost.image}
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 560px"
+              className="object-cover transition-transform duration-300 ease-[var(--ease-standard)] group-hover:scale-[1.02]"
+            />
+          </div>
           <div>
             <Meta post={featuredPost} />
             <h2 className="mt-4 text-[28px] md:text-[32px] font-bold leading-tight text-[var(--color-secondary-dark)]">{featuredPost.title}</h2>
@@ -59,7 +68,9 @@ const BlogIndex = () => (
                 href={`/blogg/${post.slug}`}
                 className="group flex h-full flex-col rounded-[var(--radius-border-radius-main)] bg-white! p-5 transition-shadow duration-200 ease-[var(--ease-standard)] hover:shadow-[var(--shadow-regular)]"
               >
-                <div aria-hidden className="aspect-[16/10] w-full rounded-[var(--radius-border-radius-small)] bg-[var(--color-secondary-extra-extra-light)]" />
+                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-border-radius-small)] bg-[var(--color-secondary-extra-extra-light)]">
+                  <NextImage src={post.image} alt="" fill sizes="(max-width: 768px) 100vw, 360px" className="object-cover" />
+                </div>
                 <div className="mt-5">
                   <Meta post={post} />
                   <h3 className="mt-3 text-[17px] font-bold leading-snug text-[var(--color-secondary-dark)] transition-colors group-hover:text-[var(--color-primary-dark)]">
