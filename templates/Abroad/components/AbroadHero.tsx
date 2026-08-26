@@ -90,13 +90,23 @@ const AbroadHero = ({ eyebrow, breadcrumb, headline, body, bullets, stats, count
                 ))}
               </ul>
 
-              <div className="mt-9 flex flex-wrap items-end gap-x-8 gap-y-6 border-t border-[var(--color-secondary-main)]/15 pt-7">
-                {stats.map((stat, index) => (
-                  <div key={stat.value} className={index === 0 ? '' : 'border-l border-[var(--color-secondary-main)]/15 pl-8'}>
-                    <p className="text-[28px] md:text-[32px] font-bold leading-none text-[var(--color-secondary-dark)]">{stat.value}</p>
-                    <p className="mt-2 text-[13px] text-[var(--color-inactive-dark)]">{stat.label}</p>
-                  </div>
-                ))}
+              {/* Två tal ligger tätt på en rad. Fler än så bryts i ett
+                  tvåkolumnsrutnät, för i en wrappande flexrad får den andra
+                  radens första tal en avdelare till vänster om ingenting. */}
+              <div
+                className={`mt-9 border-t border-[var(--color-secondary-main)]/15 pt-7 ${
+                  stats.length > 2 ? 'grid grid-cols-2 gap-x-8 gap-y-7' : 'flex flex-wrap items-end gap-x-8 gap-y-6'
+                }`}
+              >
+                {stats.map((stat, index) => {
+                  const startsRow = stats.length > 2 ? index % 2 === 0 : index === 0
+                  return (
+                    <div key={stat.value} className={startsRow ? '' : 'border-l border-[var(--color-secondary-main)]/15 pl-8'}>
+                      <p className="text-[28px] md:text-[32px] font-bold leading-none text-[var(--color-secondary-dark)]">{stat.value}</p>
+                      <p className="mt-2 text-[13px] text-[var(--color-inactive-dark)]">{stat.label}</p>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import NextLink from 'next/link'
 import { COUNTRIES, SHARED_FAQ, type Country } from '@/constants/abroad'
+import { GOOGLE_RATING } from '@/constants/trustStats'
 import AbroadHero from './components/AbroadHero'
 import BrokerProof from './components/BrokerProof'
 import FaqSection from './components/FaqSection'
@@ -37,9 +38,14 @@ const CountryPage = ({ country }: Props) => {
         body={country.intro}
         bullets={country.bullets}
         country={country.name}
+        /* Landsfakta först, sedan samma två bevistal som hubben. Kommentar i
+           Paper 2026-08-26: siffrorna ska finnas här också. Landsfakta ligger
+           kvar eftersom de är hela skälet till att sidan finns. */
         stats={[
           { value: country.transitDays, label: country.transitNote },
           { value: country.customsLabel, label: country.customsNote },
+          { value: '200 000+', label: 'personer har flyttat med oss' },
+          { value: String(GOOGLE_RATING).replace('.', ','), label: 'betyg på Google' },
         ]}
       />
 
