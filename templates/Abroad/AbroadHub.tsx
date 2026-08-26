@@ -1,11 +1,9 @@
 import NextLink from 'next/link'
 import {
-  ABROAD_BROKERS,
   ABROAD_FAQ,
   ABROAD_HERO,
   ABROAD_RESPONSIBILITY,
   ABROAD_STEPS,
-  ABROAD_TRUST,
   ABROAD_WHY,
   COUNTRIES,
   PRICE_ANCHOR,
@@ -13,7 +11,9 @@ import {
 } from '@/constants/abroad'
 import { GOOGLE_RATING } from '@/constants/trustStats'
 import AbroadHero from './components/AbroadHero'
+import BrokerProof from './components/BrokerProof'
 import FaqSection from './components/FaqSection'
+import TrustRow from './components/TrustRow'
 
 /**
  * /flytta-utomlands. Hubben som landssidorna hänger under.
@@ -41,29 +41,7 @@ const AbroadHub = () => (
       ]}
     />
 
-    {/* Trygghetsraden. Mörk, smal, direkt under heron eftersom det är den
-        första invändningen: vem är det egentligen som kör? */}
-    <section className="bg-[var(--color-secondary-dark)]">
-      <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-8 px-6 py-12 md:grid-cols-3 md:gap-12 md:px-8 md:py-14">
-        {ABROAD_TRUST.map((item) => (
-          <div key={item.title}>
-            <div className="flex items-center gap-2.5">
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden className="shrink-0">
-                <path
-                  d="M10 2.5L16.25 5v4.5c0 3.9-2.6 6.9-6.25 8.25C6.35 16.4 3.75 13.4 3.75 9.5V5L10 2.5z"
-                  stroke="var(--color-primary-main)"
-                  strokeWidth="1.4"
-                  strokeLinejoin="round"
-                />
-                <path d="M7.5 10l1.8 1.8L13 8" stroke="var(--color-primary-main)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <h2 className="text-[17px] font-bold text-white">{item.title}</h2>
-            </div>
-            <p className="mt-3 text-[15px] leading-[24px] text-white/70">{item.body}</p>
-          </div>
-        ))}
-      </div>
-    </section>
+    <TrustRow />
 
     {/* Varför Flyttsmart. Ligger tidigt, före allt annat vi vill berätta, för
         det är den fråga besökaren faktiskt har: varför just er? */}
@@ -92,23 +70,7 @@ const AbroadHub = () => (
       </div>
     </section>
 
-    {/* Förtroende. Bara logotyperna. Omdömena och presslistan i Paper står som
-        platshållare och läggs till när vi har riktiga utlandsomdömen. */}
-    <section className="bg-white">
-      <div className="mx-auto w-full max-w-[1200px] px-6 md:px-8 pb-16 md:pb-24">
-        <h2 className={`${sectionHeading} max-w-[760px]`}>{ABROAD_BROKERS.headline}</h2>
-        <p className={sectionBody}>{ABROAD_BROKERS.body}</p>
-
-        <ul className="mt-10 grid grid-cols-2 items-center gap-x-8 gap-y-8 sm:grid-cols-3 lg:grid-cols-6">
-          {ABROAD_BROKERS.logos.map((logo) => (
-            <li key={logo.src} className="flex h-10 items-center justify-center lg:justify-start">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logo.src} alt={logo.alt} width={140} height={40} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain" />
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+    <BrokerProof />
 
     {/* Så går det till */}
     <section className="bg-white">

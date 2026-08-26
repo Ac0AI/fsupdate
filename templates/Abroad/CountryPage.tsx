@@ -1,7 +1,9 @@
 import NextLink from 'next/link'
 import { COUNTRIES, SHARED_FAQ, type Country } from '@/constants/abroad'
 import AbroadHero from './components/AbroadHero'
+import BrokerProof from './components/BrokerProof'
 import FaqSection from './components/FaqSection'
+import TrustRow from './components/TrustRow'
 
 /**
  * Mallen för /flytta-utomlands/[land]. En sida per land.
@@ -40,6 +42,8 @@ const CountryPage = ({ country }: Props) => {
           { value: country.customsLabel, label: country.customsNote },
         ]}
       />
+
+      <TrustRow />
 
       {/* Kort svar. Ligger högst upp av en anledning: det är den här biten en
           språkmodell lyfter ordagrant. */}
@@ -105,9 +109,11 @@ const CountryPage = ({ country }: Props) => {
         </div>
       </section>
 
+      <BrokerProof />
+
       {/* Orterna med fast avgång */}
       <section className="bg-white">
-        <div className="mx-auto w-full max-w-[1200px] px-6 md:px-8 pt-16 md:pt-24">
+        <div className="mx-auto w-full max-w-[1200px] px-6 md:px-8 pb-16 md:pb-24">
           <h2 className={sectionHeading}>Hit i {country.name} har vi fast avgång</h2>
           <p className="mt-4 max-w-[620px] text-[17px] leading-relaxed text-[var(--color-secondary-main)]/75">
             Ligger din adress på en av de här sträckorna får du samlast och kortare väntan. Andra orter löser vi också, med något längre framförhållning.
