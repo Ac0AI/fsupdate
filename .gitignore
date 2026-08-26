@@ -50,3 +50,10 @@ yarn-error.log*
 # Git worktrees
 .worktrees/
 .env
+
+# Byggartefakter och QA-utdata. Hör inte i git, skrivs om vid varje körning.
+tsconfig.tsbuildinfo
+lighthouse-*
+*.report.html
+*.report.json
+/qa-screenshots/
