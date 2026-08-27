@@ -5,6 +5,8 @@
   "contactUs": "Kontakta oss",
   "somethingWrong": "Något gick fel, försök igen.",
   "contactUsIfStillError": "Om det fortfarande inte fungerar, kontakta oss så hjälper vi dig.",
+  "addToChecklistToast": "Aktivitet tillagd i checklistan",
+  "removeFromChecklistToast": "Aktivitet gömd från checklistan",
   "logo": "/Common/logo_urZWubE8p.svg",
   "AUTH": {
     "identify": "Identifiering med BankID",

@@ -1,13 +1,15 @@
 import { clsx } from 'clsx'
 import * as ToastPrimitive from '@radix-ui/react-toast'
-import { toastViewportVariants, toastVariants, toastTitleVariants, toastDescriptionVariants, toastActionVariants } from './Toast.variants'
+import { toastViewportVariants, toastVariants, toastTitleVariants, toastDescriptionVariants, toastActionVariants, type ToastVariants } from './Toast.variants'
 
 // Create styled components using clsx
 const StyledViewport = ({ className, ...props }: React.ComponentProps<typeof ToastPrimitive.Viewport>) => (
   <ToastPrimitive.Viewport className={clsx(toastViewportVariants(), className)} {...props} />
 )
 
-const StyledToast = ({ className, ...props }: React.ComponentProps<typeof ToastPrimitive.Root>) => <ToastPrimitive.Root className={clsx(toastVariants(), className)} {...props} />
+const StyledToast = ({ className, tone, ...props }: React.ComponentProps<typeof ToastPrimitive.Root> & ToastVariants) => (
+  <ToastPrimitive.Root className={clsx(toastVariants({ tone }), className)} {...props} />
+)
 
 const StyledTitle = ({ className, ...props }: React.ComponentProps<typeof ToastPrimitive.Title>) => (
   <ToastPrimitive.Title className={clsx(toastTitleVariants(), className)} {...props} />

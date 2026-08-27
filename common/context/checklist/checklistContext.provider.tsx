@@ -1,5 +1,6 @@
 import { HTMLAttributes, createContext, useCallback, useContext, useEffect, useState } from 'react'
 import ReactGA4 from 'react-ga4'
+import { useTranslation } from 'react-i18next'
 import { TODO_TYPE_HANDYMAN, TodoActivityType, TodoType } from 'types/todo'
 import getChecklist, {
   addTodoToChecklist,
@@ -17,6 +18,7 @@ import { isActivityBooked } from '@/utils/activity'
 import { ORDER_STATUS_CANCELED } from '@/constants/order'
 import { ChecklistItem } from '../../../types/checklist'
 import { todoTypes } from '../../../types/todo'
+import { useToastContext } from '../toast/toast.provider'
 import { useUserContext } from '../user/UserProvider'
 
 /* eslint-disable @typescript-eslint/no-empty-function */
@@ -34,9 +36,7 @@ const defaultValue: ChecklistContextType = {
   removeItem: () => {},
   resetItem: () => {},
   startChecklistItem: () => {},
-  showToast: false,
   hasFetchedActivites: false,
-  setShowToast: () => {},
   createTodoOrder: () => undefined,
   skippedExternalActivitesList: [],
   isChecklistItemOrderedOrSkipped: () => false,
@@ -55,8 +55,6 @@ export type ChecklistContextType = {
   showItem: (arg0: string) => void
   removeItem: (arg0: TodoType, arg1: string) => void
   resetItem: (arg0: string) => void
-  showToast: boolean | string
-  setShowToast: (arg0: boolean | string) => void
   createTodoOrder: (arg0: TodoType, order: CreateOrder) => Promise<boolean> | undefined
   hasFetchedActivites: boolean
   startChecklistItem: (arg0: string, arg1: string) => void
@@ -72,6 +70,8 @@ const ChecklistContext = createContext(defaultValue)
 
 export const ChecklistContextProvider = ({ children }: ChecklistProviderProps) => {
   const userData = useUserContext()
+  const { showToast } = useToastContext()
+  const { t } = useTranslation(['common'])
   const {
     user: {
       profile: { leadDetails },
@@ -83,7 +83,6 @@ export const ChecklistContextProvider = ({ children }: ChecklistProviderProps) =
   const [skippedTodos, setSkippedTodos] = useState<TodoActivityType[]>([])
   const [skippedActivities, setSkippedActivities] = useState<ChecklistItem[]>([])
   const [activitiesList, setActivitiesList] = useState<ChecklistItem[]>([])
-  const [showToast, setShowToast] = useState<boolean | string>(false)
   const [hasFetchedActivites, setHasFetchedActivites] = useState<boolean>(false)
   const getChecklistItems = useCallback(async () => {
     const checklist = await getChecklist()
@@ -212,6 +211,9 @@ export const ChecklistContextProvider = ({ children }: ChecklistProviderProps) =
     if (response) {
       ReactGA4.event('activity_added', { type: type })
       getChecklistItems()
+      showToast(t('common:addToChecklistToast'))
+    } else {
+      showToast(t('common:somethingWrong'), 'error')
     }
   }
 
@@ -220,6 +222,9 @@ export const ChecklistContextProvider = ({ children }: ChecklistProviderProps) =
     if (response) {
       ReactGA4.event('activity_hidden', { type: type })
       getChecklistItems()
+      showToast(t('common:removeFromChecklistToast'))
+    } else {
+      showToast(t('common:somethingWrong'), 'error')
     }
   }
 
@@ -289,8 +294,6 @@ export const ChecklistContextProvider = ({ children }: ChecklistProviderProps) =
     resetItem,
     startChecklistItem,
     removeItem,
-    setShowToast,
-    showToast,
     createTodoOrder,
     hasFetchedActivites,
     skippedExternalActivitesList: skippedActivities,

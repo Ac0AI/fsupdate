@@ -5,6 +5,8 @@
   "contactUs": "Contact us",
   "somethingWrong": "Something went wrong, please try again.",
   "contactUsIfStillError": "If it still doesn't work, contact us and we'll help you.",
+  "addToChecklistToast": "Activity added to checklist",
+  "removeFromChecklistToast": "Activity hidden from checklist",
   "logo": "/Common/logo_urZWubE8p.svg",
   "AUTH": {
     "indentify": "Identify with BankID",
