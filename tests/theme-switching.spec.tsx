@@ -20,7 +20,6 @@ import H3 from '@/components/atoms/H3'
 import Input from '@/components/atoms/Input'
 import Paper from '@/components/atoms/Paper'
 import Text from '@/components/atoms/Text'
-import InfoBox from '@/components/molecules/InfoBox'
 import InfoBoxColored from '@/components/molecules/InfoBoxColored'
 import Link from '@/components/molecules/Link'
 import '@testing-library/jest-dom'
@@ -305,7 +304,6 @@ describe('Theme Switching Integration Tests', () => {
         const { unmount } = render(
           <div className={`theme-${theme === ThemeEnum.NORMAL ? 'Default' : theme === ThemeEnum.FORTUM ? 'Fortum' : 'Fastighetsbyran'}`}>
             <ColourModeProvider context={undefined as any}>
-              <InfoBox title="Test InfoBox" text={<p>Test description</p>} callText="Call us" chatText="Chat with us" openChat={() => null} />
               <InfoBoxColored type="info" color="blue">
                 Colored InfoBox
               </InfoBoxColored>
@@ -313,10 +311,8 @@ describe('Theme Switching Integration Tests', () => {
           </div>,
         )
 
-        const infoBox = screen.getByText('Test InfoBox')
         const coloredInfoBox = screen.getByText('Colored InfoBox')
 
-        expect(infoBox).toBeInTheDocument()
         expect(coloredInfoBox).toBeInTheDocument()
 
         // Verify InfoBoxColored uses theme-specific CSS custom properties

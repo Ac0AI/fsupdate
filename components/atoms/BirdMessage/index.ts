@@ -1,1 +1,0 @@
-export { BirdMessage } from './BirdMessage'
