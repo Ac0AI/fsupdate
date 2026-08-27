@@ -434,7 +434,7 @@
 
 @keyframes swipeOut {
   0% {
-    transform: translateY(var(--fs-radix-toast-swipe-end-y));
+    transform: translateY(var(--radix-toast-swipe-end-y));
   }
   100% {
     transform: translateY(-100px);

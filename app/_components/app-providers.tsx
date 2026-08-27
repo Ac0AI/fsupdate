@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { AutocompleteServiceProvider } from '@/common/context/autocompleteProvider/autocomplete.provider'
 import { InfoMissingProvider } from '@/common/context/infoMissing/infoMissing.provider'
 import { ColourModeProvider, CreateThemeContext } from '@/common/context/theme/themeContext.provider'
+import { ToastProvider } from '@/common/context/toast/toast.provider'
 import { CreateUserContext, UserProvider } from '@/common/context/user/UserProvider'
 import { CreateUtilityContext, UtilityProvider } from '@/common/context/utility/UtilityProvider'
 import { isClientDemoMode } from '@/common/utils/demoMode'
@@ -30,7 +31,9 @@ const DemoProviders = ({ children }: { children: React.ReactNode }) => (
       <ColourModeProvider context={themeObject}>
         <MemoizedUtilityProvider context={utilityObject}>
           <InfoMissingProvider>
-            <AutocompleteServiceProvider>{children}</AutocompleteServiceProvider>
+            <AutocompleteServiceProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </AutocompleteServiceProvider>
           </InfoMissingProvider>
         </MemoizedUtilityProvider>
       </ColourModeProvider>
@@ -154,8 +157,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           <MemoizedUtilityProvider context={utilityObject}>
             <InfoMissingProvider>
               <AutocompleteServiceProvider>
-                {showCookie && !scriptBlocked && <ReactCookieFirst url={process.env.NEXT_PUBLIC_COOKIE_FIRST_URL as string}>{children}</ReactCookieFirst>}
-                {scriptBlocked && <>{children}</>}
+                <ToastProvider>
+                  {showCookie && !scriptBlocked && <ReactCookieFirst url={process.env.NEXT_PUBLIC_COOKIE_FIRST_URL as string}>{children}</ReactCookieFirst>}
+                  {scriptBlocked && <>{children}</>}
+                </ToastProvider>
               </AutocompleteServiceProvider>
             </InfoMissingProvider>
           </MemoizedUtilityProvider>
