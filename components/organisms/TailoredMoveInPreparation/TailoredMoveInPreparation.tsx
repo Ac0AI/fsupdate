@@ -15,6 +15,7 @@ import Text from '@/components/atoms/Text'
 import { LONG_DISTANCE_MOVE, RESIDENCE_TOO_BIG } from '@/constants/errorCodes'
 import BirdSuccess from '@/public/images/Bird_success.svg'
 import Phone from '@/public/images/Phone.svg'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 export interface ErrorPageProps {
   error: string
@@ -115,7 +116,7 @@ const TailoredMoveInPreparation = ({ error, onButtonClick }: ErrorPageProps) => 
                     padding="8px 32px !important"
                     text={t('toMovepage')}
                     onClick={() => {
-                      router.push('/app/movepage')
+                      router.push(toDemoPath('/app/movepage'))
                     }}
                   />
                 </div>

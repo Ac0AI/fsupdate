@@ -21,6 +21,7 @@ import { activityDescriptionVariants, activityHighlightVariants, activityIconVar
 import { ActivityEnum } from '@/types/activity'
 import { isActivityLockedOrCompleted } from '@/utils/activity'
 import { ChecklistItem } from '../../../../../types/checklist'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 import {
   activityItemVariants,
   activityContentVariants,
@@ -78,7 +79,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
   const handleClickOnActivity = () => {
     if (!isUserExcludedFromService) {
       startChecklistItem(item.type, item.id)
-      if (translationItem?.linkUrl) router.push(translationItem.linkUrl)
+      if (translationItem?.linkUrl) router.push(toDemoPath(translationItem.linkUrl))
     } else {
       setIsOpened(!isOpened)
     }

@@ -1,4 +1,5 @@
 import ClientPage from '../../app/insurance/ClientPage'
+import DemoUserBoundary from '../_components/DemoUserBoundary'
 
 /**
  * Hemförsäkring som ren frontendvisning. Providern hämtar sin data som vanligt,
@@ -8,7 +9,9 @@ import ClientPage from '../../app/insurance/ClientPage'
 export default function DemoInsurancePage() {
   return (
     <main>
-      <ClientPage />
+      <DemoUserBoundary>
+        <ClientPage />
+      </DemoUserBoundary>
     </main>
   )
 }

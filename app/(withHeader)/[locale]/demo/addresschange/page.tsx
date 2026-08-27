@@ -1,4 +1,5 @@
 import ClientPage from '../../app/addresschange/ClientPage'
+import DemoUserBoundary from '../_components/DemoUserBoundary'
 
 /**
  * Flyttanmälan som ren frontendvisning. Providern hämtar sin data som vanligt,
@@ -8,7 +9,9 @@ import ClientPage from '../../app/addresschange/ClientPage'
 export default function DemoAddresschangePage() {
   return (
     <main>
-      <ClientPage />
+      <DemoUserBoundary>
+        <ClientPage />
+      </DemoUserBoundary>
     </main>
   )
 }

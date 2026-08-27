@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useThemeContext } from '@/common/context/theme/themeContext.provider'
 import { ThemeEnum } from '@/common/enums/ThemeEnum'
 import Button, { type ButtonProps } from '../Button'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 const ExitActivityButton = (props: ButtonProps) => {
   const { t } = useTranslation()
@@ -19,7 +20,7 @@ const ExitActivityButton = (props: ButtonProps) => {
   const onButtonClick = (event: React.MouseEvent) => {
     if (theme === ThemeEnum.FASTIGHETSBYRAN) return window.top?.postMessage('complete', '*')
     if (props.onClick) return props.onClick(event)
-    return router.push('/app/movepage')
+    return router.push(toDemoPath('/app/movepage'))
   }
 
   const variant = theme === ThemeEnum.FASTIGHETSBYRAN ? 'primary' : props.variant

@@ -8,6 +8,7 @@ import ImageKit from '@/components/atoms/ImageKit'
 import Text from '@/components/atoms/Text'
 import CloseThin from '@/public/images/Close_thin.svg'
 import { welcomeSectionWrapperVariants, closeWrapperVariants, styledFlexVariants } from './WelcomeSection.variants'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 interface WelcomeSectionProps {
   setShowWelcomeSection: (value: boolean) => void
@@ -70,7 +71,7 @@ const WelcomeSection = ({ setShowWelcomeSection, assignedMcAdminId, assignedMcAd
                 withFullWidth={!isTabletPortraitOrGreater}
                 padding={isTabletPortraitOrGreater ? '4px 32px' : '10px 16px 10px 32px'}
                 text={t('WELCOME_SECTION.getQuotations')}
-                onClick={() => router.push('/app/movehelp')}
+                onClick={() => router.push(toDemoPath('/app/movehelp'))}
               />
             </Flex>
           </Flex>

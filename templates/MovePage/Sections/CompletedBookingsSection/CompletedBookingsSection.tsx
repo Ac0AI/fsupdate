@@ -9,6 +9,7 @@ import Text from '@/components/atoms/Text'
 import { BOOKING_STATUS_UPCOMING, BOOKING_STATUS_CONFIRMED, BOOKING_STATUS_COMPLETED, BOOKING_TYPE_MOVEHELP } from '@/constants/booking'
 import i18nConfig from 'i18nConfig'
 import { containerVariants, sectionTitleVariants } from './CompletedBookingsSection.variants'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 interface CompletedBookingsSectionProps {
   initialBookings: Booking[]
@@ -46,7 +47,7 @@ const CompletedBookingsSection: React.FC<CompletedBookingsSectionProps> = ({ ini
   })
 
   const handleBookingClick = (booking: Booking) => {
-    router.push(`/${locale}/app/bookings?bookingId=${booking.id}`)
+    router.push(toDemoPath(`/${locale}/app/bookings?bookingId=${booking.id}`))
   }
 
   if (completedBookings.length === 0) {

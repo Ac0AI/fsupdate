@@ -8,6 +8,7 @@ import { BirdError } from '@/components/atoms/BirdError'
 import Button from '@/components/atoms/Button'
 import Text from '@/components/atoms/Text'
 import { failedWrapperVariants, innerWrapperVariants, subButtonWrapperVariants, subLargeButtonWrapperVariants } from './ErrorPage.variants'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 
 export interface ErrorPageProps {
@@ -28,8 +29,8 @@ const ErrorPage = ({ title, subTitleOne, subTitleTwo, withTryAgainButton, withRo
     if (withRouterReload) {
       router.refresh()
     } else if (withTryAgainButton && !withRouterReload) {
-      router.push('/app/movehelp?step=1')
-    } else router.push('/app/movepage')
+      router.push(toDemoPath('/app/movehelp?step=1'))
+    } else router.push(toDemoPath('/app/movepage'))
   }
 
   return (

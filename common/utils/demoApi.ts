@@ -1,5 +1,5 @@
 import { demoChecklist, demoUser } from '@/common/data/demoMovepage'
-import { demoInsuranceSuppliers, demoMovecleanSuppliers, demoMovehelpSuppliers } from '@/common/data/demoServices'
+import { demoBroadbandOffers, demoInsuranceSuppliers, demoMovecleanSuppliers, demoMovehelpSuppliers } from '@/common/data/demoServices'
 
 /**
  * Svarar på API-anrop med fixturer när sidan visas under /demo. Gör att
@@ -40,6 +40,7 @@ const reads: { method: string; test: RegExp; value: () => unknown }[] = [
   { method: 'GET', test: /^\/web\/order\/move-service\/quotation$/, value: () => ({ suppliers: [] }) },
   { method: 'GET', test: /^\/suppliers/, value: () => demoInsuranceSuppliers },
   { method: 'GET', test: /^\/holidays/, value: () => [] },
+  { method: 'GET', test: /^\/moves\/current\/internet\/bredbandsval/, value: () => demoBroadbandOffers },
 ]
 
 export const demoFetch = async <T>(method: string, url: string): Promise<T> => {

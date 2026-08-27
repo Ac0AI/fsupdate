@@ -16,6 +16,35 @@ const MS_PER_DAY = 1000 * 60 * 60 * 24
 const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate())
 
 /**
+ * Flyttbilen och hemmet ritas här i stället för att hämtas som filer: de finns
+ * bara i tidslinjen, och i 24 px behöver formerna vara ritade för just den
+ * storleken för att inte bli grötiga.
+ */
+const MovingVan = () => (
+  <svg width="30" height="20" viewBox="0 0 30 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Vit kontur först, så bilen håller sig läsbar både på den mintfyllda och den grå delen av linjen. */}
+    <g stroke="#FFFFFF" strokeWidth="3.4" strokeLinejoin="round" strokeLinecap="round">
+      <path d="M2.6 3.4h12.2v9.8H2.6z" />
+      <path d="M14.8 6.6h4.8l3.6 4.2v2.4h-8.4z" />
+    </g>
+    <path d="M2.6 3.4h12.2v9.8H2.6z" fill="var(--color-secondary-main)" />
+    <path d="M14.8 6.6h4.8l3.6 4.2v2.4h-8.4z" fill="var(--color-secondary-main)" />
+    <path d="M16.4 8.2h3.1l2 2.4h-5.1z" fill="#FFFFFF" />
+    <circle cx="7.2" cy="14.6" r="3.2" fill="#FFFFFF" />
+    <circle cx="7.2" cy="14.6" r="1.7" fill="var(--color-secondary-dark)" />
+    <circle cx="19.6" cy="14.6" r="3.2" fill="#FFFFFF" />
+    <circle cx="19.6" cy="14.6" r="1.7" fill="var(--color-secondary-dark)" />
+  </svg>
+)
+
+const DestinationHome = () => (
+  <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 2.2 2.6 8v8h14.8V8L10 2.2Z" fill="#FFFFFF" stroke="var(--color-inactive-dark)" strokeWidth="1.6" strokeLinejoin="round" />
+    <path d="M8 16v-4.2h4V16" stroke="var(--color-inactive-dark)" strokeWidth="1.6" strokeLinejoin="round" />
+  </svg>
+)
+
+/**
  * Lätt tidslinje: här är du idag, hit ska vi. Fyllningen är tid, inte uppgifter -
  * att blanda två betydelser i samma stapel gör den obegriplig.
  */
@@ -55,10 +84,17 @@ const MoveTimeline = ({ movingDate, startedAt, completed, total }: Props) => {
         <>
           <div className="relative h-1.5 rounded-full bg-[var(--color-inactive-main)]" aria-hidden>
             <div className="absolute inset-y-0 left-0 rounded-full bg-[var(--color-primary-main)]" style={{ width: `${timePercent}%` }} />
-            <span
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-white border-[3px] border-[var(--color-secondary-main)]"
-              style={{ left: `${timePercent}%` }}
-            />
+
+            {/* Flyttbilen står där tiden står. Den kör mot hemmet i änden. */}
+            <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2" style={{ left: `${timePercent}%` }}>
+              <span className="block motion-safe:animate-[driveIn_800ms_cubic-bezier(0.22,1,0.36,1)]">
+                <MovingVan />
+              </span>
+            </span>
+
+            <span className="absolute top-1/2 left-full -translate-y-1/2 -translate-x-1/2">
+              <DestinationHome />
+            </span>
           </div>
 
           <div className="flex items-center justify-between mt-2.5">

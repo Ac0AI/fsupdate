@@ -6,6 +6,7 @@ import useResponsive from '@/common/hooks/useResponsive'
 import Text from '@/components/atoms/Text'
 import ArrowLeft from '@/public/images/ArrowLeft.svg'
 import { buttonVariants, goBackTopWrapperVariants, goBackToTopInnerWrapperVariants, type GoBackTopWrapperVariants } from './BackToMovepageButton.variants'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 const BackToMovepageButton = () => {
   const router = useRouter()
@@ -18,10 +19,10 @@ const BackToMovepageButton = () => {
     `/app/${ServiceUrlEnum.ELECTRICITY}`,
     `/app/${ServiceUrlEnum.INSURANCE}`,
     `/app/${ServiceUrlEnum.BROADBAND}`,
-  ].includes(pathname)
+  ].some((servicePath) => pathname === servicePath || pathname === toDemoPath(servicePath))
 
   return (
-    <button className={buttonVariants({ withoutPadding: !buttonIsInHeader })} onClick={() => router.push('/app/movepage')}>
+    <button className={buttonVariants({ withoutPadding: !buttonIsInHeader })} onClick={() => router.push(toDemoPath('/app/movepage'))}>
       <ArrowLeft width={18} height={18} />
       {(isTabletPortraitOrGreater || !buttonIsInHeader) && (
         <Text className="pl-[5px]" spacing="none">
