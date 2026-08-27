@@ -1,16 +1,20 @@
 'use client'
 
-import { useEffect, useState, KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, KeyboardEvent } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import Link from 'next/link'
+import { useParams, useRouter } from 'next/navigation'
 import useResponsive from '@/common/hooks/useResponsive'
 import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
+import Spinner from '@/components/atoms/Spinner'
 import Text from '@/components/atoms/Text'
 import LinkButton from '@/components/linkButton'
 import LoginAndSignupBase from '@/components/molecules/LoginAndSignupBase'
 import BankId from '@/public/images/BankId.svg'
 import Info from '@/public/images/Info.svg'
+import i18nConfig from 'i18nConfig'
+import { collectWrapperVariants, innerWrapperVariants as collectInnerWrapperVariants } from '@/templates/LoginTemplate/Collect/Collect.variants'
 import {
   buttonWrapperVariants,
   headerSubtitleVariants,
@@ -25,11 +29,35 @@ import {
   thisDeviceButtonWrapperVariants,
 } from '@/templates/LoginTemplate/Init/Init.variants'
 
+// Så länge den riktiga identifieringen tar på en bra dag. Kort nog att inte
+// irritera, långt nog att vänteskärmen hinner läsas.
+const FAKE_IDENTIFY_MS = 2200
+
 export default function DemoLoginPreview() {
   const { t } = useTranslation(['login'])
   const { isTabletPortraitOrGreater } = useResponsive()
+  const router = useRouter()
+  const { locale } = useParams<{ locale: string }>()
   const [isBankIdOnThisDeviceLogin, setIsBankIdOnThisDeviceLogin] = useState(true)
   const [personalNumber, setPersonalNumber] = useState('')
+  const [isIdentifying, setIsIdentifying] = useState(false)
+  const identifyTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+
+  // Personnumret lämnar aldrig komponenten. Inget anrop går ut, ingen cookie
+  // sätts. Knappen leder till demoflyttsidan, som kör på påhittad data.
+  const startDemoLogin = () => {
+    setIsIdentifying(true)
+    identifyTimer.current = setTimeout(() => {
+      router.push(locale === i18nConfig.defaultLocale ? '/demo/movepage' : `/${locale}/demo/movepage`)
+    }, FAKE_IDENTIFY_MS)
+  }
+
+  const cancelDemoLogin = () => {
+    clearTimeout(identifyTimer.current)
+    setIsIdentifying(false)
+  }
+
+  useEffect(() => () => clearTimeout(identifyTimer.current), [])
 
   useEffect(() => {
     if (isTabletPortraitOrGreater) {
@@ -41,6 +69,30 @@ export default function DemoLoginPreview() {
     if (e.code === 'Enter' || e.code === 'NumpadEnter') {
       e.preventDefault()
     }
+  }
+
+  if (isIdentifying) {
+    return (
+      <LoginAndSignupBase>
+        <div className={collectWrapperVariants()}>
+          <h1 className={headerVariants()}>{t('identifyWithBankid')}</h1>
+          <div className={collectInnerWrapperVariants()}>
+            <Spinner scale={1.5} color="green" />
+            <Text className="mt-6 text-center" spacing="none">
+              {t('startBankid')}
+            </Text>
+            <Text className="mt-2 text-center text-xs" variant="details" spacing="none">
+              Simulerad identifiering. Ingen kontakt tas med BankID.
+            </Text>
+            <div className="mt-8">
+              <LinkButton sx={{ fontSize: 12, fontWeight: '200', borderBottom: '1px solid' }} noUnderline={false} onClick={cancelDemoLogin}>
+                {t('cancel')}
+              </LinkButton>
+            </div>
+          </div>
+        </div>
+      </LoginAndSignupBase>
+    )
   }
 
   return (
@@ -58,7 +110,7 @@ export default function DemoLoginPreview() {
             <>
               <div className={thisDeviceButtonWrapperVariants()}>
                 <div className={largeButtonWrapperVariants()}>
-                  <Button variant="primaryAlt" iconRight={<BankId />} text={t('login')} className="!text-md" withFullWidth padding="10px 10px" />
+                  <Button variant="primaryAlt" iconRight={<BankId />} text={t('login')} className="!text-md" withFullWidth padding="10px 10px" onClick={startDemoLogin} />
                 </div>
               </div>
               <LinkButton
@@ -82,6 +134,7 @@ export default function DemoLoginPreview() {
                     iconRight={<BankId />}
                     iconColor="#000"
                     text={t('login')}
+                    onClick={startDemoLogin}
                   />
                 </div>
               </div>
