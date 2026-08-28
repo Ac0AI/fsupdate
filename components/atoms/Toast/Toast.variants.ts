@@ -4,14 +4,14 @@ export const toastViewportVariants = cva([
   // Tailwind v4 lägger translate i egenskapen translate, inte transform.
   // md:transform-none nollade därför inget, och toasten låg halvvägs utanför skärmen till vänster på desktop.
   'fixed top-[10px] right-0 left-1/2 -translate-x-1/2',
-  'flex justify-center items-center flex-col p-0 h-10 max-w-full w-full',
+  'flex justify-center items-center flex-col p-0 h-auto min-h-10 max-w-full w-full',
   'margin-0 list-none z-[2147483647] outline-none',
   'md:left-0 md:translate-x-0 md:p-[0_25px_25px_25px]',
 ])
 
 export const toastVariants = cva(
   [
-    'rounded-lg h-10 w-[343px] flex items-center shadow-[0px_8px_8px_rgba(0,0,0,0.12)] p-2',
+    'rounded-lg min-h-10 h-auto w-[343px] flex items-center shadow-[0px_8px_8px_rgba(0,0,0,0.12)] p-2',
     // Animation classes for reduced motion preference
     'motion-safe:data-[state=open]:animate-[slideIn_250ms_cubic-bezier(0.16,1,0.3,1)]',
     'motion-safe:data-[state=closed]:animate-[swipeOut_250ms_ease-in]',

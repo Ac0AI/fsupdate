@@ -118,7 +118,7 @@ const DemoElectricityFlow = () => {
       const now = new Date()
       setSignedAt(now)
       setStep(4)
-      showToast('Signerat. Vi säger upp ditt gamla avtal.', 'confirm')
+      showToast('Signerat. Vi sköter resten.', 'confirm')
       const item = activitiesList.find((a) => a.type === 'power')
       if (item) skipChecklistItem('power', item.id, false)
     }, FAKE_SIGN_MS)
