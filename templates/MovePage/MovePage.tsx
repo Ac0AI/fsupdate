@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { clsx } from 'clsx'
 import { useTranslation } from 'react-i18next'
 import { useIntercom } from 'react-use-intercom'
 import { ChecklistCardItem } from 'types/checklist'
@@ -135,7 +136,7 @@ const MovePage: React.FC<MovePageProps> = ({ completedBookings }) => {
 
   return (
     <>
-      <div className={movePageWrapperClasses()} data-testid="move-page-container">
+      <div className={clsx(movePageWrapperClasses(), 'stagger-rise')} data-testid="move-page-container">
         <TopSection />
         {showWelcomeSection && toAddress?.street?.length && !skippedActivities.find((item) => item.type === ActivityEnum.MOVEHELP) && (
           <WelcomeSection setShowWelcomeSection={setShowWelcomeSection} assignedMcAdminId={assignedMcAdmin?.id} assignedMcAdminName={assignedMcAdmin?.name} />

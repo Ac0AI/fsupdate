@@ -9,7 +9,7 @@ export const inputVariants = cva(
     // Base input styles
     'h-10 w-full px-2.5 py-3.5 outline-none',
     'rounded-[var(--radius-input)] border-[1.9px] border-[rgba(118,118,118,0.4)]',
-    'font-thin text-base transition-[border] duration-[10ms]',
+    'font-thin text-base transition-[border-color,border-width] ease-standard duration-150',
     'text-[rgba(0,0,0,0.7)] bg-white',
 
     // Remove spinner buttons from number inputs
@@ -17,20 +17,20 @@ export const inputVariants = cva(
     '[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0',
 
     // Focus styles
-    'focus:border-2 focus:border-[var(--color-tertiary-main)] focus:transition-[border] focus:duration-[10ms]',
+    'focus:border-2 focus:border-[var(--color-tertiary-main)] focus:transition-[border-color,border-width] ease-standard focus:duration-150',
 
     // Has value styles (applied via className)
     '[&.has-value]:border-[1.9px] [&.has-value]:border-[rgba(118,118,118,0.4)]',
-    '[&.has-value]:transition-[border] [&.has-value]:duration-[10ms]',
+    '[&.has-value]:transition-[border-color,border-width] ease-standard [&.has-value]:duration-150',
   ],
   {
     variants: {
       // Error state for non-FB themes
       hasError: {
         true: [
-          'border-[1.9px] border-[var(--color-error-red)] transition-[border] duration-[10ms]',
+          'border-[1.9px] border-[var(--color-error-red)] transition-[border-color,border-width] ease-standard duration-150',
           '[&.has-value]:border-[1.9px] [&.has-value]:border-[var(--color-error-red)]',
-          '[&.has-value]:transition-[border] [&.has-value]:duration-[10ms]',
+          '[&.has-value]:transition-[border-color,border-width] ease-standard [&.has-value]:duration-150',
         ],
       },
 
@@ -41,7 +41,7 @@ export const inputVariants = cva(
 
       // Apartment input (with start adornment)
       isApartment: {
-        true: ['pl-[45px] border-[1.9px] border-[rgba(118,118,118,0.4)]', 'transition-[border] duration-[10ms]'],
+        true: ['pl-[45px] border-[1.9px] border-[rgba(118,118,118,0.4)]', 'transition-[border-color,border-width] ease-standard duration-150'],
       },
 
       // Fastighetsbyran theme
@@ -52,11 +52,11 @@ export const inputVariants = cva(
 
           // Focus styles for FB theme
           'focus:border-none focus:border-b-2 focus:border-b-[var(--color-secondary-main)]',
-          'focus:transition-[border] focus:duration-[10ms]',
+          'focus:transition-[border-color,border-width] ease-standard focus:duration-150',
 
           // Has value styles for FB theme
           '[&.has-value]:border-none [&.has-value]:border-b-2 [&.has-value]:border-b-[var(--color-accent-icon)]',
-          '[&.has-value]:transition-[border] [&.has-value]:duration-[10ms]',
+          '[&.has-value]:transition-[border-color,border-width] ease-standard [&.has-value]:duration-150',
           '[&.has-value]:focus:border-b-[var(--color-secondary-main)]',
         ],
       },

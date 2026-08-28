@@ -83,14 +83,15 @@ const MoveTimeline = ({ movingDate, startedAt, completed, total }: Props) => {
       {moveIn && (
         <>
           <div className="relative h-1.5 rounded-full bg-[var(--color-inactive-main)]" aria-hidden>
-            <div className="absolute inset-y-0 left-0 rounded-full bg-[var(--color-primary-main)]" style={{ width: `${timePercent}%` }} />
-
-            {/* Flyttbilen står där tiden står. Den kör mot hemmet i änden. */}
-            <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2" style={{ left: `${timePercent}%` }}>
-              <span className="block motion-safe:animate-[driveIn_800ms_cubic-bezier(0.22,1,0.36,1)]">
+            {/* Fyllningen växer från noll när sidan laddas, och bilen sitter i dess ände så den kör fram till dagens datum. */}
+            <div
+              className="absolute inset-y-0 left-0 rounded-full bg-[var(--color-primary-main)] w-[var(--fill)] starting:w-0 transition-[width] duration-[1100ms] ease-[var(--ease-out-expo)] motion-reduce:transition-none"
+              style={{ '--fill': `${timePercent}%` } as React.CSSProperties}
+            >
+              <span className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2">
                 <MovingVan />
               </span>
-            </span>
+            </div>
 
             <span className="absolute top-1/2 left-full -translate-y-1/2 -translate-x-1/2">
               <DestinationHome />

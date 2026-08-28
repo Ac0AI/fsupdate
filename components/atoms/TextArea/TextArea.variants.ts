@@ -10,7 +10,7 @@ export const textAreaVariants = cva(
     // Base textarea styles
     'h-[80px] w-full pt-[22px] pb-[8px] px-[10px] outline-none',
     'rounded-[var(--radius-input)] border-[1.9px] border-solid border-[rgba(118,118,118,0.4)]',
-    'font-[var(--font-weight-extra-small)] text-base transition-[border] duration-[10ms]',
+    'font-[var(--font-weight-extra-small)] text-base transition-[border-color,border-width] ease-standard duration-150',
     'text-[var(--color-text-main)]',
     'relative bg-white',
     'resize-none',
@@ -18,7 +18,7 @@ export const textAreaVariants = cva(
     '[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
     '[&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0',
     // Focus styles
-    'focus:border-2 focus:border-[var(--color-tertiary-main)] focus:transition-[border] focus:duration-[10ms]',
+    'focus:border-2 focus:border-[var(--color-tertiary-main)] focus:transition-[border-color,border-width] ease-standard focus:duration-150',
     // Placeholder trick for label animation
     'peer',
   ],
@@ -31,10 +31,10 @@ export const textAreaVariants = cva(
         ],
       },
       hasValue: {
-        true: ['border-[1.9px] border-solid border-[rgba(118,118,118,0.4)]', 'transition-[border] duration-[10ms]'],
+        true: ['border-[1.9px] border-solid border-[rgba(118,118,118,0.4)]', 'transition-[border-color,border-width] ease-standard duration-150'],
       },
       error: {
-        true: ['border-[1.9px] border-solid border-[var(--color-error-red)]', 'transition-[border] duration-[10ms]'],
+        true: ['border-[1.9px] border-solid border-[var(--color-error-red)]', 'transition-[border-color,border-width] ease-standard duration-150'],
       },
     },
   },

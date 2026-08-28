@@ -7,7 +7,7 @@ import ClientPage from '../../app/fixarenovera/ClientPage'
  */
 export default function DemoFixaRenoveraPage() {
   return (
-    <main>
+    <main className="motion-safe:animate-[rise_.4s_var(--ease-out-expo)_both]">
       <ClientPage />
     </main>
   )

@@ -16,7 +16,9 @@ const userContext = CreateUserContext()
  */
 const DemoUserBoundary = ({ children }: { children: React.ReactNode }) => (
   <UserProvider context={userContext} defaultValueUser={demoUser as unknown as User}>
-    <ChecklistContextProvider context={checklistContext}>{children}</ChecklistContextProvider>
+    <ChecklistContextProvider context={checklistContext}>
+      <div className="motion-safe:animate-[rise_.4s_var(--ease-out-expo)_both]">{children}</div>
+    </ChecklistContextProvider>
   </UserProvider>
 )
 

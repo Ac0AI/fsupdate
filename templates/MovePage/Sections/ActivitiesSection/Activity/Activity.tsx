@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation, Trans } from 'react-i18next'
 import { clsx } from 'clsx'
 import Image from 'next/image'
@@ -46,6 +46,8 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
   const locale = i18n.language
   const router = useRouter()
   const [isOpened, setIsOpened] = useState(false)
+  const [isLeaving, setIsLeaving] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
   const { isTabletPortraitOrGreater } = useResponsive()
   const {
     user: {
@@ -85,6 +87,40 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
     }
   }
 
+  // Kortet ska inte bara försvinna: det viks ihop och glider mot klart-listan,
+  // så man förstår vart det tog vägen. Web Animations API i stället för
+  // CSS-klasser eftersom höjden måste mätas i stunden.
+  const markAsDone = () => {
+    const el = cardRef.current
+    const reduceMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!el || reduceMotion || isLeaving || typeof el.animate !== 'function') {
+      hideItem(item.type, item.id)
+      return
+    }
+    setIsLeaving(true)
+    el.classList.add('overflow-hidden', 'pointer-events-none')
+    const box = getComputedStyle(el)
+    const open = {
+      height: `${el.offsetHeight}px`,
+      minHeight: box.minHeight,
+      marginBottom: box.marginBottom,
+      paddingTop: box.paddingTop,
+      paddingBottom: box.paddingBottom,
+      borderTopWidth: box.borderTopWidth,
+      borderBottomWidth: box.borderBottomWidth,
+    }
+    const closed = { height: '0px', minHeight: '0px', marginBottom: '0px', paddingTop: '0px', paddingBottom: '0px', borderTopWidth: '0px', borderBottomWidth: '0px' }
+    const finish = () => hideItem(item.type, item.id)
+    el.animate(
+      [
+        { ...open, opacity: 1, transform: 'none' },
+        { ...open, opacity: 0, transform: 'translateX(28px) scale(0.98)', offset: 0.5 },
+        { ...closed, opacity: 0, transform: 'translateX(28px) scale(0.98)' },
+      ],
+      { duration: 460, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' },
+    ).finished.then(finish, finish)
+  }
+
   const getSubtitle = () => {
     let translation
     if (isUserExcludedFromService) {
@@ -104,6 +140,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
   return (
     <div
       key={item.id}
+      ref={cardRef}
       className={clsx(
         activityItemVariants({
           status: status as ItemStatus,
@@ -148,7 +185,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                     className="relative mt-2 inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full border border-[#D9DBDF] bg-white text-[12px] font-semibold text-[var(--color-inactive-dark)] transition-[color,border-color,transform] duration-200 ease-out hover:border-[var(--color-secondary-main)] hover:text-[var(--color-secondary-main)] motion-safe:active:scale-[0.96] after:content-[''] after:absolute after:-inset-2"
                     onClick={(e) => {
                       e.stopPropagation()
-                      hideItem(item.type, item.id)
+                      markAsDone()
                     }}
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden>

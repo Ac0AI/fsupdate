@@ -29,9 +29,22 @@ import {
   thisDeviceButtonWrapperVariants,
 } from '@/templates/LoginTemplate/Init/Init.variants'
 
-// Så länge den riktiga identifieringen tar på en bra dag. Kort nog att inte
-// irritera, långt nog att vänteskärmen hinner läsas.
-const FAKE_IDENTIFY_MS = 2200
+// Samma rytm som en riktig BankID-inloggning på en bra dag: appen öppnas,
+// legitimeringen tar en stund, sedan bekräftelse. Tre skärmar i stället för
+// en spinner, så att väntan berättar vad som händer.
+type Stage = 'open' | 'identify' | 'done'
+const STAGES: { stage: Stage; at: number }[] = [
+  { stage: 'open', at: 0 },
+  { stage: 'identify', at: 700 },
+  { stage: 'done', at: 1900 },
+]
+const FAKE_IDENTIFY_MS = 2600
+
+const STAGE_COPY: Record<Stage, string> = {
+  open: 'Öppnar BankID',
+  identify: 'Legitimerar dig',
+  done: 'Välkommen tillbaka, Anna',
+}
 
 export default function DemoLoginPreview() {
   const { t } = useTranslation(['login'])
@@ -41,23 +54,31 @@ export default function DemoLoginPreview() {
   const [isBankIdOnThisDeviceLogin, setIsBankIdOnThisDeviceLogin] = useState(true)
   const [personalNumber, setPersonalNumber] = useState('')
   const [isIdentifying, setIsIdentifying] = useState(false)
-  const identifyTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const [stage, setStage] = useState<Stage>('open')
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([])
 
   // Personnumret lämnar aldrig komponenten. Inget anrop går ut, ingen cookie
   // sätts. Knappen leder till demoflyttsidan, som kör på påhittad data.
+  const clearTimers = () => {
+    timers.current.forEach(clearTimeout)
+    timers.current = []
+  }
+
   const startDemoLogin = () => {
     setIsIdentifying(true)
-    identifyTimer.current = setTimeout(() => {
-      router.push(locale === i18nConfig.defaultLocale ? '/demo/movepage' : `/${locale}/demo/movepage`)
-    }, FAKE_IDENTIFY_MS)
+    setStage('open')
+    timers.current = [
+      ...STAGES.filter((s) => s.at > 0).map((s) => setTimeout(() => setStage(s.stage), s.at)),
+      setTimeout(() => router.push(locale === i18nConfig.defaultLocale ? '/demo/movepage' : `/${locale}/demo/movepage`), FAKE_IDENTIFY_MS),
+    ]
   }
 
   const cancelDemoLogin = () => {
-    clearTimeout(identifyTimer.current)
+    clearTimers()
     setIsIdentifying(false)
   }
 
-  useEffect(() => () => clearTimeout(identifyTimer.current), [])
+  useEffect(() => clearTimers, [])
 
   useEffect(() => {
     if (isTabletPortraitOrGreater) {
@@ -77,18 +98,36 @@ export default function DemoLoginPreview() {
         <div className={collectWrapperVariants()}>
           <h1 className={headerVariants()}>{t('identifyWithBankid')}</h1>
           <div className={collectInnerWrapperVariants()}>
-            <Spinner scale={1.5} color="green" />
-            <Text className="mt-6 text-center" spacing="none">
-              {t('startBankid')}
-            </Text>
+            <div key={stage} className="flex flex-col items-center motion-safe:animate-[rise_.35s_var(--ease-out-expo)_both]" aria-live="polite">
+              <div className="flex h-20 items-center justify-center">
+                {stage === 'open' && (
+                  <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-[0_6px_20px_rgba(1,22,39,0.12)] motion-safe:animate-[pulse_1.4s_ease-in-out_infinite] [&_svg]:h-8 [&_svg]:w-9">
+                    <BankId />
+                  </span>
+                )}
+                {stage === 'identify' && <Spinner scale={1.5} color="green" />}
+                {stage === 'done' && (
+                  <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-primary-main)] motion-safe:animate-[pop_.5s_var(--ease-spring)_both]">
+                    <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden>
+                      <path d="M5 13l4 4L19 7" fill="none" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                )}
+              </div>
+              <Text className="mt-4 text-center font-bold" spacing="none">
+                {STAGE_COPY[stage]}
+              </Text>
+            </div>
             <Text className="mt-2 text-center text-xs" variant="details" spacing="none">
               Simulerad identifiering. Ingen kontakt tas med BankID.
             </Text>
-            <div className="mt-8">
-              <LinkButton sx={{ fontSize: 12, fontWeight: '200', borderBottom: '1px solid' }} noUnderline={false} onClick={cancelDemoLogin}>
-                {t('cancel')}
-              </LinkButton>
-            </div>
+            {stage !== 'done' && (
+              <div className="mt-8">
+                <LinkButton sx={{ fontSize: 12, fontWeight: '200', borderBottom: '1px solid' }} noUnderline={false} onClick={cancelDemoLogin}>
+                  {t('cancel')}
+                </LinkButton>
+              </div>
+            )}
           </div>
         </div>
       </LoginAndSignupBase>
@@ -97,7 +136,7 @@ export default function DemoLoginPreview() {
 
   return (
     <LoginAndSignupBase>
-      <div className={initWrapperVariants()}>
+      <div className={`${initWrapperVariants()} motion-safe:animate-[rise_.4s_var(--ease-out-expo)_both]`}>
         <h1 className={headerVariants()}>{t('header')}</h1>
         <Text className={headerSubtitleVariants()} spacing="bottom">
           {t('headerSubtitle')}

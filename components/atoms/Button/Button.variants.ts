@@ -22,7 +22,7 @@ export const buttonVariants = cva(
     // att bevaka varje animerbar property på varje knapp i appen.
     'cursor-pointer transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-standard',
     // Tryckrespons. Utan den känns knappen som att den inte hörde klicket.
-    'motion-safe:active:scale-[0.97]',
+    'motion-safe:active:scale-[0.97] active:duration-100',
     // Reset button styles
     'border-0 outline-none appearance-none',
     // Default padding

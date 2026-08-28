@@ -91,6 +91,7 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
         </div>
       ) : (
         <>
+          <div className="stagger-rise">
           {activitiesList?.map((item) => (
             <Activity
               item={item}
@@ -103,6 +104,7 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
               })}
             />
           ))}
+          </div>
 
           {/* Lägg till något eget - listan är kundens, inte vår */}
           <div className="mt-3">

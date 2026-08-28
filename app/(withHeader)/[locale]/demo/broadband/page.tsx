@@ -7,7 +7,7 @@ import ClientPage from '../../app/broadband/ClientPage'
  */
 export default function DemoBroadbandPage() {
   return (
-    <main>
+    <main className="motion-safe:animate-[rise_.4s_var(--ease-out-expo)_both]">
       <ClientPage />
     </main>
   )

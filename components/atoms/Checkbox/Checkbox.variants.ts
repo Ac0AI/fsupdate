@@ -28,7 +28,8 @@ export const checkboxInputVariants = cva(
     'before:content-[""] before:w-[14px] before:h-[10px]',
     'before:[clip-path:var(--checkmark-path)]',
     'before:transform before:scale-0 before:origin-bottom-left',
-    'before:transition-transform before:duration-[120ms] before:ease-in-out',
+    'before:transition-transform before:duration-200 before:ease-[var(--ease-spring)]',
+    'transition-[background-color,border-color,transform] duration-150 ease-standard motion-safe:active:scale-90',
     'before:shadow-[inset_1em_1em_white] before:bg-[CanvasText]',
     // Focus styles
     'focus:outline-2 focus:outline-solid focus:outline-[var(--color-tertiary-light)] focus:outline-offset-0',

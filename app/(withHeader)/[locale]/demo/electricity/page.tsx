@@ -7,7 +7,7 @@ import ClientPage from '../../app/electricity/ClientPage'
  */
 export default function DemoElectricityPage() {
   return (
-    <main>
+    <main className="motion-safe:animate-[rise_.4s_var(--ease-out-expo)_both]">
       <ClientPage />
     </main>
   )
