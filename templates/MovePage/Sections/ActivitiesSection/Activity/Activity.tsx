@@ -145,12 +145,15 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                   )}
                   <button
                     type="button"
-                    className="mt-2 text-[11px] md:text-[12px] text-[var(--color-inactive-dark)]/80 hover:text-[var(--color-secondary-main)] hover:underline underline-offset-2 transition-colors"
+                    className="relative mt-2 inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full border border-[#D9DBDF] bg-white text-[12px] font-semibold text-[var(--color-inactive-dark)] transition-[color,border-color,transform] duration-200 ease-out hover:border-[var(--color-secondary-main)] hover:text-[var(--color-secondary-main)] motion-safe:active:scale-[0.96] after:content-[''] after:absolute after:-inset-2"
                     onClick={(e) => {
                       e.stopPropagation()
                       hideItem(item.type, item.id)
                     }}
                   >
+                    <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden>
+                      <path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
                     {t('CHECKLIST_SECTION.alreadyDone')}
                   </button>
                 </div>
@@ -174,7 +177,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                     {translationItem?.linkText}
                   </Text>
                 )}
-                <ArrowRightThin />
+                <ArrowRightThin className="transition-transform duration-200 ease-out group-hover:translate-x-0.5" />
               </>
             )
           )}

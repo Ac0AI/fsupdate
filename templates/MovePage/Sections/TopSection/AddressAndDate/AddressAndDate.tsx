@@ -268,9 +268,9 @@ const AddressAndDate = ({ hasPartner = false }: AddressAndDateProps) => {
                 </AccordionContent>
               </AccordionItem>
               {!showSecondCalendar && (
-                <div className={addDateIconWrapperVariants()} data-testid="add-second-date">
-                  <CalendarPlus onClick={() => setShowSecondCalendar(true)} />
-                </div>
+                <button type="button" className={addDateIconWrapperVariants()} data-testid="add-second-date" aria-label={t('common:moveIn')} onClick={() => setShowSecondCalendar(true)}>
+                  <CalendarPlus />
+                </button>
               )}
             </div>
             {showSecondCalendar && (
@@ -311,16 +311,19 @@ const AddressAndDate = ({ hasPartner = false }: AddressAndDateProps) => {
                     <Calendar movingDate={movingInDate || new Date()} setAccordionValue={setAccordionValue} isMoveInDate={true} />
                   </AccordionContent>
                 </AccordionItem>
-                <div className={addDateIconWrapperVariants()}>
-                  <CalendarCancel
-                    onClick={() => {
-                      const moveOutDate = movingDate ? new Date(movingDate) : new Date()
-                      updateMovingDate(moveOutDate, moveOutDate)
-                      setSelectedMoveInDay(undefined)
-                      setShowSecondCalendar(false)
-                    }}
-                  />
-                </div>
+                <button
+                  type="button"
+                  className={addDateIconWrapperVariants()}
+                  aria-label={t('common:cancel')}
+                  onClick={() => {
+                    const moveOutDate = movingDate ? new Date(movingDate) : new Date()
+                    updateMovingDate(moveOutDate, moveOutDate)
+                    setSelectedMoveInDay(undefined)
+                    setShowSecondCalendar(false)
+                  }}
+                >
+                  <CalendarCancel />
+                </button>
               </div>
             )}
           </Accordion>

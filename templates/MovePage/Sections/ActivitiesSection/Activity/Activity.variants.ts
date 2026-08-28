@@ -5,7 +5,8 @@ export const activityItemVariants = cva(
   [
     'p-3 md:p-4 rounded-[var(--radius-small)] shadow-[0px_2px_6px_rgba(1,22,39,0.06)]',
     'bg-white border-2 border-white mb-2 flex flex-col min-h-22 md:min-h-20 relative cursor-pointer',
-    'transition-shadow duration-200 hover:shadow-[0px_6px_18px_rgba(1,22,39,0.10)]',
+    'group transition-[box-shadow,transform] duration-200 ease-out',
+    'hover:shadow-[0px_6px_18px_rgba(1,22,39,0.10)] motion-safe:active:scale-[0.99] active:shadow-[0px_2px_6px_rgba(1,22,39,0.06)]',
     'last:mb-2',
     '[&.ghostClass]:bg-[var(--color-ghost-background)] [&.ghostClass]:border-[var(--color-ghost-background)]',
     '[&.ghostClass]_*:hidden',

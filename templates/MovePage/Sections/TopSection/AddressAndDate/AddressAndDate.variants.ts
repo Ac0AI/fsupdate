@@ -8,7 +8,15 @@ export const styledAccordionItemVariants = cva(['rounded-[var(--radius-border-ra
 
 export const startNewMoveButtonVariants = cva(['text-[var(--color-accent-main)]', 'text-[15px]', 'ml-2'])
 
-export const addDateIconWrapperVariants = cva(['w-[33.5px] h-[30px]', 'ml-2', 'flex justify-center items-center', 'rounded-full', 'border border-white', 'hover:cursor-pointer'])
+export const addDateIconWrapperVariants = cva([
+  'w-9 h-9 shrink-0 ml-2',
+  'flex justify-center items-center',
+  'rounded-full border border-white/80 text-white cursor-pointer',
+  'transition-[background-color,border-color,transform] duration-200 ease-out',
+  'hover:bg-white/15 hover:border-white',
+  'motion-safe:active:scale-[0.92]',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)]',
+])
 
 export const addressAndDateWrapperVariants = cva(
   [
@@ -63,6 +71,12 @@ export const accordionButtonWrapperVariants = cva(
     '[&_button[data-state="closed"]]:bg-[var(--color-secondary-main)]',
     '[&_button>svg]:absolute',
     '[&_button>svg]:right-3',
+    // Raderna ska kännas tryckbara: ljusare på hover, mörkare under tryck, ring vid tangentbord
+    '[&_button]:transition-colors [&_button]:duration-200 [&_button]:ease-out',
+    '[&_button[data-state="closed"]:hover]:bg-[#2A5578]',
+    '[&_button[data-state="closed"]:active]:bg-[var(--color-secondary-main-dark)]',
+    '[&_button[data-state="open"]:active]:bg-[var(--color-secondary-main-dark)]',
+    '[&_button:focus-visible]:outline-none [&_button:focus-visible]:ring-2 [&_button:focus-visible]:ring-inset [&_button:focus-visible]:ring-[var(--color-primary-main)]',
   ],
   {
     variants: {

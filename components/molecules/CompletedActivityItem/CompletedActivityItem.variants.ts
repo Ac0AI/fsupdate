@@ -1,6 +1,6 @@
 import { cva } from 'class-variance-authority'
 
-export const completedActivityItemWrapperVariants = cva(['w-full', 'flex', 'text-text-main', 'font-bold', 'px-2'], {
+export const completedActivityItemWrapperVariants = cva(['w-full', 'flex', 'text-text-main', 'font-bold', 'px-2', 'py-1'], {
   variants: {
     type: {
       hidden: '',

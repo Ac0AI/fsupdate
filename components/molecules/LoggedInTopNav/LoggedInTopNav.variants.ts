@@ -30,7 +30,7 @@ export const circleVariants = cva([
   'bg-[rgb(238,238,240)]',
 ])
 
-export const menuWrapperVariants = cva(['flex', 'h-full', 'items-center', 'leading-[23px]', 'tracking-[0.02rem]', 'hover:cursor-pointer'])
+export const menuWrapperVariants = cva(['flex', 'h-full', 'items-center', 'leading-[23px]', 'tracking-[0.02rem]', 'cursor-pointer', 'transition-[opacity,transform] duration-200 ease-out', 'hover:opacity-85', 'motion-safe:active:scale-[0.97]'])
 
 export const menuTextVariants = cva(['text-white-main', 'font-black', 'ml-4', 'text-sm', 'hidden', 'sm:block'])
 
