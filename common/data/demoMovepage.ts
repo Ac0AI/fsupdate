@@ -89,7 +89,8 @@ export const demoChecklist = {
     item(ActivityEnum.MOVEHELP, 2),
     item(ActivityEnum.MOVECLEAN, 3),
     item(ActivityEnum.INSURANCE, 4),
-    item(ActivityEnum.INTERNET, 5, { status: 'completed', skippedAt: '2026-08-12T09:00:00.000Z' }),
+    // Bredband är nästa steg efter elavtalet i demon, så det står öppet.
+    item(ActivityEnum.INTERNET, 5),
     item(ActivityEnum.ADDRESSCHANGE, 6, { status: 'completed', skippedAt: '2026-08-14T09:00:00.000Z' }),
   ],
 }
