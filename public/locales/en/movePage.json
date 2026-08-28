@@ -43,7 +43,7 @@
   "WELCOME_SECTION": {
     "welcome": "Welcome to your move",
     "welcomeText": "We have already picked the suppliers and negotiated the prices.",
-    "welcomeTextSubSection": "Start with electricity, that is where you save the most.",
+    "welcomeTextSubSection": "Start with electricity. Three minutes, and the lights are on when you arrive, at a good price.",
     "getQuotations": "Get your quotes",
     "currentForYourMove": "Next step for your move",
     "movingCoordinator": "/{{name}}, movecoordinator"

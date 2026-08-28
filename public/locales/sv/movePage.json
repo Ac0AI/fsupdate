@@ -41,7 +41,7 @@
   "WELCOME_SECTION": {
     "welcome": "Välkommen till din flyttsida",
     "welcomeText": "Vi har redan valt leverantörerna och förhandlat priserna.",
-    "welcomeTextSubSection": "Börja med elavtalet, det är där du tjänar mest.",
+    "welcomeTextSubSection": "Börja med elavtalet. Tre minuter, så är lampan tänd när du kommer, till bra pris.",
     "getQuotations": "Få kostnadsfria offerter",
     "currentForYourMove": "Aktuellt för din flytt",
     "movingCoordinator": "/{{name}}, flyttkoordinator"
