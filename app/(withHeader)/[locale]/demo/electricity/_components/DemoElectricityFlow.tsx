@@ -8,7 +8,7 @@ import { demoUser } from '@/common/data/demoMovepage'
 import { useChecklistContext } from '@/common/context/checklist/checklistContext.provider'
 import { useToastContext } from '@/common/context/toast/toast.provider'
 import { Modal, ModalContent, ModalTitle } from '@/components/molecules/Modal'
-import { Card, Check, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, press, rise } from '../../_components/flow-ui'
+import { Card, Check, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise } from '../../_components/flow-ui'
 import { APARTMENTS, OFFERS, STEP_HINTS, STEP_TITLES, type Offer, type OfferId, type ResidenceType, estimateKwh, formatKr, formatOre, monthlyCost } from './offers'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
@@ -103,6 +103,7 @@ const DemoElectricityFlow = () => {
   }
 
   const rootRef = useRef<HTMLDivElement>(null)
+  useNoScrollAnchoring()
   const mounted = useRef(false)
   useLayoutEffect(() => {
     if (!mounted.current) {

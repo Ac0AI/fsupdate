@@ -8,7 +8,7 @@ import i18nConfig from 'i18nConfig'
 import { demoUser } from '@/common/data/demoMovepage'
 import { useToastContext } from '@/common/context/toast/toast.provider'
 import { ADDONS, DISTANCES, ELEVATORS, STEP_TITLES, type Addon, type QuoteRequest, type Residence } from './steps'
-import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, press, rise, textareaClass } from '../../_components/flow-ui'
+import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, textareaClass } from '../../_components/flow-ui'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
 const weekday = (d: Date) => new Intl.DateTimeFormat('sv-SE', { weekday: 'long' }).format(d)
@@ -98,6 +98,7 @@ const DemoMovehelpFlow = () => {
   // Nytt steg börjar högst upp. På mobil står man annars kvar vid knappen
   // och ser inte att sidan bytt innehåll.
   const rootRef = useRef<HTMLDivElement>(null)
+  useNoScrollAnchoring()
   const mounted = useRef(false)
   useLayoutEffect(() => {
     if (!mounted.current) {

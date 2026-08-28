@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { clsx } from 'clsx'
 
 /**
@@ -248,4 +249,18 @@ export const scrollFlowToTop = (root: HTMLElement | null) => {
   // Webbläsarens scrollförankring kan flytta tillbaka positionen när det gamla
   // steget försvinner och det nya får sin höjd, så vi nollar en gång till efter nästa bildruta.
   window.requestAnimationFrame(reset)
+}
+
+// Chromes scrollförankring håller kvar sidfoten på samma plats när ett steg
+// byts ut, och flyttar tillbaka scrollen efter att vi nollat den. Stäng av den
+// på dokumentet så länge ett flöde är monterat.
+export const useNoScrollAnchoring = () => {
+  useEffect(() => {
+    const html = document.documentElement
+    const previous = html.style.overflowAnchor
+    html.style.overflowAnchor = 'none'
+    return () => {
+      html.style.overflowAnchor = previous
+    }
+  }, [])
 }
