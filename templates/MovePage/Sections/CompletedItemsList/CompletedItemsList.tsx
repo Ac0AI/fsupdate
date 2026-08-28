@@ -14,7 +14,7 @@ interface CompletedItemsListProps {
 }
 
 const CompletedItemsList = ({ checklistItems }: CompletedItemsListProps) => {
-  const { skippedActivities, resetItem } = useChecklistContext()
+  const { skippedActivities, resetItem, showItem } = useChecklistContext()
   const { t } = useTranslation(['movePage', 'checklistItems'])
   const {
     user: {
@@ -72,9 +72,11 @@ const CompletedItemsList = ({ checklistItems }: CompletedItemsListProps) => {
     setSelectedItem(null)
   }
 
+  // Redan fixat-poster är dolda, inte överhoppade, och har en egen väg tillbaka i API:t.
   const handleResetItem = () => {
     if (selectedItem?.id) {
-      resetItem(selectedItem.id)
+      if (selectedItem.hiddenAt) showItem(selectedItem.id)
+      else resetItem(selectedItem.id)
       handleCloseModal()
     }
   }
