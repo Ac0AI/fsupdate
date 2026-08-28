@@ -220,9 +220,13 @@ export const Timeline = ({ items }: { items: { state: 'done' | 'current' | 'todo
 // Sidan scrollar till första felet och sätter fokus där. Knappen är aldrig död:
 // den säger vad som saknas i stället.
 export const focusFirstInvalid = () => {
-  window.setTimeout(() => {
-    const first = document.querySelector<HTMLElement>('[data-invalid="true"]')
-    first?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    first?.querySelector<HTMLElement>('input, textarea, select')?.focus({ preventScroll: true })
-  }, 0)
+  // Två bildrutor så felraderna hunnit ritas och sidan fått sin nya höjd,
+  // annars avbryts den mjuka scrollen halvvägs av layoutskiftet.
+  window.requestAnimationFrame(() =>
+    window.requestAnimationFrame(() => {
+      const first = document.querySelector<HTMLElement>('[data-invalid="true"]')
+      first?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      first?.querySelector<HTMLElement>('input, textarea, select')?.focus({ preventScroll: true })
+    }),
+  )
 }
