@@ -25,7 +25,9 @@ export type QuoteRequest = {
   heavyItems: boolean
   heavyNote: string
   addons: Addon[]
-  dateMode: 'fixed' | 'flexible'
+  // fixed = tillträdesdagen, flexible = Nina föreslår, custom = kunden väljer själv
+  dateMode: 'fixed' | 'flexible' | 'custom'
+  customDate: string
 }
 
 // Tre svar i stället för fem metersintervall. Kunden vet inte om det är 40

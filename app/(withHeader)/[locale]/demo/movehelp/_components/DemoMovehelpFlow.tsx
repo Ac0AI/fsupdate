@@ -11,6 +11,8 @@ import { ADDONS, DISTANCES, ELEVATORS, STEP_TITLES, type Addon, type QuoteReques
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
 const weekday = (d: Date) => new Intl.DateTimeFormat('sv-SE', { weekday: 'long' }).format(d)
+const isoDate = (d: Date) => new Intl.DateTimeFormat('sv-SE').format(d) // sv-SE ger yyyy-mm-dd, som <input type="date"> vill ha
+const isWeekend = (d: Date) => d.getDay() === 0 || d.getDay() === 6
 
 // Samma mjuka övergång på allt som går att trycka på, så att flödet känns som
 // en app och inte som ett formulär. Tryck ger en liten nedskalning, val tonas in.
@@ -31,7 +33,15 @@ const residenceErrors = (res: Residence, prefix: 'from' | 'to', origin: boolean)
 
 const stepErrors = (step: number, req: QuoteRequest): Errors => {
   if (step === 0) return { ...residenceErrors(req.from, 'from', true), ...residenceErrors(req.to, 'to', false) }
-  if (step === 1 && req.heavyItems && !req.heavyNote.trim()) return { heavyNote: 'Berätta vad som är tungt eller ömtåligt, så Nina kan sätta rätt antal bärare.' }
+  if (step === 1) {
+    const e: Errors = {}
+    if (req.heavyItems && !req.heavyNote.trim()) e.heavyNote = 'Berätta vad som är tungt eller ömtåligt, så Nina kan sätta rätt antal bärare.'
+    if (req.dateMode === 'custom') {
+      if (!req.customDate) e.customDate = 'Välj vilken dag du vill flytta.'
+      else if (req.customDate < isoDate(new Date())) e.customDate = 'Den dagen har redan varit. Välj en dag framåt.'
+    }
+    return e
+  }
   return {}
 }
 
@@ -66,6 +76,7 @@ const DemoMovehelpFlow = () => {
     heavyNote: '',
     addons: ADDONS.filter((a) => a.defaultOn).map((a) => a.value),
     dateMode: 'fixed',
+    customDate: '',
   })
 
   // Felen visas först när man försöker gå vidare, inte medan man fyller i.
@@ -206,7 +217,34 @@ const DemoMovehelpFlow = () => {
                     hint={`Tillträdesdagen · en ${weekday(movingDate)}`}
                   />
                   <Radio active={req.dateMode === 'flexible'} onClick={() => setReq((r) => ({ ...r, dateMode: 'flexible' }))} title="Flexibel, ge mig bästa pris" />
+                  <Radio
+                    active={req.dateMode === 'custom'}
+                    onClick={() => setReq((r) => ({ ...r, dateMode: 'custom', customDate: r.customDate || isoDate(movingDate) }))}
+                    title="Ett annat datum"
+                    hint="Välj själv, så räknar Nina på den dagen"
+                  />
                 </div>
+                {req.dateMode === 'custom' && (
+                  <div className={clsx('mt-3', rise)}>
+                    <Field label="Vilken dag?" error={shownErrors.customDate}>
+                      <input
+                        type="date"
+                        autoFocus
+                        min={isoDate(new Date())}
+                        aria-invalid={!!shownErrors.customDate}
+                        className={clsx(areaInput, 'max-w-[220px] bg-white', shownErrors.customDate && errorBorder)}
+                        value={req.customDate}
+                        onChange={(e) => setReq((r) => ({ ...r, customDate: e.target.value }))}
+                      />
+                    </Field>
+                    {req.customDate && !shownErrors.customDate && (
+                      <p className="mt-1.5 text-xs leading-[17px] text-[#767678]">
+                        {formatDate(new Date(req.customDate))}, en {weekday(new Date(req.customDate))}.
+                        {isWeekend(new Date(req.customDate)) ? ' Helger kostar ofta mer, vardagar är billigare.' : ''}
+                      </p>
+                    )}
+                  </div>
+                )}
                 <p className="text-xs leading-[17px] text-[#767678] mt-2.5">
                   Vardagar är ofta billigare än helger. Flexibel betyder att Nina föreslår ett datum inom en vecka från tillträdet.
                 </p>
@@ -240,7 +278,7 @@ const DemoMovehelpFlow = () => {
                 {sending ? 'Skickar till Nina' : 'Skicka till Nina'}
               </Primary>
               {hasShownErrors ? (
-                <Foot tone="error">Berätta om det tunga innan du skickar, så Nina kan räkna rätt.</Foot>
+                <Foot tone="error">Något saknas ovan. Fyll i det markerade så Nina kan räkna rätt.</Foot>
               ) : (
                 <Foot>Nina sammanställer och skickar ett förslag. Inget är bokat förrän du godkänt det.</Foot>
               )}
@@ -506,7 +544,7 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
         <span className="flex flex-col gap-0.5">
           <span className="text-[15px] font-bold text-[#214766]">Dina svar</span>
           <span className="text-[13px] text-[#767678]">
-            {req.from.street} → {req.to.street} · {req.dateMode === 'fixed' ? formatDate(movingDate) : 'flexibelt datum'}
+            {req.from.street} → {req.to.street} · {req.dateMode === 'fixed' ? formatDate(movingDate) : req.dateMode === 'custom' && req.customDate ? formatDate(new Date(req.customDate)) : 'flexibelt datum'}
             {addonLabels.length ? ` · ${addonLabels.join(', ')}` : ''}
           </span>
         </span>
