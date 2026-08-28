@@ -35,6 +35,7 @@ import {
   innerWrapperVariants,
 } from './Insurance.variants'
 import SupplierSection from './SupplierSection'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 interface ElectricityPageProps {
   isExternalModule?: boolean
@@ -84,7 +85,7 @@ export const InsurancePage = ({ isExternalModule }: ElectricityPageProps) => {
     try {
       const checklistObj = activitiesList.find((item) => item.type === ActivityEnum.INSURANCE)
       skipChecklistItem(ORDER_TYPE_INSURANCE, checklistObj?.id || '', checklistObj?.status !== 'not_started')
-      push('/app/movepage')
+      push(toDemoPath('/app/movepage'))
     } catch (error: unknown) {
       console.error(error)
     }
@@ -196,7 +197,7 @@ export const InsurancePage = ({ isExternalModule }: ElectricityPageProps) => {
               )}
               <SupplierSection />
               <Flex className={buttonsWrapperVariants()} justifyContent="space-between" alignItems="end">
-                <div className={goBackButtonVariants()} style={{ height: 'unset' }} onClick={() => push('/app/movepage')}>
+                <div className={goBackButtonVariants()} style={{ height: 'unset' }} onClick={() => push(toDemoPath('/app/movepage'))}>
                   {
                     <Text spacing="none" variant="linkBig">
                       {t('common:goBack')}

@@ -9,6 +9,7 @@ import Checkmark from '@/components/atoms/Icons/Checkmark'
 import Text from '@/components/atoms/Text'
 import { ORDER_TYPE_ADDRESSCHANGE } from '@/constants/order'
 import { buttonWrapperVariants, innerWrapperVariants, stepTemplateWrapperVariants } from './AddresschangePage.variants'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 const AlternativeAddresschange = () => {
   const { t } = useTranslation(['addresschange', 'common'])
@@ -18,7 +19,7 @@ const AlternativeAddresschange = () => {
   const markAddressChangeAsDone = () => {
     try {
       skipChecklistItem(ORDER_TYPE_ADDRESSCHANGE, checklistObj?.id || '', checklistObj?.status !== 'not_started')
-      router.push('/app/movepage')
+      router.push(toDemoPath('/app/movepage'))
     } catch (error: unknown) {
       console.error(error)
     }

@@ -10,6 +10,7 @@ import Flex from '@/components/atoms/Flex'
 import H3 from '@/components/atoms/H3'
 import Text from '@/components/atoms/Text'
 import { Autocomplete } from '@/components/molecules/Autocomplete'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 import {
   cancelWrapperVariants,
   innerWrapperVariants,
@@ -36,7 +37,7 @@ const Cancel = () => {
   const onClickButton = () => {
     if (theme === ThemeEnum.FASTIGHETSBYRAN) {
       window.top?.postMessage('complete', '*')
-    } else push('/app/movepage')
+    } else push(toDemoPath('/app/movepage'))
   }
 
   useEffect(() => {

@@ -9,6 +9,7 @@ import Text from '@/components/atoms/Text'
 import LinkButton from '@/components/linkButton'
 import BankId from '@/public/images/BankId.svg'
 import { smallButtonWrapperVariants, styledHeaderTextVariants } from '../AddresschangePage.variants'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 export const AddresschangeError = ({ onLogin, errorText }: { onLogin: () => void; errorText: string }) => {
   const { t } = useTranslation()
@@ -31,7 +32,7 @@ export const AddresschangeError = ({ onLogin, errorText }: { onLogin: () => void
       <LinkButton
         noUnderline={false}
         onClick={() => {
-          router.push('/app/movepage')
+          router.push(toDemoPath('/app/movepage'))
         }}
       >
         {t('common:toMovepage')}

@@ -12,6 +12,7 @@ import DropdownMenu from '@/components/atoms/DropdownMenu'
 import Flex from '@/components/atoms/Flex'
 import ProfileModal from '@/components/organisms/ProfileModal'
 import LanguageSelect from '../LanguageSelect/LanguageSelectNew'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 import {
   headerContentVariants,
   gridVariants,
@@ -79,7 +80,7 @@ const LoggedInTopNav = () => {
           <div className={gridVariants()}>
             <Flex className="pl-4">
               <div className={imagesWrapperVariants()}>
-                <div className={imageWrapperVariants({ display: 'normal' })} data-testid="image-wrapper" onClick={() => router.push('/app/movepage')}>
+                <div className={imageWrapperVariants({ display: 'normal' })} data-testid="image-wrapper" onClick={() => router.push(toDemoPath('/app/movepage'))}>
                   <Image src="/images/Flyttsmart_bird_white.svg" objectFit="contain" layout="fill" alt={'Flyttsmart fågel'} />
                 </div>
                 {leadDetails?.brokerAgencyLogo && (

@@ -29,6 +29,7 @@ import AddonsSection from './Sections/AddonsSection'
 import DetailsSection from './Sections/DetailsSection'
 import FromSection from './Sections/FromSection'
 import ToSection from './Sections/ToSection'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 interface RequestQuotationProps {
   onCloseButtonClick: () => void
@@ -121,7 +122,7 @@ export const RequestQuotation = ({ onCloseButtonClick, type }: RequestQuotationP
               </Text>
             </div>
             <div className={continueButtonWrapperVariants()}>
-              <Button onClick={() => router.push('/app/movepage')} largerArrowRight text={t('common:backToMovepage')} padding="8px 16px !important" />
+              <Button onClick={() => router.push(toDemoPath('/app/movepage'))} largerArrowRight text={t('common:backToMovepage')} padding="8px 16px !important" />
             </div>
           </>
         ) : (
