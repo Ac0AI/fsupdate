@@ -379,7 +379,6 @@ const ResidenceCard = ({
           onChange={(e) => onChange({ size: Number(e.target.value.replace(/\D/g, '')) || 0 })}
         />
       </Field>
-      {errors[`${prefix}.size`] && <ErrorText className="basis-full">{errors[`${prefix}.size`]}</ErrorText>}
       {origin && (
         <Field label="Biyta">
           <input
@@ -405,6 +404,7 @@ const ResidenceCard = ({
           ))}
         </select>
       </Field>
+      {errors[`${prefix}.size`] && <ErrorText className="basis-full">{errors[`${prefix}.size`]}</ErrorText>}
     </div>
 
     {origin && (
