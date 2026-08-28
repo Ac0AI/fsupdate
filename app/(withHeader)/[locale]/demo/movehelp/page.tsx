@@ -1,16 +1,20 @@
 import { Suspense } from 'react'
-import MovehelpTemplate from '@/templates/Movehelp'
 import Loading from '../../app/loading'
+import DemoUserBoundary from '../_components/DemoUserBoundary'
+import DemoMovehelpFlow from './_components/DemoMovehelpFlow'
 
 /**
- * Flytthjälp som ren frontendvisning. Skarpa sidan hämtar Google-omdömen
- * serversidigt, här skickas ett fast värde in i stället.
+ * Flytthjälp i tre steg: bostaden, bohaget, Nina räknar. Ritad i Paper under
+ * Flytthjälp · flödet och byggd här som ren frontend, så flödet går att testa
+ * utan backend. Skarpa templaten i templates/Movehelp är orörd.
  */
 export default function DemoMovehelpPage() {
   return (
     <main>
       <Suspense fallback={<Loading />}>
-        <MovehelpTemplate flyttsmartGoogleReviewCountAndRating={{ rating: 4.7, reviewCount: 498 }} />
+        <DemoUserBoundary>
+          <DemoMovehelpFlow />
+        </DemoUserBoundary>
       </Suspense>
     </main>
   )
