@@ -18,6 +18,23 @@ const press =
   'transition-[background-color,color,border-color,box-shadow,transform] duration-200 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#51C8B4] focus-visible:ring-offset-2'
 const rise = 'animate-[rise_.35s_ease-out_both] motion-reduce:animate-none'
 
+type Errors = Record<string, string>
+
+// Det Nina inte kan räkna utan. Allt annat får vara tomt, hon frågar om det behövs.
+const residenceErrors = (res: Residence, prefix: 'from' | 'to', origin: boolean): Errors => {
+  const e: Errors = {}
+  if (!res.size) e[`${prefix}.size`] = 'Fyll i boarean så Nina vet hur mycket som ska flyttas.'
+  if (origin && res.secondaryArea > 0 && !res.secondaryMove && !res.secondaryClean) e[`${prefix}.secondary`] = 'Välj om biytan ska flyttas eller städas, eller sätt den till 0.'
+  if (res.hardAccess && !res.accessNote.trim()) e[`${prefix}.accessNote`] = 'Berätta kort vad som är krångligt, annars kan Nina inte räkna rätt.'
+  return e
+}
+
+const stepErrors = (step: number, req: QuoteRequest): Errors => {
+  if (step === 0) return { ...residenceErrors(req.from, 'from', true), ...residenceErrors(req.to, 'to', false) }
+  if (step === 1 && req.heavyItems && !req.heavyNote.trim()) return { heavyNote: 'Berätta vad som är tungt eller ömtåligt, så Nina kan sätta rätt antal bärare.' }
+  return {}
+}
+
 const initialResidence = (street: string, city: string, size: number, overrides: Partial<Residence> = {}): Residence => ({
   street,
   city,
@@ -50,6 +67,26 @@ const DemoMovehelpFlow = () => {
     addons: ADDONS.filter((a) => a.defaultOn).map((a) => a.value),
     dateMode: 'fixed',
   })
+
+  // Felen visas först när man försöker gå vidare, inte medan man fyller i.
+  // Knappen är aldrig död: den säger i stället vad som saknas och scrollar dit.
+  const [attempted, setAttempted] = useState<Record<number, boolean>>({})
+  const errors = stepErrors(step, req)
+  const shownErrors: Errors = attempted[step] ? errors : {}
+  const hasShownErrors = Object.keys(shownErrors).length > 0
+
+  const tryContinue = (next: () => void) => {
+    if (Object.keys(errors).length === 0) {
+      next()
+      return
+    }
+    setAttempted((a) => ({ ...a, [step]: true }))
+    window.setTimeout(() => {
+      const first = document.querySelector<HTMLElement>('[data-invalid="true"]')
+      first?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      first?.querySelector<HTMLElement>('input, textarea')?.focus({ preventScroll: true })
+    }, 0)
+  }
 
   // Nytt steg börjar högst upp. På mobil står man annars kvar vid knappen
   // och ser inte att sidan bytt innehåll.
@@ -88,10 +125,10 @@ const DemoMovehelpFlow = () => {
           <>
             <div className="flex flex-col gap-3.5 md:grid md:grid-cols-2 md:items-start">
               <div className={rise}>
-                <ResidenceCard label="Flyttar från" origin res={req.from} onChange={(p) => patchResidence('from', p)} />
+                <ResidenceCard label="Flyttar från" prefix="from" origin res={req.from} errors={shownErrors} onChange={(p) => patchResidence('from', p)} />
               </div>
               <div className={clsx(rise, '[animation-delay:70ms]')}>
-                <ResidenceCard label="Flyttar till" res={req.to} onChange={(p) => patchResidence('to', p)} />
+                <ResidenceCard label="Flyttar till" prefix="to" res={req.to} errors={shownErrors} onChange={(p) => patchResidence('to', p)} />
               </div>
             </div>
             <p className="text-xs leading-[17px] text-[#767678]">Adresser och tillträdesdatum kommer från din flytt. Boarea från Skatteverket.</p>
@@ -113,13 +150,17 @@ const DemoMovehelpFlow = () => {
                   </Pill>
                 </div>
                 {req.heavyItems && (
-                  <textarea
-                    autoFocus
-                    className={clsx('mt-3 w-full min-h-[72px] rounded-[5px] border-[1.9px] border-[#76767666] px-3 py-2.5 text-base leading-[21px] text-[#000000B3] focus:outline-none focus:border-[#51C8B4] transition-colors', rise)}
-                    placeholder="T.ex. piano på våning 3, ingen hiss"
-                    value={req.heavyNote}
-                    onChange={(e) => setReq((r) => ({ ...r, heavyNote: e.target.value }))}
-                  />
+                  <div className={clsx('mt-3 flex flex-col gap-1.5', rise)} data-invalid={shownErrors.heavyNote ? 'true' : undefined}>
+                    <textarea
+                      autoFocus
+                      aria-invalid={!!shownErrors.heavyNote}
+                      className={clsx(textareaClass, shownErrors.heavyNote && errorBorder)}
+                      placeholder="T.ex. piano på våning 3, ingen hiss"
+                      value={req.heavyNote}
+                      onChange={(e) => setReq((r) => ({ ...r, heavyNote: e.target.value }))}
+                    />
+                    {shownErrors.heavyNote && <ErrorText>{shownErrors.heavyNote}</ErrorText>}
+                  </div>
                 )}
               </Card>
             </div>
@@ -185,16 +226,24 @@ const DemoMovehelpFlow = () => {
         <div className="w-full max-w-[818px] mx-auto px-4 py-4 flex flex-col gap-2.5 md:items-center">
           {step === 0 && (
             <>
-              <Primary onClick={() => setStep(1)}>Fortsätt till bohaget</Primary>
-              <Foot>Kostnadsfritt och inte bindande. Du bestämmer när förslaget kommer.</Foot>
+              <Primary onClick={() => tryContinue(() => setStep(1))}>Fortsätt till bohaget</Primary>
+              {hasShownErrors ? (
+                <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar Nina rätt.</Foot>
+              ) : (
+                <Foot>Kostnadsfritt och inte bindande. Du bestämmer när förslaget kommer.</Foot>
+              )}
             </>
           )}
           {step === 1 && (
             <>
-              <Primary onClick={send} loading={sending}>
+              <Primary onClick={() => tryContinue(send)} loading={sending}>
                 {sending ? 'Skickar till Nina' : 'Skicka till Nina'}
               </Primary>
-              <Foot>Nina sammanställer och skickar ett förslag. Inget är bokat förrän du godkänt det.</Foot>
+              {hasShownErrors ? (
+                <Foot tone="error">Berätta om det tunga innan du skickar, så Nina kan räkna rätt.</Foot>
+              ) : (
+                <Foot>Nina sammanställer och skickar ett förslag. Inget är bokat förrän du godkänt det.</Foot>
+              )}
             </>
           )}
           {step === 2 && (
@@ -254,8 +303,24 @@ const Hero = ({ step }: { step: number }) => {
 }
 
 const areaInput = 'w-full h-11 rounded-[5px] border-[1.9px] border-[#76767666] px-3 text-base text-[#000000B3] focus:outline-none focus:border-[#51C8B4] transition-colors'
+const textareaClass = 'w-full min-h-[72px] rounded-[5px] border-[1.9px] border-[#76767666] px-3 py-2.5 text-base leading-[21px] text-[#000000B3] bg-white focus:outline-none focus:border-[#51C8B4] transition-colors'
+const errorBorder = 'border-[var(--color-error-red)] focus:border-[var(--color-error-red)]'
 
-const ResidenceCard = ({ label, origin, res, onChange }: { label: string; origin?: boolean; res: Residence; onChange: (p: Partial<Residence>) => void }) => (
+const ResidenceCard = ({
+  label,
+  prefix,
+  origin,
+  res,
+  errors,
+  onChange,
+}: {
+  label: string
+  prefix: 'from' | 'to'
+  origin?: boolean
+  res: Residence
+  errors: Errors
+  onChange: (p: Partial<Residence>) => void
+}) => (
   <Card>
     <div className="flex flex-col gap-0.5">
       <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#767678]">{label}</span>
@@ -265,12 +330,14 @@ const ResidenceCard = ({ label, origin, res, onChange }: { label: string; origin
     </div>
 
     <div className="flex gap-1.5 mt-3">
-      <Field label="Boarea">
+      <Field label="Boarea" error={errors[`${prefix}.size`]}>
         <input
           type="text"
           inputMode="numeric"
-          className={areaInput}
-          value={`${res.size} m²`}
+          aria-invalid={!!errors[`${prefix}.size`]}
+          className={clsx(areaInput, errors[`${prefix}.size`] && errorBorder)}
+          placeholder="m²"
+          value={res.size ? `${res.size} m²` : ''}
           onChange={(e) => onChange({ size: Number(e.target.value.replace(/\D/g, '')) || 0 })}
         />
       </Field>
@@ -280,7 +347,8 @@ const ResidenceCard = ({ label, origin, res, onChange }: { label: string; origin
             type="text"
             inputMode="numeric"
             className={areaInput}
-            value={`${res.secondaryArea} m²`}
+            placeholder="0 m²"
+            value={res.secondaryArea ? `${res.secondaryArea} m²` : ''}
             onChange={(e) => onChange({ secondaryArea: Number(e.target.value.replace(/\D/g, '')) || 0 })}
           />
         </Field>
@@ -301,7 +369,7 @@ const ResidenceCard = ({ label, origin, res, onChange }: { label: string; origin
     </div>
 
     {origin && (
-      <Field label="Förråd, garage eller vind" hint="Biytan ska" className="mt-3">
+      <Field label="Förråd, garage eller vind" hint="Biytan ska" className="mt-3" error={errors[`${prefix}.secondary`]}>
         {res.secondaryArea > 0 ? (
           <div className={clsx('flex gap-1.5', rise)}>
             <Pill active={res.secondaryMove} onClick={() => onChange({ secondaryMove: !res.secondaryMove })} multi>
@@ -352,9 +420,14 @@ const ResidenceCard = ({ label, origin, res, onChange }: { label: string; origin
     </Field>
 
     <label
+      data-invalid={errors[`${prefix}.accessNote`] ? 'true' : undefined}
       className={clsx(
         'mt-3 flex flex-col gap-2.5 rounded-lg px-3.5 py-3 border cursor-pointer transition-colors duration-200 motion-reduce:transition-none',
-        res.hardAccess ? 'bg-[#F4FCFA] border-[#51C8B4]' : 'bg-[#F8FAF9] border-[#EEEEF0] hover:border-[#214766]/40',
+        errors[`${prefix}.accessNote`]
+          ? 'bg-[#FFF5F5] border-[var(--color-error-red)]'
+          : res.hardAccess
+            ? 'bg-[#F4FCFA] border-[#51C8B4]'
+            : 'bg-[#F8FAF9] border-[#EEEEF0] hover:border-[#214766]/40',
       )}
     >
       <span className="flex items-start gap-3">
@@ -368,13 +441,17 @@ const ResidenceCard = ({ label, origin, res, onChange }: { label: string; origin
         </span>
       </span>
       {res.hardAccess && (
-        <textarea
-          autoFocus
-          className={clsx('w-full min-h-[72px] rounded-[5px] border-[1.9px] border-[#76767666] px-3 py-2.5 text-base leading-[21px] text-[#000000B3] bg-white focus:outline-none focus:border-[#51C8B4] transition-colors', rise)}
-          placeholder="Gårdshus, bilen får inte in på gården. Ca 40 m från gatan."
-          value={res.accessNote}
-          onChange={(e) => onChange({ accessNote: e.target.value })}
-        />
+        <>
+          <textarea
+            autoFocus
+            aria-invalid={!!errors[`${prefix}.accessNote`]}
+            className={clsx(textareaClass, rise, errors[`${prefix}.accessNote`] && errorBorder)}
+            placeholder="Gårdshus, bilen får inte in på gården. Ca 40 m från gatan."
+            value={res.accessNote}
+            onChange={(e) => onChange({ accessNote: e.target.value })}
+          />
+          {errors[`${prefix}.accessNote`] && <ErrorText>{errors[`${prefix}.accessNote`]}</ErrorText>}
+        </>
       )}
     </label>
   </Card>
@@ -482,14 +559,21 @@ const Timeline = ({ items }: { items: { state: 'done' | 'current' | 'todo'; titl
 
 const Card = ({ children }: { children: React.ReactNode }) => <div className="rounded-[10px] bg-white border border-[#EEEEF0] p-4">{children}</div>
 
-const Field = ({ label, hint, className, children }: { label: string; hint?: string; className?: string; children: React.ReactNode }) => (
-  <div className={clsx('flex-1 flex flex-col gap-1.5', className)}>
+const Field = ({ label, hint, error, className, children }: { label: string; hint?: string; error?: string; className?: string; children: React.ReactNode }) => (
+  <div className={clsx('flex-1 flex flex-col gap-1.5', className)} data-invalid={error ? 'true' : undefined}>
     <span className="text-xs text-[#767678]">
       {label}
       {hint && <span className="text-[#214766] font-semibold"> · {hint}</span>}
     </span>
     {children}
+    {error && <ErrorText>{error}</ErrorText>}
   </div>
+)
+
+const ErrorText = ({ children }: { children: React.ReactNode }) => (
+  <span role="alert" className={clsx('text-xs leading-4 font-semibold text-[var(--color-error-red)]', rise)}>
+    {children}
+  </span>
 )
 
 const Pill = ({ active, multi, onClick, children }: { active: boolean; multi?: boolean; onClick: () => void; children: React.ReactNode }) => (
@@ -591,6 +675,8 @@ const Primary = ({ loading, onClick, children }: { loading?: boolean; onClick: (
   </button>
 )
 
-const Foot = ({ children }: { children: React.ReactNode }) => <p className="text-center text-xs leading-4 text-[#767678]">{children}</p>
+const Foot = ({ tone, children }: { tone?: 'error'; children: React.ReactNode }) => (
+  <p className={clsx('text-center text-xs leading-4', tone === 'error' ? 'font-semibold text-[var(--color-error-red)]' : 'text-[#767678]')}>{children}</p>
+)
 
 export default DemoMovehelpFlow
