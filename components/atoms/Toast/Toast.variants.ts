@@ -1,10 +1,12 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 
 export const toastViewportVariants = cva([
-  'fixed top-[10px] right-0 left-1/2 transform -translate-x-1/2',
+  // Tailwind v4 lägger translate i egenskapen translate, inte transform.
+  // md:transform-none nollade därför inget, och toasten låg halvvägs utanför skärmen till vänster på desktop.
+  'fixed top-[10px] right-0 left-1/2 -translate-x-1/2',
   'flex justify-center items-center flex-col p-0 h-10 max-w-full w-full',
   'margin-0 list-none z-[2147483647] outline-none',
-  'md:left-0 md:transform-none md:p-[0_25px_25px_25px]',
+  'md:left-0 md:translate-x-0 md:p-[0_25px_25px_25px]',
 ])
 
 export const toastVariants = cva(
