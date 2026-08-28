@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import { clsx } from 'clsx'
@@ -99,7 +99,7 @@ const DemoMovehelpFlow = () => {
   // och ser inte att sidan bytt innehåll.
   const rootRef = useRef<HTMLDivElement>(null)
   const mounted = useRef(false)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!mounted.current) {
       mounted.current = true
       return
@@ -124,7 +124,7 @@ const DemoMovehelpFlow = () => {
   const toElectricity = () => router.push(locale === i18nConfig.defaultLocale ? '/demo/electricity' : `/${locale}/demo/electricity`)
 
   return (
-    <div ref={rootRef} className="min-h-screen bg-[#F8FAF9] flex flex-col">
+    <div ref={rootRef} className="min-h-screen bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={['2 min', '1 min', 'Pågår']} />
       <Hero title="Flytthjälp och städning" copy={HERO_COPY[step]} tone={step === 2 ? 'green' : 'blue'} />
 

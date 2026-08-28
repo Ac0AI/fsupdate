@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { clsx } from 'clsx'
 import i18nConfig from 'i18nConfig'
@@ -104,7 +104,7 @@ const DemoElectricityFlow = () => {
 
   const rootRef = useRef<HTMLDivElement>(null)
   const mounted = useRef(false)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!mounted.current) {
       mounted.current = true
       return
@@ -130,7 +130,7 @@ const DemoElectricityFlow = () => {
   const goBackToMovepage = () => router.push(pathTo('/demo/movepage'))
 
   return (
-    <div ref={rootRef} className="min-h-screen bg-[#F8FAF9] flex flex-col">
+    <div ref={rootRef} className="min-h-screen bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={STEP_HINTS} label={step === 4 ? 'Klart · 5 av 5' : undefined} />
       <Hero title="Elavtal" copy={HERO_COPY[step]} tone={step === 4 ? 'green' : 'blue'}>
         {step === 0 && (

@@ -234,12 +234,18 @@ export const focusFirstInvalid = () => {
 // Nytt steg börjar högst upp. Sidan kan scrolla i fönstret eller i en
 // omslutande yta beroende på layout, så båda nollas.
 export const scrollFlowToTop = (root: HTMLElement | null) => {
-  let node: HTMLElement | null = root
-  while (node) {
-    if (node.scrollTop > 0) node.scrollTop = 0
-    node = node.parentElement
+  const reset = () => {
+    let node: HTMLElement | null = root
+    while (node) {
+      if (node.scrollTop > 0) node.scrollTop = 0
+      node = node.parentElement
+    }
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+    window.scrollTo({ top: 0 })
   }
-  document.documentElement.scrollTop = 0
-  document.body.scrollTop = 0
-  window.scrollTo({ top: 0 })
+  reset()
+  // Webbläsarens scrollförankring kan flytta tillbaka positionen när det gamla
+  // steget försvinner och det nya får sin höjd, så vi nollar en gång till efter nästa bildruta.
+  window.requestAnimationFrame(reset)
 }
