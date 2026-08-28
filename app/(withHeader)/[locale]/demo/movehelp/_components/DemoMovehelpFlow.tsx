@@ -8,19 +8,13 @@ import i18nConfig from 'i18nConfig'
 import { demoUser } from '@/common/data/demoMovepage'
 import { useToastContext } from '@/common/context/toast/toast.provider'
 import { ADDONS, DISTANCES, ELEVATORS, STEP_TITLES, type Addon, type QuoteRequest, type Residence } from './steps'
+import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, press, rise, textareaClass } from '../../_components/flow-ui'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
 const weekday = (d: Date) => new Intl.DateTimeFormat('sv-SE', { weekday: 'long' }).format(d)
 const isoDate = (d: Date) => new Intl.DateTimeFormat('sv-SE').format(d) // sv-SE ger yyyy-mm-dd, som <input type="date"> vill ha
 const isWeekend = (d: Date) => d.getDay() === 0 || d.getDay() === 6
 
-// Samma mjuka övergång på allt som går att trycka på, så att flödet känns som
-// en app och inte som ett formulär. Tryck ger en liten nedskalning, val tonas in.
-const press =
-  'transition-[background-color,color,border-color,box-shadow,transform] duration-200 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#51C8B4] focus-visible:ring-offset-2'
-const rise = 'animate-[rise_.35s_ease-out_both] motion-reduce:animate-none'
-
-type Errors = Record<string, string>
 
 // Det Nina inte kan räkna utan. Allt annat får vara tomt, hon frågar om det behövs.
 const residenceErrors = (res: Residence, prefix: 'from' | 'to', origin: boolean): Errors => {
@@ -44,6 +38,12 @@ const stepErrors = (step: number, req: QuoteRequest): Errors => {
   }
   return {}
 }
+
+const HERO_COPY = [
+  'Berätta om bostäderna så tar din flyttkoordinator fram ett pris. Vi har fyllt i det vi redan vet.',
+  'Hur mycket ska flyttas, och vill du ha hjälp med något mer?',
+  'Din offert är på väg.',
+]
 
 const initialResidence = (street: string, city: string, size: number, overrides: Partial<Residence> = {}): Residence => ({
   street,
@@ -92,11 +92,7 @@ const DemoMovehelpFlow = () => {
       return
     }
     setAttempted((a) => ({ ...a, [step]: true }))
-    window.setTimeout(() => {
-      const first = document.querySelector<HTMLElement>('[data-invalid="true"]')
-      first?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      first?.querySelector<HTMLElement>('input, textarea')?.focus({ preventScroll: true })
-    }, 0)
+    focusFirstInvalid()
   }
 
   // Nytt steg börjar högst upp. På mobil står man annars kvar vid knappen
@@ -128,8 +124,8 @@ const DemoMovehelpFlow = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAF9] flex flex-col">
-      <StepBar step={step} />
-      <Hero step={step} />
+      <StepBar step={step} titles={STEP_TITLES} hints={['2 min', '1 min', 'Pågår']} />
+      <Hero title="Flytthjälp och städning" copy={HERO_COPY[step]} tone={step === 2 ? 'green' : 'blue'} />
 
       <div key={step} className={clsx('flex-1 w-full max-w-[818px] mx-auto px-4 py-4 md:py-6 flex flex-col gap-3.5', rise)}>
         {step === 0 && (
@@ -296,53 +292,7 @@ const DemoMovehelpFlow = () => {
   )
 }
 
-/* ---------- byggstenar ---------- */
-
-const StepBar = ({ step }: { step: number }) => (
-  <div className="bg-white border-b border-[#EEEEF0]">
-    <div className="w-full max-w-[818px] mx-auto px-4 py-4 flex flex-col gap-2">
-      <div className="flex items-baseline justify-between gap-3">
-        <span className="text-[13px] font-bold text-[#214766]">
-          Steg {step + 1} av 3 · {STEP_TITLES[step]}
-        </span>
-        <span className="text-xs text-[#767678] shrink-0">{['2 min', '1 min', 'Pågår'][step]}</span>
-      </div>
-      <div className="flex gap-1.5">
-        {STEP_TITLES.map((_, i) => (
-          <span
-            key={i}
-            className={clsx(
-              'flex-1 h-1 rounded-full transition-colors duration-500 motion-reduce:transition-none',
-              i < step ? 'bg-[#51C8B4]' : i === step ? 'bg-[#214766]' : 'bg-[#EEEEF0]',
-            )}
-          />
-        ))}
-      </div>
-    </div>
-  </div>
-)
-
-const Hero = ({ step }: { step: number }) => {
-  const copy = [
-    'Berätta om bostäderna så tar din flyttkoordinator fram ett pris. Vi har fyllt i det vi redan vet.',
-    'Hur mycket ska flyttas, och vill du ha hjälp med något mer?',
-    'Din offert är på väg.',
-  ][step]
-  return (
-    <div className={clsx('transition-colors duration-700 motion-reduce:transition-none', step === 2 ? 'bg-[#1F6156]' : 'bg-[#3879AD]')}>
-      <div className="w-full max-w-[818px] mx-auto px-4 pt-5 pb-6 md:pt-9 md:pb-8 flex flex-col gap-2.5">
-        <h1 className="text-[32px] md:text-[42px] font-black tracking-[-0.02em] leading-9 md:leading-[48px] text-white">Flytthjälp och städning</h1>
-        <p key={step} className={clsx('text-[15px] md:text-[18px] leading-[21px] md:leading-[25px] text-white max-w-[330px] md:max-w-[560px]', rise)}>
-          {copy}
-        </p>
-      </div>
-    </div>
-  )
-}
-
-const areaInput = 'w-full h-11 rounded-[5px] border-[1.9px] border-[#76767666] px-3 text-base text-[#000000B3] focus:outline-none focus:border-[#51C8B4] transition-colors'
-const textareaClass = 'w-full min-h-[72px] rounded-[5px] border-[1.9px] border-[#76767666] px-3 py-2.5 text-base leading-[21px] text-[#000000B3] bg-white focus:outline-none focus:border-[#51C8B4] transition-colors'
-const errorBorder = 'border-[var(--color-error-red)] focus:border-[var(--color-error-red)]'
+/* ---------- flödets egna delar ---------- */
 
 const ResidenceCard = ({
   label,
@@ -565,157 +515,5 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
     </>
   )
 }
-
-const Timeline = ({ items }: { items: { state: 'done' | 'current' | 'todo'; title: string; hint: string }[] }) => (
-  <div className="flex flex-col">
-    {items.map((it, i) => (
-      <div key={it.title} className={clsx('flex items-start gap-3', i < items.length - 1 && 'pb-3.5')}>
-        <div className="flex flex-col items-center gap-1 shrink-0 w-[22px]">
-          {it.state === 'done' && (
-            <span className="w-[22px] h-[22px] rounded-full bg-[#51C8B4] flex items-center justify-center animate-[pop_.45s_cubic-bezier(.2,.9,.3,1.3)_both] motion-reduce:animate-none">
-              <svg width="12" height="12" viewBox="0 0 24 24">
-                <path d="M5 13l4 4L19 7" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-          )}
-          {it.state === 'current' && (
-            <span className="relative w-[22px] h-[22px]">
-              <span className="absolute inset-0 rounded-full bg-[#214766]/30 animate-ping motion-reduce:hidden" />
-              <span className="absolute inset-0 rounded-full border-[6px] border-[#214766] bg-white" />
-            </span>
-          )}
-          {it.state === 'todo' && <span className="w-[22px] h-[22px] rounded-full border-2 border-[#EEEEF0] bg-white" />}
-          {i < items.length - 1 && <span className={clsx('w-0.5 h-[22px]', it.state === 'done' ? 'bg-[#51C8B4]' : 'bg-[#EEEEF0]')} />}
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <span className={clsx('text-[13px] font-semibold', it.state === 'todo' ? 'text-[#767678]' : 'text-[#214766]')}>{it.title}</span>
-          <span className="text-xs text-[#767678]">{it.hint}</span>
-        </div>
-      </div>
-    ))}
-  </div>
-)
-
-const Card = ({ children }: { children: React.ReactNode }) => <div className="rounded-[10px] bg-white border border-[#EEEEF0] p-4">{children}</div>
-
-const Field = ({ label, hint, error, invalid, className, children }: { label: string; hint?: string; error?: string; invalid?: boolean; className?: string; children: React.ReactNode }) => (
-  <div className={clsx('flex-1 flex flex-col gap-1.5', className)} data-invalid={error || invalid ? 'true' : undefined}>
-    <span className="text-xs text-[#767678]">
-      {label}
-      {hint && <span className="text-[#214766] font-semibold"> · {hint}</span>}
-    </span>
-    {children}
-    {error && <ErrorText>{error}</ErrorText>}
-  </div>
-)
-
-const ErrorText = ({ className, children }: { className?: string; children: React.ReactNode }) => (
-  <span role="alert" className={clsx('text-xs leading-4 font-semibold text-[var(--color-error-red)]', rise, className)}>
-    {children}
-  </span>
-)
-
-const Pill = ({ active, multi, onClick, children }: { active: boolean; multi?: boolean; onClick: () => void; children: React.ReactNode }) => (
-  <button
-    type="button"
-    aria-pressed={active}
-    onClick={onClick}
-    className={clsx(
-      'flex-1 h-10 rounded-full text-[13px] flex items-center justify-center gap-1.5 border',
-      press,
-      active ? 'bg-[#214766] border-[#214766] text-white font-semibold' : 'bg-white border-[#EEEEF0] text-[#214766] hover:border-[#214766]/40',
-    )}
-  >
-    {multi && active && (
-      <svg width="12" height="12" viewBox="0 0 24 24" className="animate-[pop_.25s_ease-out_both] motion-reduce:animate-none">
-        <path d="M5 13l4 4L19 7" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    )}
-    {children}
-  </button>
-)
-
-const Radio = ({ active, onClick, title, hint }: { active: boolean; onClick: () => void; title: string; hint?: string }) => (
-  <button
-    type="button"
-    role="radio"
-    aria-checked={active}
-    onClick={onClick}
-    className={clsx(
-      'w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-left border-2',
-      press,
-      active ? 'border-[#51C8B4] bg-[#F4FCFA]' : 'border-[#76767666] bg-white hover:border-[#214766]/40',
-    )}
-  >
-    <span
-      className={clsx(
-        'w-5 h-5 rounded-full shrink-0 bg-white transition-[border-width,border-color] duration-200 ease-out motion-reduce:transition-none',
-        active ? 'border-[6px] border-[#51C8B4]' : 'border-[1.9px] border-[#9F9FA1]',
-      )}
-    />
-    <span className="flex flex-col gap-px">
-      <span className={clsx('text-[15px] text-[#214766]', active && 'font-bold')}>{title}</span>
-      {hint && <span className="text-[13px] text-[#767678]">{hint}</span>}
-    </span>
-  </button>
-)
-
-const Toggle = ({ on }: { on: boolean }) => (
-  <span className={clsx('w-11 h-[26px] p-[3px] rounded-full shrink-0 flex items-center transition-colors duration-200 ease-out motion-reduce:transition-none', on ? 'bg-[#51C8B4]' : 'bg-[#D9DBDF]')}>
-    <span
-      className={clsx(
-        'w-5 h-5 rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.25)] transition-transform duration-200 ease-out motion-reduce:transition-none',
-        on && 'translate-x-[18px]',
-      )}
-    />
-  </span>
-)
-
-const Checkbox = ({ checked }: { checked: boolean }) => (
-  <span
-    className={clsx(
-      'w-[22px] h-[22px] rounded shrink-0 mt-px flex items-center justify-center transition-colors duration-200 ease-out motion-reduce:transition-none',
-      checked ? 'bg-[#51C8B4]' : 'bg-white border-[3px] border-[#9F9FA1]',
-    )}
-  >
-    {checked && (
-      <svg width="13" height="13" viewBox="0 0 24 24" className="animate-[pop_.25s_ease-out_both] motion-reduce:animate-none">
-        <path d="M5 13l4 4L19 7" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    )}
-  </span>
-)
-
-const Chevron = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" className="shrink-0">
-    <path d="M9 5l7 7-7 7" fill="none" stroke="#214766" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-
-const Primary = ({ loading, onClick, children }: { loading?: boolean; onClick: () => void; children: React.ReactNode }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    aria-busy={loading}
-    className={clsx(
-      'w-full md:max-w-[420px] min-h-11 rounded-full px-6 py-3 text-[15px] font-bold border-2 border-[#214766] bg-[#214766] text-white flex items-center justify-center gap-2.5',
-      press,
-      'active:scale-[0.985] hover:bg-[#1A3A54] hover:border-[#1A3A54]',
-      loading && 'opacity-80 pointer-events-none',
-    )}
-  >
-    {loading && (
-      <svg width="18" height="18" viewBox="0 0 24 24" className="animate-spin motion-reduce:animate-none">
-        <circle cx="12" cy="12" r="9" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="3" />
-        <path d="M21 12a9 9 0 0 0-9-9" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
-      </svg>
-    )}
-    {children}
-  </button>
-)
-
-const Foot = ({ tone, children }: { tone?: 'error'; children: React.ReactNode }) => (
-  <p className={clsx('text-center text-xs leading-4', tone === 'error' ? 'font-semibold text-[var(--color-error-red)]' : 'text-[#767678]')}>{children}</p>
-)
 
 export default DemoMovehelpFlow

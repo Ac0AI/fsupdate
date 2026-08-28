@@ -1,14 +1,21 @@
-import ClientPage from '../../app/electricity/ClientPage'
+import { Suspense } from 'react'
+import Loading from '../../app/loading'
+import DemoUserBoundary from '../_components/DemoUserBoundary'
+import DemoElectricityFlow from './_components/DemoElectricityFlow'
 
 /**
- * Elavtal som ren frontendvisning. Providern hämtar sin data som vanligt,
- * men anropen fångas av demoFetch i common/utils/api.ts eftersom sökvägen
- * innehåller /demo.
+ * Elavtal i fem steg: priser, detaljer, sammanfattning, BankID, klart. Ritat i
+ * Paper under Elavtal · flödet (B-varianten med ett rekommenderat avtal) och
+ * byggt här som ren frontend. Skarpa templaten i templates/Electricity är orörd.
  */
 export default function DemoElectricityPage() {
   return (
-    <main className="motion-safe:animate-[rise_.4s_var(--ease-out-expo)_both]">
-      <ClientPage />
+    <main>
+      <Suspense fallback={<Loading />}>
+        <DemoUserBoundary>
+          <DemoElectricityFlow />
+        </DemoUserBoundary>
+      </Suspense>
     </main>
   )
 }
