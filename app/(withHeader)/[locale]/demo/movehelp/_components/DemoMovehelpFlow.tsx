@@ -8,7 +8,7 @@ import i18nConfig from 'i18nConfig'
 import { demoUser } from '@/common/data/demoMovepage'
 import { useToastContext } from '@/common/context/toast/toast.provider'
 import { ADDONS, DISTANCES, ELEVATORS, STEP_TITLES, type Addon, type QuoteRequest, type Residence } from './steps'
-import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, press, rise, textareaClass } from '../../_components/flow-ui'
+import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, press, rise, textareaClass } from '../../_components/flow-ui'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
 const weekday = (d: Date) => new Intl.DateTimeFormat('sv-SE', { weekday: 'long' }).format(d)
@@ -97,13 +97,14 @@ const DemoMovehelpFlow = () => {
 
   // Nytt steg börjar högst upp. På mobil står man annars kvar vid knappen
   // och ser inte att sidan bytt innehåll.
+  const rootRef = useRef<HTMLDivElement>(null)
   const mounted = useRef(false)
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true
       return
     }
-    window.scrollTo({ top: 0 })
+    scrollFlowToTop(rootRef.current)
   }, [step])
 
   const patchResidence = (key: 'from' | 'to', patch: Partial<Residence>) => setReq((r) => ({ ...r, [key]: { ...r[key], ...patch } }))
@@ -123,7 +124,7 @@ const DemoMovehelpFlow = () => {
   const toElectricity = () => router.push(locale === i18nConfig.defaultLocale ? '/demo/electricity' : `/${locale}/demo/electricity`)
 
   return (
-    <div className="min-h-screen bg-[#F8FAF9] flex flex-col">
+    <div ref={rootRef} className="min-h-screen bg-[#F8FAF9] flex flex-col">
       <StepBar step={step} titles={STEP_TITLES} hints={['2 min', '1 min', 'Pågår']} />
       <Hero title="Flytthjälp och städning" copy={HERO_COPY[step]} tone={step === 2 ? 'green' : 'blue'} />
 

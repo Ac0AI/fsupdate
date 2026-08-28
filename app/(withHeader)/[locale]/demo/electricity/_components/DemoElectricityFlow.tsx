@@ -8,7 +8,7 @@ import { demoUser } from '@/common/data/demoMovepage'
 import { useChecklistContext } from '@/common/context/checklist/checklistContext.provider'
 import { useToastContext } from '@/common/context/toast/toast.provider'
 import { Modal, ModalContent, ModalTitle } from '@/components/molecules/Modal'
-import { Card, Check, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Toggle, areaInput, errorBorder, focusFirstInvalid, press, rise } from '../../_components/flow-ui'
+import { Card, Check, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, press, rise } from '../../_components/flow-ui'
 import { APARTMENTS, OFFERS, STEP_HINTS, STEP_TITLES, type Offer, type OfferId, type ResidenceType, estimateKwh, formatKr, formatOre, monthlyCost } from './offers'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
@@ -102,13 +102,14 @@ const DemoElectricityFlow = () => {
     focusFirstInvalid()
   }
 
+  const rootRef = useRef<HTMLDivElement>(null)
   const mounted = useRef(false)
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true
       return
     }
-    window.scrollTo({ top: 0 })
+    scrollFlowToTop(rootRef.current)
   }, [step])
 
   // Steg 4: väntan på BankID. Avbryter man händer ingenting.
@@ -129,7 +130,7 @@ const DemoElectricityFlow = () => {
   const goBackToMovepage = () => router.push(pathTo('/demo/movepage'))
 
   return (
-    <div className="min-h-screen bg-[#F8FAF9] flex flex-col">
+    <div ref={rootRef} className="min-h-screen bg-[#F8FAF9] flex flex-col">
       <StepBar step={step} titles={STEP_TITLES} hints={STEP_HINTS} label={step === 4 ? 'Klart · 5 av 5' : undefined} />
       <Hero title="Elavtal" copy={HERO_COPY[step]} tone={step === 4 ? 'green' : 'blue'}>
         {step === 0 && (

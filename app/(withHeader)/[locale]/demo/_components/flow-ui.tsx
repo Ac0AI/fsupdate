@@ -230,3 +230,16 @@ export const focusFirstInvalid = () => {
     }),
   )
 }
+
+// Nytt steg börjar högst upp. Sidan kan scrolla i fönstret eller i en
+// omslutande yta beroende på layout, så båda nollas.
+export const scrollFlowToTop = (root: HTMLElement | null) => {
+  let node: HTMLElement | null = root
+  while (node) {
+    if (node.scrollTop > 0) node.scrollTop = 0
+    node = node.parentElement
+  }
+  document.documentElement.scrollTop = 0
+  document.body.scrollTop = 0
+  window.scrollTo({ top: 0 })
+}
