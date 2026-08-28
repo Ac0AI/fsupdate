@@ -329,8 +329,8 @@ const ResidenceCard = ({
       </span>
     </div>
 
-    <div className="flex gap-1.5 mt-3">
-      <Field label="Boarea" error={errors[`${prefix}.size`]}>
+    <div className="flex flex-wrap gap-1.5 mt-3">
+      <Field label="Boarea" invalid={!!errors[`${prefix}.size`]}>
         <input
           type="text"
           inputMode="numeric"
@@ -341,6 +341,7 @@ const ResidenceCard = ({
           onChange={(e) => onChange({ size: Number(e.target.value.replace(/\D/g, '')) || 0 })}
         />
       </Field>
+      {errors[`${prefix}.size`] && <ErrorText className="basis-full">{errors[`${prefix}.size`]}</ErrorText>}
       {origin && (
         <Field label="Biyta">
           <input
@@ -559,8 +560,8 @@ const Timeline = ({ items }: { items: { state: 'done' | 'current' | 'todo'; titl
 
 const Card = ({ children }: { children: React.ReactNode }) => <div className="rounded-[10px] bg-white border border-[#EEEEF0] p-4">{children}</div>
 
-const Field = ({ label, hint, error, className, children }: { label: string; hint?: string; error?: string; className?: string; children: React.ReactNode }) => (
-  <div className={clsx('flex-1 flex flex-col gap-1.5', className)} data-invalid={error ? 'true' : undefined}>
+const Field = ({ label, hint, error, invalid, className, children }: { label: string; hint?: string; error?: string; invalid?: boolean; className?: string; children: React.ReactNode }) => (
+  <div className={clsx('flex-1 flex flex-col gap-1.5', className)} data-invalid={error || invalid ? 'true' : undefined}>
     <span className="text-xs text-[#767678]">
       {label}
       {hint && <span className="text-[#214766] font-semibold"> · {hint}</span>}
@@ -570,8 +571,8 @@ const Field = ({ label, hint, error, className, children }: { label: string; hin
   </div>
 )
 
-const ErrorText = ({ children }: { children: React.ReactNode }) => (
-  <span role="alert" className={clsx('text-xs leading-4 font-semibold text-[var(--color-error-red)]', rise)}>
+const ErrorText = ({ className, children }: { className?: string; children: React.ReactNode }) => (
+  <span role="alert" className={clsx('text-xs leading-4 font-semibold text-[var(--color-error-red)]', rise, className)}>
     {children}
   </span>
 )
