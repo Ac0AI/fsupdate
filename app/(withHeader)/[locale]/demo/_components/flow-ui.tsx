@@ -232,26 +232,23 @@ export const focusFirstInvalid = () => {
   )
 }
 
-// Nytt steg börjar högst upp. Sidan kan scrolla i fönstret eller i en
-// omslutande yta beroende på layout, så båda nollas.
+// Nytt steg börjar högst upp. globals.css sätter scroll-behavior: smooth på
+// html, vilket gör varje programmatisk scroll till en animation som nästa
+// anrop avbryter. Därför stängs den av under själva hoppet.
 export const scrollFlowToTop = (root: HTMLElement | null) => {
   const reset = () => {
+    const html = document.documentElement
+    const previous = html.style.scrollBehavior
+    html.style.scrollBehavior = 'auto'
     let node: HTMLElement | null = root
     while (node) {
       if (node.scrollTop > 0) node.scrollTop = 0
       node = node.parentElement
     }
-    document.documentElement.scrollTop = 0
-    document.body.scrollTop = 0
-    window.scrollTo({ top: 0 })
-    if (window.scrollY > 0) root?.scrollIntoView({ block: 'start' })
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+    html.style.scrollBehavior = previous
   }
   reset()
-  // Något i sidan (sidhuvudets mätning, sidfotens layout) kan flytta scrollen
-  // strax efter bytet. Nolla några gånger till under den första halvsekunden.
-  ;[60, 200, 400].forEach((ms) => window.setTimeout(reset, ms))
-  // Webbläsarens scrollförankring kan flytta tillbaka positionen när det gamla
-  // steget försvinner och det nya får sin höjd, så vi nollar en gång till efter nästa bildruta.
   window.requestAnimationFrame(reset)
 }
 
