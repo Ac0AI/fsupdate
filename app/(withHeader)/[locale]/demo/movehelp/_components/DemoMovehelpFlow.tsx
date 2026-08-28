@@ -103,7 +103,7 @@ const DemoMovehelpFlow = () => {
       mounted.current = true
       return
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0 })
   }, [step])
 
   const patchResidence = (key: 'from' | 'to', patch: Partial<Residence>) => setReq((r) => ({ ...r, [key]: { ...r[key], ...patch } }))
