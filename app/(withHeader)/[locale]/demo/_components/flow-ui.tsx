@@ -244,8 +244,12 @@ export const scrollFlowToTop = (root: HTMLElement | null) => {
     document.documentElement.scrollTop = 0
     document.body.scrollTop = 0
     window.scrollTo({ top: 0 })
+    if (window.scrollY > 0) root?.scrollIntoView({ block: 'start' })
   }
   reset()
+  // Något i sidan (sidhuvudets mätning, sidfotens layout) kan flytta scrollen
+  // strax efter bytet. Nolla några gånger till under den första halvsekunden.
+  ;[60, 200, 400].forEach((ms) => window.setTimeout(reset, ms))
   // Webbläsarens scrollförankring kan flytta tillbaka positionen när det gamla
   // steget försvinner och det nya får sin höjd, så vi nollar en gång till efter nästa bildruta.
   window.requestAnimationFrame(reset)
