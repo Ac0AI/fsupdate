@@ -64,12 +64,17 @@ export default function DemoLoginPreview() {
     timers.current = []
   }
 
+  const movepagePath = locale === i18nConfig.defaultLocale ? '/demo/movepage' : `/${locale}/demo/movepage`
+
   const startDemoLogin = () => {
     setIsIdentifying(true)
     setStage('open')
+    // Flyttsidan hämtas medan legitimeringen pågår, så bytet efter bocken sker
+    // direkt i stället för via en tom sida med snurra.
+    router.prefetch(movepagePath)
     timers.current = [
       ...STAGES.filter((s) => s.at > 0).map((s) => setTimeout(() => setStage(s.stage), s.at)),
-      setTimeout(() => router.push(locale === i18nConfig.defaultLocale ? '/demo/movepage' : `/${locale}/demo/movepage`), FAKE_IDENTIFY_MS),
+      setTimeout(() => router.push(movepagePath), FAKE_IDENTIFY_MS),
     ]
   }
 
