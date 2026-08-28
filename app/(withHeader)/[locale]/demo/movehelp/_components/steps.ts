@@ -5,7 +5,11 @@ export type Residence = {
   street: string
   city: string
   size: number
+  // Förråd, garage, vind. Bara relevant på från-adressen: frågan är om
+  // den ska tömmas och flyttas, städas, eller båda.
   secondaryArea: number
+  secondaryMove: boolean
+  secondaryClean: boolean
   floor: number
   elevator: Elevator
   distance: Distance
