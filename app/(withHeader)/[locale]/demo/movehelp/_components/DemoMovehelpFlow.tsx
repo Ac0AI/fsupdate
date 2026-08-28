@@ -305,7 +305,7 @@ const ResidenceCard = ({ label, origin, res, onChange }: { label: string; origin
         {res.secondaryArea > 0 ? (
           <div className={clsx('flex gap-1.5', rise)}>
             <Pill active={res.secondaryMove} onClick={() => onChange({ secondaryMove: !res.secondaryMove })} multi>
-              Tömmas och flyttas
+              Flyttas
             </Pill>
             <Pill active={res.secondaryClean} onClick={() => onChange({ secondaryClean: !res.secondaryClean })} multi>
               Städas
