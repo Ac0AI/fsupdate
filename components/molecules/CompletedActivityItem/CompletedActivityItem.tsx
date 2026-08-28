@@ -1,7 +1,6 @@
 import React from 'react'
 import RoundCheckmark from '@/components/atoms/RoundCheckmark'
 import Text from '@/components/atoms/Text'
-import CircleWithX from '@/public/images/CircleWithX.svg'
 import { ChecklistCardItem, ChecklistItem } from '../../../types/checklist'
 import { completedActivityItemWrapperVariants, nameWrapperVariants, nameTextVariants, activityWrapperVariants, checkmarkWrapperVariants } from './CompletedActivityItem.variants'
 import clsx from 'clsx'
@@ -16,7 +15,7 @@ export interface CompletedActivityItemProps {
 const CompletedActivityItem = ({ isHidden = false, item, translationItem, onClick }: CompletedActivityItemProps) => {
   const type = isHidden ? 'hidden' : item.id === 'preChecked' ? 'preChecked' : 'skipped'
 
-  const icon = !isHidden ? <RoundCheckmark /> : <CircleWithX />
+  const icon = <RoundCheckmark />
 
   const getItemName = () => {
     return translationItem?.title ?? item.type
@@ -24,7 +23,7 @@ const CompletedActivityItem = ({ isHidden = false, item, translationItem, onClic
 
   // Determine if item is clickable (non-order items can be reset)
   const hasOrders = item.orders && item.orders.length > 0
-  const isClickable = !hasOrders && !isHidden && item.id !== 'preChecked' && onClick
+  const isClickable = !hasOrders && item.id !== 'preChecked' && onClick
 
   const handleClick = () => {
     if (isClickable && onClick) {

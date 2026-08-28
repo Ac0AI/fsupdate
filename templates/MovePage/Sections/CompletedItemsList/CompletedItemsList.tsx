@@ -46,9 +46,9 @@ const CompletedItemsList = ({ checklistItems }: CompletedItemsListProps) => {
     }
   }
 
-  const skippedItems = mergedLists
-    .filter((item) => !item?.hiddenAt)
-    .sort((a, b) => {
+  // Redan fixat (hiddenAt) räknas i "x av y klara" och ska därför synas här också,
+  // annars försvinner kortet spårlöst när man klickar bort det.
+  const skippedItems = mergedLists.sort((a, b) => {
       const aValue = isAdvancedServiceOrderType(currentMove[a.type as keyof CurrentMove]) || a?.hiddenAt
       const bValue = isAdvancedServiceOrderType(currentMove[b.type as keyof CurrentMove]) || b?.hiddenAt
 
