@@ -15,6 +15,7 @@ const initialResidence = (street: string, city: string, size: number, overrides:
   street,
   city,
   size,
+  secondaryArea: 0,
   floor: 1,
   elevator: 'none',
   distance: 'near',
@@ -32,7 +33,7 @@ const DemoMovehelpFlow = () => {
   const [step, setStep] = useState(0)
   const [req, setReq] = useState<QuoteRequest>({
     from: initialResidence(move.fromAddress.street, move.fromAddress.city, 68, { floor: 3, elevator: 'big' }),
-    to: initialResidence(move.toAddress.street, move.toAddress.city, move.residenceSize, { floor: 1, distance: 'medium' }),
+    to: initialResidence(move.toAddress.street, move.toAddress.city, move.residenceSize, { floor: 1, distance: 'medium', secondaryArea: 12 }),
     heavyItems: false,
     heavyNote: '',
     addons: ADDONS.filter((a) => a.defaultOn).map((a) => a.value),
@@ -43,6 +44,7 @@ const DemoMovehelpFlow = () => {
   const toggleAddon = (a: Addon) => setReq((r) => ({ ...r, addons: r.addons.includes(a) ? r.addons.filter((x) => x !== a) : [...r.addons, a] }))
 
   const backToMovepage = () => router.push(locale === i18nConfig.defaultLocale ? '/demo/movepage' : `/${locale}/demo/movepage`)
+  const toElectricity = () => router.push(locale === i18nConfig.defaultLocale ? '/demo/electricity' : `/${locale}/demo/electricity`)
 
   return (
     <div className="min-h-screen bg-[#F8FAF9] flex flex-col">
@@ -120,7 +122,7 @@ const DemoMovehelpFlow = () => {
           </>
         )}
 
-        {step === 2 && <WaitingStep req={req} movingDate={movingDate} onEdit={() => setStep(0)} />}
+        {step === 2 && <WaitingStep req={req} movingDate={movingDate} onEdit={() => setStep(0)} onNext={toElectricity} />}
       </div>
 
       <div className="sticky bottom-0 bg-white border-t border-[#EEEEF0] px-4 py-4 flex flex-col gap-2.5">
@@ -138,8 +140,8 @@ const DemoMovehelpFlow = () => {
         )}
         {step === 2 && (
           <>
-            <Primary onClick={backToMovepage}>Till min offert</Primary>
-            <Foot>Du får SMS när Nina skickat den. Offerten landar på din flyttsida.</Foot>
+            <Primary onClick={backToMovepage}>Tillbaka till checklistan</Primary>
+            <Foot>Du får SMS när Nina skickat offerten.</Foot>
           </>
         )}
       </div>
@@ -190,7 +192,7 @@ const ResidenceCard = ({ label, res, onChange }: { label: string; res: Residence
       </div>
     </div>
 
-    <div className="flex gap-2 mt-3">
+    <div className="flex gap-1.5 mt-3">
       <Field label="Boarea">
         <input
           type="text"
@@ -198,6 +200,15 @@ const ResidenceCard = ({ label, res, onChange }: { label: string; res: Residence
           className="w-full h-11 rounded-[5px] border-[1.9px] border-[#76767666] px-3 text-base text-[#000000B3] focus:outline-none focus:border-[#51C8B4]"
           value={`${res.size} m²`}
           onChange={(e) => onChange({ size: Number(e.target.value.replace(/\D/g, '')) || 0 })}
+        />
+      </Field>
+      <Field label="Biyta">
+        <input
+          type="text"
+          inputMode="numeric"
+          className="w-full h-11 rounded-[5px] border-[1.9px] border-[#76767666] px-3 text-base text-[#000000B3] focus:outline-none focus:border-[#51C8B4]"
+          value={`${res.secondaryArea} m²`}
+          onChange={(e) => onChange({ secondaryArea: Number(e.target.value.replace(/\D/g, '')) || 0 })}
         />
       </Field>
       <Field label="Våning">
@@ -275,7 +286,7 @@ const ResidenceCard = ({ label, res, onChange }: { label: string; res: Residence
   </Card>
 )
 
-const WaitingStep = ({ req, movingDate, onEdit }: { req: QuoteRequest; movingDate: Date; onEdit: () => void }) => {
+const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; movingDate: Date; onEdit: () => void; onNext: () => void }) => {
   const now = new Date()
   const time = new Intl.DateTimeFormat('sv-SE', { hour: '2-digit', minute: '2-digit' }).format(now)
   const addonLabels = ADDONS.filter((a) => req.addons.includes(a.value)).map((a) => a.label.toLowerCase())
@@ -318,6 +329,18 @@ const WaitingStep = ({ req, movingDate, onEdit }: { req: QuoteRequest; movingDat
             {req.from.street} → {req.to.street} · {req.dateMode === 'fixed' ? formatDate(movingDate) : 'flexibelt datum'}
             {addonLabels.length ? ` · ${addonLabels.join(', ')}` : ''}
           </span>
+        </span>
+        <Chevron />
+      </button>
+
+      <button
+        type="button"
+        onClick={onNext}
+        className="w-full text-left rounded-[10px] bg-[#FFF1E5] border border-[#FFD4B3] px-3.5 py-3.5 flex items-center justify-between gap-3"
+      >
+        <span className="flex flex-col gap-0.5">
+          <span className="text-[15px] font-bold text-[#214766]">Näst på tur: elavtal</span>
+          <span className="text-[13px] text-[#214766]">Tre minuter, det är där du sparar mest</span>
         </span>
         <Chevron />
       </button>

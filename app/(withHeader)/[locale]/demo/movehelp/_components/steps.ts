@@ -5,6 +5,7 @@ export type Residence = {
   street: string
   city: string
   size: number
+  secondaryArea: number
   floor: number
   elevator: Elevator
   distance: Distance
