@@ -135,7 +135,7 @@ const DemoElectricityFlow = () => {
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={STEP_HINTS} label={step === 4 ? 'Klart · 5 av 5' : undefined} />
       <Hero
-        eyebrow={step === 4 ? 'Elavtal · Klart' : `Elavtal · Steg ${step + 1} av ${STEP_TITLES.length} · ${STEP_TITLES[step]}`}
+        eyebrow={step === 4 ? 'Klart · 5 av 5' : `Steg ${step + 1} av ${STEP_TITLES.length} · ${STEP_TITLES[step]}`}
         title="Elavtal"
         copy={HERO_COPY[step]}
         tone={step === 4 ? 'green' : 'blue'}
