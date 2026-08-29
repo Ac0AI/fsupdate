@@ -100,7 +100,8 @@ const DemoMovehelpFlow = () => {
       floor: 3,
       elevator: 'big',
       distance: 'd50',
-      secondaries: [{ id: 1, kind: 'storage', area: 8, move: true, clean: true }],
+      // Biyta vet vi inget om från mäklaren. Kunden lägger till förråd, garage eller vind själv.
+      secondaries: [],
     }),
     to: initialResidence(move.toAddress.street, move.toAddress.city, move.residenceSize, { dwelling: 'house', floor: 0 }),
     heavyItems: false,
