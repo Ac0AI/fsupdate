@@ -164,7 +164,7 @@ const DemoMovehelpFlow = () => {
   return (
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={['2 min', '1 min', 'Pågår']} />
-      <Hero title="Flytthjälp och städning" copy={HERO_COPY[step]} tone={step === 2 ? 'green' : 'blue'} />
+      <Hero title="Flytthjälp och städning" copy={HERO_COPY[step]} tone={step === 2 ? 'green' : 'blue'} back={{ label: 'Tillbaka till flyttsidan', onClick: backToMovepage }} />
 
       <div key={step} className={clsx('flex-1 w-full max-w-[818px] mx-auto px-4 py-4 md:py-6 flex flex-col gap-3.5', rise)}>
         {step === 0 && (

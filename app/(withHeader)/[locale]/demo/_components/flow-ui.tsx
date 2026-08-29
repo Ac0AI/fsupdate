@@ -53,9 +53,33 @@ export const StepBar = ({ step, titles, hints, label }: { step: number; titles: 
   </div>
 )
 
-export const Hero = ({ title, copy, tone = 'blue', children }: { title: string; copy: string; tone?: 'blue' | 'green'; children?: React.ReactNode }) => (
+export const Hero = ({
+  title,
+  copy,
+  tone = 'blue',
+  back,
+  children,
+}: {
+  title: string
+  copy: string
+  tone?: 'blue' | 'green'
+  back?: { label: string; onClick: () => void }
+  children?: React.ReactNode
+}) => (
   <div className={clsx('transition-colors duration-700 motion-reduce:transition-none', tone === 'green' ? 'bg-[#1F6156]' : 'bg-[#3879AD]')}>
     <div className="w-full max-w-[818px] mx-auto px-4 pt-5 pb-6 md:pt-9 md:pb-8 flex flex-col gap-2.5">
+      {back && (
+        <button
+          type="button"
+          onClick={back.onClick}
+          className={clsx('self-start -my-2 min-h-11 flex items-center gap-2 text-[13px] leading-[18px] text-white/90 hover:text-white rounded-sm', press)}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
+            <path d="M15 19l-7-7 7-7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {back.label}
+        </button>
+      )}
       <h1 className="text-[32px] md:text-[42px] font-black tracking-[-0.02em] leading-9 md:leading-[48px] text-white">{title}</h1>
       <p key={copy} className={clsx('text-[15px] md:text-[18px] leading-[21px] md:leading-[25px] text-white max-w-[330px] md:max-w-[560px]', rise)}>
         {copy}
