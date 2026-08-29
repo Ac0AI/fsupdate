@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { clsx } from 'clsx'
 
 /**
@@ -24,6 +24,9 @@ export const areaInput =
 export const textareaClass =
   'w-full min-h-[72px] rounded-[5px] border-[1.9px] border-[#76767666] px-3 py-2.5 text-base leading-[21px] text-[#000000B3] bg-white focus:outline-none focus:border-[#51C8B4] transition-colors'
 export const errorBorder = 'border-[var(--color-error-red)] focus:border-[var(--color-error-red)]'
+// Samma ram som textfälten, med systemets egen pil. Bakgrunden måste sättas,
+// annars ärver select en grå ton på iOS.
+export const selectClass = clsx(areaInput, 'bg-white')
 
 export type Errors = Record<string, string>
 
@@ -65,11 +68,14 @@ export const Card = ({ children, className }: { children: React.ReactNode; class
   <div className={clsx('rounded-[10px] bg-white border border-[#EEEEF0] p-4', className)}>{children}</div>
 )
 
-export const Field = ({ label, hint, error, invalid, className, children }: { label: string; hint?: string; error?: string; invalid?: boolean; className?: string; children: React.ReactNode }) => (
+export const Field = ({ label, hint, info, error, invalid, className, children }: { label: string; hint?: string; info?: string; error?: string; invalid?: boolean; className?: string; children: React.ReactNode }) => (
   <div className={clsx('flex-1 flex flex-col gap-1.5', className)} data-invalid={error || invalid ? 'true' : undefined}>
-    <span className="text-xs text-[#767678]">
-      {label}
-      {hint && <span className="text-[#214766] font-semibold"> · {hint}</span>}
+    <span className="text-xs text-[#767678] flex items-center gap-1">
+      <span>
+        {label}
+        {hint && <span className="text-[#214766] font-semibold"> · {hint}</span>}
+      </span>
+      {info && <Info text={info} />}
     </span>
     {children}
     {error && <ErrorText>{error}</ErrorText>}
@@ -82,13 +88,14 @@ export const ErrorText = ({ className, children }: { className?: string; childre
   </span>
 )
 
-export const Pill = ({ active, multi, onClick, children }: { active: boolean; multi?: boolean; onClick: () => void; children: React.ReactNode }) => (
+export const Pill = ({ active, multi, small, onClick, children }: { active: boolean; multi?: boolean; small?: boolean; onClick: () => void; children: React.ReactNode }) => (
   <button
     type="button"
     aria-pressed={active}
     onClick={onClick}
     className={clsx(
-      'flex-1 h-10 rounded-full text-[13px] flex items-center justify-center gap-1.5 border',
+      'flex-1 rounded-full text-[13px] flex items-center justify-center gap-1.5 border whitespace-nowrap',
+      small ? 'h-9 px-2' : 'h-10',
       press,
       pressScale,
       active ? 'bg-[#214766] border-[#214766] text-white font-semibold' : 'bg-white border-[#EEEEF0] text-[#214766] hover:border-[#214766]/40',
@@ -125,6 +132,125 @@ export const Radio = ({ active, onClick, title, hint }: { active: boolean; onCli
   </button>
 )
 
+/**
+ * Tvåradigt val: etikett och en liten förklaring. För svar som behöver en
+ * definition för att vara entydiga, som starttider.
+ */
+export const Option = ({ active, onClick, label, hint }: { active: boolean; onClick: () => void; label: string; hint: string }) => (
+  <button
+    type="button"
+    aria-pressed={active}
+    onClick={onClick}
+    className={clsx(
+      'flex-1 flex flex-col items-center gap-px py-[7px] px-1 rounded-lg border',
+      press,
+      pressScale,
+      active ? 'bg-[#214766] border-[#214766]' : 'bg-white border-[#EEEEF0] hover:border-[#214766]/40',
+    )}
+  >
+    <span className={clsx('text-[13px] transition-colors duration-200', active ? 'text-white font-semibold' : 'text-[#214766]')}>{label}</span>
+    <span className={clsx('text-xs leading-[14px] transition-colors duration-200', active ? 'text-white/80' : 'text-[#767678]')}>{hint}</span>
+  </button>
+)
+
+/** En fråga med Nej och Ja till höger. Radas på varandra som tillvalen. */
+export const YesNo = ({ label, info, value, onChange }: { label: string; info?: string; value: boolean; onChange: (v: boolean) => void }) => (
+  <div className="flex items-center justify-between gap-3 py-2 border-t border-[#EEEEF0]">
+    <span className="text-[13px] font-semibold text-[#214766] flex items-center gap-1">
+      {label}
+      {info && <Info text={info} />}
+    </span>
+    <div className="flex gap-1 w-[124px] shrink-0">
+      <Pill small active={!value} onClick={() => onChange(false)}>
+        Nej
+      </Pill>
+      <Pill small active={value} onClick={() => onChange(true)}>
+        Ja
+      </Pill>
+    </div>
+  </div>
+)
+
+/**
+ * Förklaring bakom en i-ikon. Mus: visas vid hovring, klick låser fast den.
+ * Fingrar: ett tryck öppnar, nästa stänger, liksom tryck utanför och Escape.
+ * Bubblan hoppar till vänster om den annars skulle sticka ut i högerkanten.
+ * Träffytan är 44 px fast ikonen är 16, så den går att träffa med tumme.
+ */
+export const Info = ({ text }: { text: string }) => {
+  const [open, setOpen] = useState(false)
+  const [pinned, setPinned] = useState(false)
+  const [flip, setFlip] = useState(false)
+  const ref = useRef<HTMLSpanElement>(null)
+  const id = useId()
+
+  useLayoutEffect(() => {
+    if (!open || !ref.current) return
+    const r = ref.current.getBoundingClientRect()
+    setFlip(r.left + 264 > window.innerWidth - 16)
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    const outside = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) {
+        setOpen(false)
+        setPinned(false)
+      }
+    }
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        setPinned(false)
+      }
+    }
+    document.addEventListener('pointerdown', outside)
+    document.addEventListener('keydown', key)
+    return () => {
+      document.removeEventListener('pointerdown', outside)
+      document.removeEventListener('keydown', key)
+    }
+  }, [open])
+
+  return (
+    <span ref={ref} className="relative inline-flex">
+      <button
+        type="button"
+        aria-label="Mer information"
+        aria-expanded={open}
+        aria-describedby={open ? id : undefined}
+        onPointerEnter={(e) => e.pointerType === 'mouse' && setOpen(true)}
+        onPointerLeave={(e) => e.pointerType === 'mouse' && !pinned && setOpen(false)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => !pinned && setOpen(false)}
+        onClick={() => {
+          const next = !pinned
+          setPinned(next)
+          setOpen(next)
+        }}
+        className="w-11 h-11 -my-[14px] -mx-2.5 flex items-center justify-center rounded-full text-[#9F9FA1] hover:text-[#214766] transition-colors"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
+          <circle cx="12" cy="12" r="10" fill="currentColor" />
+          <path d="M12 10.5v6.5M12 7.2v.3" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+        </svg>
+      </button>
+      {open && (
+        <span
+          role="tooltip"
+          id={id}
+          className={clsx(
+            'absolute top-full mt-1 z-20 w-max max-w-[264px] rounded-lg bg-[#011627] px-3 py-2 text-xs font-normal normal-case tracking-normal leading-[17px] text-white shadow-[0_6px_20px_rgba(1,22,39,0.25)] animate-[rise_.2s_ease-out_both] motion-reduce:animate-none',
+            flip ? 'right-0' : 'left-0',
+          )}
+        >
+          {text}
+        </span>
+      )}
+    </span>
+  )
+}
+
 export const Toggle = ({ on }: { on: boolean }) => (
   <span className={clsx('w-11 h-[26px] p-[3px] rounded-full shrink-0 flex items-center transition-colors duration-200 ease-out motion-reduce:transition-none', on ? 'bg-[#51C8B4]' : 'bg-[#D9DBDF]')}>
     <span
@@ -153,9 +279,9 @@ export const Check = ({ size = 12, color = '#fff', pop }: { size?: number; color
   </svg>
 )
 
-export const Chevron = ({ direction = 'right' }: { direction?: 'right' | 'down' }) => (
-  <svg width="18" height="18" viewBox="0 0 24 24" className={clsx('shrink-0 transition-transform duration-200', direction === 'down' && 'rotate-90')} aria-hidden>
-    <path d="M9 5l7 7-7 7" fill="none" stroke="#214766" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+export const Chevron = ({ direction = 'right', color = '#214766', size = 18 }: { direction?: 'right' | 'down'; color?: string; size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" className={clsx('shrink-0 transition-transform duration-200', direction === 'down' && 'rotate-90')} aria-hidden>
+    <path d="M9 5l7 7-7 7" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )
 

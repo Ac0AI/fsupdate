@@ -1,47 +1,128 @@
-export type Distance = 'near' | 'medium' | 'far'
-export type Elevator = 'big' | 'small' | 'none'
+export type Dwelling = 'apartment' | 'house' | 'townhouse'
+export type Distance = 'd25' | 'd50' | 'd75' | 'd100' | 'far' | 'unknown'
+export type Elevator = 'big' | 'small' | 'none' | 'unknown'
+export type SecondaryKind = 'basement' | 'attic' | 'storage' | 'garage' | 'other'
+export type StartTime = 'morning' | 'forenoon' | 'afternoon' | 'any'
+export type KeyHandling = 'present' | 'absent' | 'unknown'
+export type CleanDay = 'after' | 'same' | 'custom'
+
+// Förråd, garage, vind. Bara på från-adressen: frågan är om ytan ska tömmas
+// och flyttas, städas, eller båda. Flera får finnas, en villa har ofta både
+// garage och förråd.
+export type Secondary = {
+  id: number
+  kind: SecondaryKind
+  area: number
+  move: boolean
+  clean: boolean
+}
 
 export type Residence = {
   street: string
   city: string
+  dwelling: Dwelling
   size: number
-  // Förråd, garage, vind. Bara relevant på från-adressen: frågan är om
-  // den ska tömmas och flyttas, städas, eller båda.
-  secondaryArea: number
-  secondaryMove: boolean
-  secondaryClean: boolean
   floor: number
+  // Hiss frågas bara i lägenhet. Villa och radhus har ingen.
   elevator: Elevator
   distance: Distance
   hardAccess: boolean
   accessNote: string
+  // Bara från-adressen och bara villa eller radhus: trädgårdsmöbler tar plats i bilen.
+  outdoorFurniture: boolean
+  secondaries: Secondary[]
 }
 
 export type Addon = 'packing' | 'moveclean' | 'boxes' | 'assembly' | 'storage' | 'recycling'
+
+export type Cleaning = {
+  specialWindows: boolean
+  glazedBalcony: boolean
+  sensitiveSurfaces: boolean
+  keys: KeyHandling
+  day: CleanDay
+  customDate: string
+}
 
 export type QuoteRequest = {
   from: Residence
   to: Residence
   heavyItems: boolean
   heavyNote: string
+  // Bohag 2010: föremål värda över ett halvt prisbasbelopp ska uppges i förväg.
+  valuables: boolean
+  valuablesNote: string
+  // Kubik är frivilligt. Tomt betyder att Nina uppskattar från boarean.
+  volume: string
   addons: Addon[]
   // fixed = tillträdesdagen, flexible = Nina föreslår, custom = kunden väljer själv
   dateMode: 'fixed' | 'flexible' | 'custom'
   customDate: string
+  startTime: StartTime
+  note: string
+  cleaning: Cleaning
 }
 
-// Tre svar i stället för fem metersintervall. Kunden vet inte om det är 40
-// eller 60 meter till porten, men vet om det är nära eller långt.
-export const DISTANCES: { value: Distance; label: string; hint: string }[] = [
-  { value: 'near', label: 'Nära', hint: 'under 25 m' },
-  { value: 'medium', label: 'En bit', hint: '25 till 50 m' },
-  { value: 'far', label: 'Långt', hint: 'över 50 m' },
+export const DWELLINGS: { value: Dwelling; label: string }[] = [
+  { value: 'apartment', label: 'Lägenhet' },
+  { value: 'house', label: 'Villa' },
+  { value: 'townhouse', label: 'Radhus' },
+]
+
+// Källarplan räknas nedåt. 8 betyder åtta eller fler.
+export const FLOORS: { value: number; label: string }[] = [
+  { value: -3, label: 'Källare, −3' },
+  { value: -2, label: 'Källare, −2' },
+  { value: -1, label: 'Källare, −1' },
+  { value: 0, label: 'Bottenvåning' },
+  ...[1, 2, 3, 4, 5, 6, 7].map((f) => ({ value: f, label: String(f) })),
+  { value: 8, label: '8 eller högre' },
 ]
 
 export const ELEVATORS: { value: Elevator; label: string }[] = [
-  { value: 'big', label: 'Stor' },
+  { value: 'big', label: 'Stor (6+ pers)' },
   { value: 'small', label: 'Liten' },
-  { value: 'none', label: 'Ingen' },
+  { value: 'none', label: 'Saknas' },
+  { value: 'unknown', label: 'Vet ej' },
+]
+
+// Samma intervall som flyttfirman räknar med. Vet ej är ett riktigt svar,
+// inte ett fel: Nina frågar om det behövs.
+export const DISTANCES: { value: Distance; label: string }[] = [
+  { value: 'd25', label: '0–25 m' },
+  { value: 'd50', label: '26–50 m' },
+  { value: 'd75', label: '51–75 m' },
+  { value: 'd100', label: '76–100 m' },
+  { value: 'far', label: 'Över 100 m' },
+  { value: 'unknown', label: 'Vet ej' },
+]
+
+export const SECONDARY_KINDS: { value: SecondaryKind; label: string }[] = [
+  { value: 'storage', label: 'Förråd' },
+  { value: 'garage', label: 'Garage' },
+  { value: 'attic', label: 'Vind' },
+  { value: 'basement', label: 'Källare' },
+  { value: 'other', label: 'Annat' },
+]
+
+export const START_TIMES: { value: StartTime; label: string; hint: string }[] = [
+  { value: 'morning', label: 'Morgon', hint: 'start 08–09' },
+  { value: 'forenoon', label: 'Förmiddag', hint: 'start 09–12' },
+  { value: 'afternoon', label: 'Eftermiddag', hint: 'start efter 12' },
+  { value: 'any', label: 'Spelar ingen roll', hint: 'Nina föreslår' },
+]
+
+export const KEY_HANDLING: { value: KeyHandling; label: string }[] = [
+  { value: 'present', label: 'Jag är hemma' },
+  { value: 'absent', label: 'Lämnar nyckel' },
+  { value: 'unknown', label: 'Vet ej' },
+]
+
+// Förklaringarna sätts i flödet, de innehåller det faktiska datumet.
+export const CLEAN_DAYS: { value: CleanDay; title: string }[] = [
+  { value: 'after', title: 'Dagen efter flytten' },
+  { value: 'same', title: 'Samma dag som flytten' },
+  { value: 'custom', title: 'Ett annat datum' },
 ]
 
 // Packhjälp och städ förvalda: de största merförsäljningarna och de flesta
@@ -55,4 +136,20 @@ export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boo
   { value: 'recycling', label: 'Bortforsling', hint: 'Det du inte vill ta med', defaultOn: false },
 ]
 
-export const STEP_TITLES = ['Bostaden', 'Bohaget', 'Nina räknar'] as const
+// Förklaringar bakom i-ikonen. Korta, och de säger alltid varför vi frågar.
+export const INFO = {
+  distance: 'Sträckan bärarna går mellan bilen och din dörr. Räkna ungefär, Nina frågar om det behövs.',
+  access: 'Hur tar sig flyttbilen till dörren? Smal trappa, ingen lastplats, gårdshus, bom. Vet du inte, lämna den av.',
+  outdoor: 'Trädgårdsmöbler, grill, studsmatta. Sånt som står ute tar plats i bilen och ska räknas med.',
+  secondary: 'Ytor utanför bostaden som ska tömmas eller städas. Lägg till en per utrymme.',
+  valuables: 'Enligt Bohag 2010 ska föremål värda över ett halvt prisbasbelopp, 29 600 kr, uppges i förväg. Annars kan ersättningen vid skada begränsas. Det hjälper oss också att packa och bära rätt.',
+  volume: 'Vet du inte, lämna tomt. Nina uppskattar från boarean.',
+  windows: 'Spröjsade fönster, takfönster eller fönster som är svåra att nå tar längre tid att göra rent.',
+  surfaces: 'Marmor, obehandlat trä, mässing och liknande ytor kräver särskilda medel.',
+  keys: 'Är någon på plats när vi städar? Annars behöver vi veta hur vi kommer in, till exempel nyckel i brevlådan eller kod.',
+}
+
+// Städytan är boarean plus de biytor som ska städas.
+export const cleanArea = (res: Residence) => res.size + res.secondaries.filter((s) => s.clean).reduce((sum, s) => sum + s.area, 0)
+
+export const STEP_TITLES = ['Bostaden', 'Bohaget', 'Offert på väg'] as const
