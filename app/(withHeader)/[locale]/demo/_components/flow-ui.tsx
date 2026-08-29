@@ -33,33 +33,59 @@ export type Errors = Record<string, string>
 
 export const StepBar = ({ step, titles, hints, label }: { step: number; titles: readonly string[]; hints: readonly string[]; label?: string }) => (
   <div className="bg-white border-b border-[#EEEEF0]">
-    <div className="w-full max-w-[818px] mx-auto px-4 py-4 flex flex-col gap-2">
+    <div className="w-full max-w-[818px] mx-auto px-4 py-3 md:py-4 flex flex-col gap-2 md:gap-2.5">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-[13px] font-bold text-[#214766]">{label ?? `Steg ${step + 1} av ${titles.length} · ${titles[step]}`}</span>
+        <span className="text-[13px] font-bold text-[#214766]">
+          {label ?? `Steg ${step + 1} av ${titles.length}`}
+          {/* På mobil får stegnamnet plats bara här. På desktop står det under sitt streck. */}
+          {!label && <span className="md:hidden"> · {titles[step]}</span>}
+        </span>
         <span className="text-xs text-[#767678] shrink-0">{hints[step]}</span>
       </div>
-      <div className="flex gap-1.5">
-        {titles.map((_, i) => (
-          <span
-            key={i}
-            className={clsx(
-              'flex-1 h-1 rounded-full transition-colors duration-500 motion-reduce:transition-none',
-              i < step || label ? 'bg-[#51C8B4]' : i === step ? 'bg-[#214766]' : 'bg-[#EEEEF0]',
-            )}
-          />
-        ))}
-      </div>
+      <ol className="flex gap-1.5 md:gap-2">
+        {titles.map((t, i) => {
+          const done = i < step || !!label
+          const current = i === step && !label
+          return (
+            <li key={i} className="flex-1 min-w-0 flex flex-col gap-1.5" aria-current={current ? 'step' : undefined}>
+              <span
+                className={clsx(
+                  'block h-1 rounded-full transition-colors duration-500 motion-reduce:transition-none',
+                  done ? 'bg-[#51C8B4]' : current ? 'bg-[#214766]' : 'bg-[#EEEEF0]',
+                )}
+              />
+              <span
+                className={clsx(
+                  'hidden md:flex items-center gap-1.5 text-[13px] leading-4 truncate transition-colors duration-500 motion-reduce:transition-none',
+                  done ? 'text-[#1F6156]' : current ? 'font-bold text-[#214766]' : 'text-[#767678]',
+                )}
+              >
+                {done ? (
+                  <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden className="shrink-0">
+                    <path d="M5 12.5l4.5 4.5L19 8" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : (
+                  <span className="tabular-nums">{i + 1}.</span>
+                )}
+                <span className="truncate">{t}</span>
+              </span>
+            </li>
+          )
+        })}
+      </ol>
     </div>
   </div>
 )
 
 export const Hero = ({
+  eyebrow,
   title,
   copy,
   tone = 'blue',
   back,
   children,
 }: {
+  eyebrow?: string
   title: string
   copy: string
   tone?: 'blue' | 'green'
@@ -80,7 +106,11 @@ export const Hero = ({
           {back.label}
         </button>
       )}
-      <h1 className="text-[32px] md:text-[42px] font-black tracking-[-0.02em] leading-9 md:leading-[48px] text-white">{title}</h1>
+      {/* Var är jag: tjänsten och steget som liten rad, steget som rubrik. */}
+      {eyebrow && <span className="text-[12px] md:text-[13px] font-bold uppercase tracking-[0.12em] leading-4 text-white/80">{eyebrow}</span>}
+      <h1 key={title} className={clsx('text-[32px] md:text-[42px] font-black tracking-[-0.02em] leading-9 md:leading-[48px] text-white', rise)}>
+        {title}
+      </h1>
       <p key={copy} className={clsx('text-[15px] md:text-[18px] leading-[21px] md:leading-[25px] text-white max-w-[330px] md:max-w-[560px]', rise)}>
         {copy}
       </p>

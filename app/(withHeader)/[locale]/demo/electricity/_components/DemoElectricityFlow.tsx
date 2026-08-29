@@ -134,7 +134,13 @@ const DemoElectricityFlow = () => {
   return (
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={STEP_HINTS} label={step === 4 ? 'Klart · 5 av 5' : undefined} />
-      <Hero title="Elavtal" copy={HERO_COPY[step]} tone={step === 4 ? 'green' : 'blue'} back={{ label: 'Tillbaka till flyttsidan', onClick: goBackToMovepage }}>
+      <Hero
+        eyebrow={step === 4 ? 'Elavtal · Klart' : `Elavtal · Steg ${step + 1} av ${STEP_TITLES.length} · ${STEP_TITLES[step]}`}
+        title="Elavtal"
+        copy={HERO_COPY[step]}
+        tone={step === 4 ? 'green' : 'blue'}
+        back={{ label: 'Tillbaka till flyttsidan', onClick: goBackToMovepage }}
+      >
         {step === 0 && (
           <div className={clsx('mt-2 rounded-[10px] bg-white p-3.5 flex flex-col gap-3 md:max-w-[560px]', rise)}>
             <div className="flex items-center justify-between gap-3">

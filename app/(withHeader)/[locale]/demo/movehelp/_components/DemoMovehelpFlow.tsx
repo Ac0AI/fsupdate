@@ -64,10 +64,12 @@ const stepErrors = (step: number, req: QuoteRequest): Errors => {
   return {}
 }
 
+// Rubriken säger var du är. Tjänstens namn och stegräknaren står som rad ovanför.
+const HERO_TITLE = ['Berätta om bostäderna', 'Vad ska med?', 'Din offert är på väg']
 const HERO_COPY = [
-  'Du slipper ringa runt och jaga offerter. Berätta om bostäderna, så räknar vi på din flytt. Vi har fyllt i det vi redan vet.',
-  'Hur mycket ska flyttas, och vill du ha hjälp med något mer?',
-  'Din offert är på väg.',
+  'Du slipper ringa runt och jaga offerter. Vi har fyllt i det vi redan vet, du fyller i resten. Sen räknar vi på din flytt.',
+  'Hur mycket ska flyttas, och vill du ha hjälp med något mer? Sista steget innan vi räknar.',
+  'Vi räknar på din flytt och hör av oss med pris och datum. Du godkänner eller ändrar det du vill.',
 ]
 
 const initialResidence = (street: string, city: string, size: number, overrides: Partial<Residence> = {}): Residence => ({
@@ -168,11 +170,17 @@ const DemoMovehelpFlow = () => {
   return (
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={['2 min', '1 min', 'Pågår']} />
-      <Hero title="Flytthjälp och städning" copy={HERO_COPY[step]} tone={step === 2 ? 'green' : 'blue'} back={{ label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}>
+      <Hero
+        eyebrow={`Flytthjälp och städning · Steg ${step + 1} av ${STEP_TITLES.length}`}
+        title={HERO_TITLE[step]}
+        copy={HERO_COPY[step]}
+        tone={step === 2 ? 'green' : 'blue'}
+        back={{ label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
+      >
         {/* Beviset står där beslutet att fortsätta tas. Siffrorna är brandguidens (Bevisen). */}
         {step === 0 && (
           <p className="text-[13px] leading-[18px] text-white/80 max-w-[560px]">
-            230 000 flyttar sedan 2020 · 4,7 av över 500 recensioner på Google · hela Sverige, försäkrat och med trafiktillstånd
+            230 000 personer har mött oss inför sin flytt sedan 2020 · 4,7 av över 500 recensioner på Google, augusti 2026 · hela Sverige, försäkrat och med trafiktillstånd
           </p>
         )}
       </Hero>
