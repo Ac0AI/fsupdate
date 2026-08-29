@@ -17,30 +17,40 @@ const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDat
 
 /**
  * Flyttbilen och hemmet ritas här i stället för att hämtas som filer: de finns
- * bara i tidslinjen, och i 24 px behöver formerna vara ritade för just den
- * storleken för att inte bli grötiga.
+ * bara i tidslinjen, och i den här storleken behöver formerna vara ritade för
+ * just den för att inte bli grötiga. Manéret är samma som tjänsteikonerna:
+ * navy linjer, persika och mint som fyllning.
  */
 const MovingVan = () => (
-  <svg width="30" height="20" viewBox="0 0 30 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Vit kontur först, så bilen håller sig läsbar både på den mintfyllda och den grå delen av linjen. */}
-    <g stroke="#FFFFFF" strokeWidth="3.4" strokeLinejoin="round" strokeLinecap="round">
-      <path d="M2.6 3.4h12.2v9.8H2.6z" />
-      <path d="M14.8 6.6h4.8l3.6 4.2v2.4h-8.4z" />
+  <svg width="34" height="24" viewBox="0 0 34 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    {/* Vit halo så bilen håller sig läsbar både på den mintfyllda och den grå delen av linjen. */}
+    <g stroke="#FFFFFF" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round">
+      <rect x="2" y="3.5" width="17" height="12" rx="2" />
+      <path d="M19 8h4.6l4.9 4.4V15.5H19z" />
     </g>
-    <path d="M2.6 3.4h12.2v9.8H2.6z" fill="var(--color-secondary-main)" />
-    <path d="M14.8 6.6h4.8l3.6 4.2v2.4h-8.4z" fill="var(--color-secondary-main)" />
-    <path d="M16.4 8.2h3.1l2 2.4h-5.1z" fill="#FFFFFF" />
-    <circle cx="7.2" cy="14.6" r="3.2" fill="#FFFFFF" />
-    <circle cx="7.2" cy="14.6" r="1.7" fill="var(--color-secondary-dark)" />
-    <circle cx="19.6" cy="14.6" r="3.2" fill="#FFFFFF" />
-    <circle cx="19.6" cy="14.6" r="1.7" fill="var(--color-secondary-dark)" />
+    {/* Skåpet och hytten i persika med navy kontur, som flytthjälpsikonen. */}
+    <rect x="2" y="3.5" width="17" height="12" rx="2" fill="#FFD4B3" stroke="#214766" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M19 8h4.6l4.9 4.4V15.5H19z" fill="#FFD4B3" stroke="#214766" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M20.6 9.6h2.6l2.7 2.5h-5.3z" fill="#FFFFFF" stroke="#214766" strokeWidth="1.2" strokeLinejoin="round" />
+    {/* Mint rand: samma accent som bocken och tidslinjens fyllning. */}
+    <path d="M5.5 9.5h7" stroke="#51C8B4" strokeWidth="1.8" strokeLinecap="round" />
+    <circle cx="8.5" cy="17.5" r="3.1" fill="#FFFFFF" stroke="#214766" strokeWidth="1.8" />
+    <circle cx="8.5" cy="17.5" r="1.1" fill="#214766" />
+    <circle cx="24.5" cy="17.5" r="3.1" fill="#FFFFFF" stroke="#214766" strokeWidth="1.8" />
+    <circle cx="24.5" cy="17.5" r="1.1" fill="#214766" />
   </svg>
 )
 
 const DestinationHome = () => (
-  <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M10 2.2 2.6 8v8h14.8V8L10 2.2Z" fill="#FFFFFF" stroke="var(--color-inactive-dark)" strokeWidth="1.6" strokeLinejoin="round" />
-    <path d="M8 16v-4.2h4V16" stroke="var(--color-inactive-dark)" strokeWidth="1.6" strokeLinejoin="round" />
+  <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <g stroke="#FFFFFF" strokeWidth="5" strokeLinejoin="round">
+      <path d="M12 2.5 3 10.5h2.2v8.2a1 1 0 0 0 1 1h11.6a1 1 0 0 0 1-1v-8.2H21z" />
+    </g>
+    {/* Väggar vita, tak i persika, dörr i mint, allt med navy kontur. */}
+    <path d="M5.2 10.5h13.6v8.2a1 1 0 0 1-1 1H6.2a1 1 0 0 1-1-1z" fill="#FFFFFF" stroke="#214766" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M12 2.5 3 10.5h18z" fill="#FFD4B3" stroke="#214766" strokeWidth="1.8" strokeLinejoin="round" />
+    <rect x="15" y="4.2" width="2.4" height="3.2" rx="0.4" fill="#214766" />
+    <rect x="9.9" y="13" width="4.2" height="6.7" rx="1" fill="#51C8B4" />
   </svg>
 )
 
