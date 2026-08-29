@@ -38,8 +38,12 @@ export type Addon = 'packing' | 'moveclean' | 'boxes' | 'assembly' | 'storage' |
 export type Cleaning = {
   specialWindows: boolean
   glazedBalcony: boolean
+  // Ungefärlig yta när balkongen är inglasad. Städas som en del av bostaden.
+  balconyArea: number
   sensitiveSurfaces: boolean
   keys: KeyHandling
+  // Var nyckeln finns när ingen är hemma: brevlåda, granne, kod.
+  keyNote: string
   day: CleanDay
   customDate: string
 }
@@ -52,10 +56,10 @@ export type QuoteRequest = {
   // Bohag 2010: föremål värda över ett halvt prisbasbelopp ska uppges i förväg.
   valuables: boolean
   valuablesNote: string
-  // Kubik är frivilligt. Tomt betyder att Nina uppskattar från boarean.
+  // Kubik är frivilligt. Tomt betyder att vi uppskattar från boarean.
   volume: string
   addons: Addon[]
-  // fixed = tillträdesdagen, flexible = Nina föreslår, custom = kunden väljer själv
+  // fixed = tillträdesdagen, flexible = vi föreslår, custom = kunden väljer själv
   dateMode: 'fixed' | 'flexible' | 'custom'
   customDate: string
   startTime: StartTime
@@ -87,7 +91,7 @@ export const ELEVATORS: { value: Elevator; label: string }[] = [
 ]
 
 // Samma intervall som flyttfirman räknar med. Vet ej är ett riktigt svar,
-// inte ett fel: Nina frågar om det behövs.
+// inte ett fel: vi frågar om det behövs.
 export const DISTANCES: { value: Distance; label: string }[] = [
   { value: 'd25', label: '0–25 m' },
   { value: 'd50', label: '26–50 m' },
@@ -109,7 +113,7 @@ export const START_TIMES: { value: StartTime; label: string; hint: string }[] = 
   { value: 'morning', label: 'Morgon', hint: 'start 08–09' },
   { value: 'forenoon', label: 'Förmiddag', hint: 'start 09–12' },
   { value: 'afternoon', label: 'Eftermiddag', hint: 'start efter 12' },
-  { value: 'any', label: 'Spelar ingen roll', hint: 'Nina föreslår' },
+  { value: 'any', label: 'Spelar ingen roll', hint: 'vi föreslår' },
 ]
 
 export const KEY_HANDLING: { value: KeyHandling; label: string }[] = [
@@ -138,12 +142,12 @@ export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boo
 
 // Förklaringar bakom i-ikonen. Korta, och de säger alltid varför vi frågar.
 export const INFO = {
-  distance: 'Sträckan bärarna går mellan bilen och din dörr. Räkna ungefär, Nina frågar om det behövs.',
+  distance: 'Sträckan bärarna går mellan bilen och din dörr. Räkna ungefär, vi frågar om det behövs.',
   access: 'Hur tar sig flyttbilen till dörren? Smal trappa, ingen lastplats, gårdshus, bom. Vet du inte, lämna den av.',
   outdoor: 'Trädgårdsmöbler, grill, studsmatta. Sånt som står ute tar plats i bilen och ska räknas med.',
   secondary: 'Ytor utanför bostaden som ska tömmas eller städas. Lägg till en per utrymme.',
   valuables: 'Enligt Bohag 2010 ska föremål värda över ett halvt prisbasbelopp, 29 600 kr, uppges i förväg. Annars kan ersättningen vid skada begränsas. Det hjälper oss också att packa och bära rätt.',
-  volume: 'Vet du inte, lämna tomt. Nina uppskattar från boarean.',
+  volume: 'Vet du inte, lämna tomt. Vi uppskattar från boarean.',
   windows: 'Spröjsade fönster, takfönster eller fönster som är svåra att nå tar längre tid att göra rent.',
   surfaces: 'Marmor, obehandlat trä, mässing och liknande ytor kräver särskilda medel.',
   keys: 'Är någon på plats när vi städar? Annars behöver vi veta hur vi kommer in, till exempel nyckel i brevlådan eller kod.',

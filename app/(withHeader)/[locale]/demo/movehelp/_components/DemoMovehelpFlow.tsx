@@ -23,22 +23,22 @@ const isWeekend = (d: Date) => d.getDay() === 0 || d.getDay() === 6
 const digits = (s: string) => Number(s.replace(/\D/g, '')) || 0
 const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
 
-// Flyttdagen som kunden valt, eller null när Nina ska föreslå.
+// Flyttdagen som kunden valt, eller null när vi ska föreslå.
 const moveDay = (req: QuoteRequest, movingDate: Date): Date | null => {
   if (req.dateMode === 'fixed') return movingDate
   if (req.dateMode === 'custom' && req.customDate) return new Date(req.customDate)
   return null
 }
 
-// Det Nina inte kan räkna utan. Allt annat får vara tomt, hon frågar om det behövs.
+// Det vi inte kan räkna utan. Allt annat får vara tomt, vi frågar om det behövs.
 const residenceErrors = (res: Residence, prefix: 'from' | 'to'): Errors => {
   const e: Errors = {}
-  if (!res.size) e[`${prefix}.size`] = 'Fyll i boarean så Nina vet hur mycket som ska flyttas.'
+  if (!res.size) e[`${prefix}.size`] = 'Fyll i boarean så vi vet hur mycket som ska flyttas.'
   for (const s of res.secondaries) {
     if (!s.area) e[`${prefix}.secondary.${s.id}`] = 'Fyll i ungefär hur stor ytan är, eller ta bort den.'
     else if (!s.move && !s.clean) e[`${prefix}.secondary.${s.id}`] = 'Välj om ytan ska flyttas eller städas.'
   }
-  if (res.hardAccess && !res.accessNote.trim()) e[`${prefix}.accessNote`] = 'Berätta kort vad som är krångligt, annars kan Nina inte räkna rätt.'
+  if (res.hardAccess && !res.accessNote.trim()) e[`${prefix}.accessNote`] = 'Berätta kort vad som är krångligt, annars kan vi inte räkna rätt.'
   return e
 }
 
@@ -47,7 +47,7 @@ const stepErrors = (step: number, req: QuoteRequest): Errors => {
   if (step === 1) {
     const e: Errors = {}
     const today = isoDate(new Date())
-    if (req.heavyItems && !req.heavyNote.trim()) e.heavyNote = 'Berätta vad som är tungt eller ömtåligt, så Nina kan sätta rätt antal bärare.'
+    if (req.heavyItems && !req.heavyNote.trim()) e.heavyNote = 'Berätta vad som är tungt eller ömtåligt, så vi kan sätta rätt antal bärare.'
     if (req.valuables && !req.valuablesNote.trim()) e.valuablesNote = 'Berätta vad det är, så packas och försäkras det rätt.'
     if (req.dateMode === 'custom') {
       if (!req.customDate) e.customDate = 'Välj vilken dag du vill flytta.'
@@ -111,7 +111,7 @@ const DemoMovehelpFlow = () => {
     customDate: '',
     startTime: 'morning',
     note: '',
-    cleaning: { specialWindows: false, glazedBalcony: false, sensitiveSurfaces: false, keys: 'present', day: 'after', customDate: '' },
+    cleaning: { specialWindows: false, glazedBalcony: false, balconyArea: 0, sensitiveSurfaces: false, keys: 'present', keyNote: '', day: 'after', customDate: '' },
   })
 
   // Felen visas först när man försöker gå vidare, inte medan man fyller i.
@@ -154,7 +154,7 @@ const DemoMovehelpFlow = () => {
     window.setTimeout(() => {
       setSending(false)
       setStep(2)
-      showToast('Skickat. Nina räknar på din flytt.', 'confirm')
+      showToast('Skickat. Vi räknar på din flytt.', 'confirm')
     }, 900)
   }
 
@@ -229,7 +229,7 @@ const DemoMovehelpFlow = () => {
               <div className={clsx('order-1 md:order-none', rise)}>
                 <Card>
                   <h3 className="text-[15px] font-bold text-[#214766]">Något tungt eller ömtåligt?</h3>
-                  <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Piano, kassaskåp, akvarium. Sånt som behöver fler bärare.</p>
+                  <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Över 80 kg räknas som tungt. Piano, kassaskåp, akvarium, sånt som behöver fler bärare.</p>
                   <div className="flex gap-1.5 mt-3">
                     <Pill active={!req.heavyItems} onClick={() => setReq((r) => ({ ...r, heavyItems: false }))}>
                       Nej
@@ -300,7 +300,7 @@ const DemoMovehelpFlow = () => {
                       active={req.dateMode === 'custom'}
                       onClick={() => setReq((r) => ({ ...r, dateMode: 'custom', customDate: r.customDate || isoDate(movingDate) }))}
                       title="Ett annat datum"
-                      hint="Välj själv, så räknar Nina på den dagen"
+                      hint="Välj själv, så räknar vi på den dagen"
                     />
                   </div>
                   {req.dateMode === 'custom' && (
@@ -325,7 +325,7 @@ const DemoMovehelpFlow = () => {
                     </div>
                   )}
                   <p className="text-xs leading-[17px] text-[#767678] mt-2.5">
-                    Vardagar är ofta billigare än helger. Flexibel betyder att Nina föreslår ett datum inom en vecka från tillträdet.
+                    Vardagar är ofta billigare än helger. Flexibel betyder att vi föreslår ett datum inom en vecka från tillträdet.
                   </p>
 
                   <Field label="Starttid" className="mt-3 pt-3 border-t border-[#EEEEF0]">
@@ -340,8 +340,8 @@ const DemoMovehelpFlow = () => {
 
               <div className={clsx('order-5 md:order-none', rise, '[animation-delay:210ms]')}>
                 <Card>
-                  <h3 className="text-[15px] font-bold text-[#214766]">Något mer Nina bör veta?</h3>
-                  <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Parkering, portkod, tider som inte funkar. Allt som hjälper henne räkna rätt.</p>
+                  <h3 className="text-[15px] font-bold text-[#214766]">Något mer vi bör veta?</h3>
+                  <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Parkering, portkod, tider som inte funkar. Allt som hjälper oss räkna rätt.</p>
                   <textarea
                     className={clsx(textareaClass, 'mt-3')}
                     placeholder="Skriv fritt, eller lämna tomt"
@@ -377,7 +377,7 @@ const DemoMovehelpFlow = () => {
             <>
               <Primary onClick={() => tryContinue(() => setStep(1))}>Till sista steget</Primary>
               {hasShownErrors ? (
-                <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar Nina rätt.</Foot>
+                <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar vi rätt.</Foot>
               ) : (
                 <Foot>Kostnadsfritt och inte bindande. Du bestämmer när förslaget kommer.</Foot>
               )}
@@ -389,16 +389,16 @@ const DemoMovehelpFlow = () => {
                 {sending ? 'Skickar' : 'Begär offert'}
               </Primary>
               {hasShownErrors ? (
-                <Foot tone="error">Något saknas ovan. Fyll i det markerade så Nina kan räkna rätt.</Foot>
+                <Foot tone="error">Något saknas ovan. Fyll i det markerade så vi kan räkna rätt.</Foot>
               ) : (
-                <Foot>Nina sammanställer och skickar ett förslag. Inget är bokat förrän du godkänt det.</Foot>
+                <Foot>Vi sammanställer och skickar ett förslag. Inget är bokat förrän du godkänt det.</Foot>
               )}
             </>
           )}
           {step === 2 && (
             <>
               <Primary onClick={backToMovepage}>Tillbaka till checklistan</Primary>
-              <Foot>Du får SMS när Nina skickat offerten.</Foot>
+              <Foot>Du får SMS när offerten är skickad.</Foot>
             </>
           )}
         </div>
@@ -506,13 +506,13 @@ const ResidenceCard = ({
       )}
 
       <Field label="Från porten till där bilen kan stå" info={INFO.distance} className="mt-3">
-        <div className="grid grid-cols-3 gap-1.5">
+        <select className={selectClass} value={res.distance} onChange={(e) => onChange({ distance: e.target.value as Residence['distance'] })}>
           {DISTANCES.map((d) => (
-            <Pill key={d.value} active={res.distance === d.value} onClick={() => onChange({ distance: d.value })}>
+            <option key={d.value} value={d.value}>
               {d.label}
-            </Pill>
+            </option>
           ))}
-        </div>
+        </select>
       </Field>
 
       <label
@@ -653,6 +653,21 @@ const CleaningCard = ({
       <div className="mt-3">
         <YesNo label="Specialfönster" info={INFO.windows} value={cleaning.specialWindows} onChange={(v) => onChange({ specialWindows: v })} />
         <YesNo label="Inglasad balkong" value={cleaning.glazedBalcony} onChange={(v) => onChange({ glazedBalcony: v })} />
+        {cleaning.glazedBalcony && (
+          <div className={clsx('pb-2.5', rise)}>
+            <Field label="Ungefär hur stor är balkongen?">
+              <input
+                type="text"
+                inputMode="numeric"
+                autoFocus
+                className={clsx(areaInput, 'max-w-[140px]')}
+                placeholder="m²"
+                value={cleaning.balconyArea ? `${cleaning.balconyArea} m²` : ''}
+                onChange={(e) => onChange({ balconyArea: digits(e.target.value) })}
+              />
+            </Field>
+          </div>
+        )}
         <YesNo label="Känsliga ytor" info={INFO.surfaces} value={cleaning.sensitiveSurfaces} onChange={(v) => onChange({ sensitiveSurfaces: v })} />
       </div>
 
@@ -665,6 +680,20 @@ const CleaningCard = ({
           ))}
         </div>
       </Field>
+      {cleaning.keys === 'absent' && (
+        <div className={clsx('mt-2.5', rise)}>
+          <Field label="Var lämnar du nyckeln?">
+            <input
+              type="text"
+              autoFocus
+              className={areaInput}
+              placeholder="T.ex. i brevlådan eller hos grannen"
+              value={cleaning.keyNote}
+              onChange={(e) => onChange({ keyNote: e.target.value })}
+            />
+          </Field>
+        </div>
+      )}
 
       <Field label="När ska det städas?" className="mt-3">
         <div className="flex flex-col gap-2">
@@ -731,7 +760,7 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
           <Timeline
             items={[
               { state: 'done', title: 'Uppgifter skickade', hint: `I dag ${time} · bekräftelse på mejl` },
-              { state: 'current', title: 'Nina tar fram förslaget', hint: 'Senast i morgon förmiddag · du får SMS' },
+              { state: 'current', title: 'Vi tar fram förslaget', hint: 'Senast i morgon förmiddag · du får SMS' },
               { state: 'todo', title: 'Du godkänner eller frågar', hint: 'Förslaget gäller i två veckor' },
             ]}
           />

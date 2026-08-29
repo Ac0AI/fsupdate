@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { clsx } from 'clsx'
 
 /**
@@ -174,20 +175,49 @@ export const YesNo = ({ label, info, value, onChange }: { label: string; info?: 
 /**
  * Förklaring bakom en i-ikon. Mus: visas vid hovring, klick låser fast den.
  * Fingrar: ett tryck öppnar, nästa stänger, liksom tryck utanför och Escape.
- * Bubblan hoppar till vänster om den annars skulle sticka ut i högerkanten.
+ * Bubblan ritas i en portal med fast position: korten och kolumnerna har
+ * egna staplingskontexter (rise-animationen sätter transform), så en vanlig
+ * absolut bubbla hamnar under grannkortet på desktop. Den hoppar åt vänster
+ * om den annars sticker ut i högerkanten, och uppåt nära underkanten.
  * Träffytan är 44 px fast ikonen är 16, så den går att träffa med tumme.
  */
+const BUBBLE_W = 264
+const BUBBLE_H = 110
+
 export const Info = ({ text }: { text: string }) => {
   const [open, setOpen] = useState(false)
   const [pinned, setPinned] = useState(false)
-  const [flip, setFlip] = useState(false)
+  const [pos, setPos] = useState<{ top?: number; bottom?: number; left?: number; right?: number } | null>(null)
   const ref = useRef<HTMLSpanElement>(null)
   const id = useId()
 
   useLayoutEffect(() => {
-    if (!open || !ref.current) return
+    if (!open || !ref.current) {
+      setPos(null)
+      return
+    }
     const r = ref.current.getBoundingClientRect()
-    setFlip(r.left + 264 > window.innerWidth - 16)
+    const flipX = r.left + BUBBLE_W > window.innerWidth - 16
+    const flipY = r.bottom + BUBBLE_H > window.innerHeight - 16
+    setPos({
+      ...(flipY ? { bottom: window.innerHeight - r.top + 4 } : { top: r.bottom + 4 }),
+      ...(flipX ? { right: window.innerWidth - r.right } : { left: r.left }),
+    })
+  }, [open])
+
+  // Fast position följer inte med när sidan rullar. Stäng i stället.
+  useEffect(() => {
+    if (!open) return
+    const close = () => {
+      setOpen(false)
+      setPinned(false)
+    }
+    window.addEventListener('scroll', close, true)
+    window.addEventListener('resize', close)
+    return () => {
+      window.removeEventListener('scroll', close, true)
+      window.removeEventListener('resize', close)
+    }
   }, [open])
 
   useEffect(() => {
@@ -235,18 +265,19 @@ export const Info = ({ text }: { text: string }) => {
           <path d="M12 10.5v6.5M12 7.2v.3" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
         </svg>
       </button>
-      {open && (
-        <span
-          role="tooltip"
-          id={id}
-          className={clsx(
-            'absolute top-full mt-1 z-20 w-max max-w-[264px] rounded-lg bg-[#011627] px-3 py-2 text-xs font-normal normal-case tracking-normal leading-[17px] text-white shadow-[0_6px_20px_rgba(1,22,39,0.25)] animate-[rise_.2s_ease-out_both] motion-reduce:animate-none',
-            flip ? 'right-0' : 'left-0',
-          )}
-        >
-          {text}
-        </span>
-      )}
+      {open &&
+        pos &&
+        createPortal(
+          <span
+            role="tooltip"
+            id={id}
+            style={pos}
+            className="fixed z-50 w-max max-w-[264px] rounded-lg bg-[#011627] px-3 py-2 text-xs font-normal normal-case tracking-normal leading-[17px] text-white shadow-[0_6px_20px_rgba(1,22,39,0.25)] animate-[rise_.2s_ease-out_both] motion-reduce:animate-none"
+          >
+            {text}
+          </span>,
+          document.body,
+        )}
     </span>
   )
 }
