@@ -7,6 +7,7 @@
   "contactUsIfStillError": "If it still doesn't work, contact us and we'll help you.",
   "helpRequestToast": "Sent. We get back to you within one working day.",
   "addToChecklistToast": "Activity added to checklist",
+  "removedFromChecklistToast": "Removed from your list.",
   "removeFromChecklistToast": "Activity hidden from checklist",
   "logo": "/Common/logo_urZWubE8p.svg",
   "AUTH": {

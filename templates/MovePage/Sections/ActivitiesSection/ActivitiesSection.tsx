@@ -121,7 +121,7 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
                         addTodo(type)
                         setIsAdding(false)
                       }}
-                      className="px-3 py-2 rounded-full text-[13px] font-medium border border-[var(--color-inactive-main)] text-[var(--color-secondary-main)] hover:border-[var(--color-primary-main)] hover:bg-[var(--color-primary-main)]/8 transition-colors"
+                      className="px-3 py-2 rounded-full text-[13px]! font-medium border border-[var(--color-inactive-main)] text-[var(--color-secondary-main)] hover:border-[var(--color-primary-main)] hover:bg-[var(--color-primary-main)]/8 transition-colors"
                     >
                       {t(`movePage:TODO_LABELS.${type}`)}
                     </button>
@@ -155,7 +155,7 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
                     <button
                       type="submit"
                       disabled={!ownTitle.trim()}
-                      className="h-11 shrink-0 rounded-full px-5 bg-[var(--color-secondary-main)] text-white text-[14px] font-bold transition-[opacity,transform,background-color] duration-200 ease-out hover:bg-[var(--color-secondary-main-dark)] motion-safe:active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
+                      className="h-11 shrink-0 rounded-full px-5 bg-[var(--color-secondary-main)] text-white text-[14px]! font-bold transition-[opacity,transform,background-color] duration-200 ease-out hover:bg-[var(--color-secondary-main-dark)] motion-safe:active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
                     >
                       {t('movePage:CHECKLIST_SECTION.addOwnButton')}
                     </button>
@@ -166,7 +166,7 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
               <button
                 type="button"
                 onClick={() => setIsAdding(true)}
-                className="flex items-center gap-2 text-[14px] font-semibold text-[var(--color-secondary-main)] underline underline-offset-4 hover:text-[var(--color-primary-dark)] transition-colors"
+                className="flex items-center gap-2 text-[14px]! font-semibold text-[var(--color-secondary-main)] underline underline-offset-4 hover:text-[var(--color-primary-dark)] transition-colors"
               >
                 <span aria-hidden className="text-[18px] leading-none">+</span>
                 {t('movePage:CHECKLIST_SECTION.addOwn')}

@@ -7,6 +7,7 @@
   "contactUsIfStillError": "Om det fortfarande inte fungerar, kontakta oss så hjälper vi dig.",
   "helpRequestToast": "Skickat. Vi hör av oss inom en vardag.",
   "addToChecklistToast": "Aktivitet tillagd i checklistan",
+  "removedFromChecklistToast": "Borttagen från listan.",
   "removeFromChecklistToast": "Aktivitet gömd från checklistan",
   "logo": "/Common/logo_urZWubE8p.svg",
   "AUTH": {

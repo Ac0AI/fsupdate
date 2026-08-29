@@ -288,6 +288,7 @@ export const ChecklistContextProvider = ({ children }: ChecklistProviderProps) =
     if (response) {
       ReactGA4.event('activity_removed', { type: type })
       getChecklistItems()
+      showToast(t('common:removedFromChecklistToast'))
     }
   }
 

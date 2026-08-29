@@ -188,7 +188,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                   {isTodo && (
                     <button
                       type="button"
-                      className="relative mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-error-red)] hover:underline after:content-[''] after:absolute after:-inset-3"
+                      className="relative mt-2 inline-flex items-center gap-1 text-[12px]! font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-error-red)] hover:underline after:content-[''] after:absolute after:-inset-3"
                       onClick={(e) => {
                         e.stopPropagation()
                         removeItem(item.type as TodoType, item.id)
@@ -199,7 +199,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                   )}
                   <button
                     type="button"
-                    className="relative mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-secondary-main)] hover:underline after:content-[''] after:absolute after:-inset-3"
+                    className="relative mt-2 inline-flex items-center gap-1 text-[12px]! font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-secondary-main)] hover:underline after:content-[''] after:absolute after:-inset-3"
                     onClick={(e) => {
                       e.stopPropagation()
                       markAsDone()
@@ -311,7 +311,7 @@ const TodoChoice = ({ item, onSelf, onHelp, onCancel }: { item: ChecklistItem; o
     e.stopPropagation()
     fn()
   }
-  const link = 'text-[12px] font-medium underline underline-offset-2 text-[var(--color-inactive-dark)] hover:text-[var(--color-secondary-main)] transition-colors'
+  const link = 'text-[12px]! font-medium underline underline-offset-2 text-[var(--color-inactive-dark)] hover:text-[var(--color-secondary-main)] transition-colors'
 
   if (item.helpStatus === 'pending') {
     return (
@@ -321,14 +321,14 @@ const TodoChoice = ({ item, onSelf, onHelp, onCancel }: { item: ChecklistItem; o
           <button
             type="button"
             onClick={stop(onSelf)}
-            className="h-10 rounded-full px-4 border-2 border-[var(--color-secondary-main)] bg-white text-[13px] font-bold text-[var(--color-secondary-main)] transition-[background-color,transform] duration-200 ease-out hover:bg-[#F4FCFA] motion-safe:active:scale-[0.97]"
+            className="h-10 rounded-full px-4 border-2 border-[var(--color-secondary-main)] bg-white text-[13px]! font-bold text-[var(--color-secondary-main)] transition-[background-color,transform] duration-200 ease-out hover:bg-[#F4FCFA] motion-safe:active:scale-[0.97]"
           >
             {t('CHECKLIST_SECTION.doItMyself')}
           </button>
           <button
             type="button"
             onClick={stop(onHelp)}
-            className="h-10 rounded-full px-4 border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] text-[13px] font-bold text-white transition-[background-color,transform] duration-200 ease-out hover:bg-[var(--color-secondary-main-dark)] motion-safe:active:scale-[0.97]"
+            className="h-10 rounded-full px-4 border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] text-[13px]! font-bold text-white transition-[background-color,transform] duration-200 ease-out hover:bg-[var(--color-secondary-main-dark)] motion-safe:active:scale-[0.97]"
           >
             {t('CHECKLIST_SECTION.wantHelp')}
           </button>
