@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { clsx } from 'clsx'
 import i18nConfig from 'i18nConfig'
-import { demoUser } from '@/common/data/demoMovepage'
+import { useDemoUser } from '@/common/data/useDemoUser'
 import { useChecklistContext } from '@/common/context/checklist/checklistContext.provider'
 import { useToastContext } from '@/common/context/toast/toast.provider'
 import { Modal, ModalContent, ModalTitle } from '@/components/molecules/Modal'
@@ -59,6 +59,7 @@ const DemoElectricityFlow = () => {
   const { locale } = useParams<{ locale: string }>()
   const { showToast } = useToastContext()
   const { activitiesList, skipChecklistItem } = useChecklistContext()
+  const demoUser = useDemoUser()
   const move = demoUser.currentMove
   const moveIn = new Date(move.movingDate)
   const pathTo = (p: string) => (locale === i18nConfig.defaultLocale ? p : `/${locale}${p}`)

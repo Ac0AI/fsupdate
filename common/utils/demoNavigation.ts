@@ -2,7 +2,7 @@ import { isDemoPath } from './demoApi'
 
 // Tjänstesidor som finns under /demo. Saknas en väg här hamnar man på
 // demoflyttsidan i stället för att kastas ut till inloggningen.
-const DEMO_ROUTES = ['addresschange', 'bookings', 'broadband', 'electricity', 'fixarenovera', 'insurance', 'moveclean', 'movehelp', 'movepage']
+const DEMO_ROUTES = ['addresschange', 'bookings', 'broadband', 'electricity', 'fixarenovera', 'insurance', 'moveclean', 'movehelp', 'movepage', 'welcome']
 
 // Checklistan pekar på /app/showcleaning, som inte finns som egen route.
 const ROUTE_ALIASES: Record<string, string> = {

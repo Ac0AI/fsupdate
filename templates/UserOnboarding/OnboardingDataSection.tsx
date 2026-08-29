@@ -35,6 +35,7 @@ export const OnboardingDataSection = ({ code }: OnboardingDataSectionProps) => {
   const [inviterLogoUrl, setInviterLogoUrl] = useState<string>('')
 
   const setCoordinatesFn = useCallback((leadAddress: Record<string, string>) => {
+    if (!window.google?.maps?.Geocoder) return
     const geoCoder = new window.google.maps.Geocoder()
     geoCoder.geocode({ address: `${leadAddress.street}, ${leadAddress.zip}, ${leadAddress.city}` }, (results) => {
       if (results?.[0].geometry) setCoordinates({ lat: results?.[0].geometry.location.lat(), lng: results?.[0].geometry.location.lng() })

@@ -5,6 +5,7 @@ import ReactGA4 from 'react-ga4'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { isClientDemoMode } from '@/common/utils/demoMode'
 import { MOVEPAGEURL } from '@/constants/urls'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 import Button from '@/components/atoms/Button'
 import Spinner from '@/components/atoms/Spinner'
 
@@ -34,7 +35,7 @@ export const WelcomePage = () => {
     const hasSentRequest = searchParams.get('hasSentRequest')
 
     if (!refUrl || ['/', '/en'].includes(refUrl)) {
-      router.push(MOVEPAGEURL)
+      router.push(toDemoPath(MOVEPAGEURL))
     } else {
       const queryString = hasSentRequest ? `?hasSentRequest=${hasSentRequest}` : ''
       router.push(`${refUrl}${queryString}`)

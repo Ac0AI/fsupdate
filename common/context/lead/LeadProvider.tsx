@@ -9,6 +9,8 @@ import { autoSignup } from '@/common/api/signup'
 import { updateToAddress } from '@/common/api/updateCurrentMove'
 import { PartnerCodeEnum } from '@/common/enums/PartnerCodeEnum'
 import { getCookieDomain } from '@/common/helpers/domain'
+import { isDemoPath } from '@/common/utils/demoApi'
+import { toDemoPath } from '@/common/utils/demoNavigation'
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 const defaultValue: LeadContextType = {
@@ -204,35 +206,35 @@ export const LeadProvider = ({ children }: UserProviderProps) => {
         } else if (leadAddressData?.movingOutDate) {
           await updateMovingDates()
         }
-        router.push('/app/welcome?userCreated=true')
+        router.push(toDemoPath('/app/welcome?userCreated=true'))
       } else if (invitationCode === PartnerCodeEnum.testMode) {
         // Test mode - set fake token, skip API for local testing
         const domain = getCookieDomain(window.location.hostname)
         Cookies.set('userToken', 'test-token-local-development', { expires: 365, domain })
-        router.push('/app/welcome?userCreated=true')
+        router.push(toDemoPath('/app/welcome?userCreated=true'))
       } else if (!!fakeInvitationCode?.length) {
         const response = await autoSignup(fakeInvitationCode ?? '', withoutNewAddress)
         if (response?.token) {
           const domain = getCookieDomain(window.location.hostname)
-          Cookies.set('userToken', response?.token as string, { expires: 365, domain })
+          if (!isDemoPath()) Cookies.set('userToken', response?.token as string, { expires: 365, domain })
           if (!!leadAddressData.toCity?.length) {
             const moveDateResponse = await updateCurrentMoveData(response?.token as string)
-            if (!!moveDateResponse?.id?.length) router.push('/app/welcome?userCreated=true')
+            if (!!moveDateResponse?.id?.length) router.push(toDemoPath('/app/welcome?userCreated=true'))
           } else {
-            router.push('/app/welcome?userCreated=true')
+            router.push(toDemoPath('/app/welcome?userCreated=true'))
           }
         }
       } else {
         const response = await autoSignup(invitationCode ?? '', withoutNewAddress)
         if (response?.token) {
           const domain = getCookieDomain(window.location.hostname)
-          Cookies.set('userToken', response?.token as string, { expires: 365, domain })
+          if (!isDemoPath()) Cookies.set('userToken', response?.token as string, { expires: 365, domain })
           if (!!leadAddressData.toCity?.length) {
             await updateCurrentMoveData(response?.token as string)
           } else if (leadAddressData?.movingOutDate) {
             await updateMovingDates()
           }
-          router.push('/app/welcome?userCreated=true')
+          router.push(toDemoPath('/app/welcome?userCreated=true'))
         }
       }
     } catch (e: unknown) {

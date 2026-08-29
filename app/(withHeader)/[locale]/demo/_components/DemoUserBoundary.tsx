@@ -2,7 +2,7 @@
 
 import { ChecklistContextProvider, CreateChecklistContext } from '@/common/context/checklist/checklistContext.provider'
 import { CreateUserContext, UserProvider } from '@/common/context/user/UserProvider'
-import { demoUser } from '@/common/data/demoMovepage'
+import { useDemoUser } from '@/common/data/useDemoUser'
 
 const checklistContext = CreateChecklistContext()
 const userContext = CreateUserContext()
@@ -14,12 +14,15 @@ const userContext = CreateUserContext()
  * i stället för att rendera. Skarpa appen rör vi inte: den här komponenten
  * används bara av sidorna under /demo.
  */
-const DemoUserBoundary = ({ children }: { children: React.ReactNode }) => (
-  <UserProvider context={userContext} defaultValueUser={demoUser as unknown as User}>
+const DemoUserBoundary = ({ children }: { children: React.ReactNode }) => {
+  const user = useDemoUser()
+  return (
+  <UserProvider context={userContext} defaultValueUser={user as unknown as User}>
     <ChecklistContextProvider context={checklistContext}>
       <div className="motion-safe:animate-[rise_.4s_var(--ease-out-expo)_both]">{children}</div>
     </ChecklistContextProvider>
   </UserProvider>
-)
+  )
+}
 
 export default DemoUserBoundary

@@ -13,7 +13,7 @@ const createFetchInstance = (method: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT'
     // Demovyerna under /demo körs utan backend. Bara den sökvägen svarar med
     // fixturer, allt annat går som vanligt.
     if (isDemoPath()) {
-      return demoFetch<T>(method, url)
+      return demoFetch<T>(method, url, typeof options.body === 'string' ? options.body : undefined)
     }
 
     const queryString = params

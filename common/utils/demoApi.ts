@@ -1,4 +1,5 @@
 import { demoChecklist, demoUser } from '@/common/data/demoMovepage'
+import { demoLead, getDemoUser, writeDemoSession } from '@/common/data/demoPersona'
 import { demoBroadbandOffers, demoInsuranceSuppliers, demoMovecleanSuppliers, demoMovehelpSuppliers } from '@/common/data/demoServices'
 
 /**
@@ -17,6 +18,11 @@ let items: Item[] = demoChecklist.items.map((i) => ({ ...i })) as Item[]
 
 const find = (id: string) => items.find((i) => i.id === id)
 
+// Ny inbjuden kund: checklistan börjar om från fixturen.
+export const resetDemoChecklist = () => {
+  items = demoChecklist.items.map((i) => ({ ...i })) as Item[]
+}
+
 const mutations: { method: string; test: RegExp; run: (id: string) => void }[] = [
   { method: 'PATCH', test: /^\/web\/checklist\/item\/([^/]+)\/skip$/, run: (id) => { const i = find(id); if (i) { i.skippedAt = new Date().toISOString(); i.status = 'completed' } } },
   { method: 'PATCH', test: /^\/web\/checklist\/item\/([^/]+)\/hide$/, run: (id) => { const i = find(id); if (i) i.hiddenAt = new Date().toISOString() } },
@@ -26,8 +32,8 @@ const mutations: { method: string; test: RegExp; run: (id: string) => void }[] =
 ]
 
 const reads: { method: string; test: RegExp; value: () => unknown }[] = [
-  { method: 'GET', test: /^\/users\/me$/, value: () => ({ ...demoUser.profile, domesticServicesBalance: { data: null } }) },
-  { method: 'GET', test: /^\/moves\/current$/, value: () => demoUser.currentMove },
+  { method: 'GET', test: /^\/users\/me$/, value: () => ({ ...getDemoUser().profile, domesticServicesBalance: { data: null } }) },
+  { method: 'GET', test: /^\/moves\/current$/, value: () => getDemoUser().currentMove },
   { method: 'GET', test: /^\/users\/contact$/, value: () => demoUser.contact },
   { method: 'GET', test: /^\/web\/checklist\/move\/current$/, value: () => ({ items }) },
   { method: 'GET', test: /\/todo\/active$/, value: () => [] },
@@ -43,7 +49,28 @@ const reads: { method: string; test: RegExp; value: () => unknown }[] = [
   { method: 'GET', test: /^\/moves\/current\/internet\/bredbandsval/, value: () => demoBroadbandOffers },
 ]
 
-export const demoFetch = async <T>(method: string, url: string): Promise<T> => {
+export const demoFetch = async <T>(method: string, url: string, body?: string): Promise<T> => {
+  // Onboardingen: inbjudan hämtas med en kort paus så att laddningsvyn hinner
+  // visas, signup ger en låtsastoken, och det kunden fyller i sparas i sessionen.
+  const lead = method === 'GET' && /^\/users\/code\/([^/]+)$/.exec(url)
+  if (lead) {
+    await new Promise((r) => setTimeout(r, 900))
+    return demoLead(lead[1]) as T
+  }
+  if (method === 'POST' && url === '/users/signup/auto') {
+    writeDemoSession({ onboarded: true })
+    return { token: 'demo-token', id: demoUser.profile.id } as T
+  }
+  if (method === 'PATCH' && url === '/moves/current') {
+    try {
+      const data = body ? JSON.parse(body) : {}
+      if (data.toAddress?.street) writeDemoSession({ toAddress: { apartmentNumber: null, ...data.toAddress } })
+      if (data.movingDate) writeDemoSession({ movingDate: new Date(data.movingDate).toISOString() })
+    } catch {
+      // Ofullständig kropp: låt sessionen vara.
+    }
+    return getDemoUser().currentMove as T
+  }
   const added = method === 'POST' && /^\/web\/checklist\/item\/add\/([^/]+)$/.exec(url)
   if (added) {
     const type = added[1]

@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import { clsx } from 'clsx'
 import i18nConfig from 'i18nConfig'
-import { demoUser } from '@/common/data/demoMovepage'
+import { useDemoUser } from '@/common/data/useDemoUser'
 import { useToastContext } from '@/common/context/toast/toast.provider'
 import { ADDONS, DISTANCES, ELEVATORS, STEP_TITLES, type Addon, type QuoteRequest, type Residence } from './steps'
 import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, textareaClass, pressScale, pressSoft } from '../../_components/flow-ui'
@@ -64,6 +64,7 @@ const DemoMovehelpFlow = () => {
   const router = useRouter()
   const { locale } = useParams<{ locale: string }>()
   const { showToast } = useToastContext()
+  const demoUser = useDemoUser()
   const move = demoUser.currentMove
   const movingDate = new Date(move.movingDate)
 
