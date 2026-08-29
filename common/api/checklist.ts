@@ -28,6 +28,30 @@ export const addTodoToChecklist = async (type: TodoType): Promise<ChecklistRetur
   return data
 }
 
+// Egna punkter och hjälpvalet. Backend: add/custom skapar punkten, help skickar
+// mejl till Flyttsmart och sätter helpStatus, self och DELETE help ändrar bara status.
+export const addCustomTodo = async (title: string): Promise<ChecklistReturnType> => {
+  const fetchInstance = createFetchInstance('POST')
+  await fetchInstance<TodoChecklistReturnType>('/web/checklist/item/add/custom', { body: JSON.stringify({ title }) })
+  const data = await getChecklist()
+  return data
+}
+
+export const chooseTodoSelf = async (itemId: string): Promise<TodoChecklistReturnType> => {
+  const fetchInstance = createFetchInstance('PATCH')
+  return fetchInstance<TodoChecklistReturnType>(`/web/checklist/item/${itemId}/self`)
+}
+
+export const requestTodoHelp = async (itemId: string, note?: string): Promise<TodoChecklistReturnType> => {
+  const fetchInstance = createFetchInstance('POST')
+  return fetchInstance<TodoChecklistReturnType>(`/web/checklist/item/${itemId}/help`, { body: JSON.stringify({ note }) })
+}
+
+export const cancelTodoHelp = async (itemId: string): Promise<TodoChecklistReturnType> => {
+  const fetchInstance = createFetchInstance('DELETE')
+  return fetchInstance<TodoChecklistReturnType>(`/web/checklist/item/${itemId}/help`)
+}
+
 export const removeTodoFromChecklist = async (itemId: string): Promise<TodoChecklistReturnType> => {
   const CHECKLIST_API_URL = `/web/checklist/item/${itemId}/remove`
   const fetchInstance = createFetchInstance('DELETE')

@@ -134,10 +134,10 @@ export const CLEAN_DAYS: { value: CleanDay; title: string }[] = [
 export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boolean }[] = [
   { value: 'packing', label: 'Packhjälp', hint: 'Tar i snitt 70 timmar för en tvåa', defaultOn: true },
   { value: 'moveclean', label: 'Flyttstädning', hint: 'Med städgaranti', defaultOn: true },
-  { value: 'boxes', label: 'Flyttkartonger', hint: 'Lån, levereras hem', defaultOn: false },
+  { value: 'boxes', label: 'Flyttkartonger', hint: 'Låna eller köp, levereras hem', defaultOn: false },
   { value: 'assembly', label: 'Montering', hint: 'Ned och upp av möbler', defaultOn: false },
   { value: 'storage', label: 'Magasinering', hint: 'Om datumen inte går ihop', defaultOn: false },
-  { value: 'recycling', label: 'Bortforsling', hint: 'Det du inte vill ta med', defaultOn: false },
+  { value: 'recycling', label: 'Bortforsling', hint: 'Vi kör till tippen eller lämnar till återbruk', defaultOn: false },
 ]
 
 // Förklaringar bakom i-ikonen. Korta, och de säger alltid varför vi frågar.

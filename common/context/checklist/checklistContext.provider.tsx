@@ -11,6 +11,7 @@ import getChecklist, {
   resetActivity,
   showChecklistItem,
 } from '@/common/api/checklist'
+import { addCustomTodo, cancelTodoHelp, chooseTodoSelf, requestTodoHelp } from '@/common/api/checklist'
 import { CreateOrder, cancelTodo, createOrder, getActiveTodos, todoSkip } from '@/common/api/todo'
 import { SourceSystemEnum } from '@/common/enums/SourceSystemEnum'
 import { ActivityEnum } from '@/common/types/activity'
@@ -31,6 +32,10 @@ const defaultValue: ChecklistContextType = {
   setActivitiesList: () => {},
   skipChecklistItem: () => {},
   addTodo: () => {},
+  addOwnTodo: async () => {},
+  chooseSelf: async () => {},
+  requestHelp: async () => false,
+  cancelHelp: async () => {},
   hideItem: () => {},
   showItem: () => {},
   removeItem: () => {},
@@ -51,6 +56,10 @@ export type ChecklistContextType = {
   setActivitiesList: (arg0: ChecklistItem[]) => void
   skipChecklistItem: (arg0: string, arg1: string, arg2: boolean, arg3?: () => void) => void
   addTodo: (arg0: TodoType) => void
+  addOwnTodo: (title: string) => Promise<void>
+  chooseSelf: (item: ChecklistItem) => Promise<void>
+  requestHelp: (item: ChecklistItem, note?: string) => Promise<boolean>
+  cancelHelp: (item: ChecklistItem) => Promise<void>
   hideItem: (arg0: string, arg1: string) => void
   showItem: (arg0: string) => void
   removeItem: (arg0: TodoType, arg1: string) => void
@@ -217,6 +226,45 @@ export const ChecklistContextProvider = ({ children }: ChecklistProviderProps) =
     }
   }
 
+  // Egna punkter: kunden skriver själv vad som ska göras, och väljer sedan om
+  // hon fixar det eller vill ha vår hjälp. Hjälp betyder ett mejl till oss och
+  // svar inom en vardag.
+  const addOwnTodo = async (title: string) => {
+    const response = await addCustomTodo(title.trim())
+    if (response) {
+      ReactGA4.event('activity_added', { type: 'custom' })
+      getChecklistItems()
+      showToast(t('common:addToChecklistToast'))
+    } else {
+      showToast(t('common:somethingWrong'), 'error')
+    }
+  }
+
+  const chooseSelf = async (item: ChecklistItem) => {
+    const response = await chooseTodoSelf(item.id)
+    if (response) {
+      ReactGA4.event('todo_choice', { type: item.type, choice: 'self' })
+      getChecklistItems()
+    }
+  }
+
+  const requestHelp = async (item: ChecklistItem, note?: string) => {
+    const response = await requestTodoHelp(item.id, note)
+    if (response) {
+      ReactGA4.event('todo_choice', { type: item.type, choice: 'help' })
+      getChecklistItems()
+      showToast(t('common:helpRequestToast'))
+      return true
+    }
+    showToast(t('common:somethingWrong'), 'error')
+    return false
+  }
+
+  const cancelHelp = async (item: ChecklistItem) => {
+    const response = await cancelTodoHelp(item.id)
+    if (response) getChecklistItems()
+  }
+
   const hideItem = async (type: string, itemId: string) => {
     const response = await hideChecklistItem(itemId)
     if (response) {
@@ -289,6 +337,10 @@ export const ChecklistContextProvider = ({ children }: ChecklistProviderProps) =
     setActivitiesList,
     skipChecklistItem,
     addTodo,
+    addOwnTodo,
+    chooseSelf,
+    requestHelp,
+    cancelHelp,
     hideItem,
     showItem,
     resetItem,

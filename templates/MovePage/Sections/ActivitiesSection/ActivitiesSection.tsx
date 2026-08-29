@@ -30,8 +30,9 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
   } = useUserContext()
   const { theme } = useThemeContext()
   const { t } = useTranslation(['serviceDenyList', 'movePage'])
-  const { activitiesList, hasFetchedActivites, addTodo } = useChecklistContext()
+  const { activitiesList, hasFetchedActivites, addTodo, addOwnTodo } = useChecklistContext()
   const [isAdding, setIsAdding] = useState(false)
+  const [ownTitle, setOwnTitle] = useState('')
 
   const partnerId = leadDetails?.brokerOfficeId ?? partnerDetails?.partnerId ?? ''
   const movingDistanceTooFar = movehelp?.movingDistanceTooFar ?? false
@@ -126,6 +127,40 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
                     </button>
                   ))}
                 </div>
+                {/* Eget förslag: allt som inte finns i listan ovan */}
+                <form
+                  className="mt-3 pt-3 border-t border-[var(--color-inactive-main)] flex flex-col gap-1.5"
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    if (!ownTitle.trim()) return
+                    addOwnTodo(ownTitle)
+                    setOwnTitle('')
+                    setIsAdding(false)
+                  }}
+                >
+                  <label htmlFor="own-todo" className="text-[13px] text-[var(--color-inactive-dark)]">
+                    {t('movePage:CHECKLIST_SECTION.addOwnOther')}
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      id="own-todo"
+                      type="text"
+                      autoFocus
+                      maxLength={80}
+                      placeholder={t('movePage:CHECKLIST_SECTION.addOwnPlaceholder')}
+                      value={ownTitle}
+                      onChange={(e) => setOwnTitle(e.target.value)}
+                      className="flex-1 min-w-0 h-11 rounded-[5px] border-[1.9px] border-[rgba(118,118,118,0.4)] px-3 text-base text-[var(--color-text-main)] focus:outline-none focus:border-[var(--color-tertiary-main)] transition-colors"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!ownTitle.trim()}
+                      className="h-11 shrink-0 rounded-full px-5 bg-[var(--color-secondary-main)] text-white text-[14px] font-bold transition-[opacity,transform,background-color] duration-200 ease-out hover:bg-[var(--color-secondary-main-dark)] motion-safe:active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
+                    >
+                      {t('movePage:CHECKLIST_SECTION.addOwnButton')}
+                    </button>
+                  </div>
+                </form>
               </div>
             ) : (
               <button

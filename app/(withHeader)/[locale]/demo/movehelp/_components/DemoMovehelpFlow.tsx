@@ -33,7 +33,9 @@ const moveDay = (req: QuoteRequest, movingDate: Date): Date | null => {
 // Det vi inte kan räkna utan. Allt annat får vara tomt, vi frågar om det behövs.
 const residenceErrors = (res: Residence, prefix: 'from' | 'to'): Errors => {
   const e: Errors = {}
-  if (!res.size) e[`${prefix}.size`] = 'Fyll i boarean så vi vet hur mycket som ska flyttas.'
+  // Boarean styr volym och städyta, och bara på adressen man flyttar från.
+  // Dit man flyttar kostar bärsträckan (våning, hiss, avstånd), inte kvadratmetrarna.
+  if (prefix === 'from' && !res.size) e[`${prefix}.size`] = 'Fyll i boarean så vi vet hur mycket som ska flyttas.'
   for (const s of res.secondaries) {
     if (!s.area) e[`${prefix}.secondary.${s.id}`] = 'Fyll i ungefär hur stor ytan är, eller ta bort den.'
     else if (!s.move && !s.clean) e[`${prefix}.secondary.${s.id}`] = 'Välj om ytan ska flyttas eller städas.'
@@ -109,7 +111,8 @@ const DemoMovehelpFlow = () => {
     addons: ADDONS.filter((a) => a.defaultOn).map((a) => a.value),
     dateMode: 'fixed',
     customDate: '',
-    startTime: 'morning',
+    // Förvalt "spelar ingen roll": inget att ångra, och koordinatorn föreslår.
+    startTime: 'any',
     note: '',
     cleaning: { specialWindows: false, glazedBalcony: false, balconyArea: 0, sensitiveSurfaces: false, keys: 'present', keyNote: '', day: 'after', customDate: '' },
   })
@@ -456,18 +459,23 @@ const ResidenceCard = ({
         </div>
       </Field>
 
+      {/* Boarean frågas bara där man flyttar från: den styr volym och städyta.
+          Dit man flyttar är det bärsträckan som kostar, så där står våningen
+          ensam i sin halva av raden. */}
       <div className="flex gap-1.5 mt-3">
-        <Field label="Boarea" invalid={!!err('size')}>
-          <input
-            type="text"
-            inputMode="numeric"
-            aria-invalid={!!err('size')}
-            className={clsx(areaInput, err('size') && errorBorder)}
-            placeholder="m²"
-            value={res.size ? `${res.size} m²` : ''}
-            onChange={(e) => onChange({ size: digits(e.target.value) })}
-          />
-        </Field>
+        {origin && (
+          <Field label="Boarea" invalid={!!err('size')}>
+            <input
+              type="text"
+              inputMode="numeric"
+              aria-invalid={!!err('size')}
+              className={clsx(areaInput, err('size') && errorBorder)}
+              placeholder="m²"
+              value={res.size ? `${res.size} m²` : ''}
+              onChange={(e) => onChange({ size: digits(e.target.value) })}
+            />
+          </Field>
+        )}
         <Field label="Våning">
           <select className={selectClass} value={res.floor} onChange={(e) => onChange({ floor: Number(e.target.value) })}>
             {FLOORS.map((f) => (
@@ -477,6 +485,7 @@ const ResidenceCard = ({
             ))}
           </select>
         </Field>
+        {!origin && <div className="flex-1" aria-hidden="true" />}
       </div>
       {err('size') && <ErrorText className="mt-1.5">{err('size')}</ErrorText>}
 
@@ -505,14 +514,16 @@ const ResidenceCard = ({
         )
       )}
 
+      {/* Sex korta värden: piller som Hiss, inte en rullista. Då är Våning den
+          enda nativa listan i kortet, där den hör hemma. */}
       <Field label="Från porten till där bilen kan stå" info={INFO.distance} className="mt-3">
-        <select className={selectClass} value={res.distance} onChange={(e) => onChange({ distance: e.target.value as Residence['distance'] })}>
+        <div className="grid grid-cols-3 gap-1.5">
           {DISTANCES.map((d) => (
-            <option key={d.value} value={d.value}>
+            <Pill key={d.value} active={res.distance === d.value} onClick={() => onChange({ distance: d.value })}>
               {d.label}
-            </option>
+            </Pill>
           ))}
-        </select>
+        </div>
       </Field>
 
       <label
@@ -749,8 +760,8 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
             </span>
           </div>
           <p className={clsx('mt-3 rounded-[12px_12px_12px_2px] bg-[#EAF2F8] px-3.5 py-3 text-[13px] leading-5 text-[#214766]', rise, '[animation-delay:350ms]')}>
-            Hej! Jag har fått dina uppgifter och räknar på flytten från {req.from.street}. Du får ett förslag senast i morgon förmiddag. Har du frågor är det
-            bara att skriva här.
+            Hej! Jag har fått dina uppgifter och räknar på flytten från {req.from.street}. Du får ett förslag senast i morgon förmiddag. Vill du lägga till
+            eller ändra något är det bara att säga till, så tar jag det direkt.
           </p>
         </Card>
       </div>
@@ -761,7 +772,7 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
             items={[
               { state: 'done', title: 'Uppgifter skickade', hint: `I dag ${time} · bekräftelse på mejl` },
               { state: 'current', title: 'Vi tar fram förslaget', hint: 'Senast i morgon förmiddag · du får SMS' },
-              { state: 'todo', title: 'Du godkänner eller frågar', hint: 'Förslaget gäller i två veckor' },
+              { state: 'todo', title: 'Du godkänner, kompletterar eller ändrar', hint: 'Inget är bokat förrän du sagt ja' },
             ]}
           />
         </Card>

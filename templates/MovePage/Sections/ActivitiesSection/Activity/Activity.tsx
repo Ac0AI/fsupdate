@@ -20,6 +20,7 @@ import ArrowRightThin from '@/public/images/ArrowRight_thin.svg'
 import { activityDescriptionVariants, activityHighlightVariants, activityIconVariants, activityTitleVariants } from '@/templates/MovePage/Sections/ActivitiesSection/ActivitiesSection.variants'
 import { ActivityEnum } from '@/types/activity'
 import { isActivityLockedOrCompleted } from '@/utils/activity'
+import { type TodoType, todoTypes } from '../../../../../types/todo'
 import { ChecklistItem } from '../../../../../types/checklist'
 import { toDemoPath } from '@/common/utils/demoNavigation'
 import {
@@ -56,9 +57,10 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
   } = useUserContext()
 
   const { theme } = useThemeContext()
-  const { activitiesList, startChecklistItem, skippedActivities, hideItem } = useChecklistContext()
+  const { activitiesList, startChecklistItem, skippedActivities, hideItem, chooseSelf, requestHelp, cancelHelp, removeItem } = useChecklistContext()
   const { movingDistanceTooFar } = movehelp
   const status = (item.type && activitiesList.find((activity) => activity.type === item.type)?.status) || ''
+  const isTodo = item.type === 'custom' || (todoTypes as readonly string[]).includes(item.type)
   const isMovehelpCombinedLockedOrCompleted = isActivityLockedOrCompleted(skippedActivities.find((activity) => activity.type === ActivityEnum.MOVEHELP_COMBINED)?.status as string)
 
   const isHiddenItem = () => {
@@ -123,6 +125,9 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
 
   const getSubtitle = () => {
     let translation
+    if (item.type === 'custom') {
+      return [item.note ?? t('CHECKLIST_SECTION.ownItem')]
+    }
     if (isUserExcludedFromService) {
       translation = t('CHECKLIST_SECTION.excludedService')
     } else {
@@ -159,10 +164,10 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
         <div className={activityContentVariants()}>
           <Flex alignItems="center" onClick={handleClickOnActivity}>
             <div className={activityIconVariants({ disabled: isUserExcludedFromService })}>
-              {!!theme && <ImageKit src={`${ActivitiesIcons?.[theme]?.[item.type as keyof IconsUrls]}`} />}
+              {item.type === 'custom' ? <OwnItemIcon /> : !!theme && <ImageKit src={`${ActivitiesIcons?.[theme]?.[item.type as keyof IconsUrls]}`} />}
             </div>
             <div>
-              <div className={activityTitleVariants({ disabled: isUserExcludedFromService })}>{translationItem?.title ?? ''}</div>
+              <div className={activityTitleVariants({ disabled: isUserExcludedFromService })}>{translationItem?.title ?? item.title ?? ''}</div>
               {getSubtitle()?.length &&
                 !isUserExcludedFromService &&
                 getSubtitle()?.map((trans: string, key: number) => {
@@ -180,6 +185,18 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                       {translationItem.highlight}
                     </div>
                   )}
+                  {isTodo && (
+                    <button
+                      type="button"
+                      className="relative mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-error-red)] hover:underline after:content-[''] after:absolute after:-inset-3"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        removeItem(item.type as TodoType, item.id)
+                      }}
+                    >
+                      {t('CHECKLIST_SECTION.remove')}
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="relative mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-secondary-main)] hover:underline after:content-[''] after:absolute after:-inset-3"
@@ -194,6 +211,14 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                     {t('CHECKLIST_SECTION.alreadyDone')}
                   </button>
                 </div>
+              )}
+              {isTodo && item.helpStatus && (
+                <TodoChoice
+                  item={item}
+                  onSelf={() => chooseSelf(item)}
+                  onHelp={() => requestHelp(item)}
+                  onCancel={() => cancelHelp(item)}
+                />
               )}
             </div>
           </Flex>
@@ -264,5 +289,107 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
     </div>
   )
 }
+
+/* ---------- egna punkter ---------- */
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24
+
+// Nästa vardag efter en tidpunkt. Helgen räknas inte, röda dagar får backend ta.
+const nextWorkingDay = (from: Date) => {
+  const d = new Date(from.getTime() + MS_PER_DAY)
+  while (d.getDay() === 0 || d.getDay() === 6) d.setTime(d.getTime() + MS_PER_DAY)
+  return d
+}
+
+const TodoChoice = ({ item, onSelf, onHelp, onCancel }: { item: ChecklistItem; onSelf: () => void; onHelp: () => void; onCancel: () => void }) => {
+  const { t, i18n } = useTranslation(['movePage'])
+  const locale = i18n.language === 'en' ? 'en-GB' : 'sv-SE'
+  const requestedAt = item.helpRequestedAt ? new Date(item.helpRequestedAt) : new Date()
+  const time = new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(requestedAt)
+  const date = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(nextWorkingDay(requestedAt))
+  const stop = (fn: () => void) => (e: React.MouseEvent) => {
+    e.stopPropagation()
+    fn()
+  }
+  const link = 'text-[12px] font-medium underline underline-offset-2 text-[var(--color-inactive-dark)] hover:text-[var(--color-secondary-main)] transition-colors'
+
+  if (item.helpStatus === 'pending') {
+    return (
+      <div className="mt-3 flex flex-col gap-2 motion-safe:animate-[rise_.3s_var(--ease-out-expo)_both]">
+        <span className="text-[13px] font-semibold text-[var(--color-text-main)]">{t('CHECKLIST_SECTION.howToProceed')}</span>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={stop(onSelf)}
+            className="h-10 rounded-full px-4 border-2 border-[var(--color-secondary-main)] bg-white text-[13px] font-bold text-[var(--color-secondary-main)] transition-[background-color,transform] duration-200 ease-out hover:bg-[#F4FCFA] motion-safe:active:scale-[0.97]"
+          >
+            {t('CHECKLIST_SECTION.doItMyself')}
+          </button>
+          <button
+            type="button"
+            onClick={stop(onHelp)}
+            className="h-10 rounded-full px-4 border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] text-[13px] font-bold text-white transition-[background-color,transform] duration-200 ease-out hover:bg-[var(--color-secondary-main-dark)] motion-safe:active:scale-[0.97]"
+          >
+            {t('CHECKLIST_SECTION.wantHelp')}
+          </button>
+        </div>
+      </div>
+    )
+  }
+  if (item.helpStatus === 'self') {
+    return (
+      <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-[var(--color-inactive-dark)]">
+        <span>{t('CHECKLIST_SECTION.youDoIt')}</span>
+        <button type="button" onClick={stop(onHelp)} className={link}>
+          {t('CHECKLIST_SECTION.wantHelpAnyway')}
+        </button>
+      </div>
+    )
+  }
+  if (item.helpStatus === 'requested') {
+    return (
+      <div className="mt-3 rounded-lg bg-[#EAF6F3] border border-[#9EE0D5] px-3.5 py-3 flex flex-col gap-1.5 motion-safe:animate-[rise_.3s_var(--ease-out-expo)_both]">
+        <span className="flex items-start gap-2 text-[13px] leading-[19px] font-semibold text-[var(--color-primary-dark)]">
+          <svg width="16" height="16" viewBox="0 0 24 24" className="mt-0.5 shrink-0" aria-hidden>
+            <circle cx="12" cy="12" r="10" fill="var(--color-primary-main)" />
+            <path d="M7 12.5l3 3 7-7" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {t('CHECKLIST_SECTION.helpSent', { time, date })}
+        </span>
+        <button type="button" onClick={stop(onCancel)} className={`${link} self-start`}>
+          {t('CHECKLIST_SECTION.undoHelp')}
+        </button>
+      </div>
+    )
+  }
+  if (item.helpStatus === 'in_progress') {
+    return (
+      <div className="mt-3 rounded-lg bg-[#EAF6F3] border border-[#9EE0D5] px-3.5 py-3 text-[13px] leading-[19px] font-semibold text-[var(--color-primary-dark)]">
+        {t('CHECKLIST_SECTION.helpInProgress', { name: item.handledBy || 'Nina', date })}
+      </div>
+    )
+  }
+  if (item.helpStatus === 'failed') {
+    return (
+      <div className="mt-3 rounded-lg bg-[#FFF5F5] border border-[var(--color-error-red)] px-3.5 py-3 flex flex-col gap-1.5">
+        <span className="text-[13px] leading-[19px] font-semibold text-[var(--color-error-red)]">{t('CHECKLIST_SECTION.helpFailed')}</span>
+        <button type="button" onClick={stop(onHelp)} className={`${link} self-start`}>
+          {t('CHECKLIST_SECTION.tryAgain')}
+        </button>
+      </div>
+    )
+  }
+  return null
+}
+
+// Egna punkter har ingen ikon i uppsättningen: en tom lista med bock i samma manér.
+const OwnItemIcon = () => (
+  <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden>
+    <rect x="7" y="4" width="22" height="28" rx="4" fill="#FFD4B3" stroke="#214766" strokeWidth="1.8" />
+    <path d="M12 12h12M12 18h12M12 24h7" stroke="#214766" strokeWidth="1.8" strokeLinecap="round" />
+    <circle cx="26" cy="26" r="6" fill="#51C8B4" stroke="#FFFFFF" strokeWidth="1.5" />
+    <path d="m23.3 26 1.9 1.9 3.6-3.6" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
 
 export default Activity

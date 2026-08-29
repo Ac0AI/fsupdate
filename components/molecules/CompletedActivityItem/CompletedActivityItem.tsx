@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import RoundCheckmark from '@/components/atoms/RoundCheckmark'
 import Text from '@/components/atoms/Text'
 import { ChecklistCardItem, ChecklistItem } from '../../../types/checklist'
@@ -13,13 +14,17 @@ export interface CompletedActivityItemProps {
 }
 
 const CompletedActivityItem = ({ isHidden = false, item, translationItem, onClick }: CompletedActivityItemProps) => {
+  const { t } = useTranslation(['movePage'])
   const type = isHidden ? 'hidden' : item.id === 'preChecked' ? 'preChecked' : 'skipped'
 
   const icon = <RoundCheckmark />
 
   const getItemName = () => {
-    return translationItem?.title ?? item.type
+    return translationItem?.title ?? item.title ?? item.type
   }
+
+  // Raden säger hur det blev klart: själv, med vår hjälp, eller bara avbockat.
+  const howKey = isHidden ? 'markedDone' : item.helpStatus === 'self' ? 'doneYourself' : item.helpStatus === 'requested' || item.helpStatus === 'in_progress' ? 'doneWithHelp' : null
 
   // Determine if item is clickable (non-order items can be reset)
   const hasOrders = item.orders && item.orders.length > 0
@@ -47,6 +52,7 @@ const CompletedActivityItem = ({ isHidden = false, item, translationItem, onClic
           <Text as="p" spacing="none" className={nameTextVariants()}>
             {getItemName()}
           </Text>
+          {howKey && <p className="text-[12px] leading-4 text-[#9F9FA1] mt-0.5">{t(`movePage:CHECKLIST_SECTION.${howKey}`)}</p>}
         </div>
         {isClickable && (
           <div className="ml-auto flex items-center gap-2">

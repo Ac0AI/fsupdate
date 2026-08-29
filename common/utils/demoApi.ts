@@ -29,6 +29,10 @@ const mutations: { method: string; test: RegExp; run: (id: string) => void }[] =
   { method: 'PATCH', test: /^\/web\/checklist\/item\/([^/]+)\/show$/, run: (id) => { const i = find(id); if (i) { i.hiddenAt = null; i.skippedAt = undefined; i.status = 'not_started' } } },
   { method: 'PATCH', test: /^\/web\/checklist\/item\/([^/]+)\/reset$/, run: (id) => { const i = find(id); if (i) { i.hiddenAt = null; i.skippedAt = undefined; i.status = 'not_started' } } },
   { method: 'DELETE', test: /^\/web\/checklist\/item\/([^/]+)\/remove$/, run: (id) => { items = items.filter((i) => i.id !== id) } },
+  // Tillagda punkter: fixar själv, vill ha hjälp (mejl till oss), ångrar hjälpen.
+  { method: 'PATCH', test: /^\/web\/checklist\/item\/([^/]+)\/self$/, run: (id) => { const i = find(id); if (i) { i.helpStatus = 'self'; i.helpRequestedAt = null } } },
+  { method: 'POST', test: /^\/web\/checklist\/item\/([^/]+)\/help$/, run: (id) => { const i = find(id); if (i) { i.helpStatus = 'requested'; i.helpRequestedAt = new Date().toISOString() } } },
+  { method: 'DELETE', test: /^\/web\/checklist\/item\/([^/]+)\/help$/, run: (id) => { const i = find(id); if (i) { i.helpStatus = 'pending'; i.helpRequestedAt = null } } },
 ]
 
 const reads: { method: string; test: RegExp; value: () => unknown }[] = [
@@ -74,8 +78,18 @@ export const demoFetch = async <T>(method: string, url: string, body?: string): 
   const added = method === 'POST' && /^\/web\/checklist\/item\/add\/([^/]+)$/.exec(url)
   if (added) {
     const type = added[1]
-    if (!items.some((i) => i.type === type)) {
-      items = [...items, { checklistId: 'demo-checklist-0001', id: `demo-item-${type}`, hiddenAt: null, status: 'not_started', sortOrder: items.length + 1, type, orders: [] }]
+    if (type === 'custom') {
+      let title = ''
+      try {
+        title = String(JSON.parse(body || '{}').title || '').trim()
+      } catch {
+        title = ''
+      }
+      if (title) {
+        items = [...items, { checklistId: 'demo-checklist-0001', id: `demo-item-custom-${Date.now()}`, hiddenAt: null, status: 'not_started', sortOrder: items.length + 1, type: 'custom', title, helpStatus: 'pending', orders: [] }]
+      }
+    } else if (!items.some((i) => i.type === type)) {
+      items = [...items, { checklistId: 'demo-checklist-0001', id: `demo-item-${type}`, hiddenAt: null, status: 'not_started', sortOrder: items.length + 1, type, helpStatus: 'pending', orders: [] }]
     }
     return { items } as T
   }
