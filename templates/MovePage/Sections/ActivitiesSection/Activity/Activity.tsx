@@ -17,7 +17,12 @@ import { ActivitiesIcons, IconsUrls } from '@/enums/ActivitiesIconsEnum'
 import ArrowDown from '@/public/images/Arrow-down-black.svg'
 import ArrowUp from '@/public/images/Arrow-up-black.svg'
 import ArrowRightThin from '@/public/images/ArrowRight_thin.svg'
-import { activityDescriptionVariants, activityHighlightVariants, activityIconVariants, activityTitleVariants } from '@/templates/MovePage/Sections/ActivitiesSection/ActivitiesSection.variants'
+import {
+  activityDescriptionVariants,
+  activityHighlightVariants,
+  activityIconVariants,
+  activityTitleVariants,
+} from '@/templates/MovePage/Sections/ActivitiesSection/ActivitiesSection.variants'
 import { ActivityEnum } from '@/types/activity'
 import { isActivityLockedOrCompleted } from '@/utils/activity'
 import { type TodoType, todoTypes } from '../../../../../types/todo'
@@ -178,48 +183,44 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                   )
                 })}
               {!isUserExcludedFromService && (
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                // Pillen är vårt påstående, raden under är kundens handlingar. Två rader så de inte tävlar.
+                <div className="flex flex-col items-start">
                   {!!translationItem?.highlight && (
                     <div className={activityHighlightVariants()}>
                       <span aria-hidden className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--color-primary-main)] flex-shrink-0" />
                       {translationItem.highlight}
                     </div>
                   )}
-                  {isTodo && (
+                  <div className="flex flex-wrap items-center gap-x-4">
+                    {isTodo && (
+                      <button
+                        type="button"
+                        className="relative mt-2 inline-flex items-center gap-1 text-[12px]! font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-error-red)] hover:underline after:content-[''] after:absolute after:-inset-3"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          removeItem(item.type as TodoType, item.id)
+                        }}
+                      >
+                        {t('CHECKLIST_SECTION.remove')}
+                      </button>
+                    )}
                     <button
                       type="button"
-                      className="relative mt-2 inline-flex items-center gap-1 text-[12px]! font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-error-red)] hover:underline after:content-[''] after:absolute after:-inset-3"
+                      className="relative mt-2 inline-flex items-center gap-1 text-[12px]! font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-secondary-main)] hover:underline after:content-[''] after:absolute after:-inset-3"
                       onClick={(e) => {
                         e.stopPropagation()
-                        removeItem(item.type as TodoType, item.id)
+                        markAsDone()
                       }}
                     >
-                      {t('CHECKLIST_SECTION.remove')}
+                      <svg width="10" height="10" viewBox="0 0 24 24" aria-hidden>
+                        <path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      {t('CHECKLIST_SECTION.alreadyDone')}
                     </button>
-                  )}
-                  <button
-                    type="button"
-                    className="relative mt-2 inline-flex items-center gap-1 text-[12px]! font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-secondary-main)] hover:underline after:content-[''] after:absolute after:-inset-3"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      markAsDone()
-                    }}
-                  >
-                    <svg width="10" height="10" viewBox="0 0 24 24" aria-hidden>
-                      <path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    {t('CHECKLIST_SECTION.alreadyDone')}
-                  </button>
+                  </div>
                 </div>
               )}
-              {isTodo && item.helpStatus && (
-                <TodoChoice
-                  item={item}
-                  onSelf={() => chooseSelf(item)}
-                  onHelp={() => requestHelp(item)}
-                  onCancel={() => cancelHelp(item)}
-                />
-              )}
+              {isTodo && item.helpStatus && <TodoChoice item={item} onSelf={() => chooseSelf(item)} onHelp={() => requestHelp(item)} onCancel={() => cancelHelp(item)} />}
             </div>
           </Flex>
         </div>
