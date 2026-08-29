@@ -65,7 +65,7 @@ const stepErrors = (step: number, req: QuoteRequest): Errors => {
 }
 
 const HERO_COPY = [
-  'Berätta om bostäderna så tar din flyttkoordinator fram ett pris. Vi har fyllt i det vi redan vet.',
+  'Du slipper ringa runt och jaga offerter. Berätta om bostäderna, så räknar vi på din flytt. Vi har fyllt i det vi redan vet.',
   'Hur mycket ska flyttas, och vill du ha hjälp med något mer?',
   'Din offert är på väg.',
 ]
@@ -167,7 +167,14 @@ const DemoMovehelpFlow = () => {
   return (
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={['2 min', '1 min', 'Pågår']} />
-      <Hero title="Flytthjälp och städning" copy={HERO_COPY[step]} tone={step === 2 ? 'green' : 'blue'} back={{ label: 'Tillbaka till flyttsidan', onClick: backToMovepage }} />
+      <Hero title="Flytthjälp och städning" copy={HERO_COPY[step]} tone={step === 2 ? 'green' : 'blue'} back={{ label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}>
+        {/* Beviset står där beslutet att fortsätta tas. Siffrorna är brandguidens (Bevisen). */}
+        {step === 0 && (
+          <p className="text-[13px] leading-[18px] text-white/80 max-w-[560px]">
+            230 000 flyttar sedan 2020 · 4,7 av över 500 recensioner på Google · hela Sverige, försäkrat och med trafiktillstånd
+          </p>
+        )}
+      </Hero>
 
       <div key={step} className={clsx('flex-1 w-full max-w-[818px] mx-auto px-4 py-4 md:py-6 flex flex-col gap-3.5', rise)}>
         {step === 0 && (
@@ -328,7 +335,7 @@ const DemoMovehelpFlow = () => {
                     </div>
                   )}
                   <p className="text-xs leading-[17px] text-[#767678] mt-2.5">
-                    Vardagar är ofta billigare än helger. Flexibel betyder att vi föreslår ett datum inom en vecka från tillträdet.
+                    Vardagar är ofta billigare än helger, och helger och månadsskiften bokas ofta upp tidigt. Flexibel betyder att vi föreslår ett datum inom en vecka från tillträdet.
                   </p>
 
                   <Field label="Starttid" className="mt-3 pt-3 border-t border-[#EEEEF0]">
@@ -382,7 +389,7 @@ const DemoMovehelpFlow = () => {
               {hasShownErrors ? (
                 <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar vi rätt.</Foot>
               ) : (
-                <Foot>Kostnadsfritt och inte bindande. Du bestämmer när förslaget kommer.</Foot>
+                <Foot>Kostnadsfritt och inte bindande. Först får du en offert, sedan godkänner du eller ändrar det du vill.</Foot>
               )}
             </>
           )}
@@ -394,7 +401,7 @@ const DemoMovehelpFlow = () => {
               {hasShownErrors ? (
                 <Foot tone="error">Något saknas ovan. Fyll i det markerade så vi kan räkna rätt.</Foot>
               ) : (
-                <Foot>Vi sammanställer och skickar ett förslag. Inget är bokat förrän du godkänt det.</Foot>
+                <Foot>Vi sammanställer din offert och sköter rutavdraget. Inget är bokat förrän du godkänt det.</Foot>
               )}
             </>
           )}
@@ -760,7 +767,7 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
             </span>
           </div>
           <p className={clsx('mt-3 rounded-[12px_12px_12px_2px] bg-[#EAF2F8] px-3.5 py-3 text-[13px] leading-5 text-[#214766]', rise, '[animation-delay:350ms]')}>
-            Hej! Jag har fått dina uppgifter och räknar på flytten från {req.from.street}. Du får ett förslag senast i morgon förmiddag. Vill du lägga till
+            Hej! Jag har fått dina uppgifter och räknar på flytten från {req.from.street}. Du får din offert senast nästa vardag, före lunch. Vill du lägga till
             eller ändra något är det bara att säga till, så tar jag det direkt.
           </p>
         </Card>
@@ -771,7 +778,7 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
           <Timeline
             items={[
               { state: 'done', title: 'Uppgifter skickade', hint: `I dag ${time} · bekräftelse på mejl` },
-              { state: 'current', title: 'Vi tar fram förslaget', hint: 'Senast i morgon förmiddag · du får SMS' },
+              { state: 'current', title: 'Vi tar fram din offert', hint: 'Senast nästa vardag före lunch · du får SMS' },
               { state: 'todo', title: 'Du godkänner, kompletterar eller ändrar', hint: 'Inget är bokat förrän du sagt ja' },
             ]}
           />
@@ -805,7 +812,7 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
         </span>
         <span className="flex-1 flex flex-col gap-0.5">
           <span className="text-[15px] font-bold text-[#214766]">Näst på tur: elavtal</span>
-          <span className="text-[13px] text-[#214766]">Tre minuter. Tänd lampa när du kommer, till bra pris.</span>
+          <span className="text-[13px] text-[#214766]">Tre minuter. Tänd lampa när du kommer, till pris vi redan förhandlat.</span>
         </span>
         <span className="shrink-0 h-9 px-3.5 rounded-full bg-[#214766] text-white text-[13px] font-semibold flex items-center gap-1">
           Börja

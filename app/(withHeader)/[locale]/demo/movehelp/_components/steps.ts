@@ -132,7 +132,7 @@ export const CLEAN_DAYS: { value: CleanDay; title: string }[] = [
 // Packhjälp och städ förvalda: de största merförsäljningarna och de flesta
 // vill ha dem. Resten är nischade nog att kräva ett aktivt val.
 export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boolean }[] = [
-  { value: 'packing', label: 'Packhjälp', hint: 'Tar i snitt 70 timmar för en tvåa', defaultOn: true },
+  { value: 'packing', label: 'Packhjälp', hint: 'Vi packar allt, du får kvällarna tillbaka', defaultOn: true },
   { value: 'moveclean', label: 'Flyttstädning', hint: 'Med städgaranti', defaultOn: true },
   { value: 'boxes', label: 'Flyttkartonger', hint: 'Låna eller köp, levereras hem', defaultOn: false },
   { value: 'assembly', label: 'Montering', hint: 'Ned och upp av möbler', defaultOn: false },
