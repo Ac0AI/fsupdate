@@ -125,7 +125,7 @@ const DemoMovehelpFlow = () => {
   const toElectricity = () => router.push(locale === i18nConfig.defaultLocale ? '/demo/electricity' : `/${locale}/demo/electricity`)
 
   return (
-    <div ref={rootRef} className="min-h-screen bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
+    <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={['2 min', '1 min', 'Pågår']} />
       <Hero title="Flytthjälp och städning" copy={HERO_COPY[step]} tone={step === 2 ? 'green' : 'blue'} />
 

@@ -131,7 +131,7 @@ const DemoElectricityFlow = () => {
   const goBackToMovepage = () => router.push(pathTo('/demo/movepage'))
 
   return (
-    <div ref={rootRef} className="min-h-screen bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
+    <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={STEP_HINTS} label={step === 4 ? 'Klart · 5 av 5' : undefined} />
       <Hero title="Elavtal" copy={HERO_COPY[step]} tone={step === 4 ? 'green' : 'blue'}>
         {step === 0 && (
