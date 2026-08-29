@@ -40,7 +40,7 @@ describe('toDemoPath', () => {
 
     it('skickar okända tjänster till flyttsidan i stället för att kasta ut', () => {
       expect(toDemoPath('/app/flyttkartonger')).toBe('/demo/movepage')
-      expect(toDemoPath('/app/welcome')).toBe('/demo/movepage')
+      expect(toDemoPath('/app/settings')).toBe('/demo/movepage')
     })
 
     it('hanterar vägar utan app-prefix', () => {
