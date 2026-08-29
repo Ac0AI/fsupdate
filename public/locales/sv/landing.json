@@ -12,7 +12,7 @@
   "flyttsmart_phone": "08-12 00 88 22",
   "flyttsmart_chat": "eller i chatten.",
   "HERO": {
-    "badge": "200 000+ nöjda flyttare",
+    "badge": "230 000+ nöjda flyttare",
     "headline_1": "Slipp stressen -",
     "headline_2": "vi fixar",
     "headline_3": "flytten åt dig",
@@ -39,7 +39,7 @@
     },
     "step3": {
       "title": "En människa, inte en telefonkö",
-      "description": "Din flyttkoordinator svarar i chatten, på mejl och i telefon. Går något fel hör du av dig till oss, inte till leverantören.",
+      "description": "Din flyttkoordinator svarar i chatten, på mejl och i telefon. Går något fel hör du av dig till oss.",
       "benefit": "Vi tar ansvaret"
     }
   },

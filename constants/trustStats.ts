@@ -9,14 +9,14 @@ export const GOOGLE_REVIEW_COUNT = 500
  *
  * Källor:
  *  - "Hälften av Sveriges mäklarkedjor": varumärkesplattformen aug 2026.
- *  - "Över 200 000 flyttar sedan 2020": bekräftad av David 2026-08-21.
+ *  - "Över 230 000 flyttar sedan 2020": bekräftad av David 2026-08-29 (höjt från 200 000, samma siffra som brandguiden).
  *  - "Tjänsten kostar dig ingenting": bevis 2, leverantörerna betalar.
  */
 export const PROOF_BLOCK = {
   eyebrow: 'Rekommenderas av',
   claim: 'Hälften av Sveriges mäklarkedjor',
-  body: 'Vi bokar inte bara åt dig. Vi ser till att arbetet blir gjort – och går något fel hör du av dig till oss, inte till leverantören.',
-  numbers: 'Över 200 000 flyttar sedan 2020. Tjänsten kostar dig ingenting.',
+  body: 'Vi bokar inte bara åt dig. Vi ser till att arbetet blir gjort – och går något fel hör du av dig till oss.',
+  numbers: 'Över 230 000 flyttar sedan 2020. Tjänsten kostar dig ingenting.',
 } as const
 
 /**
@@ -25,7 +25,7 @@ export const PROOF_BLOCK = {
  * stå kvar för att den ser bra ut.
  *
  * Bekräftade av David:
- *  - 200 000+ hjälpta flyttare  (2026-08-21)
+ *  - 230 000+ hjälpta flyttare  (2026-08-29)
  *  - 120+ partners              (2026-08-25)
  *  - 3000+ mäklare              (2026-08-25)
  *
@@ -36,7 +36,7 @@ export const PROOF_BLOCK = {
  *  - 2 300 användare första året
  */
 export const ABOUT_STATS = [
-  { value: '200 000+', label: 'Hjälpta flyttare' },
+  { value: '230 000+', label: 'Hjälpta flyttare' },
   { value: '120+', label: 'Partners' },
   { value: '3000+', label: 'Mäklare' },
   { value: '9,6/10', label: 'Kundbetyg' },

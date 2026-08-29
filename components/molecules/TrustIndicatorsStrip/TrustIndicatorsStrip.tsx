@@ -52,7 +52,7 @@ export const TrustIndicatorsStrip = ({
             <path d="M12 2L3 9V20C3 20.55 3.45 21 4 21H9V14H15V21H20C20.55 21 21 20.55 21 20V9L12 2Z" />
           </svg>
           <span className="text-xs text-inactive-dark">
-            200 000+ {t('moves', 'flyttar')}
+            230 000+ {t('moves', 'flyttar')}
           </span>
         </div>
       </div>

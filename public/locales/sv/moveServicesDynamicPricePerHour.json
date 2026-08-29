@@ -1,7 +1,7 @@
 {
   "headerTitle": "Flytthjälp & flyttstädning",
   "introSectionTitle": "Vi hjälper dig - hela vägen hem!",
-  "introSectionText": "Välj oss för en trygg, enkel och prisvärd flytt, utan krångel! Vi har hjälpt över 200 000 kunder in i sina nya hem sedan 2020, med fantastiska omdömen. Vår nöjd-kund-garanti säkerställer att vi överträffar alla dina förväntningar, samtidigt som vår erfarna personal alltid finns tillgänglig för alla dina frågor och funderingar.",
+  "introSectionText": "Välj oss för en trygg, enkel och prisvärd flytt, utan krångel! Vi har hjälpt över 230 000 kunder in i sina nya hem sedan 2020, med fantastiska omdömen. Vår nöjd-kund-garanti säkerställer att vi överträffar alla dina förväntningar, samtidigt som vår erfarna personal alltid finns tillgänglig för alla dina frågor och funderingar.",
   "included": "Ingår!",
   "whatDoYouNeed": "Vad behöver du hjälp med?",
   "movehelpDiscount": "Lägg till flytthjälp och få {{discountAmount}} kr rabatt!",
@@ -12,7 +12,7 @@
   "packingOrderSummaryText": "Inklusive lån av flyttlådor. Vi hör av oss med mer information efter du har bokat.",
   "serviceAlreadyBooked": "Du har redan bokat denna tjänst",
   "SELLING_POINTS": {
-    "moves": "200 000+ flyttar",
+    "moves": "230 000+ flyttar",
     "satisfiedCustomers": "Nöjd-kund-garanti",
     "qualityAssured": "Kvalitetssäkrat"
   },

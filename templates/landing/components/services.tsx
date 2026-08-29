@@ -61,7 +61,7 @@ const steps = [
 ]
 
 const stats = [
-  { value: '200 000+', label: 'Hjälpta flyttare' },
+  { value: '230 000+', label: 'Hjälpta flyttare' },
   { value: '40+', label: 'Leverantörer' },
   { value: '96%', label: 'Nöjda kunder' },
 ]

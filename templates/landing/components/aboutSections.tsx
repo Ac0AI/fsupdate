@@ -77,7 +77,7 @@ const TeamSection = () => {
               Vi är inte en marknadsplats som skickar dig vidare. När du bokar genom Flyttsmart är vi din avtalspart. Vi har försäkringarna, vi har supporten, vi sköter faktureringen. Du har en person att ringa om något inte stämmer.
             </p>
             <p>
-              120+ kvalitetssäkrade leverantörer i hela Sverige. 16 personer i teamet. 200 000 hjälpta flyttare. Från 2 300 användare första året till Sveriges största digitala flyttjänst på under fem år.
+              120+ kvalitetssäkrade leverantörer i hela Sverige. 16 personer i teamet. 230 000 hjälpta flyttare. Från 2 300 användare första året till Sveriges största digitala flyttjänst på under fem år.
             </p>
           </div>
         </div>
