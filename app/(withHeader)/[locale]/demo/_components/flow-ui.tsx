@@ -12,7 +12,11 @@ import { clsx } from 'clsx'
 // Samma mjuka övergång på allt som går att trycka på. Tryck ger en liten
 // nedskalning, val tonas in.
 export const press =
-  'transition-[background-color,color,border-color,box-shadow,transform] duration-200 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#51C8B4] focus-visible:ring-offset-2'
+  'transition-[background-color,color,border-color,box-shadow,transform] duration-200 ease-out motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#51C8B4] focus-visible:ring-offset-2'
+// Små reglage (piller, knappar) sjunker ihop tydligt. Hela rader och kort får
+// bara en antydan, annars ser det ut som att rutan hoppar.
+export const pressScale = 'motion-safe:active:scale-[0.97]'
+export const pressSoft = 'motion-safe:active:scale-[0.99]'
 export const rise = 'animate-[rise_.35s_ease-out_both] motion-reduce:animate-none'
 
 export const areaInput =
@@ -86,6 +90,7 @@ export const Pill = ({ active, multi, onClick, children }: { active: boolean; mu
     className={clsx(
       'flex-1 h-10 rounded-full text-[13px] flex items-center justify-center gap-1.5 border',
       press,
+      pressScale,
       active ? 'bg-[#214766] border-[#214766] text-white font-semibold' : 'bg-white border-[#EEEEF0] text-[#214766] hover:border-[#214766]/40',
     )}
   >
@@ -103,6 +108,7 @@ export const Radio = ({ active, onClick, title, hint }: { active: boolean; onCli
     className={clsx(
       'w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-left border-2',
       press,
+      pressSoft,
       active ? 'border-[#51C8B4] bg-[#F4FCFA]' : 'border-[#76767666] bg-white hover:border-[#214766]/40',
     )}
   >
@@ -134,7 +140,7 @@ export const Checkbox = ({ checked }: { checked: boolean }) => (
   <span
     className={clsx(
       'w-[22px] h-[22px] rounded shrink-0 mt-px flex items-center justify-center transition-colors duration-200 ease-out motion-reduce:transition-none',
-      checked ? 'bg-[#51C8B4]' : 'bg-white border-[3px] border-[#9F9FA1]',
+      checked ? 'bg-[#51C8B4]' : 'bg-white border-2 border-[#9F9FA1]',
     )}
   >
     {checked && <Check size={13} pop />}
@@ -171,7 +177,7 @@ export const Primary = ({
     className={clsx(
       'w-full md:max-w-[420px] min-h-11 rounded-full px-6 py-3 text-[15px] font-bold border-2 border-[#214766] flex items-center justify-center gap-2.5',
       press,
-      'active:scale-[0.985]',
+      'motion-safe:active:scale-[0.985]',
       variant === 'solid' ? 'bg-[#214766] text-white hover:bg-[#1A3A54] hover:border-[#1A3A54]' : 'bg-white text-[#214766] hover:bg-[#F4FCFA]',
       loading && 'opacity-80 pointer-events-none',
     )}

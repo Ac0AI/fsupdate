@@ -8,7 +8,7 @@ import i18nConfig from 'i18nConfig'
 import { demoUser } from '@/common/data/demoMovepage'
 import { useToastContext } from '@/common/context/toast/toast.provider'
 import { ADDONS, DISTANCES, ELEVATORS, STEP_TITLES, type Addon, type QuoteRequest, type Residence } from './steps'
-import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, textareaClass } from '../../_components/flow-ui'
+import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, textareaClass, pressScale, pressSoft } from '../../_components/flow-ui'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
 const weekday = (d: Date) => new Intl.DateTimeFormat('sv-SE', { weekday: 'long' }).format(d)
@@ -191,7 +191,7 @@ const DemoMovehelpFlow = () => {
                       role="switch"
                       aria-checked={on}
                       onClick={() => toggleAddon(a.value)}
-                      className={clsx('w-full flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0] text-left rounded-sm', press, 'active:scale-100 active:bg-[#F8FAF9]')}
+                      className={clsx('w-full flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0] text-left rounded-sm', press, 'active:bg-[#F8FAF9]')}
                     >
                       <span className="flex flex-col gap-px">
                         <span className="text-[13px] font-semibold text-[#214766]">{a.label}</span>
@@ -399,6 +399,7 @@ const ResidenceCard = ({
               className={clsx(
                 'flex-1 flex flex-col items-center gap-px py-[7px] px-1 rounded-lg border',
                 press,
+                pressScale,
                 active ? 'bg-[#214766] border-[#214766]' : 'bg-white border-[#EEEEF0] hover:border-[#214766]/40',
               )}
             >
@@ -418,14 +419,14 @@ const ResidenceCard = ({
           ? 'bg-[#FFF5F5] border-[var(--color-error-red)]'
           : res.hardAccess
             ? 'bg-[#F4FCFA] border-[#51C8B4]'
-            : 'bg-[#F8FAF9] border-[#EEEEF0] hover:border-[#214766]/40',
+            : 'bg-transparent border-transparent hover:bg-[#F8FAF9]',
       )}
     >
       <span className="flex items-start gap-3">
         <input type="checkbox" className="sr-only" checked={res.hardAccess} onChange={(e) => onChange({ hardAccess: e.target.checked })} />
         <Checkbox checked={res.hardAccess} />
         <span className="flex flex-col gap-0.5">
-          <span className="text-[13px] font-semibold text-[#214766]">Det är krångligt att komma fram här</span>
+          <span className="text-[13px] font-medium text-[#214766]">Det är krångligt att komma fram här</span>
           {!res.hardAccess && (
             <span className="text-xs leading-4 text-[#767678]">Smal trappa, ingen lastplats, gårdshus, bom. Vet du inte, lämna den av. Nina frågar om det behövs.</span>
           )}
@@ -491,7 +492,7 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
       <button
         type="button"
         onClick={onEdit}
-        className={clsx('w-full text-left rounded-[10px] bg-white border border-[#EEEEF0] px-3.5 py-3.5 flex items-center justify-between gap-3 hover:border-[#214766]/40', press, rise, '[animation-delay:200ms]')}
+        className={clsx('w-full text-left rounded-[10px] bg-white border border-[#EEEEF0] px-3.5 py-3.5 flex items-center justify-between gap-3 hover:border-[#214766]/40', press, pressSoft, rise, '[animation-delay:200ms]')}
       >
         <span className="flex flex-col gap-0.5">
           <span className="text-[15px] font-bold text-[#214766]">Dina svar</span>
@@ -506,7 +507,7 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
       <button
         type="button"
         onClick={onNext}
-        className={clsx('w-full text-left rounded-[10px] bg-[#FFF1E5] border border-[#FFD4B3] px-3.5 py-3.5 flex items-center justify-between gap-3 hover:border-[#F5A623]', press, rise, '[animation-delay:280ms]')}
+        className={clsx('w-full text-left rounded-[10px] bg-[#FFF1E5] border border-[#FFD4B3] px-3.5 py-3.5 flex items-center justify-between gap-3 hover:border-[#F5A623]', press, pressSoft, rise, '[animation-delay:280ms]')}
       >
         <span className="flex flex-col gap-0.5">
           <span className="text-[15px] font-bold text-[#214766]">Näst på tur: elavtal</span>

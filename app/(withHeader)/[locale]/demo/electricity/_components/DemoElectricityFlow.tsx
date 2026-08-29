@@ -8,7 +8,7 @@ import { demoUser } from '@/common/data/demoMovepage'
 import { useChecklistContext } from '@/common/context/checklist/checklistContext.provider'
 import { useToastContext } from '@/common/context/toast/toast.provider'
 import { Modal, ModalContent, ModalTitle } from '@/components/molecules/Modal'
-import { Card, Check, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise } from '../../_components/flow-ui'
+import { Card, Check, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Pill, Primary, Radio, StepBar, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, pressSoft, rise } from '../../_components/flow-ui'
 import { APARTMENTS, OFFERS, STEP_HINTS, STEP_TITLES, type Offer, type OfferId, type ResidenceType, estimateKwh, formatKr, formatOre, monthlyCost } from './offers'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
@@ -230,7 +230,7 @@ const DemoElectricityFlow = () => {
               type="button"
               onClick={() => setOthersOpen((v) => !v)}
               aria-expanded={othersOpen}
-              className={clsx('w-full text-left rounded-[10px] bg-white border border-[#EEEEF0] px-3.5 py-3.5 flex items-center justify-between gap-3 hover:border-[#214766]/40', press)}
+              className={clsx('w-full text-left rounded-[10px] bg-white border border-[#EEEEF0] px-3.5 py-3.5 flex items-center justify-between gap-3 hover:border-[#214766]/40', press, pressSoft)}
             >
               <span className="flex flex-col gap-0.5">
                 <span className="text-[15px] font-bold text-[#214766]">{othersOpen ? 'Andra avtal på din adress' : `Visa ${others.length} andra avtal`}</span>
@@ -256,6 +256,7 @@ const DemoElectricityFlow = () => {
                         className={clsx(
                           'w-full text-left rounded-[10px] bg-white border-2 px-3.5 py-3 flex items-center justify-between gap-3',
                           press,
+                          pressSoft,
                           active ? 'border-[#51C8B4] bg-[#F4FCFA]' : 'border-[#EEEEF0] hover:border-[#214766]/40',
                         )}
                       >
@@ -325,7 +326,7 @@ const DemoElectricityFlow = () => {
             </Card>
 
             <Card>
-              <button type="button" role="switch" aria-checked={details.terminate} onClick={() => setDetails((d) => ({ ...d, terminate: !d.terminate }))} className={clsx('w-full flex items-center justify-between gap-3 text-left rounded-sm', press, 'active:scale-100')}>
+              <button type="button" role="switch" aria-checked={details.terminate} onClick={() => setDetails((d) => ({ ...d, terminate: !d.terminate }))} className={clsx('w-full flex items-center justify-between gap-3 text-left rounded-sm', press)}>
                 <span className="flex flex-col gap-0.5">
                   <span className="text-[15px] font-bold text-[#214766]">Vi säger upp ditt gamla avtal</span>
                   <span className="text-[13px] leading-[19px] text-[#767678]">
@@ -491,7 +492,7 @@ const DemoElectricityFlow = () => {
             <button
               type="button"
               onClick={() => router.push(pathTo('/demo/broadband'))}
-              className={clsx('w-full text-left rounded-[10px] bg-[#FFF1E5] border border-[#FFD4B3] px-3.5 py-3.5 flex items-center justify-between gap-3 hover:border-[#F5A623]', press, rise, '[animation-delay:200ms]')}
+              className={clsx('w-full text-left rounded-[10px] bg-[#FFF1E5] border border-[#FFD4B3] px-3.5 py-3.5 flex items-center justify-between gap-3 hover:border-[#F5A623]', press, pressSoft, rise, '[animation-delay:200ms]')}
             >
               <span className="flex flex-col gap-0.5">
                 <span className="text-[15px] font-bold text-[#214766]">Näst på tur: bredband</span>
