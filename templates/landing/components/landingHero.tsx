@@ -11,7 +11,7 @@ import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT, MOVES_SINCE_2020 } from '@/constant
 // platta för att kunna stå på mörk botten.
 const HERO_LOGOS = [
   // width/height ur SVG:ernas viewBox, så raden inte hoppar under laddning.
-  // Höjden sätts per logotyp: ordmärken lägre, staplade märken högre, så de väger lika.
+  // Höjden sätts per logotyp: ordmärken lägre, staplade märken högre, så de väger lika. I egen färg på vit botten.
   { src: '/images/partners/all/fastighetsbyran-logo-pobmqvfiy.svg', alt: 'Fastighetsbyrån', width: 268, height: 55, h: 'h-5' },
   { src: '/images/partners/all/maklarhuset-logotyp-1wwxhjgay.svg', alt: 'Mäklarhuset', width: 1456, height: 188, h: 'h-[18px]' },
   { src: '/images/partners/all/notar-new-4g0mb9fuo.svg', alt: 'Notar', width: 142, height: 42, h: 'h-[22px]' },
@@ -108,11 +108,12 @@ const LandingHero = () => {
         />
       </div>
 
-      {/* Remsan: vilka som rekommenderar oss, i bildens egen mark. */}
-      <div className="w-full bg-[var(--color-secondary-main)]">
+      {/* Remsan: vilka som rekommenderar oss. Ljus botten så logotyperna kan gå i
+          sin egen färg, som ägaren vill. */}
+      <div className="w-full bg-white border-b border-[#EEEEF0]">
         <div className="max-w-[1248px] mx-auto px-5 md:px-8 py-4 md:py-0 md:h-16 flex flex-col md:flex-row items-center md:justify-between gap-3 md:gap-6">
           <div className="flex flex-col md:flex-row items-center gap-3 md:gap-5">
-            <span className="text-white/70 text-[11px] font-semibold uppercase tracking-[0.18em] whitespace-nowrap">Rekommenderas av</span>
+            <span className="text-[#767678] text-[11px] font-semibold uppercase tracking-[0.18em] whitespace-nowrap">Rekommenderas av</span>
             <div className="flex items-center justify-center flex-wrap gap-x-6 gap-y-3 md:flex-nowrap">
               {HERO_LOGOS.map((logo) => (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -124,12 +125,12 @@ const LandingHero = () => {
                   height={logo.height}
                   loading="lazy"
                   decoding="async"
-                  className={clsx(logo.h, 'w-auto object-contain brightness-0 invert opacity-80')}
+                  className={clsx(logo.h, 'w-auto object-contain')}
                 />
               ))}
             </div>
           </div>
-          <span className="text-white/80 text-[13px] whitespace-nowrap">{MOVES_SINCE_2020} flyttar sedan 2020</span>
+          <span className="text-[var(--color-secondary-main)] text-[13px] whitespace-nowrap">{MOVES_SINCE_2020} flyttar sedan 2020</span>
         </div>
       </div>
 
