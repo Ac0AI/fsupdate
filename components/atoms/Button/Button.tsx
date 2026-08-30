@@ -21,6 +21,7 @@ export type ButtonProps = {
     | 'ghostInverted'
     | 'primaryAlt'
     | 'primaryAltInverted'
+    | 'orange'
     | 'gray'
     | 'outline'
     | 'green'

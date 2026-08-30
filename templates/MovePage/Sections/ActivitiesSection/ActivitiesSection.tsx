@@ -18,10 +18,11 @@ import { containerVariants, emptyListVariants, spinnerWrapperVariants } from './
 const ADDABLE_TODOS = ['mail', 'tv', 'parking', 'waste', 'alarm', 'school'] as const
 
 interface ActivitiesSectionProps {
+  highlightNext?: boolean
   checklistItems: ChecklistCardItem[]
 }
 
-const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
+const ActivitiesSection = ({ checklistItems, highlightNext = false }: ActivitiesSectionProps) => {
   const {
     user: {
       currentMove: { movehelp },
@@ -81,6 +82,14 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
     )
   }
 
+  // Första öppna tjänstekortet är nästa steg och får den orangea knappen.
+  const nextId = highlightNext
+    ? activitiesList.find((item) => {
+        const tr = checklistItems.find((a) => a.name === item.type)
+        return !!tr?.linkUrl && item.type !== 'custom' && !isUserExcludedFromService(item.type as ReducedServiceTypes)
+      })?.id
+    : undefined
+
   return (
     <div className={containerVariants({ isFullList: activitiesList?.length === 6 })}>
       <Text className="text-[var(--color-secondary-dark)] text-lg md:text-xl leading-tight tracking-wider pb-3 text-center md:text-left" spacing="none">
@@ -93,18 +102,19 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
       ) : (
         <>
           <div className="stagger-rise">
-          {activitiesList?.map((item) => (
-            <Activity
-              item={item}
-              key={item.id}
-              logoToDisplay={isUserExcludedFromService(item.type as ReducedServiceTypes) && inviterLogoUrl ? inviterLogoUrl : undefined}
-              isUserExcludedFromService={isUserExcludedFromService(item.type as ReducedServiceTypes)}
-              isExternalMovecleanOfferCustomer={SERVICE_DENY_LIST.moveclean_seperate_provider?.includes(partnerId)}
-              translationItem={checklistItems.find((activityItem) => {
-                if (activityItem.name === item.type) return item
-              })}
-            />
-          ))}
+            {activitiesList?.map((item) => (
+              <Activity
+                item={item}
+                key={item.id}
+                isNext={item.id === nextId}
+                logoToDisplay={isUserExcludedFromService(item.type as ReducedServiceTypes) && inviterLogoUrl ? inviterLogoUrl : undefined}
+                isUserExcludedFromService={isUserExcludedFromService(item.type as ReducedServiceTypes)}
+                isExternalMovecleanOfferCustomer={SERVICE_DENY_LIST.moveclean_seperate_provider?.includes(partnerId)}
+                translationItem={checklistItems.find((activityItem) => {
+                  if (activityItem.name === item.type) return item
+                })}
+              />
+            ))}
           </div>
 
           {/* Lägg till något eget - listan är kundens, inte vår */}
@@ -168,7 +178,9 @@ const ActivitiesSection = ({ checklistItems }: ActivitiesSectionProps) => {
                 onClick={() => setIsAdding(true)}
                 className="flex items-center gap-2 text-[14px]! font-semibold text-[var(--color-secondary-main)] underline underline-offset-4 hover:text-[var(--color-primary-dark)] transition-colors"
               >
-                <span aria-hidden className="text-[18px] leading-none">+</span>
+                <span aria-hidden className="text-[18px] leading-none">
+                  +
+                </span>
                 {t('movePage:CHECKLIST_SECTION.addOwn')}
               </button>
             )}

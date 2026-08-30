@@ -6,9 +6,9 @@
   "somethingWrong": "Något gick fel, försök igen.",
   "contactUsIfStillError": "Om det fortfarande inte fungerar, kontakta oss så hjälper vi dig.",
   "helpRequestToast": "Skickat. Vi hör av oss inom en vardag.",
-  "addToChecklistToast": "Aktivitet tillagd i checklistan",
+  "addToChecklistToast": "Tillagd i din lista.",
   "removedFromChecklistToast": "Borttagen från listan.",
-  "removeFromChecklistToast": "Aktivitet gömd från checklistan",
+  "removeFromChecklistToast": "Klart. Ligger i Snabböversikt.",
   "logo": "/Common/logo_urZWubE8p.svg",
   "AUTH": {
     "identify": "Identifiering med BankID",

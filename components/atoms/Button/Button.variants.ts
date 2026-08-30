@@ -67,6 +67,13 @@ export const buttonVariants = cva(
           'hover:bg-[var(--color-accent-main)] hover:text-[var(--color-white-main)] hover:border-[var(--color-accent-main)]',
           'active:bg-[var(--color-accent-main)]',
         ],
+        // Guidens orangea knapp: en per vy, navy text.
+        orange: [
+          'bg-[var(--color-accent-main)] !text-[var(--color-secondary-main)]',
+          'border-2 border-[var(--color-accent-main)]',
+          'hover:bg-[#FF9A48] hover:border-[#FF9A48]',
+          'active:bg-[#FF9A48] active:border-[#FF9A48]',
+        ],
         primaryAltInverted: [
           'bg-[var(--color-accent-main)] text-[var(--color-white-main)]',
           'border-2 border-[var(--color-accent-main)]',

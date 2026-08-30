@@ -66,9 +66,10 @@ const WelcomeSection = ({ setShowWelcomeSection, assignedMcAdminId, assignedMcAd
               {/* Texten säger börja med elavtalet, så knappen går dit. Rabattraden är får-halvan. */}
               <div className="flex flex-col gap-1.5 w-full md:w-auto md:items-end">
                 <Button
+                  variant="orange"
                   largerArrowRight
                   iconRight={<ArrowRightThin />}
-                  iconColor="#fff"
+                  iconColor="#214766"
                   withMaxContentWidth={isTabletPortraitOrGreater}
                   withFullWidth={!isTabletPortraitOrGreater}
                   padding={isTabletPortraitOrGreater ? '4px 32px' : '10px 16px 10px 32px'}

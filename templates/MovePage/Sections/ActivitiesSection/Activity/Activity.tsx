@@ -40,6 +40,7 @@ import {
 export type ItemStatus = 'skipped' | 'not_started' | 'locked' | 'completed' | 'hidden' | 'reported' | 'invoiced' | 'under_process'
 
 interface Props {
+  isNext?: boolean
   item: ChecklistItem
   translationItem?: ChecklistCardItem
   isUserExcludedFromService?: boolean
@@ -47,7 +48,7 @@ interface Props {
   isExternalMovecleanOfferCustomer?: boolean
 }
 
-export const Activity = ({ item, translationItem, isUserExcludedFromService, logoToDisplay, isExternalMovecleanOfferCustomer }: Props) => {
+export const Activity = ({ item, translationItem, isUserExcludedFromService, logoToDisplay, isExternalMovecleanOfferCustomer, isNext = false }: Props) => {
   const { t, i18n } = useTranslation(['movePage'])
   const locale = i18n.language
   const router = useRouter()
@@ -233,7 +234,14 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
               </div>
             </div>
           ) : (
-            !!translationItem?.linkUrl && (
+            !!translationItem?.linkUrl &&
+            (isNext ? (
+              // Nästa steg: den enda orangea knappen på sidan. Bara pilen på mobil.
+              <span className="inline-flex items-center gap-2 h-10 md:h-11 px-3 md:px-5 rounded-full bg-[var(--color-accent-main)] text-[14px] md:text-[15px] font-bold text-[var(--color-secondary-main)] transition-[background-color,transform] duration-200 ease-out group-hover:bg-[#FF9A48] motion-safe:group-active:scale-[0.97]">
+                {isTabletPortraitOrGreater && translationItem?.linkText}
+                <ArrowRightThin className="transition-transform duration-200 ease-out group-hover:translate-x-0.5" />
+              </span>
+            ) : (
               <>
                 {isTabletPortraitOrGreater && (
                   <Text style={{ paddingRight: 6, color: 'var(--color-secondary-main)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
@@ -242,7 +250,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                 )}
                 <ArrowRightThin className="transition-transform duration-200 ease-out group-hover:translate-x-0.5" />
               </>
-            )
+            ))
           )}
         </Flex>
       </Flex>

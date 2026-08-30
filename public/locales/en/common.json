@@ -6,9 +6,9 @@
   "somethingWrong": "Something went wrong, please try again.",
   "contactUsIfStillError": "If it still doesn't work, contact us and we'll help you.",
   "helpRequestToast": "Sent. We get back to you within one working day.",
-  "addToChecklistToast": "Activity added to checklist",
+  "addToChecklistToast": "Added to your list.",
   "removedFromChecklistToast": "Removed from your list.",
-  "removeFromChecklistToast": "Activity hidden from checklist",
+  "removeFromChecklistToast": "Done. It’s in your Quick overview.",
   "logo": "/Common/logo_urZWubE8p.svg",
   "AUTH": {
     "indentify": "Identify with BankID",

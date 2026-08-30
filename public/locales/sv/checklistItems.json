@@ -176,10 +176,10 @@
     {
       "name": "movehelp",
       "title": "Flytthjälp",
-      "subtitle": "Handplockade flyttgubbar som kommer i tid och bär varsamt.",
+      "subtitle": "Handplockade flyttgubbar och gummor som kommer i tid och bär varsamt. Helgen tillbaka, utan att fråga en kompis.",
       "linkText": "Boka flytthjälp",
       "linkUrl": "/app/movehelp",
-      "highlight": "Helgen tillbaka, utan att fråga en kompis"
+      "highlight": ""
     },
     {
       "name": "moveclean",
@@ -187,7 +187,7 @@
       "subtitle": "Städningen görs av folk vi kvalitetskontrollerat.",
       "linkText": "Boka flyttstädning",
       "linkUrl": "/app/moveclean",
-      "highlight": "Godkänd besiktning, med nöjd-kund-garanti"
+      "highlight": "Med städgaranti"
     },
     {
       "name": "mail",

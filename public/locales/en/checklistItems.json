@@ -176,10 +176,10 @@
     {
       "name": "movehelp",
       "title": "Move help",
-      "subtitle": "Hand-picked movers who show up on time and handle your things with care.",
+      "subtitle": "Hand-picked movers who show up on time and handle your things with care. Your weekend back, without asking a friend.",
       "linkText": "Book movers",
       "linkUrl": "/app/movehelp",
-      "highlight": "Your weekend back, without asking a friend"
+      "highlight": ""
     },
     {
       "name": "moveclean",
@@ -187,7 +187,7 @@
       "subtitle": "The cleaning is done by people we have vetted.",
       "linkText": "Book cleaning",
       "linkUrl": "/app/moveclean",
-      "highlight": "Passes inspection, with a satisfaction guarantee"
+      "highlight": "With cleaning guarantee"
     },
     {
       "name": "movehelpCombined",

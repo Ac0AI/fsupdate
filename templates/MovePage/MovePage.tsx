@@ -125,6 +125,8 @@ const MovePage: React.FC<MovePageProps> = ({ completedBookings }) => {
     showIntercom()
   }
 
+  const welcomeVisible = showWelcomeSection && !!toAddress?.street?.length && !skippedActivities.find((item) => item.type === ActivityEnum.MOVEHELP)
+
   if (!theme && isLoading)
     return (
       <div className={movePageWrapperClasses()}>
@@ -138,11 +140,10 @@ const MovePage: React.FC<MovePageProps> = ({ completedBookings }) => {
     <>
       <div className={clsx(movePageWrapperClasses(), 'stagger-rise')} data-testid="move-page-container">
         <TopSection />
-        {showWelcomeSection && toAddress?.street?.length && !skippedActivities.find((item) => item.type === ActivityEnum.MOVEHELP) && (
-          <WelcomeSection setShowWelcomeSection={setShowWelcomeSection} assignedMcAdminId={assignedMcAdmin?.id} assignedMcAdminName={assignedMcAdmin?.name} />
-        )}
+        {welcomeVisible && <WelcomeSection setShowWelcomeSection={setShowWelcomeSection} assignedMcAdminId={assignedMcAdmin?.id} assignedMcAdminName={assignedMcAdmin?.name} />}
         <MoveTimeline movingDate={movingDate} startedAt={createdAt} completed={completedTasks} total={totalTasks} />
-        <ActivitiesSection checklistItems={checklistItems} />
+        {/* En orange knapp per vy: välkomstkortet medan det syns, sedan första öppna kortet. */}
+        <ActivitiesSection checklistItems={checklistItems} highlightNext={!welcomeVisible} />
         <CompletedBookingsSection initialBookings={completedBookings} />
         <CompletedItemsList checklistItems={checklistItemsCompleted} />
       </div>
