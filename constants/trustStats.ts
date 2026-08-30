@@ -2,6 +2,8 @@
 // real Google rating or review count changes.
 export const GOOGLE_RATING = 4.7
 export const GOOGLE_REVIEW_COUNT = 500
+// Samma siffra som brandguiden. Ändras här, inte i komponenterna.
+export const MOVES_SINCE_2020 = '230 000'
 
 /**
  * Bevisblocket under heron. En stor sanning i stället för tre små - varje rad
