@@ -57,7 +57,8 @@ const MobileMenu = ({ onlyLogin }: Props) => {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
-  const loginPath = '/i/testmode'
+  // Demosajten: Logga in leder till demons startsida, inte till testläget.
+  const loginPath = '/demo'
 
   return (
     <>

@@ -10,12 +10,14 @@ import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT, MOVES_SINCE_2020 } from '@/constant
 // inverteras till vitt på navy. De 41 i partnerLogos har för många med opak
 // platta för att kunna stå på mörk botten.
 const HERO_LOGOS = [
-  { src: '/images/partners/all/fastighetsbyran-logo-pobmqvfiy.svg', alt: 'Fastighetsbyrån' },
-  { src: '/images/partners/all/maklarhuset-logotyp-1wwxhjgay.svg', alt: 'Mäklarhuset' },
-  { src: '/images/partners/all/notar-new-4g0mb9fuo.svg', alt: 'Notar' },
-  { src: '/images/partners/all/historiska-hem-logo-ri0m3fw-x.svg', alt: 'Historiska Hem' },
-  { src: '/images/partners/all/lejons-makleri-logo-njpe-l-5m.svg', alt: 'Lejons Mäkleri' },
-  { src: '/images/partners/all/edward-logo-mi5yjp1j1.svg', alt: 'Edward & Partners' },
+  // width/height ur SVG:ernas viewBox, så raden inte hoppar under laddning.
+  // Höjden sätts per logotyp: ordmärken lägre, staplade märken högre, så de väger lika.
+  { src: '/images/partners/all/fastighetsbyran-logo-pobmqvfiy.svg', alt: 'Fastighetsbyrån', width: 268, height: 55, h: 'h-5' },
+  { src: '/images/partners/all/maklarhuset-logotyp-1wwxhjgay.svg', alt: 'Mäklarhuset', width: 1456, height: 188, h: 'h-[18px]' },
+  { src: '/images/partners/all/notar-new-4g0mb9fuo.svg', alt: 'Notar', width: 142, height: 42, h: 'h-[22px]' },
+  { src: '/images/partners/all/historiska-hem-logo-ri0m3fw-x.svg', alt: 'Historiska Hem', width: 174, height: 50, h: 'h-[30px]' },
+  { src: '/images/partners/all/lejons-makleri-logo-njpe-l-5m.svg', alt: 'Lejons Mäkleri', width: 1788, height: 980, h: 'h-10' },
+  { src: '/images/partners/all/edward-logo-mi5yjp1j1.svg', alt: 'Edward & Partners', width: 145, height: 66, h: 'h-9' },
 ]
 
 const SCENE = {
@@ -111,16 +113,18 @@ const LandingHero = () => {
         <div className="max-w-[1248px] mx-auto px-5 md:px-8 py-4 md:py-0 md:h-16 flex flex-col md:flex-row items-center md:justify-between gap-3 md:gap-6">
           <div className="flex flex-col md:flex-row items-center gap-3 md:gap-5">
             <span className="text-white/70 text-[11px] font-semibold uppercase tracking-[0.18em] whitespace-nowrap">Rekommenderas av</span>
-            <div className="flex items-center justify-center flex-wrap gap-x-5 gap-y-3 md:flex-nowrap">
+            <div className="flex items-center justify-center flex-wrap gap-x-6 gap-y-3 md:flex-nowrap">
               {HERO_LOGOS.map((logo) => (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   key={logo.src}
                   src={logo.src}
                   alt={logo.alt}
+                  width={logo.width}
+                  height={logo.height}
                   loading="lazy"
                   decoding="async"
-                  className="h-4 md:h-5 w-auto max-w-[120px] object-contain brightness-0 invert opacity-80"
+                  className={clsx(logo.h, 'w-auto object-contain brightness-0 invert opacity-80')}
                 />
               ))}
             </div>

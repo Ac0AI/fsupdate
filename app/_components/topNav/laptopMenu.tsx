@@ -70,7 +70,8 @@ interface Props {
 const LaptopMenu = ({ onlyLogin }: Props) => {
   const router = useRouter()
   const pathname = usePathname()
-  const loginPath = '/i/testmode'
+  // Demosajten: Logga in leder till demons startsida, inte till testläget.
+  const loginPath = '/demo'
 
   // Strip locale prefix for matching (e.g. /sv/tjanster -> /tjanster)
   const cleanPath = pathname.replace(/^\/(sv|en)/, '') || '/'
