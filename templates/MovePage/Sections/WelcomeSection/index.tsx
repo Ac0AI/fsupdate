@@ -63,16 +63,22 @@ const WelcomeSection = ({ setShowWelcomeSection, assignedMcAdminId, assignedMcAd
                   </Text>
                 </Flex>
               </Flex>
-              <Button
-                largerArrowRight
-                iconRight={<ArrowRightThin />}
-                iconColor="#fff"
-                withMaxContentWidth={isTabletPortraitOrGreater}
-                withFullWidth={!isTabletPortraitOrGreater}
-                padding={isTabletPortraitOrGreater ? '4px 32px' : '10px 16px 10px 32px'}
-                text={t('WELCOME_SECTION.getQuotations')}
-                onClick={() => router.push(toDemoPath('/app/movehelp'))}
-              />
+              {/* Texten säger börja med elavtalet, så knappen går dit. Rabattraden är får-halvan. */}
+              <div className="flex flex-col gap-1.5 w-full md:w-auto md:items-end">
+                <Button
+                  largerArrowRight
+                  iconRight={<ArrowRightThin />}
+                  iconColor="#fff"
+                  withMaxContentWidth={isTabletPortraitOrGreater}
+                  withFullWidth={!isTabletPortraitOrGreater}
+                  padding={isTabletPortraitOrGreater ? '4px 32px' : '10px 16px 10px 32px'}
+                  text={t('WELCOME_SECTION.getQuotations')}
+                  onClick={() => router.push(toDemoPath('/app/electricity'))}
+                />
+                <span className="text-[13px] leading-[18px] font-semibold text-[var(--color-primary-dark)] text-center md:text-right">
+                  {t('WELCOME_SECTION.getQuotationsHint')}
+                </span>
+              </div>
             </Flex>
           </Flex>
           <div className={closeWrapperVariants()}>

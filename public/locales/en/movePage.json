@@ -44,7 +44,8 @@
     "welcome": "Welcome to your move",
     "welcomeText": "We have already picked the suppliers and negotiated the prices.",
     "welcomeTextSubSection": "Start with electricity. Three minutes, and the power is on when you move in.",
-    "getQuotations": "Get your quotes",
+    "getQuotations": "Get the best electricity deal for your address",
+    "getQuotationsHint": "Save 1 035 kr with Flyttsmart’s exclusive discount",
     "currentForYourMove": "Next step for your move",
     "movingCoordinator": "/{{name}}, movecoordinator"
   },
