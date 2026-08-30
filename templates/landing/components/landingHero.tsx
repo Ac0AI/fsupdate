@@ -58,7 +58,7 @@ const LandingHero = () => {
           lastar ur, paret som går upp tomhänta. Budskapet ligger i himlen.
           På mobil ankras bilden i underkanten i 240 % bredd, så himlen ovanför
           blir ren yta (samma färg som bildens överkant) och texten går fri. */}
-      <div className="relative min-h-[760px] md:min-h-[820px] lg:min-h-[calc(100svh-72px)] lg:max-h-[960px]">
+      <div className="relative min-h-[760px] md:min-h-[820px] lg:min-h-[max(820px,calc(100svh-72px))] lg:max-h-[960px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={SCENE.src}
