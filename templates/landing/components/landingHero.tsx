@@ -5,6 +5,7 @@ import { clsx } from 'clsx'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/atoms/Button'
 import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT, MOVES_SINCE_2020 } from '@/constants/trustStats'
+import { HERO_SCENE as SCENE } from './heroScene'
 
 // Sex mäklarlogotyper som är rena SVG:er utan egen bakgrund, så de tål att
 // inverteras till vitt på navy. De 41 i partnerLogos har för många med opak
@@ -20,14 +21,6 @@ const HERO_LOGOS = [
   { src: '/images/partners/all/edward-logo-mi5yjp1j1.svg', alt: 'Edward & Partners', width: 145, height: 66, h: 'h-9' },
 ]
 
-const SCENE = {
-  src: '/images/brand/hero-vagen-hem-1440.webp',
-  srcSet: '/images/brand/hero-vagen-hem-1440.webp 1440w, /images/brand/hero-vagen-hem-2160.webp 2160w, /images/brand/hero-vagen-hem-3168.webp 3168w',
-  width: 3168,
-  height: 1344,
-  // Bildens övre kant, så himlen fortsätter sömlöst från textytan ner i scenen.
-  sky: '#E5F1FA',
-}
 
 const Arrow = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
