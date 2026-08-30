@@ -48,6 +48,10 @@ interface Props {
   isExternalMovecleanOfferCustomer?: boolean
 }
 
+// Sekundära handlingar på kortet. Tydligt klickbara, aldrig i konkurrens med CTA:n.
+const secondaryChip =
+  'inline-flex items-center gap-1.5 h-9 md:h-8 pl-2.5 pr-3 rounded-full border-[1.5px] border-[var(--color-inactive-main)] bg-white text-[13px]! font-medium text-[var(--color-inactive-dark)] transition-[border-color,color,background-color,transform] duration-200 ease-out motion-safe:active:scale-[0.97]'
+
 export const Activity = ({ item, translationItem, isUserExcludedFromService, logoToDisplay, isExternalMovecleanOfferCustomer, isNext = false }: Props) => {
   const { t, i18n } = useTranslation(['movePage'])
   const locale = i18n.language
@@ -67,6 +71,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
   const { movingDistanceTooFar } = movehelp
   const status = (item.type && activitiesList.find((activity) => activity.type === item.type)?.status) || ''
   const isTodo = item.type === 'custom' || (todoTypes as readonly string[]).includes(item.type)
+  const [ticked, setTicked] = useState(false)
   const isMovehelpCombinedLockedOrCompleted = isActivityLockedOrCompleted(skippedActivities.find((activity) => activity.type === ActivityEnum.MOVEHELP_COMBINED)?.status as string)
 
   const isHiddenItem = () => {
@@ -192,29 +197,62 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                       {translationItem.highlight}
                     </div>
                   )}
-                  <div className="flex flex-wrap items-center gap-x-4">
+                  {/* Kundens egna handlingar: chips som ser ut som val, inte som status. Cirkeln är tom tills man bockar. */}
+                  <div className="flex flex-wrap items-center gap-2 mt-2.5">
                     {isTodo && (
                       <button
                         type="button"
-                        className="relative mt-2 inline-flex items-center gap-1 text-[12px]! font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-error-red)] hover:underline after:content-[''] after:absolute after:-inset-3"
+                        className={clsx(secondaryChip, 'hover:border-[var(--color-error-red)] hover:text-[var(--color-error-red)]')}
                         onClick={(e) => {
                           e.stopPropagation()
                           removeItem(item.type as TodoType, item.id)
                         }}
                       >
+                        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden className="shrink-0">
+                          <path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                        </svg>
                         {t('CHECKLIST_SECTION.remove')}
                       </button>
                     )}
                     <button
                       type="button"
-                      className="relative mt-2 inline-flex items-center gap-1 text-[12px]! font-medium text-[var(--color-inactive-dark)] underline-offset-2 transition-colors duration-200 ease-out hover:text-[var(--color-secondary-main)] hover:underline after:content-[''] after:absolute after:-inset-3"
+                      aria-pressed={ticked}
+                      className={clsx(
+                        secondaryChip,
+                        'group/chip',
+                        ticked
+                          ? 'border-[var(--color-primary-main)] bg-[#F4FCFA] text-[var(--color-primary-dark)]'
+                          : 'hover:border-[var(--color-primary-main)] hover:bg-[#F4FCFA] hover:text-[var(--color-primary-dark)]',
+                      )}
                       onClick={(e) => {
                         e.stopPropagation()
+                        if (ticked) return
+                        setTicked(true)
                         markAsDone()
                       }}
                     >
-                      <svg width="10" height="10" viewBox="0 0 24 24" aria-hidden>
-                        <path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden className="shrink-0">
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="9"
+                          strokeWidth="1.8"
+                          className={clsx(
+                            'transition-[fill,stroke] duration-200 ease-out',
+                            ticked ? 'fill-[var(--color-primary-main)] stroke-[var(--color-primary-main)]' : 'fill-transparent stroke-current',
+                          )}
+                        />
+                        <path
+                          d="M8 12.5l2.6 2.6L16.5 9"
+                          fill="none"
+                          strokeWidth="2.4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className={clsx(
+                            'transition-opacity duration-200 ease-out',
+                            ticked ? 'stroke-white opacity-100' : 'stroke-current opacity-0 group-hover/chip:opacity-100',
+                          )}
+                        />
                       </svg>
                       {t('CHECKLIST_SECTION.alreadyDone')}
                     </button>
@@ -244,7 +282,10 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
             ) : (
               <>
                 {isTabletPortraitOrGreater && (
-                  <Text style={{ paddingRight: 6, color: 'var(--color-secondary-main)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                  <Text
+                    className="whitespace-nowrap"
+                    style={{ paddingRight: 6, color: 'var(--color-secondary-main)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '3px' }}
+                  >
                     {translationItem?.linkText}
                   </Text>
                 )}

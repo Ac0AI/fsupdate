@@ -146,7 +146,7 @@
       "name": "power",
       "title": "Electricity agreement",
       "subtitle": "An electricity contract that suits your particular home. The discount exists only through us.",
-      "linkText": "Show my option",
+      "linkText": "See my recommendation",
       "linkUrl": "/app/electricity",
       "highlight": "Save 1,035 kr the first year"
     },
@@ -154,7 +154,7 @@
       "name": "internet",
       "title": "Internet",
       "subtitle": "We check which networks reach your address and recommend one.",
-      "linkText": "Show my option",
+      "linkText": "See my recommendation",
       "linkUrl": "/app/broadband",
       "highlight": "If it is already included we say so"
     },
