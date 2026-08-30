@@ -53,40 +53,10 @@ const LandingHero = () => {
   }, [])
 
   return (
-    <section className="relative flex flex-col" style={{ background: `linear-gradient(180deg, #FFFFFF 0%, ${SCENE.sky} 100%)` }}>
-      {/* Budskapet: beviset före löftet, ett löfte, en knapp. */}
-      <div className="stagger-rise w-full max-w-[1200px] mx-auto px-5 md:px-8 pt-7 md:pt-14 pb-8 md:pb-10 flex flex-col items-center text-center gap-4 md:gap-5">
-        <p className="inline-flex items-center gap-2 h-9 md:h-10 pl-3 pr-4 rounded-full bg-white border border-[#EEEEF0] shadow-[0_4px_14px_rgba(33,71,102,0.10)] text-[13px] md:text-[14px] font-semibold text-[var(--color-secondary-main)]">
-          <Star />
-          {rating}
-        </p>
-
-        <h1 className="text-[var(--color-secondary-main)] font-bold tracking-[-0.02em] text-[40px] leading-[44px] md:text-[60px] md:leading-[64px] lg:text-[72px] lg:leading-[76px] max-w-[1000px]">
-          Det enklaste sättet att flytta.
-        </h1>
-
-        <p className="text-[var(--color-secondary-main)] text-[17px] leading-[25px] md:text-[20px] md:leading-[30px] max-w-[640px]">
-          Färdigförhandlat, kvalitetssäkrat, och vi tar ansvar hela vägen.
-        </p>
-
-        <div className="flex flex-col items-center gap-3 pt-1 w-full sm:w-auto">
-          <Button
-            className={ctaClassName}
-            padding="16px 32px"
-            variant="primaryAltInverted"
-            iconRight={<Arrow />}
-            text="Starta din flytt"
-            onClick={() => router.push(loginUrl)}
-            withFullWidth
-          />
-          <span className="text-[13px] leading-4 text-[#767678]">Kostnadsfritt · 2 min · logga in med BankID</span>
-        </div>
-      </div>
-
-      {/* Scenen: vägen hem. Bilen står redan vid huset och lastar ur, paret går
-          upp tomhänta. På mobil beskärs den till en stående ruta med huset och
-          paret kvar i bild. */}
-      <div className="relative w-full" style={{ backgroundColor: SCENE.sky }}>
+    <section className="relative flex flex-col overflow-hidden" style={{ backgroundColor: SCENE.sky }}>
+      {/* Scenen bär hela heron: vägen hem, bilen som redan står vid huset och
+          lastar ur, paret som går upp tomhänta. Budskapet ligger i himlen. */}
+      <div className="relative min-h-[760px] md:min-h-[820px] lg:min-h-[calc(100svh-72px)] lg:max-h-[960px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={SCENE.src}
@@ -97,8 +67,37 @@ const LandingHero = () => {
           alt=""
           fetchPriority="high"
           decoding="async"
-          className="hero-scene-in block w-full h-[400px] object-cover object-bottom md:h-auto md:object-fill"
+          className="hero-scene-in absolute inset-0 w-full h-full object-cover object-bottom"
         />
+
+        {/* Budskapet: beviset före löftet, ett löfte, en knapp. */}
+        <div className="stagger-rise relative z-10 w-full max-w-[1200px] mx-auto px-5 md:px-8 pt-7 md:pt-14 flex flex-col items-center text-center gap-4 md:gap-5">
+          <p className="inline-flex items-center gap-2 h-9 md:h-10 pl-3 pr-4 rounded-full bg-white border border-[#EEEEF0] shadow-[0_4px_14px_rgba(33,71,102,0.10)] text-[13px] md:text-[14px] font-semibold text-[var(--color-secondary-main)]">
+            <Star />
+            {rating}
+          </p>
+
+          <h1 className="text-[var(--color-secondary-main)] font-bold tracking-[-0.02em] text-[40px] leading-[44px] md:text-[60px] md:leading-[64px] lg:text-[72px] lg:leading-[76px] max-w-[1000px]">
+            Det enklaste sättet att flytta.
+          </h1>
+
+          <p className="text-[var(--color-secondary-main)] text-[17px] leading-[25px] md:text-[20px] md:leading-[30px] max-w-[640px]">
+            Färdigförhandlat, kvalitetssäkrat, och vi tar ansvar hela vägen.
+          </p>
+
+          <div className="flex flex-col items-center gap-3 pt-1 w-full sm:w-auto">
+            <Button
+              className={ctaClassName}
+              padding="16px 32px"
+              variant="primaryAltInverted"
+              iconRight={<Arrow />}
+              text="Starta din flytt"
+              onClick={() => router.push(loginUrl)}
+              withFullWidth
+            />
+            <span className="text-[13px] leading-4 text-[#767678]">Kostnadsfritt · 2 min · logga in med BankID</span>
+          </div>
+        </div>
       </div>
 
       {/* Remsan: vilka som rekommenderar oss. Ljus botten så logotyperna kan gå i
