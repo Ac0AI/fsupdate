@@ -53,12 +53,13 @@ const LandingHero = () => {
   }, [])
 
   return (
-    <section className="relative flex flex-col overflow-hidden" style={{ backgroundColor: SCENE.sky }}>
+    <section className="relative flex flex-col overflow-hidden lg:min-h-[calc(100svh-72px)]" style={{ backgroundColor: SCENE.sky }}>
       {/* Scenen bär hela heron: vägen hem, bilen som redan står vid huset och
           lastar ur, paret som går upp tomhänta. Budskapet ligger i himlen.
-          På mobil ankras bilden i underkanten i 240 % bredd, så himlen ovanför
-          blir ren yta (samma färg som bildens överkant) och texten går fri. */}
-      <div className="relative min-h-[760px] md:min-h-[820px] lg:min-h-[max(820px,calc(100svh-72px))] lg:max-h-[960px]">
+          På desktop delar scenen skärmhöjden med logotypremsan, så mäklarna
+          syns utan att scrolla. På mobil ankras bilden i underkanten i 240 %
+          bredd, så himlen ovanför blir ren yta och texten går fri. */}
+      <div className="relative flex-1 min-h-[760px] md:min-h-[800px] lg:min-h-[720px] lg:max-h-[960px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={SCENE.src}
@@ -73,13 +74,13 @@ const LandingHero = () => {
         />
 
         {/* Budskapet: beviset före löftet, ett löfte, en knapp. */}
-        <div className="stagger-rise relative z-10 w-full max-w-[1200px] mx-auto px-5 md:px-8 pt-7 md:pt-14 flex flex-col items-center text-center gap-4 md:gap-5">
+        <div className="stagger-rise relative z-10 w-full max-w-[1200px] mx-auto px-5 md:px-8 pt-7 md:pt-10 flex flex-col items-center text-center gap-4">
           <p className="inline-flex items-center gap-2 h-9 md:h-10 pl-3 pr-4 rounded-full bg-white border border-[#EEEEF0] shadow-[0_4px_14px_rgba(33,71,102,0.10)] text-[13px] md:text-[14px] font-semibold text-[var(--color-secondary-main)]">
             <Star />
             {rating}
           </p>
 
-          <h1 className="text-[var(--color-secondary-main)] font-bold tracking-[-0.02em] text-[40px] leading-[44px] md:text-[60px] md:leading-[64px] lg:text-[72px] lg:leading-[76px] max-w-[1000px]">
+          <h1 className="text-[var(--color-secondary-main)] font-bold tracking-[-0.02em] text-[40px] leading-[44px] md:text-[56px] md:leading-[60px] lg:text-[64px] lg:leading-[68px] xl:text-[72px] xl:leading-[76px] max-w-[1000px]">
             Det enklaste sättet att flytta.
           </h1>
 
@@ -104,7 +105,7 @@ const LandingHero = () => {
 
       {/* Remsan: vilka som rekommenderar oss. Ljus botten så logotyperna kan gå i
           sin egen färg, som ägaren vill. */}
-      <div className="w-full bg-white border-b border-[#EEEEF0]">
+      <div className="w-full shrink-0 bg-white border-b border-[#EEEEF0]">
         <div className="max-w-[1248px] mx-auto px-5 md:px-8 py-4 md:py-0 md:h-16 flex flex-col md:flex-row items-center md:justify-between gap-3 md:gap-6">
           <div className="flex flex-col md:flex-row items-center gap-3 md:gap-5">
             <span className="text-[#767678] text-[11px] font-semibold uppercase tracking-[0.18em] whitespace-nowrap">Rekommenderas av</span>
