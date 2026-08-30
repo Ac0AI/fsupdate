@@ -55,7 +55,9 @@ const LandingHero = () => {
   return (
     <section className="relative flex flex-col overflow-hidden" style={{ backgroundColor: SCENE.sky }}>
       {/* Scenen bär hela heron: vägen hem, bilen som redan står vid huset och
-          lastar ur, paret som går upp tomhänta. Budskapet ligger i himlen. */}
+          lastar ur, paret som går upp tomhänta. Budskapet ligger i himlen.
+          På mobil ankras bilden i underkanten i 240 % bredd, så himlen ovanför
+          blir ren yta (samma färg som bildens överkant) och texten går fri. */}
       <div className="relative min-h-[760px] md:min-h-[820px] lg:min-h-[calc(100svh-72px)] lg:max-h-[960px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -67,7 +69,7 @@ const LandingHero = () => {
           alt=""
           fetchPriority="high"
           decoding="async"
-          className="hero-scene-in absolute inset-0 w-full h-full object-cover object-bottom"
+          className="hero-scene-in absolute bottom-0 left-1/2 w-[240%] max-w-none h-auto -translate-x-1/2 md:inset-0 md:left-0 md:translate-x-0 md:w-full md:h-full md:object-cover md:object-bottom"
         />
 
         {/* Budskapet: beviset före löftet, ett löfte, en knapp. */}
