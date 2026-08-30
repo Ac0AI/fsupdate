@@ -59,7 +59,7 @@ const LandingHero = () => {
           På desktop delar scenen skärmhöjden med logotypremsan, så mäklarna
           syns utan att scrolla. På mobil ankras bilden i underkanten i 240 %
           bredd, så himlen ovanför blir ren yta och texten går fri. */}
-      <div className="relative flex-1 min-h-[760px] md:min-h-[800px] lg:min-h-[720px] lg:max-h-[960px]">
+      <div className="relative flex-1 min-h-[760px] md:min-h-[800px] lg:min-h-[740px] lg:max-h-[960px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={SCENE.src}
@@ -74,17 +74,17 @@ const LandingHero = () => {
         />
 
         {/* Budskapet: beviset före löftet, ett löfte, en knapp. */}
-        <div className="stagger-rise relative z-10 w-full max-w-[1200px] mx-auto px-5 md:px-8 pt-7 md:pt-10 flex flex-col items-center text-center gap-4">
+        <div className="stagger-rise relative z-10 w-full max-w-[1200px] mx-auto px-5 md:px-8 pt-7 md:pt-8 flex flex-col items-center text-center gap-4">
           <p className="inline-flex items-center gap-2 h-9 md:h-10 pl-3 pr-4 rounded-full bg-white border border-[#EEEEF0] shadow-[0_4px_14px_rgba(33,71,102,0.10)] text-[13px] md:text-[14px] font-semibold text-[var(--color-secondary-main)]">
             <Star />
             {rating}
           </p>
 
-          <h1 className="text-[var(--color-secondary-main)] font-bold tracking-[-0.02em] text-[40px] leading-[44px] md:text-[56px] md:leading-[60px] lg:text-[64px] lg:leading-[68px] xl:text-[72px] xl:leading-[76px] max-w-[1000px]">
+          <h1 className="text-[var(--color-secondary-main)] font-bold tracking-[-0.02em] text-[40px] leading-[44px] md:text-[56px] md:leading-[60px] lg:text-[64px] lg:leading-[68px] 2xl:text-[72px] 2xl:leading-[76px] max-w-[1000px]">
             Det enklaste sättet att flytta.
           </h1>
 
-          <p className="text-[var(--color-secondary-main)] text-[17px] leading-[25px] md:text-[20px] md:leading-[30px] max-w-[640px]">
+          <p className="text-[var(--color-secondary-main)] text-[17px] leading-[25px] md:text-[18px] md:leading-[26px] max-w-[640px]">
             Färdigförhandlat, kvalitetssäkrat, och vi tar ansvar hela vägen.
           </p>
 
