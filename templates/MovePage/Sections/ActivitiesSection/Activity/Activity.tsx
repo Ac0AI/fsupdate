@@ -237,7 +237,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
             !!translationItem?.linkUrl &&
             (isNext ? (
               // Nästa steg: den enda orangea knappen på sidan. Bara pilen på mobil.
-              <span className="inline-flex items-center gap-2 h-10 md:h-11 px-3 md:px-5 rounded-full bg-[var(--color-accent-main)] text-[14px] md:text-[15px] font-bold text-[var(--color-secondary-main)] transition-[background-color,transform] duration-200 ease-out group-hover:bg-[#FF9A48] motion-safe:group-active:scale-[0.97]">
+              <span className="inline-flex items-center gap-2 whitespace-nowrap h-10 md:h-11 px-3 md:px-5 rounded-full bg-[var(--color-accent-main)] text-[14px] md:text-[15px] font-bold text-[var(--color-secondary-main)] transition-[background-color,transform] duration-200 ease-out group-hover:bg-[#FF9A48] motion-safe:group-active:scale-[0.97]">
                 {isTabletPortraitOrGreater && translationItem?.linkText}
                 <ArrowRightThin className="transition-transform duration-200 ease-out group-hover:translate-x-0.5" />
               </span>
