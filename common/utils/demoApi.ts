@@ -1,5 +1,5 @@
 import { demoChecklist, demoUser } from '@/common/data/demoMovepage'
-import { demoLead, getDemoUser, writeDemoSession } from '@/common/data/demoPersona'
+import { readDemoSession, demoLead, getDemoUser, writeDemoSession } from '@/common/data/demoPersona'
 import { demoBroadbandOffers, demoInsuranceSuppliers, demoMovecleanSuppliers, demoMovehelpSuppliers } from '@/common/data/demoServices'
 
 /**
@@ -17,6 +17,19 @@ type Item = Record<string, unknown> & { id: string; type: string; skippedAt?: st
 let items: Item[] = demoChecklist.items.map((i) => ({ ...i })) as Item[]
 
 const find = (id: string) => items.find((i) => i.id === id)
+
+// Checklistans minne nollas vid omladdning, men bokningar ligger i sessionen.
+// Städ bokat via demoflödet ska vara avbockat även i ett omladdat fönster.
+const withSessionState = (list: Item[]) => {
+  if (readDemoSession()?.cleanBooked) {
+    const i = list.find((x) => x.type === 'moveclean')
+    if (i && !i.skippedAt) {
+      i.skippedAt = '2026-08-31T10:00:00.000Z'
+      i.status = 'completed'
+    }
+  }
+  return list
+}
 
 // Ny inbjuden kund: checklistan börjar om från fixturen.
 export const resetDemoChecklist = () => {
@@ -39,7 +52,7 @@ const reads: { method: string; test: RegExp; value: () => unknown }[] = [
   { method: 'GET', test: /^\/users\/me$/, value: () => ({ ...getDemoUser().profile, domesticServicesBalance: { data: null } }) },
   { method: 'GET', test: /^\/moves\/current$/, value: () => getDemoUser().currentMove },
   { method: 'GET', test: /^\/users\/contact$/, value: () => demoUser.contact },
-  { method: 'GET', test: /^\/web\/checklist\/move\/current$/, value: () => ({ items }) },
+  { method: 'GET', test: /^\/web\/checklist\/move\/current$/, value: () => ({ items: withSessionState(items) }) },
   { method: 'GET', test: /\/todo\/active$/, value: () => [] },
   { method: 'GET', test: /\/orders/, value: () => [] },
   // Tjänstevyerna. Saknas en av de här faller templaten till sitt felläge
