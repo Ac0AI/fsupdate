@@ -12,7 +12,7 @@ const BUYER_STEPS = [
   { do: 'Öppna inbjudan som köpare.', see: 'En kort laddningsvy med "Inbjuden av Demomäklaren" och koordinatorerna. Sedan onboardingen.' },
   { do: 'Steg 1 av 2: Vart ska du flytta?', see: 'Ekvägen 8, 41320 Göteborg är förifyllt från mäklaren. Tryck Fortsätt. Testa gärna Ändra också.' },
   { do: 'Steg 2 av 2: När ska du flytta?', see: 'Tillträdesdagen är förvald och kartan visar Göteborg. Tryck Visa min flytt.' },
-  { do: 'Välkomstsidan går över till checklistan av sig själv.', see: 'Överst: Från Storgatan 12, Till Ekvägen 8, datumet. Välkomstkortet med Nina, tidslinjen med flyttbilen och allt som är kvar att göra.' },
+  { do: 'Välkomstsidan går över till checklistan av sig själv.', see: 'Överst: Från Storgatan 12, Till Ekvägen 8, datumet. Välkomstkortet med Nina, tidslinjen med flyttbilen och allt som är kvar att göra. Flytthjälpen ligger överst: Stockholm till Göteborg är en långflytt, och stora eller långa flyttar börjar med offerten.' },
 ]
 
 const SELLER_STEPS = [
@@ -20,6 +20,7 @@ const SELLER_STEPS = [
   { do: 'Steg 1 av 2: tryck Lägg till adress och skriv en adress.', see: 'Google föreslår riktiga adresser medan du skriver. Välj ett förslag, kontrollera postnummer och ort, tryck Spara och sedan Fortsätt.' },
   { do: 'Alternativt: tryck Jag har inte en ny adress ännu.', see: 'Då hoppar du till datumsteget utan adress. På checklistan står det Uppdatera i Till-raden.' },
   { do: 'Steg 2 av 2: välj datum och tryck Visa min flytt.', see: 'Checklistan visar Från Storgatan 12, den sålda bostaden, och den adress du fyllde i.' },
+  { do: 'Titta på ordningen i listan.', see: 'Valde du en adress i Stockholm ligger Flyttstädningen överst och välkomstknappen säger Boka flyttstädningen: kort flytt i samma stad börjar med städet. En adress i en annan stad ger flytthjälpen överst med Få min offert, precis som i köparresan.' },
 ]
 
 const CHECKLIST_AREAS = [
@@ -29,12 +30,27 @@ const CHECKLIST_AREAS = [
     simulated: 'BankID-signeringen tar några sekunder och lyckas alltid. Avbryt signeringen går tillbaka utan att något händer.',
   },
   {
+    where: 'Flyttstädning',
+    what: 'Boka direkt till fast pris efter RUT: yta, biytor, städdag, bekräfta, klart. Priset räknas medan du fyller i. Efter bokningen byter elkortet pill till Teckna nu: 100 kr rabatt på städet, och punkten bockas av.',
+    simulated: 'Ingen bekräftelse skickas. Bokningen ligger kvar i fliken tills du startar en ny resa.',
+  },
+  {
     where: 'Flytthjälp',
-    what: 'Tre steg: bostäderna, bohaget, väntan på Nina. Stoppar om boarea saknas, om biytan inte har ett val, eller om du kryssat i krångligt utan att skriva något.',
+    what: 'Knappen heter Få min offert. Tre steg: bostäderna, bohaget, offert på väg. Offerten räknas på hemmet, ingen blir uppringd som pitch. Stoppar om boarea saknas, om biytan inte har ett val, eller om du kryssat i krångligt utan att skriva något.',
     simulated: 'Offerten kommer aldrig. Steg 3 visar väntan och nästa steg.',
   },
   { where: 'Bredband', what: 'Riktiga bredbandsval för adressen.', simulated: 'Beställningen går inte iväg.' },
-  { where: 'Redan fixat', what: 'Kortet viks ihop och landar i Snabböversikt. Där går det att återställa.', simulated: 'Inget.' },
+  { where: 'Redan fixat', what: 'En chip med tom bockcirkel på varje kort. Bocka i, kortet viks ihop och landar i Snabböversikt med en rad som säger hur det blev klart. Där går det att återställa.', simulated: 'Inget.' },
+  {
+    where: 'Lägg till något eget',
+    what: 'Färdiga förslag som Eftersändning och Parkeringsplats, plus ett fritt fält för allt annat. Varje tillagd punkt frågar Hur vill du göra: Jag fixar det själv eller Jag vill ha hjälp, som ger ett kvitto med svarstid och går att ångra.',
+    simulated: 'Hjälpvalet mejlar oss i skarp drift. I demon visas bara kvittot.',
+  },
+  {
+    where: 'Den orangea knappen',
+    what: 'En åt gången, alltid nästa steg. Välkomstkortet äger den tills det stängs, sedan styr kalendern: över 30 dagar kvar pekar den på flytt och städ, 14 till 30 på el, under 14 på bredband och flyttanmälan. Med 21 dagar kvar i demon blir elavtalet orange när välkomstkortet stängts.',
+    simulated: 'Inget.',
+  },
   { where: 'Från, Till, När', what: 'Fäll ut och ändra. Kalenderknappen lägger till separat inflyttningsdatum.', simulated: 'Inget.' },
 ]
 
@@ -192,7 +208,7 @@ export default function DemoStartPage() {
 
         <Section title="Bra att veta">
           <div className="flex flex-col gap-2">
-            <Note title="Omladdning nollställer">Laddar du om sidan mitt i ett tjänsteflöde börjar flödet om. Det är demon, inte appen.</Note>
+            <Note title="Omladdning nollställer det mesta">Laddar du om sidan mitt i ett tjänsteflöde börjar flödet om. Bokat städ och tillagda egna punkter kan också nollas. Det är demon, inte appen.</Note>
             <Note title="Ekvägen 8 finns inte i Göteborg">Skriver du in samma adress i säljarresan föreslår Google Grästorp. Välj vilken riktig adress som helst.</Note>
             <Note title="Kartan kan vara grå ett ögonblick">Onboardingens karta laddas efter adressen. Vänta en sekund innan du dömer.</Note>
             <Note title="Länkar som börjar på /app/">Det är den riktiga appen och fungerar inte i demon. Håll dig till länkar under {BASE.replace('https://', '')}/demo.</Note>
