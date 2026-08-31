@@ -1,3 +1,4 @@
+import { ChecklistItem } from 'types/checklist'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChecklistCardItem } from 'types/checklist'
@@ -20,11 +21,12 @@ const ADDABLE_TODOS = ['mail', 'tv', 'parking', 'waste', 'alarm', 'school'] as c
 interface ActivitiesSectionProps {
   movehelpFirst?: boolean
   showElHook?: boolean
+  daysToMove?: number | null
   highlightNext?: boolean
   checklistItems: ChecklistCardItem[]
 }
 
-const ActivitiesSection = ({ checklistItems, highlightNext = false, movehelpFirst = false, showElHook = false }: ActivitiesSectionProps) => {
+const ActivitiesSection = ({ checklistItems, highlightNext = false, movehelpFirst = false, showElHook = false, daysToMove = null }: ActivitiesSectionProps) => {
   const {
     user: {
       currentMove: { movehelp },
@@ -95,12 +97,15 @@ const ActivitiesSection = ({ checklistItems, highlightNext = false, movehelpFirs
   const displayList = [...activitiesList].sort((a, b) => rank(a.type) - rank(b.type))
 
   // Första öppna tjänstekortet är nästa steg och får den orangea knappen.
-  const nextId = highlightNext
-    ? displayList.find((item) => {
-        const tr = checklistItems.find((a) => a.name === item.type)
-        return !!tr?.linkUrl && item.type !== 'custom' && !isUserExcludedFromService(item.type as ReducedServiceTypes)
-      })?.id
-    : undefined
+  const openService = (item: ChecklistItem) => {
+    const tr = checklistItems.find((a) => a.name === item.type)
+    return !!tr?.linkUrl && item.type !== 'custom' && !isUserExcludedFromService(item.type as ReducedServiceTypes)
+  }
+  const openList = displayList.filter(openService)
+  // Kalendern styr: över 30 dagar kvar pekar knappen på flytt/städ (först i listan),
+  // 14-30 på el, under 14 på bredband och flyttanmälan. Regel 2 på Flyttsidan · regler.
+  const preferred = daysToMove == null || daysToMove > 30 ? [] : daysToMove >= 14 ? ['power'] : ['internet', 'addresschange']
+  const nextId = highlightNext ? (preferred.map((t) => openList.find((i) => i.type === t)).find(Boolean) ?? openList[0])?.id : undefined
 
   return (
     <div className={containerVariants({ isFullList: activitiesList?.length === 6 })}>

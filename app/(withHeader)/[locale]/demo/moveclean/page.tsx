@@ -1,14 +1,21 @@
-import ClientPage from '../../app/moveclean/ClientPage'
+import { Suspense } from 'react'
+import Loading from '../../app/loading'
+import DemoUserBoundary from '../_components/DemoUserBoundary'
+import DemoMovecleanFlow from './_components/DemoMovecleanFlow'
 
 /**
- * Flyttstädning som ren frontendvisning. Providern hämtar sin data som vanligt,
- * men anropen fångas av demoFetch i common/utils/api.ts eftersom sökvägen
- * innehåller /demo.
+ * Flyttstädning som hyllvara: fast pris efter RUT, bokas direkt i två steg,
+ * flytten erbjuds i flödet. Regel 5 på artboarden Flyttsidan · regler.
+ * Skarpa templaten i templates/MoveClean är orörd.
  */
 export default function DemoMovecleanPage() {
   return (
-    <main className="motion-safe:animate-[rise_.4s_var(--ease-out-expo)_both]">
-      <ClientPage />
+    <main>
+      <Suspense fallback={<Loading />}>
+        <DemoUserBoundary>
+          <DemoMovecleanFlow />
+        </DemoUserBoundary>
+      </Suspense>
     </main>
   )
 }

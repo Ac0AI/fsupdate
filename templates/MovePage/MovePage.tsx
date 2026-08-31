@@ -132,6 +132,8 @@ const MovePage: React.FC<MovePageProps> = ({ completedBookings }) => {
   const movehelpFirst = isBigOrLongMove({ fromCity: fromAddress?.city, toCity: toAddress?.city, fromResidenceSize })
   // Rabattkroken på elkortet gäller när städet är bokat via oss, inte fixat själv.
   const cleanBooked = !!(moveclean?.lockedAt || moveclean?.completedAt)
+  // Kalendern styr den orangea knappen: el när det är 14-30 dagar kvar, bredband och flyttanmälan därunder.
+  const daysToMove = movingDate ? Math.ceil((new Date(movingDate).getTime() - Date.now()) / 86400000) : null
 
   if (!theme && isLoading)
     return (
@@ -156,7 +158,7 @@ const MovePage: React.FC<MovePageProps> = ({ completedBookings }) => {
         )}
         <MoveTimeline movingDate={movingDate} startedAt={createdAt} completed={completedTasks} total={totalTasks} />
         {/* En orange knapp per vy: välkomstkortet medan det syns, sedan första öppna kortet. */}
-        <ActivitiesSection checklistItems={checklistItems} highlightNext={!welcomeVisible} movehelpFirst={movehelpFirst} showElHook={cleanBooked} />
+        <ActivitiesSection checklistItems={checklistItems} highlightNext={!welcomeVisible} movehelpFirst={movehelpFirst} showElHook={cleanBooked} daysToMove={daysToMove} />
         <CompletedBookingsSection initialBookings={completedBookings} />
         <CompletedItemsList checklistItems={checklistItemsCompleted} />
       </div>

@@ -16,6 +16,8 @@ export type DemoSession = {
   toAddress: DemoAddress | null
   movingDate: string
   onboarded: boolean
+  // Städet bokat via demoflödet: flyttsidan tänder elkortets 100 kr-krok på den.
+  cleanBooked?: boolean
 }
 
 // Bostaden som sålts via mäklaren. Köparen får den från SPAR, säljaren från affären.
@@ -89,6 +91,7 @@ export const getDemoUser = () => {
       toAddress: s.toAddress ?? emptyAddress,
       movingDate: s.movingDate,
       addressStatus: s.toAddress ? 'ready' : 'empty',
+      moveclean: s.cleanBooked ? { ...demoUser.currentMove.moveclean, lockedAt: '2026-08-31T10:00:00.000Z', state: 'locked' } : demoUser.currentMove.moveclean,
     },
     profile: {
       ...demoUser.profile,
