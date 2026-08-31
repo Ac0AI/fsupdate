@@ -46,6 +46,12 @@
     "welcomeTextSubSection": "Start with electricity. Three minutes, and the power is on when you move in.",
     "getQuotations": "Get the best electricity deal for your address",
     "getQuotationsHint": "Save 1 035 kr with Flyttsmart’s exclusive discount",
+    "welcomeTextSubSectionMovehelp": "Start with the moving and cleaning, they get booked up first. The electricity deal takes three minutes whenever you like.",
+    "welcomeTextSubSectionMoveclean": "Start with the cleaning, it gets booked up first. The electricity deal takes three minutes whenever you like.",
+    "getQuotationsMovehelp": "Get my moving and cleaning quote",
+    "getQuotationsHintMovehelp": "Calculated on your home. Ready within one working day.",
+    "getQuotationsMoveclean": "Book the cleaning",
+    "getQuotationsHintMoveclean": "Fixed price after RUT. Done in two minutes.",
     "currentForYourMove": "Next step for your move",
     "movingCoordinator": "/{{name}}, movecoordinator"
   },
@@ -99,7 +105,8 @@
     "remove": "Remove",
     "doneYourself": "You handled it yourself",
     "doneWithHelp": "Done with our help",
-    "markedDone": "You marked it as already done"
+    "markedDone": "You marked it as already done",
+    "elHookAfterClean": "Sign now: 100 kr off your cleaning"
   },
   "STARTNEWMOVEMODAL": {
     "startNewMoveTitle": "Start new move",

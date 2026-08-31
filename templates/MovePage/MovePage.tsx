@@ -9,6 +9,7 @@ import { useUserContext } from '@/common/context/user/UserProvider'
 import { ActivityEnum } from '@/common/types/activity'
 import { Booking } from '@/types/booking'
 import Spinner, { SpinnerWrapper } from '@/components/atoms/Spinner'
+import { isBigOrLongMove } from '@/common/utils/moveProfile'
 import { movePageWrapperClasses } from './MovePage.variants'
 import ActivitiesSection from './Sections/ActivitiesSection/ActivitiesSection'
 import CompletedItemsList from './Sections/CompletedItemsList'
@@ -38,7 +39,7 @@ const MovePage: React.FC<MovePageProps> = ({ completedBookings }) => {
   const {
     user: {
       profile: { phone, email, fullName, leadDetails },
-      currentMove: { toAddress, movingDate, createdAt, power, internet, movehelp, moveclean, insurance },
+      currentMove: { toAddress, fromAddress, fromResidenceSize, movingDate, createdAt, power, internet, movehelp, moveclean, insurance },
       hasFetchedData,
     },
   } = userData
@@ -127,6 +128,11 @@ const MovePage: React.FC<MovePageProps> = ({ completedBookings }) => {
 
   const welcomeVisible = showWelcomeSection && !!toAddress?.street?.length && !skippedActivities.find((item) => item.type === ActivityEnum.MOVEHELP)
 
+  // Stor eller lång flytt: flytthjälpen är den bästa affären och ligger överst.
+  const movehelpFirst = isBigOrLongMove({ fromCity: fromAddress?.city, toCity: toAddress?.city, fromResidenceSize })
+  // Rabattkroken på elkortet gäller när städet är bokat via oss, inte fixat själv.
+  const cleanBooked = !!(moveclean?.lockedAt || moveclean?.completedAt)
+
   if (!theme && isLoading)
     return (
       <div className={movePageWrapperClasses()}>
@@ -140,10 +146,17 @@ const MovePage: React.FC<MovePageProps> = ({ completedBookings }) => {
     <>
       <div className={clsx(movePageWrapperClasses(), 'stagger-rise')} data-testid="move-page-container">
         <TopSection />
-        {welcomeVisible && <WelcomeSection setShowWelcomeSection={setShowWelcomeSection} assignedMcAdminId={assignedMcAdmin?.id} assignedMcAdminName={assignedMcAdmin?.name} />}
+        {welcomeVisible && (
+          <WelcomeSection
+            movehelpFirst={movehelpFirst}
+            setShowWelcomeSection={setShowWelcomeSection}
+            assignedMcAdminId={assignedMcAdmin?.id}
+            assignedMcAdminName={assignedMcAdmin?.name}
+          />
+        )}
         <MoveTimeline movingDate={movingDate} startedAt={createdAt} completed={completedTasks} total={totalTasks} />
         {/* En orange knapp per vy: välkomstkortet medan det syns, sedan första öppna kortet. */}
-        <ActivitiesSection checklistItems={checklistItems} highlightNext={!welcomeVisible} />
+        <ActivitiesSection checklistItems={checklistItems} highlightNext={!welcomeVisible} movehelpFirst={movehelpFirst} showElHook={cleanBooked} />
         <CompletedBookingsSection initialBookings={completedBookings} />
         <CompletedItemsList checklistItems={checklistItemsCompleted} />
       </div>

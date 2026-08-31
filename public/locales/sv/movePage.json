@@ -44,6 +44,12 @@
     "welcomeTextSubSection": "Börja med elavtalet. Tre minuter, sen är strömmen på när du flyttar in.",
     "getQuotations": "Få det bästa elavtalet för din adress",
     "getQuotationsHint": "Spara 1 035 kr med Flyttsmarts unika rabatt",
+    "welcomeTextSubSectionMovehelp": "Börja med flytten och städet, de bokas upp först. Elavtalet tar tre minuter när du vill.",
+    "welcomeTextSubSectionMoveclean": "Börja med städet, det bokas upp först. Elavtalet tar tre minuter när du vill.",
+    "getQuotationsMovehelp": "Få min offert på flytt och städ",
+    "getQuotationsHintMovehelp": "Räknad på ditt hem. Klar inom en vardag.",
+    "getQuotationsMoveclean": "Boka flyttstädningen",
+    "getQuotationsHintMoveclean": "Fast pris efter RUT. Klart på två minuter.",
     "currentForYourMove": "Aktuellt för din flytt",
     "movingCoordinator": "/{{name}}, flyttkoordinator"
   },
@@ -96,7 +102,8 @@
     "remove": "Ta bort",
     "doneYourself": "Du fixade det själv",
     "doneWithHelp": "Fixat med vår hjälp",
-    "markedDone": "Du markerade det som redan fixat"
+    "markedDone": "Du markerade det som redan fixat",
+    "elHookAfterClean": "Teckna nu: 100 kr rabatt på städet"
   },
   "STARTNEWMOVEMODAL": {
     "startNewMoveTitle": "Starta ny flytt",

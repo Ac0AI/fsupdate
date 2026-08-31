@@ -18,11 +18,13 @@ import { containerVariants, emptyListVariants, spinnerWrapperVariants } from './
 const ADDABLE_TODOS = ['mail', 'tv', 'parking', 'waste', 'alarm', 'school'] as const
 
 interface ActivitiesSectionProps {
+  movehelpFirst?: boolean
+  showElHook?: boolean
   highlightNext?: boolean
   checklistItems: ChecklistCardItem[]
 }
 
-const ActivitiesSection = ({ checklistItems, highlightNext = false }: ActivitiesSectionProps) => {
+const ActivitiesSection = ({ checklistItems, highlightNext = false, movehelpFirst = false, showElHook = false }: ActivitiesSectionProps) => {
   const {
     user: {
       currentMove: { movehelp },
@@ -82,9 +84,19 @@ const ActivitiesSection = ({ checklistItems, highlightNext = false }: Activities
     )
   }
 
+  // Ordningen: stor eller lång flytt sätter flytthjälpen överst, annars städet.
+  // Sedan el, bredband, flyttanmälan och sist försäkring. Egna punkter ligger kvar sist.
+  const rank = (type: string) => {
+    const base: Record<string, number> = movehelpFirst
+      ? { movehelp: 10, moveclean: 11, power: 20, internet: 30, addresschange: 40, insurance: 50 }
+      : { moveclean: 10, movehelp: 11, power: 20, internet: 30, addresschange: 40, insurance: 50 }
+    return base[type] ?? 90
+  }
+  const displayList = [...activitiesList].sort((a, b) => rank(a.type) - rank(b.type))
+
   // Första öppna tjänstekortet är nästa steg och får den orangea knappen.
   const nextId = highlightNext
-    ? activitiesList.find((item) => {
+    ? displayList.find((item) => {
         const tr = checklistItems.find((a) => a.name === item.type)
         return !!tr?.linkUrl && item.type !== 'custom' && !isUserExcludedFromService(item.type as ReducedServiceTypes)
       })?.id
@@ -102,7 +114,7 @@ const ActivitiesSection = ({ checklistItems, highlightNext = false }: Activities
       ) : (
         <>
           <div className="stagger-rise">
-            {activitiesList?.map((item) => (
+            {displayList?.map((item) => (
               <Activity
                 item={item}
                 key={item.id}
@@ -110,9 +122,12 @@ const ActivitiesSection = ({ checklistItems, highlightNext = false }: Activities
                 logoToDisplay={isUserExcludedFromService(item.type as ReducedServiceTypes) && inviterLogoUrl ? inviterLogoUrl : undefined}
                 isUserExcludedFromService={isUserExcludedFromService(item.type as ReducedServiceTypes)}
                 isExternalMovecleanOfferCustomer={SERVICE_DENY_LIST.moveclean_seperate_provider?.includes(partnerId)}
-                translationItem={checklistItems.find((activityItem) => {
-                  if (activityItem.name === item.type) return item
-                })}
+                translationItem={(() => {
+                  const tr = checklistItems.find((activityItem) => activityItem.name === item.type)
+                  // Motprestationen: bokat städ ger 100 kr rabatt vid el-teckning. Bara då byter pillen budskap.
+                  if (tr && item.type === 'power' && showElHook) return { ...tr, highlight: t('movePage:CHECKLIST_SECTION.elHookAfterClean') }
+                  return tr
+                })()}
               />
             ))}
           </div>

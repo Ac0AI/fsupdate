@@ -11,12 +11,13 @@ import { welcomeSectionWrapperVariants, closeWrapperVariants, styledFlexVariants
 import { toDemoPath } from '@/common/utils/demoNavigation'
 
 interface WelcomeSectionProps {
+  movehelpFirst: boolean
   setShowWelcomeSection: (value: boolean) => void
   assignedMcAdminId?: string
   assignedMcAdminName?: string
 }
 
-const WelcomeSection = ({ setShowWelcomeSection, assignedMcAdminId, assignedMcAdminName }: WelcomeSectionProps) => {
+const WelcomeSection = ({ movehelpFirst, setShowWelcomeSection, assignedMcAdminId, assignedMcAdminName }: WelcomeSectionProps) => {
   const { t } = useTranslation('movePage')
   const router = useRouter()
   const { isTabletPortraitOrGreater } = useResponsive()
@@ -43,7 +44,7 @@ const WelcomeSection = ({ setShowWelcomeSection, assignedMcAdminId, assignedMcAd
                   {t('WELCOME_SECTION.welcomeText')}
                 </Text>
                 <Text spacing="none" style={{ color: 'var(--fs-colors-secondaryDark)', fontSize: 'var(--fs-fontSizes-5)', textAlign: isTabletPortraitOrGreater ? 'left' : 'left' }}>
-                  {t('WELCOME_SECTION.welcomeTextSubSection')}
+                  {t(movehelpFirst ? 'WELCOME_SECTION.welcomeTextSubSectionMovehelp' : 'WELCOME_SECTION.welcomeTextSubSectionMoveclean')}
                 </Text>
                 <Flex alignItems="end" style={{ paddingTop: 13 }} justifyContent={isTabletPortraitOrGreater ? 'start' : 'start'}>
                   <div style={{ borderRadius: '50%', border: '1px solid #bfbfbf', width: 32, height: 32, overflow: 'hidden' }}>
@@ -73,11 +74,11 @@ const WelcomeSection = ({ setShowWelcomeSection, assignedMcAdminId, assignedMcAd
                   withMaxContentWidth={isTabletPortraitOrGreater}
                   withFullWidth={!isTabletPortraitOrGreater}
                   padding={isTabletPortraitOrGreater ? '4px 32px' : '10px 16px 10px 32px'}
-                  text={t('WELCOME_SECTION.getQuotations')}
-                  onClick={() => router.push(toDemoPath('/app/electricity'))}
+                  text={t(movehelpFirst ? 'WELCOME_SECTION.getQuotationsMovehelp' : 'WELCOME_SECTION.getQuotationsMoveclean')}
+                  onClick={() => router.push(toDemoPath(movehelpFirst ? '/app/movehelp' : '/app/moveclean'))}
                 />
                 <span className="text-[13px] leading-[18px] font-semibold text-[var(--color-primary-dark)] text-center md:text-right">
-                  {t('WELCOME_SECTION.getQuotationsHint')}
+                  {t(movehelpFirst ? 'WELCOME_SECTION.getQuotationsHintMovehelp' : 'WELCOME_SECTION.getQuotationsHintMoveclean')}
                 </span>
               </div>
             </Flex>
