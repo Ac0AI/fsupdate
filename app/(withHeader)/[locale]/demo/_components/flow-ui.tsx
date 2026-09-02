@@ -21,9 +21,9 @@ export const pressSoft = 'motion-safe:active:scale-[0.99]'
 export const rise = 'animate-[rise_.35s_ease-out_both] motion-reduce:animate-none'
 
 export const areaInput =
-  'w-full h-11 rounded-[5px] border-[1.9px] border-[#76767666] px-3 text-base text-[#000000B3] focus:outline-none focus:border-[#51C8B4] transition-colors'
+  'w-full h-11 rounded-[5px] border-[1.9px] border-[#76767666] px-3 text-base text-[#214766] placeholder:text-[#9F9FA1] focus:outline-none focus:border-[#51C8B4] transition-colors'
 export const textareaClass =
-  'resize-none w-full min-h-[72px] rounded-[5px] border-[1.9px] border-[#76767666] px-3 py-2.5 text-base leading-[21px] text-[#000000B3] bg-white focus:outline-none focus:border-[#51C8B4] transition-colors'
+  'resize-none w-full min-h-[72px] rounded-[5px] border-[1.9px] border-[#76767666] px-3 py-2.5 text-base leading-[21px] text-[#214766] placeholder:text-[#9F9FA1] bg-white focus:outline-none focus:border-[#51C8B4] transition-colors'
 export const errorBorder = 'border-[var(--color-error-red)] focus:border-[var(--color-error-red)]'
 // Samma ram som textfälten, med systemets egen pil. Bakgrunden måste sättas,
 // annars ärver select en grå ton på iOS.
@@ -65,9 +65,7 @@ export const StepBar = ({ step, titles, hints, label, complete, contentClassName
                   <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden className="shrink-0">
                     <path d="M5 12.5l4.5 4.5L19 8" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                ) : (
-                  <span className="tabular-nums">{i + 1}.</span>
-                )}
+                ) : null}
                 <span className="truncate">{t}</span>
               </span>
             </li>
@@ -151,7 +149,7 @@ export const Pill = ({ active, small, onClick, children }: { active: boolean; sm
     onClick={onClick}
     className={clsx(
       'flex-1 md:flex-none md:px-5 md:min-w-[64px] rounded-full text-[13px] flex items-center justify-center gap-1.5 border-[1.5px] whitespace-nowrap text-[#214766]',
-      small ? 'h-10 px-2' : 'h-11',
+      small ? 'h-10 px-2' : 'h-11 px-3.5',
       press,
       pressScale,
       active ? 'bg-[#51C8B4] border-[#51C8B4] font-semibold' : 'bg-white border-[#D5D6DA] hover:border-[#51C8B4]/60',
@@ -403,8 +401,8 @@ export const Primary = ({
   </button>
 )
 
-// Den enda stilen för "visa mer": navy text, 44 px hög rad. Plus bara när något läggs till;
-// ändra och anpassa är ren text. Understrykning är bara för Villkor.
+// Den enda stilen för sekundära handlingar: navy text, 44 px hög rad, plus när något
+// läggs till och chevron när något öppnas eller ändras. Understrykning är bara för Villkor.
 export const MoreLink = ({ onClick, plus, className, children }: { onClick: () => void; plus?: boolean; className?: string; children: React.ReactNode }) => (
   <button
     type="button"
@@ -417,6 +415,7 @@ export const MoreLink = ({ onClick, plus, className, children }: { onClick: () =
       </svg>
     )}
     {children}
+    {!plus && <Chevron size={14} />}
   </button>
 )
 

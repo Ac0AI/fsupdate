@@ -3,37 +3,30 @@
 import Image from 'next/image'
 import { coordinators } from '@/common/data/coordinators'
 
-const Arrow = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden className="shrink-0">
-    <path d="M5 12h14m-6-6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-
 // Bakgrund på länkar kräver ! : resetten nollar background-color på <a>.
 const primaryButton =
-  'inline-flex items-center justify-center gap-2 min-h-11 px-6 rounded-full bg-[var(--color-primary-main)]! text-[var(--color-secondary-main)] font-bold text-[15px] hover:opacity-90 transition-opacity whitespace-nowrap'
+  'inline-flex items-center justify-center min-h-11 px-6 rounded-full bg-[var(--color-primary-main)]! text-[var(--color-secondary-main)] font-bold text-[15px] hover:opacity-90 transition-opacity whitespace-nowrap'
 const outlineButton =
-  'inline-flex items-center justify-center gap-2 min-h-11 px-6 rounded-full border-2 border-white/60 text-white font-bold text-[15px] hover:bg-white/10! transition-colors whitespace-nowrap'
+  'inline-flex items-center justify-center min-h-11 px-6 rounded-full border-2 border-white text-white font-bold text-[15px] hover:bg-white/10! transition-colors whitespace-nowrap'
 
 // ─── Hero: vad partnern får, sedan valet ─────────────────────────────────────
 
 const PartnersIntro = () => (
   <section className="bg-[var(--color-secondary-main)] text-white">
-    <div className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 md:pt-16 pb-12 md:pb-16">
+    <div className="max-w-[1200px] mx-auto px-4 md:px-8 pt-8 md:pt-16 pb-12 md:pb-16">
       <div className="max-w-[680px] mb-10">
         <h1 className="text-[32px] md:text-[44px] font-bold mb-4 leading-[1.1] text-balance">Dina kunder får en flyttkoordinator. Du står som avsändare.</h1>
         <p className="text-white/80 text-lg leading-relaxed">
-          Mäklare, hyresvärdar och föreningar skickar kunderna. Flyttfirmor, elbolag och andra leverantörer utför jobbet. Flyttsmart håller ihop flytten och tar ansvaret när något går fel.
+          Kunden får en namngiven koordinator. Går något fel tar vi ansvaret, inte du.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Mäklare, hyresvärdar och föreningar</h2>
-          <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten, i ditt namn. Kostnadsfritt, vi tar betalt av leverantörerna.</p>
+          <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten och du syns som avsändare genom hela flytten. Kostnadsfritt, vi tar betalt av leverantörerna.</p>
           <a href="#distributionspartners" className={`mt-2 ${primaryButton}`}>
             Bli partner
-            <Arrow />
           </a>
         </div>
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
@@ -41,7 +34,6 @@ const PartnersIntro = () => (
           <p className="text-white/70 text-sm leading-relaxed">Du levererar tjänsten. Vi skickar kunder som ska flytta inom några veckor. Du betalar per uppdrag.</p>
           <a href="#leverantorer" className={`mt-2 ${outlineButton}`}>
             Ansök som leverantör
-            <Arrow />
           </a>
         </div>
       </div>
@@ -98,18 +90,19 @@ const SectionHeader = ({ title, text }: { title: string; text: string }) => (
   </div>
 )
 
+// De tre som nämns i steget, med förnamn. Inte hela laget som en avatarhög.
+const TEAM = ['nina-fredriksson', 'joel-berg', 'maria-karlsson']
+
 const Coordinators = () => (
-  <span className="flex items-center mt-3">
-    {coordinators.map((c, i) => (
-      <Image
-        key={c.id}
-        src={`${c.imageKitPath.split('?')[0]}?tr=w-96,h-96,fo-face`}
-        alt={c.name}
-        width={32}
-        height={32}
-        className={`w-8 h-8 rounded-full object-cover ring-2 ring-white ${i > 0 ? '-ml-2' : ''}`}
-      />
-    ))}
+  <span className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3">
+    {coordinators
+      .filter((c) => TEAM.includes(c.id))
+      .map((c) => (
+        <span key={c.id} className="flex items-center gap-2">
+          <Image src={`${c.imageKitPath.split('?')[0]}?tr=w-96,h-96,fo-face`} alt="" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
+          <span className="text-sm font-semibold text-[var(--color-secondary-main)]">{c.name.split(' ')[0]}</span>
+        </span>
+      ))}
   </span>
 )
 
@@ -147,7 +140,6 @@ const Cta = ({ title, href, label }: { title: string; href: string; label: strin
     <h3 className="text-lg md:text-xl font-bold text-white text-balance">{title}</h3>
     <a href={href} className={`${primaryButton} shrink-0`}>
       {label}
-      <Arrow />
     </a>
   </div>
 )
@@ -160,13 +152,11 @@ const brokerSteps = [
   { title: 'Kunden får en koordinator', description: 'Nina, Joel eller Maria bokar, följer upp och svarar i chatten, på mejl och i telefon.', people: true },
 ]
 
-const distributionBenefits = ['Du syns som avsändare genom hela flytten', 'Går något fel hör kunden av sig till oss, inte till dig']
-
 const DistributionPartners = () => (
   <section id="distributionspartners" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-16 md:pt-16 md:pb-24">
     <SectionHeader
       title="Skicka dina kunder till en flytt de kommer minnas."
-      text="Alla som möter personer på väg in i en ny bostad: mäklare, hyresvärdar, bostadsrättsföreningar och nyproduktion. Vi gör flytten enkel för dina kunder, helt utan kostnad för dig."
+      text="Vi gör flytten enkel för dina kunder och du står som avsändare, helt utan kostnad för dig."
     />
 
     <div className="mb-14 md:mb-16">
@@ -174,9 +164,7 @@ const DistributionPartners = () => (
       <Steps items={brokerSteps} cols={3} />
     </div>
 
-    <Bullets title="Det får du" items={distributionBenefits} />
-
-    <Cta title="Vill du erbjuda Flyttsmart till dina kunder?" href="mailto:partner@flyttsmart.se" label="Kontakta oss" />
+    <Cta title="Vill du erbjuda Flyttsmart till dina kunder?" href="mailto:partner@flyttsmart.se" label="Bli partner" />
   </section>
 )
 
@@ -195,13 +183,8 @@ const Suppliers = () => (
   <section id="leverantorer" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-16 md:pt-16 md:pb-24">
     <SectionHeader
       title="Nå kunder i exakt rätt ögonblick."
-      text="Varje månad flyttar tusentals svenskar genom Flyttsmart. De behöver flytt, städ, el, bredband och försäkring, och de letar efter leverantörer just nu. Vi kopplar ihop er, men bara om du håller måttet."
+      text="Varje månad flyttar tusentals svenskar genom Flyttsmart. De behöver flyttfirma, städbolag, el, bredband, försäkring och hantverkare, och de letar just nu. Vi kopplar ihop er, men bara om du håller måttet."
     />
-
-    <div className="mb-14 md:mb-16 max-w-[640px]">
-      <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-2">Leverantörer vi samarbetar med</h3>
-      <p className="text-[var(--color-secondary-main)] text-[15px] leading-relaxed">Flyttfirmor, städbolag, elbolag, bredbandsoperatörer, försäkringsbolag och hantverkare.</p>
-    </div>
 
     <Bullets title="Varför leverantörer väljer Flyttsmart" items={supplierBenefits} />
 
