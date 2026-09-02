@@ -82,7 +82,7 @@
     "timelineToday": "Idag",
     "daysUntilMoveIn_one": "{{count}} dag till inflytt",
     "daysUntilMoveIn_other": "{{count}} dagar till inflytt",
-    "alreadyDone": "Redan fixat",
+    "alreadyDone": "Markera som klar",
     "addOwn": "Lägg till något eget",
     "addOwnHint": "Saknas något? Lägg till det i din lista.",
     "addOwnOther": "Något annat?",

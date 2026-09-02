@@ -40,7 +40,7 @@ const CHECKLIST_AREAS = [
     simulated: 'Offerten kommer aldrig. Steg 3 visar väntan och nästa steg.',
   },
   { where: 'Bredband', what: 'Riktiga bredbandsval för adressen.', simulated: 'Beställningen går inte iväg.' },
-  { where: 'Redan fixat', what: 'En chip med tom bockcirkel på varje kort. Bocka i, kortet viks ihop och landar i Snabböversikt med en rad som säger hur det blev klart. Där går det att återställa.', simulated: 'Inget.' },
+  { where: 'Markera som klar', what: 'En textlänk under texten på varje kort. Bocka i, kortet viks ihop och landar i Snabböversikt med en rad som säger hur det blev klart. Där går det att återställa.', simulated: 'Inget.' },
   {
     where: 'Lägg till något eget',
     what: 'Färdiga förslag som Eftersändning och Parkeringsplats, plus ett fritt fält för allt annat. Varje tillagd punkt frågar Hur vill du göra: Jag fixar det själv eller Jag vill ha hjälp, som ger ett kvitto med svarstid och går att ångra.',

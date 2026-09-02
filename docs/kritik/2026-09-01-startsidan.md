@@ -66,3 +66,6 @@ Hade låtit hero-rubriken säga vad tjänsten gör (el, bredband, flytt, städ, 
 Byggt: sektionen "Dina flyttkoordinatorer" med Nina, Joel och Maria efter Så går det till, slutknappen "Redo? Det tar två minuter." efter FAQ och en sticky "Starta din flytt" på mobil som visas när herons knapp scrollat ur bild och döljs vid slutknappen. Ägaren behåller "Just nu"-feeden tills riktig data hämtas vid go-live. Inte rört: taglinen, heron, FAQ-copyn, "Vi rekommenderar. Du väljer.".
 
 Tjänsteöversikten "Det här ingår" byggdes och togs bort samma dag på ägarens beslut ("blev bara lökig"). Gap 2 står därmed öppet, löses på annat sätt än en tabell.
+
+## Beslut 2026-09-02, senare på dagen
+Heron återställd till den mörka ("Slipp stressen – vi fixar flytten", telefonen) på ägarens beslut. Sidfoten, kontaktraden och slutknappen är navy-deep, samma ton som de mörka banden på Utland som Sebastian gillar. Paper-artboarden Startsida speglar sajten sektion för sektion: Header, Hero, Mäklarlogotyper, Bevisblock, Omdömen, Så går det till, Koordinatorerna, Liveflöde, FAQ, Slutknapp, Kontakt, Sidfot.

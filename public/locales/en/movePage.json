@@ -85,7 +85,7 @@
     "timelineToday": "Today",
     "daysUntilMoveIn_one": "{{count}} day until move-in",
     "daysUntilMoveIn_other": "{{count}} days until move-in",
-    "alreadyDone": "Already done",
+    "alreadyDone": "Mark as done",
     "addOwn": "Add something of your own",
     "addOwnHint": "Missing something? Add it to your list.",
     "addOwnOther": "Something else?",

@@ -49,8 +49,9 @@ interface Props {
 }
 
 // Sekundära handlingar på kortet. Tydligt klickbara, aldrig i konkurrens med CTA:n.
-const secondaryChip =
-  'inline-flex items-center gap-1.5 h-9 md:h-8 pl-2.5 pr-3 rounded-full border-[1.5px] border-[var(--color-inactive-main)] bg-white text-[13px]! font-medium text-[var(--color-inactive-dark)] transition-[border-color,color,background-color,transform] duration-200 ease-out motion-safe:active:scale-[0.97]'
+// Kundens handlingar under texten: textlänk, inte chip, så de inte tävlar med pillen och knappen.
+const actionLink =
+  'inline-flex items-center gap-1.5 min-h-9 md:min-h-8 text-[13px]! font-medium text-[var(--color-inactive-dark)] underline-offset-4 hover:underline transition-colors duration-200 ease-out'
 
 export const Activity = ({ item, translationItem, isUserExcludedFromService, logoToDisplay, isExternalMovecleanOfferCustomer, isNext = false }: Props) => {
   const { t, i18n } = useTranslation(['movePage'])
@@ -197,12 +198,13 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                       {translationItem.highlight}
                     </div>
                   )}
-                  {/* Kundens egna handlingar: chips som ser ut som val, inte som status. Cirkeln är tom tills man bockar. */}
-                  <div className="flex flex-wrap items-center gap-2 mt-2.5">
+                  {/* Kundens egna handlingar: stillsamma textlänkar under texten, samma på mobil och desktop
+                      (Paper: Flyttsidan och Flyttsidan mobil). Bocken syns först när man markerat. */}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
                     {isTodo && (
                       <button
                         type="button"
-                        className={clsx(secondaryChip, 'hover:border-[var(--color-error-red)] hover:text-[var(--color-error-red)]')}
+                        className={clsx(actionLink, 'hover:text-[var(--color-error-red)]')}
                         onClick={(e) => {
                           e.stopPropagation()
                           removeItem(item.type as TodoType, item.id)
@@ -217,13 +219,7 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                     <button
                       type="button"
                       aria-pressed={ticked}
-                      className={clsx(
-                        secondaryChip,
-                        'group/chip',
-                        ticked
-                          ? 'border-[var(--color-primary-main)] bg-[#F4FCFA] text-[var(--color-primary-dark)]'
-                          : 'hover:border-[var(--color-primary-main)] hover:bg-[#F4FCFA] hover:text-[var(--color-primary-dark)]',
-                      )}
+                      className={clsx(actionLink, ticked ? 'text-[var(--color-primary-dark)] no-underline' : 'hover:text-[var(--color-secondary-main)]')}
                       onClick={(e) => {
                         e.stopPropagation()
                         if (ticked) return
@@ -231,29 +227,12 @@ export const Activity = ({ item, translationItem, isUserExcludedFromService, log
                         markAsDone()
                       }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden className="shrink-0">
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="9"
-                          strokeWidth="1.8"
-                          className={clsx(
-                            'transition-[fill,stroke] duration-200 ease-out',
-                            ticked ? 'fill-[var(--color-primary-main)] stroke-[var(--color-primary-main)]' : 'fill-transparent stroke-current',
-                          )}
-                        />
-                        <path
-                          d="M8 12.5l2.6 2.6L16.5 9"
-                          fill="none"
-                          strokeWidth="2.4"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className={clsx(
-                            'transition-opacity duration-200 ease-out',
-                            ticked ? 'stroke-white opacity-100' : 'stroke-current opacity-0 group-hover/chip:opacity-100',
-                          )}
-                        />
-                      </svg>
+                      {ticked && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden className="shrink-0 motion-safe:animate-[pop_.25s_ease-out_both]">
+                          <circle cx="12" cy="12" r="9" className="fill-[var(--color-primary-main)]" />
+                          <path d="M8 12.5l2.6 2.6L16.5 9" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
                       {t('CHECKLIST_SECTION.alreadyDone')}
                     </button>
                   </div>
