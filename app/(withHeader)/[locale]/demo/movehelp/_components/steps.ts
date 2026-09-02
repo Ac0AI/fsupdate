@@ -138,4 +138,4 @@ export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boo
 // Städytan är boarean plus de biytor som ska städas.
 export const cleanArea = (res: Residence) => res.size + res.secondaries.filter((s) => s.clean).reduce((sum, s) => sum + s.area, 0)
 
-export const STEP_TITLES = ['Bostaden', 'Tungt och datum', 'Offert på väg'] as const
+export const STEP_TITLES = ['Bostäderna', 'Tungt och flyttdag', 'Offert på väg'] as const

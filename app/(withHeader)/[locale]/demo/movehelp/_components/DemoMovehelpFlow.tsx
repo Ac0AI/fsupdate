@@ -67,7 +67,7 @@ const stepErrors = (step: number, req: QuoteRequest, movingDate: Date): Errors =
 // Rubriken säger var du är. Tjänstens namn och stegräknaren står som rad ovanför.
 const HERO_TITLE = ['Berätta om bostäderna', 'Tunga saker och flyttdag', 'Din offert är på väg']
 const HERO_COPY = [
-  'Du slipper ringa runt och jaga offerter. Vi har fyllt i det vi redan vet, du fyller i resten.',
+  'Vi har fyllt i det vi redan vet, du fyller i resten.',
   '',
   // Steg 3 har ingen ingress: Ninas bubbla och tidslinjen säger det direkt under.
   '',
@@ -234,7 +234,7 @@ const DemoMovehelpFlow = () => {
                 </p>
                 <textarea
                   className={clsx(textareaClass, 'mt-3')}
-                  placeholder="T.ex. piano, ca 150 kg, står i vardagsrummet. Eller lämna tomt."
+                  placeholder="T.ex. piano, ca 150 kg, står i vardagsrummet"
                   value={req.heavyNote}
                   onChange={(e) => setReq((r) => ({ ...r, heavyNote: e.target.value, heavyItems: e.target.value.trim() !== '' }))}
                 />
@@ -311,8 +311,18 @@ const DemoMovehelpFlow = () => {
             {/* Rekommendationen: packhjälp och flyttstädning på, resten bakom en länk. */}
             <div className={clsx(rise, '[animation-delay:100ms]')}>
               <Card>
-                <h3 className="text-[15px] font-bold text-[#214766]">Det här ingår i vår rekommendation</h3>
-                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1 pb-2">Varje del blir en egen rad i offerten, med rutavdraget draget. Slå av det du inte vill ha.</p>
+                <div className="flex items-center gap-2.5">
+                  <Image src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-64,h-64,fo-face" alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
+                  <h3 className="text-[15px] font-bold text-[#214766]">Ninas förslag</h3>
+                </div>
+                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-2 pb-2">Varje del blir en egen rad i offerten, med rutavdraget draget. Slå av det du inte vill ha.</p>
+                <div className="flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0]">
+                  <span className="flex flex-col gap-px">
+                    <span className="text-[13px] font-semibold text-[#214766]">Flytthjälp</span>
+                    <span className="text-xs text-[#5F6062]">Bärare, bil och försäkring, det du bad om</span>
+                  </span>
+                  <span className="text-xs font-semibold text-[#1F6156]">Ingår</span>
+                </div>
                 {ADDONS.filter((a) => a.value === 'packing' || a.value === 'moveclean').map(addonRow)}
                 {cleaning && !(cleanOpen || shownErrors.cleanDate) && (
                   <div className={clsx('pb-2 flex flex-wrap items-center justify-between gap-x-3', rise)}>
@@ -329,7 +339,7 @@ const DemoMovehelpFlow = () => {
                   ADDONS.filter((a) => a.value !== 'packing' && a.value !== 'moveclean').map(addonRow)
                 ) : (
                   <div className="pt-2 border-t border-[#EEEEF0]">
-                    <MoreLink onClick={() => setMoreAddons(true)}>Lägg till montering, magasinering eller bortforsling</MoreLink>
+                    <MoreLink onClick={() => setMoreAddons(true)}>Lägg till fler tjänster</MoreLink>
                   </div>
                 )}
               </Card>
@@ -341,7 +351,7 @@ const DemoMovehelpFlow = () => {
                 <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Parkering, portkod, tider som inte funkar.</p>
                 <textarea
                     className={clsx(textareaClass, 'mt-3')}
-                    placeholder="Skriv fritt, eller lämna tomt"
+                    placeholder="T.ex. portkod 1234"
                     value={req.note}
                     onChange={(e) => setReq((r) => ({ ...r, note: e.target.value }))}
                   />
@@ -366,7 +376,7 @@ const DemoMovehelpFlow = () => {
                 <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar vi rätt.</Foot>
               ) : (
                 <Foot>
-                  Inget är bokat förrän du sagt ja. Kostnadsfritt ·{' '}
+                  Inget är bokat förrän du sagt ja ·{' '}
                   <Link href="/terms" className="underline underline-offset-2 hover:text-[#214766]">
                     Villkor
                   </Link>
@@ -579,7 +589,7 @@ const ResidenceCard = ({
         </>
       ) : (
         <MoreLink className="mt-3" onClick={() => setMoreOpen(true)}>
-          {origin ? 'Mer om adressen: trång gata, förråd, garage eller vind' : 'Mer om adressen: trång gata eller bom'}
+          Mer om adressen
         </MoreLink>
       )}
     </Card>
@@ -796,7 +806,7 @@ const WaitingStep = ({ req, movingDate, onEdit }: { req: QuoteRequest; movingDat
             items={[
               { state: 'done', title: 'Uppgifter skickade', hint: `I dag ${time} · bekräftelse på mejl` },
               { state: 'current', title: 'Vi tar fram din offert', hint: 'Senast nästa vardag före lunch · du får SMS' },
-              { state: 'todo', title: 'Du godkänner, kompletterar eller ändrar', hint: 'Inget är bokat förrän du sagt ja' },
+              { state: 'todo', title: 'Du godkänner eller ändrar', hint: 'Inget är bokat förrän du sagt ja' },
             ]}
           />
         </Card>
@@ -811,7 +821,7 @@ const WaitingStep = ({ req, movingDate, onEdit }: { req: QuoteRequest; movingDat
           <span className="text-[15px] font-bold text-[#214766]">Dina svar</span>
           <span className="text-[13px] text-[#767678]">
             {req.from.street} → {req.to.street} · {req.dateMode === 'fixed' ? formatDate(movingDate) : req.dateMode === 'custom' && req.customDate ? formatDate(new Date(req.customDate)) : 'flexibelt datum'}
-            {addonLabels.length ? ` · ${addonLabels.join(', ')}` : ''}
+            {' · '}flytthjälp{addonLabels.length ? `, ${addonLabels.join(', ')}` : ''}
           </span>
         </span>
         <Chevron />

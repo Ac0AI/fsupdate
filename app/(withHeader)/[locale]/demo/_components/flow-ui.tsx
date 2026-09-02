@@ -23,7 +23,7 @@ export const rise = 'animate-[rise_.35s_ease-out_both] motion-reduce:animate-non
 export const areaInput =
   'w-full h-11 rounded-[5px] border-[1.9px] border-[#76767666] px-3 text-base text-[#000000B3] focus:outline-none focus:border-[#51C8B4] transition-colors'
 export const textareaClass =
-  'w-full min-h-[72px] rounded-[5px] border-[1.9px] border-[#76767666] px-3 py-2.5 text-base leading-[21px] text-[#000000B3] bg-white focus:outline-none focus:border-[#51C8B4] transition-colors'
+  'resize-none w-full min-h-[72px] rounded-[5px] border-[1.9px] border-[#76767666] px-3 py-2.5 text-base leading-[21px] text-[#000000B3] bg-white focus:outline-none focus:border-[#51C8B4] transition-colors'
 export const errorBorder = 'border-[var(--color-error-red)] focus:border-[var(--color-error-red)]'
 // Samma ram som textfälten, med systemets egen pil. Bakgrunden måste sättas,
 // annars ärver select en grå ton på iOS.
