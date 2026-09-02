@@ -29,10 +29,9 @@ const PartnersIntro = () => (
       <div className="max-w-[680px] mb-10">
         <h1 className="text-[32px] md:text-[44px] font-bold mb-4 leading-[1.1]">
           Dina kunder får en flyttkoordinator.
-          <span className="block">Du står som avsändare.</span>
         </h1>
         <p className="text-white/80 text-lg leading-relaxed">
-          Går något fel tar vi ansvaret, inte du.
+          Enklare för dem, och en kundupplevelse som sträcker sig bortom själva flytten. Går något fel tar vi ansvaret, inte du.
         </p>
       </div>
 
@@ -49,7 +48,7 @@ const PartnersIntro = () => (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Mäklare, hyresvärdar och föreningar</h2>
-          <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten och du syns som avsändare genom hela flytten. Kostnadsfritt, vi tar betalt av leverantörerna.</p>
+          <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten, enkelt för kunden och utan extra jobb för dig. Kostnadsfritt, vi tar betalt av leverantörerna.</p>
           <a href={`mailto:${CONTACTS.brokers.email}`} className={`mt-auto pt-2 ${primaryButton}`}>
             Mejla Sebastian
           </a>
