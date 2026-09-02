@@ -69,12 +69,13 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
 
   return (
     <div>
-      {/* Header + dots */}
-      <div className="flex items-end justify-between mb-8">
+      {/* Rubriken får hela bredden; navigeringen står under på mobil och till höger på
+          desktop. Prickar bara när de är få nog att träffa, annars pilar med räknare. */}
+      <div className="flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between mb-8">
         <h2 className="text-xl md:text-2xl font-bold text-[var(--color-secondary-main)]">
           {t('landing:testamonial_title')}
         </h2>
-        {maxPage > 0 && (
+        {maxPage > 0 && maxPage + 1 <= 6 && (
           <div className="flex gap-1.5">
             {Array.from({ length: maxPage + 1 }).map((_, i) => (
               <button
@@ -87,6 +88,29 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
                 aria-label={`Sida ${i + 1}`}
               />
             ))}
+          </div>
+        )}
+        {maxPage + 1 > 6 && (
+          <div className="flex items-center gap-2 self-end md:self-auto">
+            <button
+              type="button"
+              onClick={() => goToPage(page === 0 ? maxPage : page - 1)}
+              className="w-11 h-11 rounded-full border border-[var(--color-secondary-main)]/20 text-[var(--color-secondary-main)] flex items-center justify-center hover:border-[var(--color-secondary-main)] transition-colors"
+              aria-label="Föregående omdömen"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="M15 19l-7-7 7-7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <span className="text-sm text-[var(--color-secondary-main)]/60 tabular-nums min-w-[64px] text-center">
+              {page + 1} av {maxPage + 1}
+            </span>
+            <button
+              type="button"
+              onClick={() => goToPage(page >= maxPage ? 0 : page + 1)}
+              className="w-11 h-11 rounded-full border border-[var(--color-secondary-main)]/20 text-[var(--color-secondary-main)] flex items-center justify-center hover:border-[var(--color-secondary-main)] transition-colors"
+              aria-label="Nästa omdömen"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
           </div>
         )}
       </div>
@@ -137,7 +161,7 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
       <div className="flex items-center justify-center gap-2.5 mt-8">
         <GoogleIcon />
         <span className="text-[var(--color-secondary-main)]/50 text-sm">
-          {googleRating?.rating ?? '4.7'} på Google
+          {String(googleRating?.rating ?? '4.7').replace('.', ',')} på Google
         </span>
         <div className="flex gap-0.5">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -145,7 +169,7 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
               key={i}
               className={clsx(
                 'w-3.5 h-3.5',
-                i < Math.round(googleRating?.rating ?? 5) ? 'fill-amber-400' : 'fill-gray-200'
+                i < Math.floor(Number(googleRating?.rating ?? 4.7)) ? 'fill-amber-400' : 'fill-gray-200'
               )}
             />
           ))}
