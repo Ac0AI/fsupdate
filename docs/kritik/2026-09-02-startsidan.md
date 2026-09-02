@@ -53,3 +53,6 @@ Halverat sidan: hero, ett trust-band med siffra plus logotyper, tre steg, koordi
 - Mockup 02: "Rörligt elpris, 412 kr/mån, Därför just det här: elområde 3, lägsta av 14 avtal".
 - Chatten med Nina: "Flyttfirman är bokad till 14 sep. Vill du att jag lägger flyttstädet samma dag?"
 - Footern: "Har du frågor? 08-12 00 88 22 / hej@flyttsmart.se" och slut-CTA:n i full bredd på mobil.
+
+## Åtgärdat efter runda 2 (2026-09-02, "ok kör")
+Valt läge i alla flödens piller är nu mint (designsystemet), flödets steg 2 är en kolumn med städdetaljerna infällda och starttiden som länk, och "Så går det till" har brandets illustrationer i stället för telefonramar, 01/02/03 och glow. Runda 3 körs mot live.
