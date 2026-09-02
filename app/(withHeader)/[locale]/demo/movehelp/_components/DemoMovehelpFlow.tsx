@@ -1,6 +1,6 @@
 'use client'
 
-import { useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, useLayoutEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import { useIntercom } from 'react-use-intercom'
@@ -95,6 +95,7 @@ const DemoMovehelpFlow = () => {
 
   const [step, setStep] = useState(0)
   const [sending, setSending] = useState(false)
+  const [startOpen, setStartOpen] = useState(false)
   const [req, setReq] = useState<QuoteRequest>({
     from: initialResidence(move.fromAddress.street, move.fromAddress.city, 68, {
       floor: 3,
@@ -183,7 +184,7 @@ const DemoMovehelpFlow = () => {
 
       <div key={step} className={clsx('flex-1 w-full max-w-[818px] mx-auto px-4 py-4 md:py-6 flex flex-col gap-3.5', rise)}>
         {step === 0 && (
-          <div className="flex flex-col gap-3.5 md:grid md:grid-cols-2 md:items-start">
+          <div className="flex flex-col gap-3.5 w-full max-w-[640px] mx-auto">
             <div className={rise}>
               <ResidenceCard label="Flyttar från" prefix="from" origin res={req.from} errors={shownErrors} onChange={(p) => patchResidence('from', p)} />
             </div>
@@ -193,22 +194,19 @@ const DemoMovehelpFlow = () => {
           </div>
         )}
 
-        {/* Mobil: en läsordning uppifrån och ned, där flyttdagen frågas före
-            städkortet som räknar på den. Desktop: två kolumner där
-            städkortet står under tillvalet som tänder det, och datumet står
-            bredvid. Omslagen är genomskinliga (contents) på mobil så korten
-            kan ordnas fritt, och blir riktiga kolumner på desktop. */}
+        {/* En kolumn på alla bredder, i en läsordning: tungt, flyttdagen, tillvalen
+            (med städdetaljerna infällda under toggeln som tänder dem), övrigt. */}
         {step === 1 && (
-          <div className="flex flex-col gap-3.5 md:grid md:grid-cols-2 md:items-start">
-            <div className="contents md:flex md:flex-col md:gap-3.5 md:col-start-1">
-              <div className={clsx('order-3 md:order-none', rise, '[animation-delay:70ms]')}>
+          <div className="flex flex-col gap-3.5 w-full max-w-[640px] mx-auto">
+            <div className="contents">
+              <div className={clsx('order-3', rise, '[animation-delay:70ms]')}>
                 <Card>
                   <h3 className="text-[15px] font-bold text-[#214766] pb-2">Vill du ha hjälp med mer?</h3>
                   {ADDONS.map((a) => {
                     const on = req.addons.includes(a.value)
                     return (
+                      <Fragment key={a.value}>
                       <button
-                        key={a.value}
                         type="button"
                         role="switch"
                         aria-checked={on}
@@ -221,20 +219,21 @@ const DemoMovehelpFlow = () => {
                         </span>
                         <Toggle on={on} />
                       </button>
+                      {a.value === 'moveclean' && cleaning && (
+                        <div className={rise}>
+                          <CleaningCard from={req.from} cleaning={req.cleaning} moveDate={moveDay(req, movingDate)} errors={shownErrors} onChange={patchCleaning} />
+                        </div>
+                      )}
+                      </Fragment>
                     )
                   })}
                 </Card>
               </div>
 
-              {cleaning && (
-                <div className={clsx('order-4 md:order-none', rise)}>
-                  <CleaningCard from={req.from} cleaning={req.cleaning} moveDate={moveDay(req, movingDate)} errors={shownErrors} onChange={patchCleaning} />
-                </div>
-              )}
             </div>
 
-            <div className="contents md:flex md:flex-col md:gap-3.5 md:col-start-2">
-              <div className={clsx('order-1 md:order-none', rise)}>
+            <div className="contents">
+              <div className={clsx('order-1', rise)}>
                 <Card>
                   <h3 className="text-[15px] font-bold text-[#214766]">Något tungt eller ömtåligt?</h3>
                   <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Över 80 kg räknas som tungt. Piano, kassaskåp, akvarium, sånt som behöver fler bärare.</p>
@@ -293,7 +292,7 @@ const DemoMovehelpFlow = () => {
                 </Card>
               </div>
 
-              <div className={clsx('order-2 md:order-none', rise, '[animation-delay:140ms]')}>
+              <div className={clsx('order-2', rise, '[animation-delay:140ms]')}>
                 <Card>
                   <h3 className="text-[15px] font-bold text-[#214766]">Vilken dag vill du ha flytthjälpen?</h3>
                   <div className="flex flex-col gap-2 mt-2.5">
@@ -339,17 +338,30 @@ const DemoMovehelpFlow = () => {
                   )}
                   <p className="text-xs leading-[17px] text-[#767678] mt-2.5">Helger och månadsskiften bokas ofta upp tidigt.</p>
 
-                  <Field label="Starttid" className="mt-3 pt-3 border-t border-[#EEEEF0]">
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {START_TIMES.map((t) => (
-                        <Option key={t.value} active={req.startTime === t.value} onClick={() => setReq((r) => ({ ...r, startTime: t.value }))} label={t.label} hint={t.hint} />
-                      ))}
-                    </div>
-                  </Field>
+                  {/* Förvalet är att vi föreslår en starttid. Den som behöver en viss tid öppnar valet. */}
+                  <div className="mt-3 pt-3 border-t border-[#EEEEF0]">
+                    {req.startTime === 'any' && !startOpen ? (
+                      <button
+                        type="button"
+                        onClick={() => setStartOpen(true)}
+                        className={clsx('min-h-11 -my-1 text-[13px] font-semibold text-[#214766] underline-offset-4 hover:underline rounded-sm', press)}
+                      >
+                        Behöver du en viss starttid?
+                      </button>
+                    ) : (
+                      <Field label="Starttid">
+                        <div className={clsx('grid grid-cols-2 gap-1.5', rise)}>
+                          {START_TIMES.map((t) => (
+                            <Option key={t.value} active={req.startTime === t.value} onClick={() => setReq((r) => ({ ...r, startTime: t.value }))} label={t.label} hint={t.hint} />
+                          ))}
+                        </div>
+                      </Field>
+                    )}
+                  </div>
                 </Card>
               </div>
 
-              <div className={clsx('order-5 md:order-none', rise, '[animation-delay:210ms]')}>
+              <div className={clsx('order-5', rise, '[animation-delay:210ms]')}>
                 <Card>
                   <h3 className="text-[15px] font-bold text-[#214766]">Något mer vi bör veta?</h3>
                   <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Parkering, portkod, tider som inte funkar. Allt som hjälper oss räkna rätt.</p>
@@ -651,9 +663,8 @@ const CleaningCard = ({
     return 'Välj själv, senast flyttdagen'
   }
   return (
-    <Card>
-      <h3 className="text-[15px] font-bold text-[#214766]">Flyttstädningen</h3>
-      <p className="text-[13px] leading-[19px] text-[#767678] mt-1">
+    <div className="pl-3 ml-1 mb-3 border-l-2 border-[#9EE0D5]">
+      <p className="text-[13px] leading-[19px] text-[#767678] pt-1">
         {cleanArea(from)} m² städyta, {from.street}
         {extra ? ', inklusive biytorna som ska städas' : ''}.
       </p>
@@ -732,7 +743,7 @@ const CleaningCard = ({
           </Field>
         </div>
       )}
-    </Card>
+    </div>
   )
 }
 

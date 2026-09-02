@@ -151,14 +151,14 @@ export const Pill = ({ active, multi, small, onClick, children }: { active: bool
     aria-pressed={active}
     onClick={onClick}
     className={clsx(
-      'flex-1 rounded-full text-[13px] flex items-center justify-center gap-1.5 border whitespace-nowrap',
+      'flex-1 rounded-full text-[13px] flex items-center justify-center gap-1.5 border-[1.5px] whitespace-nowrap text-[#214766]',
       small ? 'h-9 px-2' : 'h-10',
       press,
       pressScale,
-      active ? 'bg-[#214766] border-[#214766] text-white font-semibold' : 'bg-white border-[#EEEEF0] text-[#214766] hover:border-[#214766]/40',
+      active ? 'bg-[#F4FCFA] border-[#51C8B4] font-semibold' : 'bg-white border-[#EEEEF0] hover:border-[#51C8B4]/60',
     )}
   >
-    {multi && active && <Check size={12} />}
+    {multi && active && <Check size={12} color="#1F6156" />}
     {children}
   </button>
 )
@@ -199,14 +199,14 @@ export const Option = ({ active, onClick, label, hint }: { active: boolean; onCl
     aria-pressed={active}
     onClick={onClick}
     className={clsx(
-      'flex-1 flex flex-col items-center gap-px py-[7px] px-1 rounded-lg border',
+      'flex-1 flex flex-col items-center gap-px py-[7px] px-1 rounded-lg border-[1.5px]',
       press,
       pressScale,
-      active ? 'bg-[#214766] border-[#214766]' : 'bg-white border-[#EEEEF0] hover:border-[#214766]/40',
+      active ? 'bg-[#F4FCFA] border-[#51C8B4]' : 'bg-white border-[#EEEEF0] hover:border-[#51C8B4]/60',
     )}
   >
-    <span className={clsx('text-[13px] transition-colors duration-200', active ? 'text-white font-semibold' : 'text-[#214766]')}>{label}</span>
-    <span className={clsx('text-xs leading-[14px] transition-colors duration-200', active ? 'text-white/80' : 'text-[#767678]')}>{hint}</span>
+    <span className={clsx('text-[13px] text-[#214766] transition-colors duration-200', active && 'font-semibold')}>{label}</span>
+    <span className={clsx('text-xs leading-[14px] transition-colors duration-200', active ? 'text-[#1F6156]' : 'text-[#767678]')}>{hint}</span>
   </button>
 )
 
