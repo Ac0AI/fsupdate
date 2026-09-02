@@ -7,11 +7,14 @@ import dynamic from 'next/dynamic'
 import useResponsive from '@/common/hooks/useResponsive'
 import { useCookieFirst } from '@cookiefirst/cookiefirst-react'
 import type { GoogleReview, GoogleReviewCountAndRating } from 'app/_actions/googleReviews.types'
+import ClosingCta, { StickyCta } from './components/ClosingCta'
+import Coordinators from './components/Coordinators'
 import FAQ from './components/faq'
 import HowItWorks from './components/howItWorks'
 import LandingHero from './components/landingHero'
 import ProofBar from './components/ProofBar'
 import RecentMoves from './components/RecentMoves'
+import ServiceOverview from './components/ServiceOverview'
 
 const Testimonials = dynamic(() => import('./components/testimonials'), { ssr: false })
 
@@ -33,6 +36,9 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
         {/* Hero Section - component handles its own background */}
         <LandingHero />
 
+        {/* Det här ingår: vad kunden slipper och får, tjänst för tjänst */}
+        <ServiceOverview />
+
         {/* Bevisraden - backar upp "vi har gjort researchen så du slipper" */}
         <ProofBar />
 
@@ -45,6 +51,9 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
 
         {/* How It Works Section */}
         <HowItWorks />
+
+        {/* Människorna bakom tjänsten */}
+        <Coordinators />
 
         {/* Flödet av genomförda tjänster */}
         <RecentMoves />
@@ -62,6 +71,9 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
             <FAQ isServerIosOrSafari={isServerIosOrSafari} />
           </div>
         </section>
+
+        {/* Sista knappen, samma handling som heron */}
+        <ClosingCta />
 
         {/* Contact - tight, centered */}
         <section className="w-screen flex justify-center bg-white border-t border-gray-100">
@@ -90,6 +102,7 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
 
         <Footer />
       </div>
+      <StickyCta />
     </>
   )
 }

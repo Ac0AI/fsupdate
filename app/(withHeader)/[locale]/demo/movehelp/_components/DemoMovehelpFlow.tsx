@@ -3,25 +3,21 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
+import { useIntercom } from 'react-use-intercom'
 import { clsx } from 'clsx'
 import i18nConfig from 'i18nConfig'
 import { useDemoUser } from '@/common/data/useDemoUser'
-import { useToastContext } from '@/common/context/toast/toast.provider'
 import {
   ADDONS, CLEAN_DAYS, DISTANCES, DWELLINGS, ELEVATORS, FLOORS, INFO, KEY_HANDLING, SECONDARY_KINDS, START_TIMES, STEP_TITLES,
   cleanArea, type Addon, type Cleaning, type QuoteRequest, type Residence, type Secondary,
 } from './steps'
-import {
-  Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Info, Option, Pill, Primary, Radio, StepBar, Timeline, Toggle, YesNo,
-  areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, selectClass, textareaClass, pressSoft,
-} from '../../_components/flow-ui'
+import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Info, Option, Pill, Primary, Radio, StepBar, Timeline, Toggle, YesNo, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, selectClass, textareaClass, pressSoft, pressScale } from '../../_components/flow-ui'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
 const weekday = (d: Date) => new Intl.DateTimeFormat('sv-SE', { weekday: 'long' }).format(d)
 const isoDate = (d: Date) => new Intl.DateTimeFormat('sv-SE').format(d) // sv-SE ger yyyy-mm-dd, som <input type="date"> vill ha
 const isWeekend = (d: Date) => d.getDay() === 0 || d.getDay() === 6
 const digits = (s: string) => Number(s.replace(/\D/g, '')) || 0
-const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
 
 // Flyttdagen som kunden valt, eller null när vi ska föreslå.
 const moveDay = (req: QuoteRequest, movingDate: Date): Date | null => {
@@ -44,7 +40,7 @@ const residenceErrors = (res: Residence, prefix: 'from' | 'to'): Errors => {
   return e
 }
 
-const stepErrors = (step: number, req: QuoteRequest): Errors => {
+const stepErrors = (step: number, req: QuoteRequest, movingDate: Date): Errors => {
   if (step === 0) return { ...residenceErrors(req.from, 'from'), ...residenceErrors(req.to, 'to') }
   if (step === 1) {
     const e: Errors = {}
@@ -56,8 +52,10 @@ const stepErrors = (step: number, req: QuoteRequest): Errors => {
       else if (req.customDate < today) e.customDate = 'Den dagen har redan varit. Välj en dag framåt.'
     }
     if (req.addons.includes('moveclean') && req.cleaning.day === 'custom') {
+      const move = moveDay(req, movingDate)
       if (!req.cleaning.customDate) e.cleanDate = 'Välj vilken dag det ska städas.'
       else if (req.cleaning.customDate < today) e.cleanDate = 'Den dagen har redan varit. Välj en dag framåt.'
+      else if (move && req.cleaning.customDate > isoDate(move)) e.cleanDate = 'Städningen kan inte ligga efter flyttdagen. Välj flyttdagen eller en dag innan.'
     }
     return e
   }
@@ -68,8 +66,9 @@ const stepErrors = (step: number, req: QuoteRequest): Errors => {
 const HERO_TITLE = ['Berätta om bostäderna', 'Vad ska med?', 'Din offert är på väg']
 const HERO_COPY = [
   'Du slipper ringa runt och jaga offerter. Vi har fyllt i det vi redan vet, du fyller i resten. Sen räknar vi på din flytt.',
-  'Hur mycket ska flyttas, och vill du ha hjälp med något mer? Sista steget innan vi räknar.',
-  'Vi räknar på din flytt och hör av oss med pris och datum. Du godkänner eller ändrar det du vill.',
+  'Hur mycket ska flyttas, och vill du ha hjälp med något mer?',
+  // Steg 3 har ingen ingress: Ninas bubbla och tidslinjen säger det direkt under.
+  '',
 ]
 
 const initialResidence = (street: string, city: string, size: number, overrides: Partial<Residence> = {}): Residence => ({
@@ -90,7 +89,6 @@ const initialResidence = (street: string, city: string, size: number, overrides:
 const DemoMovehelpFlow = () => {
   const router = useRouter()
   const { locale } = useParams<{ locale: string }>()
-  const { showToast } = useToastContext()
   const demoUser = useDemoUser()
   const move = demoUser.currentMove
   const movingDate = new Date(move.movingDate)
@@ -110,20 +108,19 @@ const DemoMovehelpFlow = () => {
     heavyNote: '',
     valuables: false,
     valuablesNote: '',
-    volume: '',
     addons: ADDONS.filter((a) => a.defaultOn).map((a) => a.value),
     dateMode: 'fixed',
     customDate: '',
     // Förvalt "spelar ingen roll": inget att ångra, och koordinatorn föreslår.
     startTime: 'any',
     note: '',
-    cleaning: { specialWindows: false, glazedBalcony: false, balconyArea: 0, sensitiveSurfaces: false, keys: 'present', keyNote: '', day: 'after', customDate: '' },
+    cleaning: { specialWindows: false, glazedBalcony: false, balconyArea: 0, sensitiveSurfaces: false, keys: 'present', keyNote: '', day: 'same', customDate: '' },
   })
 
   // Felen visas först när man försöker gå vidare, inte medan man fyller i.
   // Knappen är aldrig död: den säger i stället vad som saknas och scrollar dit.
   const [attempted, setAttempted] = useState<Record<number, boolean>>({})
-  const errors = stepErrors(step, req)
+  const errors = stepErrors(step, req, movingDate)
   const shownErrors: Errors = attempted[step] ? errors : {}
   const hasShownErrors = Object.keys(shownErrors).length > 0
 
@@ -160,7 +157,6 @@ const DemoMovehelpFlow = () => {
     window.setTimeout(() => {
       setSending(false)
       setStep(2)
-      showToast('Skickat. Vi räknar på din flytt.', 'confirm')
     }, 900)
   }
 
@@ -169,52 +165,45 @@ const DemoMovehelpFlow = () => {
 
   return (
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
-      <StepBar step={step} titles={STEP_TITLES} hints={['2 min', '1 min', 'Pågår']} />
+      <StepBar step={step} titles={STEP_TITLES} hints={['2 min', '2 min', 'Pågår']} />
       <Hero
-        eyebrow={`Flytthjälp och städning · Steg ${step + 1} av ${STEP_TITLES.length}`}
+        eyebrow="Flytthjälp och städning"
         title={HERO_TITLE[step]}
         copy={HERO_COPY[step]}
         tone={step === 2 ? 'green' : 'blue'}
-        back={{ label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
+        back={step === 2 ? undefined : { label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
       >
         {/* Beviset står där beslutet att fortsätta tas. Siffrorna är brandguidens (Bevisen). */}
         {step === 0 && (
           <p className="text-[13px] leading-[18px] text-white/80 max-w-[560px]">
-            230 000 personer har mött oss inför sin flytt sedan 2020 · 4,7 av över 500 recensioner på Google, augusti 2026 · hela Sverige, försäkrat och med trafiktillstånd
+            4,7 av över 500 recensioner på Google, augusti 2026
           </p>
         )}
       </Hero>
 
       <div key={step} className={clsx('flex-1 w-full max-w-[818px] mx-auto px-4 py-4 md:py-6 flex flex-col gap-3.5', rise)}>
         {step === 0 && (
-          <>
-            <div className="flex flex-col gap-3.5 md:grid md:grid-cols-2 md:items-start">
-              <div className={rise}>
-                <ResidenceCard label="Flyttar från" prefix="from" origin res={req.from} errors={shownErrors} onChange={(p) => patchResidence('from', p)} />
-              </div>
-              <div className={clsx(rise, '[animation-delay:70ms]')}>
-                <ResidenceCard label="Flyttar till" prefix="to" res={req.to} errors={shownErrors} onChange={(p) => patchResidence('to', p)} />
-              </div>
+          <div className="flex flex-col gap-3.5 md:grid md:grid-cols-2 md:items-start">
+            <div className={rise}>
+              <ResidenceCard label="Flyttar från" prefix="from" origin res={req.from} errors={shownErrors} onChange={(p) => patchResidence('from', p)} />
             </div>
-            <p className="text-xs leading-[17px] text-[#767678]">Adresser och tillträdesdatum kommer från din flytt. Boarea från Skatteverket.</p>
-          </>
+            <div className={clsx(rise, '[animation-delay:70ms]')}>
+              <ResidenceCard label="Flyttar till" prefix="to" res={req.to} errors={shownErrors} onChange={(p) => patchResidence('to', p)} />
+            </div>
+          </div>
         )}
 
-        {/* Mobil: en läsordning uppifrån och ned. Desktop: två kolumner där
+        {/* Mobil: en läsordning uppifrån och ned, där flyttdagen frågas före
+            städkortet som räknar på den. Desktop: två kolumner där
             städkortet står under tillvalet som tänder det, och datumet står
             bredvid. Omslagen är genomskinliga (contents) på mobil så korten
             kan ordnas fritt, och blir riktiga kolumner på desktop. */}
         {step === 1 && (
           <div className="flex flex-col gap-3.5 md:grid md:grid-cols-2 md:items-start">
             <div className="contents md:flex md:flex-col md:gap-3.5 md:col-start-1">
-              <div className={clsx('order-2 md:order-none', rise, '[animation-delay:70ms]')}>
+              <div className={clsx('order-3 md:order-none', rise, '[animation-delay:70ms]')}>
                 <Card>
-                  <div className="flex items-baseline justify-between gap-3 pb-2">
-                    <h3 className="text-[15px] font-bold text-[#214766]">Vill du ha hjälp med mer?</h3>
-                    <span key={req.addons.length} className={clsx('text-xs font-semibold text-[#1F6156] animate-[pop_.3s_ease-out_both] motion-reduce:animate-none')}>
-                      {req.addons.length === 0 ? 'Inget valt' : `${req.addons.length} valda`}
-                    </span>
-                  </div>
+                  <h3 className="text-[15px] font-bold text-[#214766] pb-2">Vill du ha hjälp med mer?</h3>
                   {ADDONS.map((a) => {
                     const on = req.addons.includes(a.value)
                     return (
@@ -238,7 +227,7 @@ const DemoMovehelpFlow = () => {
               </div>
 
               {cleaning && (
-                <div className={clsx('order-3 md:order-none', rise)}>
+                <div className={clsx('order-4 md:order-none', rise)}>
                   <CleaningCard from={req.from} cleaning={req.cleaning} moveDate={moveDay(req, movingDate)} errors={shownErrors} onChange={patchCleaning} />
                 </div>
               )}
@@ -304,7 +293,7 @@ const DemoMovehelpFlow = () => {
                 </Card>
               </div>
 
-              <div className={clsx('order-4 md:order-none', rise, '[animation-delay:140ms]')}>
+              <div className={clsx('order-2 md:order-none', rise, '[animation-delay:140ms]')}>
                 <Card>
                   <h3 className="text-[15px] font-bold text-[#214766]">Vilken dag vill du ha flytthjälpen?</h3>
                   <div className="flex flex-col gap-2 mt-2.5">
@@ -314,7 +303,12 @@ const DemoMovehelpFlow = () => {
                       title={formatDate(movingDate)}
                       hint={`Tillträdesdagen · en ${weekday(movingDate)}`}
                     />
-                    <Radio active={req.dateMode === 'flexible'} onClick={() => setReq((r) => ({ ...r, dateMode: 'flexible' }))} title="Flexibel, ge mig bästa pris" />
+                    <Radio
+                      active={req.dateMode === 'flexible'}
+                      onClick={() => setReq((r) => ({ ...r, dateMode: 'flexible' }))}
+                      title="Flexibel, ge mig bästa pris"
+                      hint="Vi föreslår en dag inom en vecka från tillträdet"
+                    />
                     <Radio
                       active={req.dateMode === 'custom'}
                       onClick={() => setReq((r) => ({ ...r, dateMode: 'custom', customDate: r.customDate || isoDate(movingDate) }))}
@@ -343,9 +337,7 @@ const DemoMovehelpFlow = () => {
                       )}
                     </div>
                   )}
-                  <p className="text-xs leading-[17px] text-[#767678] mt-2.5">
-                    Vardagar är ofta billigare än helger, och helger och månadsskiften bokas ofta upp tidigt. Flexibel betyder att vi föreslår ett datum inom en vecka från tillträdet.
-                  </p>
+                  <p className="text-xs leading-[17px] text-[#767678] mt-2.5">Helger och månadsskiften bokas ofta upp tidigt.</p>
 
                   <Field label="Starttid" className="mt-3 pt-3 border-t border-[#EEEEF0]">
                     <div className="grid grid-cols-2 gap-1.5">
@@ -367,16 +359,6 @@ const DemoMovehelpFlow = () => {
                     value={req.note}
                     onChange={(e) => setReq((r) => ({ ...r, note: e.target.value }))}
                   />
-                  <Field label="Vet du ungefär hur många kubik?" info={INFO.volume} className="mt-3">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      className={clsx(areaInput, 'max-w-[140px]')}
-                      placeholder="m³"
-                      value={req.volume ? `${req.volume} m³` : ''}
-                      onChange={(e) => setReq((r) => ({ ...r, volume: e.target.value.replace(/\D/g, '') }))}
-                    />
-                  </Field>
                 </Card>
               </div>
             </div>
@@ -394,7 +376,7 @@ const DemoMovehelpFlow = () => {
         <div className="w-full max-w-[818px] mx-auto px-4 py-4 flex flex-col gap-2.5 md:items-center">
           {step === 0 && (
             <>
-              <Primary onClick={() => tryContinue(() => setStep(1))}>Till sista steget</Primary>
+              <Primary onClick={() => tryContinue(() => setStep(1))}>Fortsätt till sista steget</Primary>
               {hasShownErrors ? (
                 <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar vi rätt.</Foot>
               ) : (
@@ -414,12 +396,7 @@ const DemoMovehelpFlow = () => {
               )}
             </>
           )}
-          {step === 2 && (
-            <>
-              <Primary onClick={backToMovepage}>Tillbaka till checklistan</Primary>
-              <Foot>Du får SMS när offerten är skickad.</Foot>
-            </>
-          )}
+          {step === 2 && <Primary onClick={backToMovepage}>Öppna flyttsidan</Primary>}
         </div>
       </div>
     </div>
@@ -476,33 +453,37 @@ const ResidenceCard = ({
       </Field>
 
       {/* Boarean frågas bara där man flyttar från: den styr volym och städyta.
-          Dit man flyttar är det bärsträckan som kostar, så där står våningen
-          ensam i sin halva av raden. */}
-      <div className="flex gap-1.5 mt-3">
-        {origin && (
-          <Field label="Boarea" invalid={!!err('size')}>
-            <input
-              type="text"
-              inputMode="numeric"
-              aria-invalid={!!err('size')}
-              className={clsx(areaInput, err('size') && errorBorder)}
-              placeholder="m²"
-              value={res.size ? `${res.size} m²` : ''}
-              onChange={(e) => onChange({ size: digits(e.target.value) })}
-            />
-          </Field>
-        )}
-        <Field label="Våning">
-          <select className={selectClass} value={res.floor} onChange={(e) => onChange({ floor: Number(e.target.value) })}>
-            {FLOORS.map((f) => (
-              <option key={f.value} value={f.value}>
-                {f.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-        {!origin && <div className="flex-1" aria-hidden="true" />}
-      </div>
+          Våningen frågas bara i lägenhet, villa och radhus har ingen. Det som
+          blir ensamt i raden håller sin halva. */}
+      {(origin || apartment) && (
+        <div className="flex gap-1.5 mt-3">
+          {origin && (
+            <Field label="Boarea" info={INFO.size} invalid={!!err('size')}>
+              <input
+                type="text"
+                inputMode="numeric"
+                aria-invalid={!!err('size')}
+                className={clsx(areaInput, err('size') && errorBorder)}
+                placeholder="m²"
+                value={res.size ? `${res.size} m²` : ''}
+                onChange={(e) => onChange({ size: digits(e.target.value) })}
+              />
+            </Field>
+          )}
+          {apartment && (
+            <Field label="Våning">
+              <select className={selectClass} value={res.floor} onChange={(e) => onChange({ floor: Number(e.target.value) })}>
+                {FLOORS.map((f) => (
+                  <option key={f.value} value={f.value}>
+                    {f.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          )}
+          {!(origin && apartment) && <div className="flex-1" aria-hidden="true" />}
+        </div>
+      )}
       {err('size') && <ErrorText className="mt-1.5">{err('size')}</ErrorText>}
 
       {apartment ? (
@@ -576,23 +557,22 @@ const ResidenceCard = ({
 
       {origin && (
         <div className="mt-3 pt-3 border-t border-[#EEEEF0] flex flex-col gap-1.5">
-          <span className="text-xs text-[#767678] flex items-center gap-1">
-            Förråd, garage eller vind
-            <Info text={INFO.secondary} />
-          </span>
           {res.secondaries.map((s) => (
             <SecondaryRow key={s.id} s={s} error={err(`secondary.${s.id}`)} onChange={(p) => patchSecondary(s.id, p)} onRemove={() => removeSecondary(s.id)} />
           ))}
-          <button
-            type="button"
-            onClick={addSecondary}
-            className={clsx('self-start min-h-11 -my-1 flex items-center gap-1.5 text-[13px] font-semibold text-[#214766] rounded-sm', press, pressSoft)}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
-              <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
-            {res.secondaries.length ? 'Lägg till en till' : 'Lägg till biyta'}
-          </button>
+          <span className="self-start flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={addSecondary}
+              className={clsx('min-h-11 -my-1 flex items-center gap-1.5 text-[13px] font-semibold text-[#214766] rounded-sm', press, pressSoft)}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
+                <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+              {res.secondaries.length ? 'Lägg till en till' : 'Lägg till förråd, garage eller vind'}
+            </button>
+            <Info text={INFO.secondary} />
+          </span>
         </div>
       )}
     </Card>
@@ -664,17 +644,18 @@ const CleaningCard = ({
   onChange: (p: Partial<Cleaning>) => void
 }) => {
   const extra = from.secondaries.some((s) => s.clean && s.area > 0)
-  // Förslaget följer flyttdagen: städ dagen efter, när bostaden är tom.
+  // Bostaden lämnas städad, så städningen ligger aldrig efter flyttdagen.
+  // Förslaget är flyttdagen: bärarna först, städarna efter.
   const dayHint = (value: Cleaning['day']) => {
-    if (value === 'after') return moveDate ? `${formatDate(addDays(moveDate, 1))} · vanligast, bostaden är tom` : 'Vanligast. Bostaden är tom.'
-    if (value === 'same') return moveDate ? formatDate(moveDate) : undefined
-    return 'Välj själv'
+    if (value === 'same') return moveDate ? `${formatDate(moveDate)} · bärarna först, städarna efter` : 'Efter att bärarna är klara'
+    return 'Välj själv, senast flyttdagen'
   }
   return (
     <Card>
       <h3 className="text-[15px] font-bold text-[#214766]">Flyttstädningen</h3>
       <p className="text-[13px] leading-[19px] text-[#767678] mt-1">
-        {cleanArea(from)} m² städyta, {from.street}. {extra ? 'Boarean plus biytorna som ska städas.' : 'Boarean.'} Med städgaranti.
+        {cleanArea(from)} m² städyta, {from.street}
+        {extra ? ', inklusive biytorna som ska städas' : ''}.
       </p>
 
       <div className="mt-3">
@@ -728,7 +709,7 @@ const CleaningCard = ({
             <Radio
               key={d.value}
               active={cleaning.day === d.value}
-              onClick={() => onChange({ day: d.value, customDate: d.value === 'custom' ? cleaning.customDate || (moveDate ? isoDate(addDays(moveDate, 1)) : '') : cleaning.customDate })}
+              onClick={() => onChange({ day: d.value, customDate: d.value === 'custom' ? cleaning.customDate || (moveDate ? isoDate(moveDate) : '') : cleaning.customDate })}
               title={d.title}
               hint={dayHint(d.value)}
             />
@@ -742,6 +723,7 @@ const CleaningCard = ({
               type="date"
               autoFocus
               min={isoDate(new Date())}
+              max={moveDate ? isoDate(moveDate) : undefined}
               aria-invalid={!!errors.cleanDate}
               className={clsx(areaInput, 'max-w-[220px] bg-white', errors.cleanDate && errorBorder)}
               value={cleaning.customDate}
@@ -755,6 +737,9 @@ const CleaningCard = ({
 }
 
 const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; movingDate: Date; onEdit: () => void; onNext: () => void }) => {
+  // Brandguidens Block 1: "Undrar du något hör du av dig i chatten." Kanalen står
+  // direkt under Ninas bubbla, så löftet "säg till" har en knapp.
+  const { show: openChat } = useIntercom()
   const now = new Date()
   const time = new Intl.DateTimeFormat('sv-SE', { hour: '2-digit', minute: '2-digit' }).format(now)
   const addonLabels = ADDONS.filter((a) => req.addons.includes(a.value)).map((a) => a.label.toLowerCase())
@@ -779,6 +764,13 @@ const WaitingStep = ({ req, movingDate, onEdit, onNext }: { req: QuoteRequest; m
             Hej! Jag har fått dina uppgifter och räknar på flytten från {req.from.street}. Du får din offert senast nästa vardag, före lunch. Vill du lägga till
             eller ändra något är det bara att säga till, så tar jag det direkt.
           </p>
+          <button
+            type="button"
+            onClick={() => openChat()}
+            className={clsx('mt-3 min-h-11 px-4 rounded-full border border-[#214766] bg-white text-[13px] font-semibold text-[#214766] hover:bg-[#F8FAF9]', press, pressScale)}
+          >
+            Öppna chatten
+          </button>
         </Card>
       </div>
 

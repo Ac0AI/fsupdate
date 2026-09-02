@@ -130,7 +130,7 @@ const DemoMovecleanFlow = () => {
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={STEP_HINTS} label={step === 2 ? 'Klart · 3 av 3' : undefined} />
       <Hero
-        eyebrow={step === 2 ? 'Flyttstädning · Klart' : `Flyttstädning · Steg ${step + 1} av 3`}
+        eyebrow="Flyttstädning"
         title={HERO_TITLE[step]}
         copy={HERO_COPY[step]}
         tone={step === 2 ? 'green' : 'blue'}

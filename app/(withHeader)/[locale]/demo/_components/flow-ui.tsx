@@ -87,7 +87,7 @@ export const Hero = ({
 }: {
   eyebrow?: string
   title: string
-  copy: string
+  copy?: string
   tone?: 'blue' | 'green'
   back?: { label: string; onClick: () => void }
   children?: React.ReactNode
@@ -111,9 +111,11 @@ export const Hero = ({
       <h1 key={title} className={clsx('text-[32px] md:text-[42px] font-black tracking-[-0.02em] leading-9 md:leading-[48px] text-white', rise)}>
         {title}
       </h1>
-      <p key={copy} className={clsx('text-[15px] md:text-[18px] leading-[21px] md:leading-[25px] text-white max-w-[330px] md:max-w-[560px]', rise)}>
-        {copy}
-      </p>
+      {copy && (
+        <p key={copy} className={clsx('text-[15px] md:text-[18px] leading-[21px] md:leading-[25px] text-white max-w-[330px] md:max-w-[560px]', rise)}>
+          {copy}
+        </p>
+      )}
       {children}
     </div>
   </div>

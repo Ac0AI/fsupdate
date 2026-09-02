@@ -88,7 +88,7 @@ const LandingHero = () => {
             Färdigförhandlat, kvalitetssäkrat, och vi tar ansvar hela vägen.
           </p>
 
-          <div className="flex flex-col items-center gap-3 pt-1 w-full sm:w-auto">
+          <div data-hero-cta className="flex flex-col items-center gap-3 pt-1 w-full sm:w-auto">
             <Button
               className={ctaClassName}
               padding="16px 32px"

@@ -4,7 +4,8 @@ export type Elevator = 'big' | 'small' | 'none' | 'unknown'
 export type SecondaryKind = 'basement' | 'attic' | 'storage' | 'garage' | 'other'
 export type StartTime = 'morning' | 'forenoon' | 'afternoon' | 'any'
 export type KeyHandling = 'present' | 'absent' | 'unknown'
-export type CleanDay = 'after' | 'same' | 'custom'
+// Städningen ligger aldrig efter flyttdagen: bostaden lämnas städad.
+export type CleanDay = 'same' | 'custom'
 
 // Förråd, garage, vind. Bara på från-adressen: frågan är om ytan ska tömmas
 // och flyttas, städas, eller båda. Flera får finnas, en villa har ofta både
@@ -56,8 +57,6 @@ export type QuoteRequest = {
   // Bohag 2010: föremål värda över ett halvt prisbasbelopp ska uppges i förväg.
   valuables: boolean
   valuablesNote: string
-  // Kubik är frivilligt. Tomt betyder att vi uppskattar från boarean.
-  volume: string
   addons: Addon[]
   // fixed = tillträdesdagen, flexible = vi föreslår, custom = kunden väljer själv
   dateMode: 'fixed' | 'flexible' | 'custom'
@@ -124,7 +123,6 @@ export const KEY_HANDLING: { value: KeyHandling; label: string }[] = [
 
 // Förklaringarna sätts i flödet, de innehåller det faktiska datumet.
 export const CLEAN_DAYS: { value: CleanDay; title: string }[] = [
-  { value: 'after', title: 'Dagen efter flytten' },
   { value: 'same', title: 'Samma dag som flytten' },
   { value: 'custom', title: 'Ett annat datum' },
 ]
@@ -142,12 +140,12 @@ export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boo
 
 // Förklaringar bakom i-ikonen. Korta, och de säger alltid varför vi frågar.
 export const INFO = {
+  size: 'Boarean kommer från Skatteverket. Stämmer den inte, ändra den.',
   distance: 'Sträckan bärarna går mellan bilen och din dörr. Räkna ungefär, vi frågar om det behövs.',
   access: 'Hur tar sig flyttbilen till dörren? Smal trappa, ingen lastplats, gårdshus, bom. Vet du inte, lämna den av.',
   outdoor: 'Trädgårdsmöbler, grill, studsmatta. Sånt som står ute tar plats i bilen och ska räknas med.',
   secondary: 'Ytor utanför bostaden som ska tömmas eller städas. Lägg till en per utrymme.',
   valuables: 'Enligt Bohag 2010 ska föremål värda över ett halvt prisbasbelopp, 29 600 kr, uppges i förväg. Annars kan ersättningen vid skada begränsas. Det hjälper oss också att packa och bära rätt.',
-  volume: 'Vet du inte, lämna tomt. Vi uppskattar från boarean.',
   windows: 'Spröjsade fönster, takfönster eller fönster som är svåra att nå tar längre tid att göra rent.',
   surfaces: 'Marmor, obehandlat trä, mässing och liknande ytor kräver särskilda medel.',
   keys: 'Är någon på plats när vi städar? Annars behöver vi veta hur vi kommer in, till exempel nyckel i brevlådan eller kod.',
