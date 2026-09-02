@@ -64,10 +64,10 @@ const stepErrors = (step: number, req: QuoteRequest, movingDate: Date): Errors =
 }
 
 // Rubriken säger var du är. Tjänstens namn och stegräknaren står som rad ovanför.
-const HERO_TITLE = ['Berätta om bostäderna', 'Vad ska med?', 'Din offert är på väg']
+const HERO_TITLE = ['Berätta om bostäderna', 'Tungt, datum och tillägg', 'Din offert är på väg']
 const HERO_COPY = [
   'Du slipper ringa runt och jaga offerter. Vi har fyllt i det vi redan vet, du fyller i resten. Sen räknar vi på din flytt.',
-  'Tungt, datum och tillägg. Vi har föreslagit det vanligaste, ändra det du vill.',
+  '',
   // Steg 3 har ingen ingress: Ninas bubbla och tidslinjen säger det direkt under.
   '',
 ]
@@ -163,13 +163,11 @@ const DemoMovehelpFlow = () => {
   }
 
   const backToMovepage = () => router.push(locale === i18nConfig.defaultLocale ? '/demo/movepage' : `/${locale}/demo/movepage`)
-  const toElectricity = () => router.push(locale === i18nConfig.defaultLocale ? '/demo/electricity' : `/${locale}/demo/electricity`)
 
   return (
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
-      <StepBar step={step} titles={STEP_TITLES} hints={['2 min', '1 min kvar', 'Pågår']} contentClassName="max-w-[640px]" />
+      <StepBar step={step} titles={STEP_TITLES} hints={['', '', 'Pågår']} contentClassName="max-w-[640px]" />
       <Hero
-        eyebrow="Flytthjälp och städning"
         title={HERO_TITLE[step]}
         copy={HERO_COPY[step]}
         tone={step === 2 ? 'green' : 'blue'}
@@ -196,9 +194,33 @@ const DemoMovehelpFlow = () => {
             <div className="contents">
               <div className={clsx('order-3', rise, '[animation-delay:70ms]')}>
                 <Card>
+                  {/* Städningen står i flödets namn och får ett eget kort, toggeln i rubrikraden. */}
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={cleaning}
+                    onClick={() => toggleAddon('moveclean')}
+                    className={clsx('w-full flex items-center justify-between gap-3 text-left rounded-sm', press)}
+                  >
+                    <span className="flex flex-col gap-px">
+                      <span className="text-[15px] font-bold text-[#214766]">Flyttstädning</span>
+                      <span className="text-[13px] leading-[19px] text-[#5F6062]">Med städgaranti: godkänd besiktning eller omstädning</span>
+                    </span>
+                    <Toggle on={cleaning} />
+                  </button>
+                  {cleaning && (
+                    <div className={clsx('mt-3 pt-3 border-t border-[#EEEEF0]', rise)}>
+                      <CleaningCard from={req.from} cleaning={req.cleaning} moveDate={moveDay(req, movingDate)} errors={shownErrors} onChange={patchCleaning} />
+                    </div>
+                  )}
+                </Card>
+              </div>
+
+              <div className={clsx('order-4', rise, '[animation-delay:100ms]')}>
+                <Card>
                   <h3 className="text-[15px] font-bold text-[#214766]">Vill du ha hjälp med mer?</h3>
-                  <p className="text-[13px] leading-[19px] text-[#767678] mt-1 pb-2">Varje tillägg blir en egen rad i offerten, med rutavdraget draget.</p>
-                  {ADDONS.filter((a) => a.kind === 'toggle').map((a) => {
+                  <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1 pb-2">Varje tillägg blir en egen rad i offerten, med rutavdraget draget.</p>
+                  {ADDONS.filter((a) => a.value !== 'moveclean').map((a) => {
                     const on = req.addons.includes(a.value)
                     return (
                       <Fragment key={a.value}>
@@ -215,23 +237,9 @@ const DemoMovehelpFlow = () => {
                         </span>
                         <Toggle on={on} />
                       </button>
-                      {a.value === 'moveclean' && cleaning && (
-                        <div className={rise}>
-                          <CleaningCard from={req.from} cleaning={req.cleaning} moveDate={moveDay(req, movingDate)} errors={shownErrors} onChange={patchCleaning} />
-                        </div>
-                      )}
                       </Fragment>
                     )
                   })}
-                  <Field label="Lägg till" className="mt-3 pt-3 border-t border-[#EEEEF0]">
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {ADDONS.filter((a) => a.kind === 'chip').map((a) => (
-                        <Pill key={a.value} multi active={req.addons.includes(a.value)} onClick={() => toggleAddon(a.value)}>
-                          {a.label}
-                        </Pill>
-                      ))}
-                    </div>
-                  </Field>
                 </Card>
               </div>
 
@@ -270,7 +278,7 @@ const DemoMovehelpFlow = () => {
                     <h3 className="text-[15px] font-bold text-[#214766] flex items-center gap-1">
                       Något värt över 30 000 kr?
                     </h3>
-                    <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Konst, antikviteter, designmöbler. Enligt Bohag 2010 ska de anges i förväg, så packas och försäkras de rätt.</p>
+                    <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Konst, antikviteter, designmöbler. Anger du dem i förväg packas och försäkras de rätt.</p>
                     <div className="flex gap-1.5 mt-3">
                       <Pill active={!req.valuables} onClick={() => setReq((r) => ({ ...r, valuables: false }))}>
                         Nej
@@ -350,8 +358,7 @@ const DemoMovehelpFlow = () => {
                         onClick={() => setStartOpen(true)}
                         className={clsx('min-h-11 -my-1 inline-flex items-center gap-1 text-[13px] font-semibold text-[#214766] underline underline-offset-4 decoration-[#214766]/40 hover:decoration-[#214766] rounded-sm', press)}
                       >
-                        Behöver du en viss starttid?
-                        <Chevron size={16} />
+                        Välj starttid
                       </button>
                     ) : (
                       <Field label="Starttid">
@@ -387,8 +394,7 @@ const DemoMovehelpFlow = () => {
             <WaitingStep req={req} movingDate={movingDate} onEdit={() => setStep(0)} />
           </div>
         )}
-        <p className="text-xs text-[#9F9FA1] text-center pt-4">
-          © Flyttsmart Sverige AB ·{' '}
+        <p className="text-[13px] text-[#767678] text-center pt-4">
           <Link href="/terms" className="underline underline-offset-2 hover:text-[#214766]">
             Villkor
           </Link>
@@ -419,14 +425,7 @@ const DemoMovehelpFlow = () => {
               )}
             </>
           )}
-          {step === 2 && (
-            <>
-              <Primary onClick={toElectricity}>Starta elavtalet</Primary>
-              <button type="button" onClick={backToMovepage} className={clsx('min-h-11 text-[13px] font-semibold text-[#214766] underline underline-offset-4 decoration-[#214766]/40 hover:decoration-[#214766] rounded-sm', press)}>
-                Öppna flyttsidan
-              </button>
-            </>
-          )}
+          {step === 2 && <Primary onClick={backToMovepage}>Öppna flyttsidan</Primary>}
         </div>
       </div>
     </div>
@@ -471,6 +470,8 @@ const ResidenceCard = ({
           {res.street}, {res.city}
         </span>
       </div>
+
+      {origin && <p className="text-[13px] leading-[19px] text-[#5F6062] mt-3">Adress och boarea kommer från din flytt. Resten är gissat utifrån liknande bostäder, ändra det som inte stämmer.</p>}
 
       <Field label="Bostadstyp" className="mt-3">
         <div className="flex gap-1.5">
@@ -644,10 +645,10 @@ const SecondaryRow = ({ s, error, onChange, onRemove }: { s: Secondary; error?: 
       </button>
     </div>
     <div className="flex gap-1.5">
-      <Pill active={s.move} multi onClick={() => onChange({ move: !s.move })}>
+      <Pill active={s.move} onClick={() => onChange({ move: !s.move })}>
         Flyttas
       </Pill>
-      <Pill active={s.clean} multi onClick={() => onChange({ clean: !s.clean })}>
+      <Pill active={s.clean} onClick={() => onChange({ clean: !s.clean })}>
         Städas
       </Pill>
     </div>
@@ -680,25 +681,25 @@ const CleaningCard = ({
     return 'Välj själv, senast flyttdagen'
   }
   return (
-    <div className="pl-3 ml-1 mb-3 border-l-2 border-[#9EE0D5]">
-      <p className="text-[13px] leading-[19px] text-[#767678] pt-1">
+    <div>
+      <p className="text-[13px] leading-[19px] text-[#5F6062]">
         {cleanArea(from)} m² städyta, {from.street}
         {extra ? ', inklusive biytorna som ska städas' : ''}.
       </p>
 
       <Field label="Något av det här i bostaden?" className="mt-3">
         <div className="flex flex-wrap gap-1.5">
-          <Pill multi active={cleaning.specialWindows} onClick={() => onChange({ specialWindows: !cleaning.specialWindows })}>
+          <Pill active={cleaning.specialWindows} onClick={() => onChange({ specialWindows: !cleaning.specialWindows })}>
             Specialfönster
           </Pill>
-          <Pill multi active={cleaning.glazedBalcony} onClick={() => onChange({ glazedBalcony: !cleaning.glazedBalcony })}>
+          <Pill active={cleaning.glazedBalcony} onClick={() => onChange({ glazedBalcony: !cleaning.glazedBalcony })}>
             Inglasad balkong
           </Pill>
-          <Pill multi active={cleaning.sensitiveSurfaces} onClick={() => onChange({ sensitiveSurfaces: !cleaning.sensitiveSurfaces })}>
+          <Pill active={cleaning.sensitiveSurfaces} onClick={() => onChange({ sensitiveSurfaces: !cleaning.sensitiveSurfaces })}>
             Känsliga ytor
           </Pill>
         </div>
-        <p className="text-xs leading-[17px] text-[#767678]">Spröjs och takfönster räknas som specialfönster, marmor och obehandlat trä som känsliga ytor.</p>
+        <p className="text-[13px] leading-[18px] text-[#5F6062]">Spröjs och takfönster räknas som specialfönster, marmor och obehandlat trä som känsliga ytor.</p>
       </Field>
       <div>
         {cleaning.glazedBalcony && (
@@ -800,12 +801,12 @@ const WaitingStep = ({ req, movingDate, onEdit }: { req: QuoteRequest; movingDat
             </span>
           </div>
           <p className={clsx('mt-3 rounded-[12px_12px_12px_2px] bg-[#EAF2F8] px-3.5 py-3 text-[13px] leading-5 text-[#214766]', rise, '[animation-delay:350ms]')}>
-            Nina är din koordinator och räknar på flytten från {req.from.street}. Vill du lägga till eller ändra något, skriv i chatten så tar hon det direkt.
+            Jag räknar på din flytt från {req.from.street} nu. Vill du lägga till eller ändra något, skriv till mig här så tar jag det direkt.
           </p>
           <button
             type="button"
             onClick={() => openChat()}
-            className={clsx('mt-3 min-h-11 px-4 rounded-full border border-[#214766] bg-white text-[13px] font-semibold text-[#214766] hover:bg-[#F8FAF9]', press, pressScale)}
+            className={clsx('mt-4 min-h-11 px-4 rounded-full border border-[#214766] bg-white text-[13px] font-semibold text-[#214766] hover:bg-[#F8FAF9]', press, pressScale)}
           >
             Öppna chatten
           </button>

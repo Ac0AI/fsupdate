@@ -62,7 +62,9 @@ const MobileMenu = ({ onlyLogin }: Props) => {
 
   return (
     <>
-      <Button padding="0px 32px" onClick={() => router.push(loginPath)} text="LOGGA IN" size="sm" className="uppercase" />
+      <button type="button" onClick={() => router.push(loginPath)} className="min-h-11 px-3 text-[15px] font-semibold text-[var(--color-secondary-main)]">
+        Logga in
+      </button>
       <div className={menuIconWrapperVariants()} onClick={() => setOpen(true)}>
         <MenuIcon />
       </div>
@@ -105,13 +107,13 @@ const MobileMenu = ({ onlyLogin }: Props) => {
                   </NextLink>
 
                   <div className="mt-8">
-                    <Button onClick={() => { setOpen(false); router.push(loginPath) }} text="LOGGA IN" className="uppercase" />
+                    <Button onClick={() => { setOpen(false); router.push(loginPath) }} text="Logga in" />
                   </div>
                 </>
               )}
               {onlyLogin && (
                 <div className="mt-10">
-                  <Button onClick={() => { setOpen(false); router.push(loginPath) }} text="LOGGA IN" className="uppercase" />
+                  <Button onClick={() => { setOpen(false); router.push(loginPath) }} text="Logga in" />
                 </div>
               )}
             </div>

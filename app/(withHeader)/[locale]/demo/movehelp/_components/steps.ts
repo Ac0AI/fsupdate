@@ -34,7 +34,7 @@ export type Residence = {
   secondaries: Secondary[]
 }
 
-export type Addon = 'packing' | 'moveclean' | 'boxes' | 'assembly' | 'storage' | 'recycling'
+export type Addon = 'packing' | 'moveclean' | 'assembly' | 'storage' | 'recycling'
 
 export type Cleaning = {
   specialWindows: boolean
@@ -127,15 +127,14 @@ export const CLEAN_DAYS: { value: CleanDay; title: string }[] = [
 // Packhjälp och städ är toggles, förvalda på: de största merförsäljningarna och de
 // flesta vill ha dem. Resten är chips under "Lägg till", så kortet håller sig kort.
 export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boolean; kind: 'toggle' | 'chip' }[] = [
-  { value: 'packing', label: 'Packhjälp', hint: 'Vi packar allt, du får kvällarna tillbaka', defaultOn: true, kind: 'toggle' },
-  { value: 'moveclean', label: 'Flyttstädning', hint: 'Med städgaranti', defaultOn: true, kind: 'toggle' },
-  { value: 'boxes', label: 'Flyttkartonger', hint: 'Levereras hem', defaultOn: false, kind: 'chip' },
-  { value: 'assembly', label: 'Montering', hint: 'Ned och upp av möbler', defaultOn: false, kind: 'chip' },
-  { value: 'storage', label: 'Magasinering', hint: 'Om datumen inte går ihop', defaultOn: false, kind: 'chip' },
-  { value: 'recycling', label: 'Bortforsling', hint: 'Till tippen eller återbruk', defaultOn: false, kind: 'chip' },
+  { value: 'packing', label: 'Packhjälp', hint: 'Vi packar allt, kartonger ingår, du får kvällarna tillbaka', defaultOn: true, kind: 'toggle' },
+  { value: 'moveclean', label: 'Flyttstädning', hint: 'Med städgaranti: godkänd besiktning eller omstädning', defaultOn: true, kind: 'toggle' },
+  { value: 'assembly', label: 'Montering', hint: 'Vi tar ned och sätter upp möbler, lampor och hyllor', defaultOn: false, kind: 'toggle' },
+  { value: 'storage', label: 'Magasinering', hint: 'Från en månad, vi hämtar och lämnar', defaultOn: false, kind: 'toggle' },
+  { value: 'recycling', label: 'Bortforsling', hint: 'Vi kör till tippen eller lämnar till återbruk', defaultOn: false, kind: 'toggle' },
 ]
 
 // Städytan är boarean plus de biytor som ska städas.
 export const cleanArea = (res: Residence) => res.size + res.secondaries.filter((s) => s.clean).reduce((sum, s) => sum + s.area, 0)
 
-export const STEP_TITLES = ['Bostaden', 'Bohaget', 'Offert på väg'] as const
+export const STEP_TITLES = ['Bostaden', 'Tungt, datum och tillägg', 'Offert på väg'] as const

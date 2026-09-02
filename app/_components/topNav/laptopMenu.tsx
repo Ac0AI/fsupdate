@@ -77,7 +77,7 @@ const LaptopMenu = ({ onlyLogin }: Props) => {
   const cleanPath = pathname.replace(/^\/(sv|en)/, '') || '/'
 
   if (onlyLogin) {
-    return <Button onClick={() => router.push(loginPath)} text="LOGGA IN" className="!uppercase !px-13 !py-3" />
+    return <Button onClick={() => router.push(loginPath)} text="Logga in" className="!px-13 !py-3" />
   }
 
   return (
@@ -85,7 +85,7 @@ const LaptopMenu = ({ onlyLogin }: Props) => {
       <NavItem label="Våra tjänster" href="/#how-it-works" currentPath={cleanPath} />
       <NavItem label="Samarbetspartners" href="/samarbetspartners" currentPath={cleanPath} />
       <NavItem label="Om oss" href="/om-oss" currentPath={cleanPath} />
-      <Button onClick={() => router.push(loginPath)} text="LOGGA IN" className="!uppercase !px-13 !py-3" />
+      <Button onClick={() => router.push(loginPath)} text="Logga in" className="!px-13 !py-3" />
     </Flex>
   )
 }

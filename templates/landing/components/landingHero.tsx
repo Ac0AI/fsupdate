@@ -6,7 +6,6 @@ import { useRouter, usePathname } from 'next/navigation'
 import Button from '@/components/atoms/Button'
 import BankId from '@/public/images/BankId.svg'
 import AnimatedDashboard from './AnimatedDashboard'
-import { partnerLogos } from './partnerLogos'
 
 const LandingHero = () => {
   const router = useRouter()
@@ -41,7 +40,7 @@ const LandingHero = () => {
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-white/80 mb-7 md:mb-10 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">
-              Slipp ringa runt. El, bredband, hemförsäkring, flytthjälp och flyttstädning är valt och förhandlat åt dig.
+              Vi har redan valt och förhandlat el, bredband, hemförsäkring, flytthjälp och flyttstädning åt dig. Du säger ja.
             </p>
 
             {/* CTA */}
@@ -51,7 +50,7 @@ const LandingHero = () => {
                 padding="16px 32px"
                 variant="primaryAltInverted"
                 iconRight={<BankId className="w-6 h-6" />}
-                text="STARTA DIN FLYTT"
+                text="Starta din flytt"
                 onClick={() => router.push(loginUrl)}
               />
               <button
@@ -69,7 +68,7 @@ const LandingHero = () => {
 
             {/* Press - Som sett i */}
             <div className="hidden md:flex items-center gap-4 mt-6 md:mt-8 justify-center lg:justify-start">
-              <span className="text-white/35 text-[10px] font-medium uppercase tracking-widest shrink-0">Som sett i</span>
+              <span className="text-white/35 text-[10px] font-medium uppercase tracking-widest shrink-0">Omskrivna i</span>
               <div className="flex items-center gap-6">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/images/press/di-logo.svg" alt="Dagens industri" className="h-4 md:h-5 brightness-0 invert opacity-40" />
@@ -123,31 +122,6 @@ const LandingHero = () => {
           </div>
 
         </div>
-        </div>
-      </div>
-
-      {/* Mäklarlogotyper flush i hero-underkanten. Ljust band eftersom 16 av 41
-          logotyper har opak bakgrund och inte tål det mörkblå. Logotyperna körs
-          i sin egen färg, så bandet måste förbli ljust. */}
-      <div className="relative z-10 w-full bg-white py-5 md:py-6">
-        <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-          <div className="flex w-max gap-6 animate-scroll-infinite">
-            {[...partnerLogos, ...partnerLogos].map((logo, i) => (
-              <span
-                key={`${logo.src}-${i}`}
-                className="flex-shrink-0 flex items-center justify-center px-5 h-11 md:h-12 w-28 md:w-32"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={logo.src}
-                  alt={logo.alt}
-                  loading="lazy"
-                  decoding="async"
-                  className="max-h-full max-w-full object-contain"
-                />
-              </span>
-            ))}
-          </div>
         </div>
       </div>
 

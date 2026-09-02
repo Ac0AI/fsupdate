@@ -28,19 +28,19 @@
     "title": "Att flytta ska inte kräva tio beslut",
     "subtitle": "Vi har förhandlat priserna och kvalitetskontrollerat leverantörerna i förväg. Du säger ja.",
     "step1": {
-      "title": "Din flytt, inte en generell lista",
-      "description": "Vi vet vad som behöver göras för din adress och ditt flyttdatum, och i vilken ordning. Du ser var du är nu och vad som kommer härnäst.",
-      "benefit": "Klar på 10 minuter"
+      "title": "Logga in med BankID",
+      "description": "Två minuter. Din checklista står klar med adress, datum och det vi redan vet om din flytt.",
+      "benefit": ""
     },
     "step2": {
-      "title": "Vi rekommenderar. Du säger ja.",
-      "description": "Ett rekommenderat val per tjänst med skälet utskrivet. Färdigförhandlade priser, inga offerter att begära.",
-      "benefit": "Färdigförhandlade priser"
+      "title": "Säg ja till ett förslag per tjänst",
+      "description": "El, bredband, flytthjälp, flyttstädning och försäkring, ett rekommenderat val med skälet utskrivet. Färdigförhandlat, inga offerter att begära.",
+      "benefit": ""
     },
     "step3": {
-      "title": "En människa, inte en telefonkö",
-      "description": "Din flyttkoordinator svarar i chatten, på mejl och i telefon. Går något fel hör du av dig till oss.",
-      "benefit": "Vi tar ansvaret"
+      "title": "Nina bokar och följer upp",
+      "description": "Din koordinator lägger beställningarna, sköter rutavdraget och svarar i chatten, på mejl och i telefon.",
+      "benefit": ""
     }
   },
   "CONTACT": {
@@ -60,20 +60,12 @@
   },
   "FAQITEMS": [
     {
-      "question": "Vad är Flyttsmart?",
-      "answer": "Flyttsmart är en kostnadsfri digital tjänst där du löser allt kring flytten och ditt nya hem - snabbt, enkelt och tryggt. Visste du att 1,3 miljoner svenskar flyttar varje år? Vi har själva upplevt hur jobbigt det kan vara att ordna allt kring flytten - och hur mycket tid och energi som krävs. Därför startade vi Flyttsmart. Med vår unika bakgrund från underhållnings-, service- och bostadsbranschen har vi tagit fram en unik tjänst, som skapar värde åt både användare och samarbetspartners."
+      "question": "Vad händer efter att jag loggat in?",
+      "answer": "Du får en checklista för just din flytt, med adress, datum och det vi redan vet. Under varje punkt ligger ett rekommenderat val, färdigförhandlat. Du säger ja till det du vill ha, så bokar din koordinator."
     },
     {
-      "question": "Vad kan jag göra på Flyttsmart?",
-      "answer": "På Flyttsmart ordnar du allt kring flytten och ditt nya hem - snabbt, enkelt, tryggt och helt kostnadsfritt. Logga in med BankID och få förslag som passar dig och din flytt. På bara 10 minuter kan du:",
-      "list_item_1": "Göra en flyttanmälan till Skatteverket (obligatoriskt)",
-      "list_item_2": "Boka flytthjälp och flyttstädning",
-      "list_item_3": "Fixa elen",
-      "list_item_4": "Skaffa internet",
-      "list_item_5": "Försäkra hemmet",
-      "list_item_6": "Ordna hjälp med hemteknik och enklare hantverk",
-      "list_item_7": "Boka juridisk rådgivning",
-      "answer_last": "Och mycket mer."
+      "question": "Kan jag ångra en bokning?",
+      "answer": "Inget är bokat förrän du sagt ja. Vill du ändra eller ångra något efteråt skriver du i chatten, så tar din koordinator det direkt."
     },
     {
       "question": "Hur långt innan flytten bör jag använda Flyttsmart?",

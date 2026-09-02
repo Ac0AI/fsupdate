@@ -14,7 +14,7 @@ const steps = [
     titleKey: 'HOW_WE_HELP.step1.title',
     descriptionKey: 'HOW_WE_HELP.step1.description',
     image: '/images/brand/sa-gar-det-till/1-checklista.jpg',
-    alt: 'En checklista i mobilen med två punkter avbockade, bredvid ett hus och en kalender med flyttdagen markerad',
+    alt: 'Checklistan i mobilen står klar efter inloggningen, med hus och kalender bredvid',
   },
   {
     number: '02',
@@ -36,19 +36,16 @@ const HowItWorks = () => {
   const { t } = useTranslation('landing')
 
   return (
-    <section id="how-it-works" className="py-20 md:py-28 bg-[var(--color-background-default)]">
+    <section id="how-it-works" className="py-16 md:py-24 bg-[var(--color-background-default)]">
       <div className="max-w-[1200px] mx-auto px-4 md:px-8">
         {/* Section header */}
-        <div className="text-center mb-14 md:mb-18">
+        <div className="mb-10 md:mb-14 max-w-[720px]">
           <span className="inline-block text-[var(--color-primary-main)] text-sm font-semibold uppercase tracking-wider mb-4">
             Så går det till
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary-main)] mb-5">
             {t('HOW_WE_HELP.title')}
           </h2>
-          <p className="text-lg text-[var(--color-secondary-main)]/60 max-w-[640px] mx-auto">
-            {t('HOW_WE_HELP.subtitle')}
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
@@ -58,7 +55,8 @@ const HowItWorks = () => {
                 <Image src={image} alt={alt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
               </div>
 
-              <h3 className="text-lg md:text-xl font-bold text-[var(--color-secondary-main)] mb-3">
+              <h3 className="text-lg md:text-xl font-bold text-[var(--color-secondary-main)] mb-3 flex items-baseline gap-2.5">
+                <span className="text-[var(--color-primary-main)] tabular-nums">{Number(number)}.</span>
                 {t(titleKey)}
               </h3>
 

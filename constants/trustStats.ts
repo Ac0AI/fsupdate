@@ -18,7 +18,7 @@ export const PROOF_BLOCK = {
   eyebrow: 'Rekommenderas av',
   claim: 'Hälften av Sveriges mäklarkedjor',
   body: 'Vi bokar inte bara åt dig. Vi ser till att arbetet blir gjort.',
-  numbers: 'Över 230 000 flyttar sedan 2020. Tjänsten kostar dig ingenting.',
+  numbers: 'Över 230 000 flyttar sedan 2020.',
 } as const
 
 /**

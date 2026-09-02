@@ -1,10 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { clsx } from 'clsx'
 import Star from '@/public/images/Star.svg'
-import useResponsive from '@/common/hooks/useResponsive'
 import type { GoogleReview, GoogleReviewCountAndRating } from 'app/_actions/googleReviews.types'
 
 interface TestimonialsProps {
@@ -30,104 +28,32 @@ const GoogleIcon = () => (
 
 const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
   const { t } = useTranslation(['common', 'landing'])
-  const { isTabletPortraitOrGreater, isDesktopOrGreater } = useResponsive()
 
-  const filteredGoogleReviews = googleReviews?.filter(
-    (r) => r.rating >= 3 && r.text
-  ) ?? []
+  // Tre svenska citat som bekräftar löftet, inga engelska och inga som berömmer "alternativ".
+  const looksSwedish = (text: string) => /[åäö]/i.test(text) || /\b(och|att|det|inte)\b/i.test(text)
+  const filteredGoogleReviews =
+    googleReviews?.filter((r) => r.rating >= 4 && !!r.text && looksSwedish(r.text) && !/alternativ/i.test(r.text)) ?? []
 
-  const hasGoogleReviews = filteredGoogleReviews.length >= 6
+  const hasGoogleReviews = filteredGoogleReviews.length >= 3
   const carouselItems = t('landing:TESTAMONIALS', { returnObjects: true }) as { rating: string; name: string; bio: string; words: string }[]
 
   const cards: Card[] = hasGoogleReviews
     ? filteredGoogleReviews.map((r) => ({ text: r.text ?? '', name: r.author_name, subtitle: r.relative_time_description, rating: r.rating }))
     : carouselItems.map((r) => ({ text: r.words, name: r.name, subtitle: r.bio, rating: parseInt(r.rating || '5') }))
 
-  const perPage = !isTabletPortraitOrGreater ? 1 : !isDesktopOrGreater ? 2 : 3
-  const maxPage = Math.max(0, Math.ceil(cards.length / perPage) - 1)
-  const [page, setPage] = useState(0)
-  const [fading, setFading] = useState(false)
-
-  const goToPage = useCallback((next: number) => {
-    setFading(true)
-    setTimeout(() => {
-      setPage(next)
-      setFading(false)
-    }, 300)
-  }, [])
-
-  // Auto-rotate every 6s
-  useEffect(() => {
-    if (maxPage === 0) return
-    const timer = setInterval(() => {
-      goToPage(page >= maxPage ? 0 : page + 1)
-    }, 6000)
-    return () => clearInterval(timer)
-  }, [page, maxPage, goToPage])
-
-  const visibleCards = cards.slice(page * perPage, page * perPage + perPage)
+  const visibleCards = cards.slice(0, 3)
 
   return (
     <div>
-      {/* Rubriken får hela bredden; navigeringen står under på mobil och till höger på
-          desktop. Prickar bara när de är få nog att träffa, annars pilar med räknare. */}
-      <div className="flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between mb-8">
-        <h2 className="text-xl md:text-2xl font-bold text-[var(--color-secondary-main)]">
-          {t('landing:testamonial_title')}
-        </h2>
-        {maxPage > 0 && maxPage + 1 <= 6 && (
-          <div className="flex gap-1.5">
-            {Array.from({ length: maxPage + 1 }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goToPage(i)}
-                className={clsx(
-                  'h-1.5 rounded-full transition-[width,background-color] duration-300 ease-standard',
-                  i === page ? 'w-6 bg-[var(--color-primary-main)]' : 'w-1.5 bg-gray-200 hover:bg-gray-300'
-                )}
-                aria-label={`Sida ${i + 1}`}
-              />
-            ))}
-          </div>
-        )}
-        {maxPage + 1 > 6 && (
-          <div className="flex items-center gap-2 self-end md:self-auto">
-            <button
-              type="button"
-              onClick={() => goToPage(page === 0 ? maxPage : page - 1)}
-              className="w-11 h-11 rounded-full border border-[var(--color-secondary-main)]/20 text-[var(--color-secondary-main)] flex items-center justify-center hover:border-[var(--color-secondary-main)] transition-colors"
-              aria-label="Föregående omdömen"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="M15 19l-7-7 7-7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </button>
-            <span className="text-sm text-[var(--color-secondary-main)]/60 tabular-nums min-w-[64px] text-center">
-              {page + 1} av {maxPage + 1}
-            </span>
-            <button
-              type="button"
-              onClick={() => goToPage(page >= maxPage ? 0 : page + 1)}
-              className="w-11 h-11 rounded-full border border-[var(--color-secondary-main)]/20 text-[var(--color-secondary-main)] flex items-center justify-center hover:border-[var(--color-secondary-main)] transition-colors"
-              aria-label="Nästa omdömen"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </button>
-          </div>
-        )}
-      </div>
+      <h2 className="text-xl md:text-2xl font-bold text-[var(--color-secondary-main)] mb-8">{t('landing:testamonial_title')}</h2>
 
       {/* Cards */}
       <div
-        className={clsx(
-          'grid gap-5 transition-opacity duration-300',
-          fading ? 'opacity-0' : 'opacity-100',
-          perPage === 1 && 'grid-cols-1',
-          perPage === 2 && 'grid-cols-2',
-          perPage === 3 && 'grid-cols-3'
-        )}
+        className="grid gap-5 grid-cols-1 md:grid-cols-3"
       >
         {visibleCards.map((card, i) => (
           <div
-            key={`${page}-${i}`}
+            key={`${card.name}-${i}`}
             className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col min-h-[220px]"
           >
             {/* Stars */}
@@ -160,19 +86,21 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
       {/* Google rating badge */}
       <div className="flex items-center justify-center gap-2.5 mt-8">
         <GoogleIcon />
-        <span className="text-[var(--color-secondary-main)]/50 text-sm">
-          {String(googleRating?.rating ?? '4.7').replace('.', ',')} på Google
+        <span className="text-[var(--color-secondary-main)]/70 text-sm">
+          {String(googleRating?.rating ?? '4.7').replace('.', ',')} av 5 på Google
         </span>
-        <div className="flex gap-0.5">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              className={clsx(
-                'w-3.5 h-3.5',
-                i < Math.floor(Number(googleRating?.rating ?? 4.7)) ? 'fill-amber-400' : 'fill-gray-200'
-              )}
-            />
-          ))}
+        <div className="flex gap-0.5" aria-hidden>
+          {Array.from({ length: 5 }).map((_, i) => {
+            const fill = Math.max(0, Math.min(1, Number(googleRating?.rating ?? 4.7) - i))
+            return (
+              <span key={i} className="relative w-3.5 h-3.5">
+                <Star className="absolute inset-0 w-3.5 h-3.5 fill-gray-200" />
+                <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
+                  <Star className="w-3.5 h-3.5 fill-amber-400" />
+                </span>
+              </span>
+            )
+          })}
         </div>
       </div>
     </div>

@@ -13,7 +13,6 @@ import FAQ from './components/faq'
 import HowItWorks from './components/howItWorks'
 import LandingHero from './components/landingHero'
 import ProofBar from './components/ProofBar'
-import RecentMoves from './components/RecentMoves'
 
 const Testimonials = dynamic(() => import('./components/testimonials'), { ssr: false })
 
@@ -39,7 +38,7 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
         <ProofBar />
 
         {/* Testimonials - white section */}
-        <section className="w-screen flex justify-center bg-white py-10 md:py-14">
+        <section className="w-screen flex justify-center bg-white py-16 md:py-24">
           <div className="w-full px-4 md:px-8 max-w-[1232px]">
             <Testimonials googleReviews={googleReviews} googleRating={googleRating} />
           </div>
@@ -50,9 +49,6 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
 
         {/* Människorna bakom tjänsten */}
         <Coordinators />
-
-        {/* Flödet av genomförda tjänster */}
-        <RecentMoves />
 
         {/* FAQ Section */}
         <section
@@ -75,7 +71,6 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
         <section className="w-screen flex justify-center bg-white border-t border-gray-100">
           <div className="w-full px-4 md:px-8 max-w-[1232px] py-6">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
-              <span className="text-[var(--color-secondary-main)]/40 text-sm">Har du frågor?</span>
               <a href="tel:+46812008822" className="flex items-center gap-2 text-[var(--color-secondary-main)] hover:text-[var(--color-primary-main)] transition-colors">
                 <span className="w-7 h-7 rounded-full bg-[var(--color-primary-main)]/10 flex items-center justify-center shrink-0">
                   <svg className="w-3.5 h-3.5 text-[var(--color-primary-main)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.75}>

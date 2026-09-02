@@ -129,19 +129,6 @@ const AnimatedDashboard = () => {
         </div>
       </div>
 
-      {/* Celebration overlay */}
-      <div className="animate-dashboard-celebration absolute inset-0 z-10 flex flex-col items-center justify-center bg-gradient-to-b from-[#51c8b4] to-[#37ae9a] px-6">
-        {/* Coordinator photos */}
-        <div className="flex items-center justify-center mb-4">
-          <img src="/images/team-nina.webp" alt="Nina" className="w-14 h-14 rounded-full object-cover border-2 border-white/40 relative z-30" />
-          <img src="/images/team-andreas.webp" alt="Andreas" className="w-14 h-14 rounded-full object-cover border-2 border-white/40 -ml-3 relative z-20" />
-          <img src="/images/team-joel.webp" alt="Joel" className="w-14 h-14 rounded-full object-cover border-2 border-white/40 -ml-3 relative z-10" />
-        </div>
-        <p className="text-xl font-bold text-white mb-1">Välkommen hem!</p>
-        <p className="text-[13px] text-white/80 text-center leading-relaxed">
-          Allt är klart – njut av ditt nya hem
-        </p>
-      </div>
     </div>
   )
 }

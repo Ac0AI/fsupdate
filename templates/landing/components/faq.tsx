@@ -38,10 +38,7 @@ const FAQ = ({ isServerIosOrSafari }: FAQProps) => {
   return (
     <div>
       {/* Header */}
-      <div className="text-center mb-10">
-        <span className="inline-block text-[var(--color-primary-main)] text-sm font-semibold uppercase tracking-wider mb-3">
-          Frågor
-        </span>
+      <div className="mb-8">
         <h2 className="text-3xl md:text-4xl font-bold text-[var(--color-secondary-main)]">
           {t('faq_title')}
         </h2>
@@ -55,8 +52,8 @@ const FAQ = ({ isServerIosOrSafari }: FAQProps) => {
             className={clsx(
               'bg-white rounded-2xl border overflow-hidden transition-[border-color,box-shadow] duration-300 ease-standard',
               openIndex === index
-                ? 'border-[var(--color-primary-main)] shadow-lg'
-                : 'border-gray-200 shadow-sm hover:shadow-md'
+                ? 'border-[var(--color-primary-main)] '
+                : 'border-gray-200 hover:'
             )}
           >
             {/* Question button */}
