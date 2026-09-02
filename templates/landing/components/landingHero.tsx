@@ -89,32 +89,40 @@ const LandingHero = () => {
             {/* Bright glow effect behind phone */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[400px] md:h-[400px] bg-[var(--color-primary-main)]/30 rounded-full blur-[60px]" />
 
-            {/* Phone frame - realistic iPhone style */}
+            {/* Telefonen: titankant runt en tunn svart ram, dynamic island med kameraöga,
+                sidoknappar i samma metall. Skärmen är 256/288/320 bred så dashboarden
+                (ritad i 320) skalas exakt. */}
             <div className="relative z-10">
               <div
                 className={clsx(
-                  'relative bg-[#1a1a1a] p-[8px] lg:p-[10px]',
-                  'rounded-[42px] md:rounded-[48px] lg:rounded-[54px]',
-                  'w-[272px] md:w-[304px] lg:w-[340px]',
-                  'shadow-[0_25px_60px_-10px_rgba(0,0,0,0.5)]'
+                  'relative p-[3px]',
+                  'rounded-[46px] md:rounded-[52px] lg:rounded-[58px]',
+                  'w-[276px] md:w-[308px] lg:w-[342px]',
+                  'bg-[linear-gradient(150deg,#f4f4f5_0%,#c2c3c7_26%,#e9e9eb_48%,#a6a7ab_70%,#d7d8da_100%)]',
+                  'shadow-[0_30px_70px_-16px_rgba(0,0,0,0.6),inset_0_0_0_1px_rgba(255,255,255,0.5)]'
                 )}
               >
-                {/* Side buttons - left */}
-                <div className="absolute left-[-2px] top-[86px] w-[3px] h-[26px] bg-[#2a2a2a] rounded-l-sm" />
-                <div className="absolute left-[-2px] top-[126px] w-[3px] h-[48px] bg-[#2a2a2a] rounded-l-sm" />
-                <div className="absolute left-[-2px] top-[184px] w-[3px] h-[48px] bg-[#2a2a2a] rounded-l-sm" />
+                {/* Sidoknappar: ljudlös, volym upp, volym ned, strömknapp */}
+                <div className="absolute left-[-3px] top-[92px] w-[3px] h-[24px] rounded-l-[2px] bg-[linear-gradient(to_right,#d2d3d6,#8b8c90)]" />
+                <div className="absolute left-[-3px] top-[136px] w-[3px] h-[52px] rounded-l-[2px] bg-[linear-gradient(to_right,#d2d3d6,#8b8c90)]" />
+                <div className="absolute left-[-3px] top-[198px] w-[3px] h-[52px] rounded-l-[2px] bg-[linear-gradient(to_right,#d2d3d6,#8b8c90)]" />
+                <div className="absolute right-[-3px] top-[160px] w-[3px] h-[84px] rounded-r-[2px] bg-[linear-gradient(to_left,#d2d3d6,#8b8c90)]" />
 
-                {/* Side button - right (power) */}
-                <div className="absolute right-[-2px] top-[140px] w-[3px] h-[62px] bg-[#2a2a2a] rounded-r-sm" />
+                {/* Svart innerram */}
+                <div className="relative bg-[#0b0b0c] p-[7px] lg:p-[8px] rounded-[43px] md:rounded-[49px] lg:rounded-[55px]">
+                  {/* Skärm - gränssnittet ritas en gång i 320x694 och skalas till varje ramstorlek */}
+                  <div className="relative overflow-hidden bg-black aspect-[9/19.5] rounded-[36px] md:rounded-[42px] lg:rounded-[47px]">
+                    <div className="absolute top-0 left-0 w-[320px] h-[694px] origin-top-left scale-[0.8] md:scale-[0.9] lg:scale-100">
+                      <AnimatedDashboard />
 
-                {/* Screen - the UI is laid out once at 320x694 and scaled to each frame size */}
-                <div className="relative overflow-hidden bg-black aspect-[9/19.5] rounded-[34px] md:rounded-[40px] lg:rounded-[44px]">
-                  <div className="absolute top-0 left-0 w-[320px] h-[694px] origin-top-left scale-[0.8] md:scale-[0.9] lg:scale-100">
-                    {/* Animated dashboard checklist */}
-                    <AnimatedDashboard />
+                      {/* Dynamic Island med kameraöga */}
+                      <div className="absolute top-[11px] left-1/2 -translate-x-1/2 w-[100px] h-[30px] bg-black rounded-full z-20">
+                        <span className="absolute right-[9px] top-1/2 -translate-y-1/2 w-[11px] h-[11px] rounded-full bg-[radial-gradient(circle_at_35%_35%,#3b4c6e,#0d1322_60%,#000_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]" />
+                      </div>
+                    </div>
 
-                    {/* Dynamic Island */}
-                    <div className="absolute top-[11px] left-1/2 -translate-x-1/2 w-[100px] h-[30px] bg-black rounded-full z-20" />
+                    {/* Glasreflex uppe till vänster */}
+                    <div className="pointer-events-none absolute inset-0 z-30 bg-[linear-gradient(115deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.04)_28%,transparent_46%)]" />
                   </div>
                 </div>
               </div>
