@@ -19,11 +19,6 @@ const LandingHero = () => {
 
   return (
     <section className="relative min-h-[100vh] md:min-h-0 flex flex-col bg-gradient-to-br from-[#1a3a52] via-[var(--color-secondary-main)] to-[#2d5a7b]">
-      {/* Subtle decorative elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-[var(--color-primary-main)]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-[var(--color-accent-main)]/10 rounded-full blur-3xl" />
-      </div>
       <div className="flex-1 flex items-center w-full relative z-10 py-6 md:py-16">
         <div className="max-w-[1200px] mx-auto px-6 md:px-8 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-center">
@@ -46,7 +41,7 @@ const LandingHero = () => {
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-white/80 mb-7 md:mb-10 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">
-              El, bredband, hemförsäkring, flytthjälp och flyttstädning. Vi har redan valt leverantörerna och förhandlat priserna.
+              Slipp ringa runt. El, bredband, hemförsäkring, flytthjälp och flyttstädning är valt och förhandlat åt dig.
             </p>
 
             {/* CTA */}
@@ -69,11 +64,11 @@ const LandingHero = () => {
               </button>
             </div>
             <span className="text-sm text-white/60 mt-4 block text-center lg:text-left">
-              Logga in med BankID. Kostnadsfritt, med eller utan inbjudan från din mäklare.
+              Kostnadsfritt, med eller utan inbjudan från din mäklare.
             </span>
 
             {/* Press - Som sett i */}
-            <div className="flex items-center gap-4 mt-6 md:mt-8 justify-center lg:justify-start">
+            <div className="hidden md:flex items-center gap-4 mt-6 md:mt-8 justify-center lg:justify-start">
               <span className="text-white/35 text-[10px] font-medium uppercase tracking-widest shrink-0">Som sett i</span>
               <div className="flex items-center gap-6">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -86,8 +81,6 @@ const LandingHero = () => {
 
           {/* Phone Mockup */}
           <div className="relative flex justify-center lg:justify-end order-2 -mt-2 lg:mt-0">
-            {/* Bright glow effect behind phone */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[400px] md:h-[400px] bg-[var(--color-primary-main)]/30 rounded-full blur-[60px]" />
 
             {/* Telefonen: titankant runt en tunn svart ram, dynamic island med kameraöga,
                 sidoknappar i samma metall. Skärmen är 256/288/320 bred så dashboarden
@@ -136,7 +129,7 @@ const LandingHero = () => {
       {/* Mäklarlogotyper flush i hero-underkanten. Ljust band eftersom 16 av 41
           logotyper har opak bakgrund och inte tål det mörkblå. Logotyperna körs
           i sin egen färg, så bandet måste förbli ljust. */}
-      <div className="relative z-10 w-full bg-[var(--color-background-default)] py-5 md:py-6">
+      <div className="relative z-10 w-full bg-white py-5 md:py-6">
         <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
           <div className="flex w-max gap-6 animate-scroll-infinite">
             {[...partnerLogos, ...partnerLogos].map((logo, i) => (

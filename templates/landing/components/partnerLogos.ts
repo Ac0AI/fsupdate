@@ -9,7 +9,6 @@ export const partnerLogos = [
   { src: '/images/partners/all/behrer-t5olod1hj.png', alt: 'Behrer' },
   { src: '/images/partners/all/brobergmakleri-2hccinrve.png', alt: 'BrobergMakleri' },
   { src: '/images/partners/all/casafastighetsformedling-zxnaoqqtyf.png', alt: 'CasaFastighetsformedling' },
-  { src: '/images/partners/all/edward-logga-svart-2-rader-muebbwqji.png', alt: 'Edward logga Svart 2 rader' },
   { src: '/images/partners/all/edward-logo-mi5yjp1j1.svg', alt: 'Edward logo' },
   { src: '/images/partners/all/fastighetsbyran-logo-pobmqvfiy.svg', alt: 'Fastighetsbyran logo' },
   { src: '/images/partners/all/gorengs-nw-o2ukhj.png', alt: 'Gorengs nW' },

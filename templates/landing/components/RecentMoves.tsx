@@ -70,7 +70,7 @@ const RecentMoves = () => {
             </h2>
             <p className="text-lg text-[var(--color-secondary-main)]/60 leading-relaxed max-w-[520px]">
               Varje rad är en tjänst vi har tecknat, bokat eller bockat av åt en kund. Ingen av dem
-              har ringt runt, begärt offerter eller läst villkor. De sa ja till ett förslag.
+              har ringt runt eller begärt offerter. De sa ja till ett förslag.
             </p>
           </div>
 
@@ -116,7 +116,6 @@ const RecentMoves = () => {
             </ul>
 
             {/* Toning nedåt så listan känns som ett flöde utan slut */}
-            <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[var(--color-background-default)] to-transparent" />
           </div>
         </div>
       </div>

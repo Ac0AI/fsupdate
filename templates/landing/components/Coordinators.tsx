@@ -21,11 +21,8 @@ const Coordinators = () => {
             <h2 id="coordinators-heading" className="text-[var(--color-secondary-main)] font-bold leading-[1.08] text-[32px] md:text-[44px] lg:text-[48px] mb-4">
               Riktiga människor som kan din flytt
             </h2>
-            <p className="text-lg text-[var(--color-secondary-main)] leading-relaxed max-w-[520px] mb-2">
+            <p className="text-lg text-[var(--color-secondary-main)] leading-relaxed max-w-[520px] mb-8">
               Går något fel hör du av dig till oss. Undrar du något hör du av dig i chatten.
-            </p>
-            <p className="text-lg text-[var(--color-secondary-main)]/65 leading-relaxed max-w-[520px] mb-8">
-              Din koordinator svarar i chatten, på mejl och i telefon, och följer din flytt från första dagen till sista nyckeln.
             </p>
             <button
               type="button"
@@ -48,7 +45,6 @@ const Coordinators = () => {
                 />
                 <span className="flex flex-col gap-0.5">
                   <span className="text-lg font-bold text-[var(--color-secondary-main)]">{c.name}</span>
-                  <span className="text-sm text-[var(--color-secondary-main)]/60">{c.title}</span>
                 </span>
               </li>
             ))}

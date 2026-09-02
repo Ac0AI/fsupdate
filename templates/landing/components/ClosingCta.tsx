@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 import Button from '@/components/atoms/Button'
 
 const LOGIN_URL = '/i/testmode'
-const MICROCOPY = 'Kostnadsfritt · 2 min · logga in med BankID'
 
 const Arrow = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
@@ -31,7 +30,7 @@ const ClosingCta = () => {
         </p>
         <div className="flex flex-col items-center gap-3 w-full sm:w-auto">
           <Button
-            className="!text-[var(--color-secondary-main)] shadow-[0_10px_24px_rgba(1,22,39,0.3)]"
+            className="!text-[var(--color-secondary-main)]"
             padding="16px 32px"
             variant="primaryAltInverted"
             iconRight={<Arrow />}
@@ -39,7 +38,6 @@ const ClosingCta = () => {
             onClick={() => router.push(LOGIN_URL)}
             withFullWidth
           />
-          <span className="text-[13px] leading-4 text-white/70">{MICROCOPY}</span>
         </div>
       </div>
     </section>

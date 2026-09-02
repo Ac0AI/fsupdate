@@ -40,7 +40,7 @@ const FAQ = ({ isServerIosOrSafari }: FAQProps) => {
       {/* Header */}
       <div className="text-center mb-10">
         <span className="inline-block text-[var(--color-primary-main)] text-sm font-semibold uppercase tracking-wider mb-3">
-          Support
+          Frågor
         </span>
         <h2 className="text-3xl md:text-4xl font-bold text-[var(--color-secondary-main)]">
           {t('faq_title')}

@@ -28,7 +28,11 @@ export function PageLayoutClient({
   const withInneHeight = pathname?.includes('fixarenovera')
   // Standardspråket saknar prefix i URL:en men /sv/... är fortfarande nåbart, så matcha utan locale.
   const pathWithoutLocale = (pathname ?? '/').replace(new RegExp(`^/(${i18nConfig.locales.join('|')})(?=/|$)`), '')
-  const noFooter = ['', '/', '/sso', '/movehelp-quotation', '/electricity-external'].includes(pathWithoutLocale) || pathWithoutLocale.includes('/i/')
+  // Tjänsteflödena under /demo har en egen fotrad; marknadsfootern hör inte hemma mitt i ett formulär.
+  const noFooter =
+    ['', '/', '/sso', '/movehelp-quotation', '/electricity-external'].includes(pathWithoutLocale) ||
+    pathWithoutLocale.includes('/i/') ||
+    (pathWithoutLocale.includes('/demo/') && !pathWithoutLocale.includes('/demo/movepage'))
   const backgroundRef = useRef<HTMLDivElement>(null)
   const { isTabletLandscapeOrGreater } = useResponsive()
   const [showBackground, setShowBackground] = useState(false)

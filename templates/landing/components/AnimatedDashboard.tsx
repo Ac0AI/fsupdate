@@ -54,7 +54,7 @@ const AnimatedDashboard = () => {
         <div className="flex items-center gap-2 mb-3">
           <div className="flex-1 min-w-0">
             <p className="text-[9px] text-[#214766]/50 font-semibold uppercase">Från</p>
-            <p className="text-[11px] text-[#214766] font-medium leading-tight">Storgatan 12,</p>
+            <p className="text-[11px] text-[#214766] font-medium leading-tight">Bondegatan 21,</p>
             <p className="text-[11px] text-[#214766] font-medium leading-tight">Stockholm</p>
           </div>
           <div className="text-[#51c8b4] flex-shrink-0">
@@ -64,8 +64,8 @@ const AnimatedDashboard = () => {
           </div>
           <div className="flex-1 min-w-0 text-right">
             <p className="text-[9px] text-[#214766]/50 font-semibold uppercase">Till</p>
-            <p className="text-[11px] text-[#214766] font-medium leading-tight">Ekvägen 8,</p>
-            <p className="text-[11px] text-[#214766] font-medium leading-tight">Göteborg</p>
+            <p className="text-[11px] text-[#214766] font-medium leading-tight">Solrosvägen 4,</p>
+            <p className="text-[11px] text-[#214766] font-medium leading-tight">Nacka</p>
           </div>
         </div>
         <div className="h-[6px] rounded-full bg-[#e8eeef] overflow-hidden">
@@ -114,13 +114,13 @@ const AnimatedDashboard = () => {
       {/* Personal contact banner */}
       <div className="bg-white rounded-xl px-4 py-4 mt-2 shadow-[0_1px_3px_rgba(0,0,0,0.06)] flex items-center gap-3">
         <img
-          src="/images/team-nina.webp"
-          alt="Din flyttkoordinator"
+          src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-96,h-96,fo-face"
+          alt="Nina Fredriksson"
           className="w-10 h-10 rounded-full object-cover flex-shrink-0"
         />
         <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-bold text-[#214766]">Personlig kontakt</p>
-          <p className="text-[10px] leading-tight text-[#214766]/50">Din koordinator hjälper dig</p>
+          <p className="text-[12px] font-bold text-[#214766]">Nina, din koordinator</p>
+          <p className="text-[10px] leading-tight text-[#214766]/50">Svarar i chatten, på mejl och i telefon</p>
         </div>
         <div className="w-7 h-7 rounded-full bg-[#51c8b4]/10 flex items-center justify-center flex-shrink-0">
           <svg className="w-4 h-4 text-[#51c8b4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

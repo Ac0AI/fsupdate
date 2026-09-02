@@ -13,7 +13,6 @@ const steps = [
     number: '01',
     titleKey: 'HOW_WE_HELP.step1.title',
     descriptionKey: 'HOW_WE_HELP.step1.description',
-    benefitKey: 'HOW_WE_HELP.step1.benefit',
     image: '/images/brand/sa-gar-det-till/1-checklista.jpg',
     alt: 'En checklista i mobilen med två punkter avbockade, bredvid ett hus och en kalender med flyttdagen markerad',
   },
@@ -21,7 +20,6 @@ const steps = [
     number: '02',
     titleKey: 'HOW_WE_HELP.step2.title',
     descriptionKey: 'HOW_WE_HELP.step2.description',
-    benefitKey: 'HOW_WE_HELP.step2.benefit',
     image: '/images/brand/sa-gar-det-till/2-rekommendation.jpg',
     alt: 'Ett rekommenderat avtal med bock och prislapp, två andra alternativ tonade i bakgrunden',
   },
@@ -29,7 +27,6 @@ const steps = [
     number: '03',
     titleKey: 'HOW_WE_HELP.step3.title',
     descriptionKey: 'HOW_WE_HELP.step3.description',
-    benefitKey: 'HOW_WE_HELP.step3.benefit',
     image: '/images/brand/sa-gar-det-till/3-manniska.jpg',
     alt: 'En flyttkoordinator vid ett skrivbord med headset, med pratbubblor för telefon, mejl och chatt',
   },
@@ -55,7 +52,7 @@ const HowItWorks = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
-          {steps.map(({ number, titleKey, descriptionKey, benefitKey, image, alt }) => (
+          {steps.map(({ number, titleKey, descriptionKey, image, alt }) => (
             <article key={number}>
               <div className="relative aspect-[16/9] mb-6 overflow-hidden rounded-2xl bg-[#EAF2F8]">
                 <Image src={image} alt={alt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
@@ -69,12 +66,6 @@ const HowItWorks = () => {
                 {t(descriptionKey)}
               </p>
 
-              <div className="flex items-center gap-2 text-[var(--color-primary-main)]">
-                <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span className="font-medium text-sm">{t(benefitKey)}</span>
-              </div>
             </article>
           ))}
         </div>

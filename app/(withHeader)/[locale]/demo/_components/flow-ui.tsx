@@ -31,9 +31,9 @@ export const selectClass = clsx(areaInput, 'bg-white')
 
 export type Errors = Record<string, string>
 
-export const StepBar = ({ step, titles, hints, label }: { step: number; titles: readonly string[]; hints: readonly string[]; label?: string }) => (
+export const StepBar = ({ step, titles, hints, label, contentClassName = 'max-w-[818px]' }: { step: number; titles: readonly string[]; hints: readonly string[]; label?: string; contentClassName?: string }) => (
   <div className="bg-white border-b border-[#EEEEF0]">
-    <div className="w-full max-w-[818px] mx-auto px-4 py-3 md:py-4 flex flex-col gap-2 md:gap-2.5">
+    <div className={clsx('w-full mx-auto px-4 py-3 md:py-4 flex flex-col gap-2 md:gap-2.5', contentClassName)}>
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-[13px] font-bold text-[#214766]">
           {label ?? `Steg ${step + 1} av ${titles.length}`}
@@ -83,6 +83,7 @@ export const Hero = ({
   copy,
   tone = 'blue',
   back,
+  contentClassName = 'max-w-[818px]',
   children,
 }: {
   eyebrow?: string
@@ -90,10 +91,11 @@ export const Hero = ({
   copy?: string
   tone?: 'blue' | 'green'
   back?: { label: string; onClick: () => void }
+  contentClassName?: string
   children?: React.ReactNode
 }) => (
   <div className={clsx('transition-colors duration-700 motion-reduce:transition-none', tone === 'green' ? 'bg-[#1F6156]' : 'bg-[#3879AD]')}>
-    <div className="w-full max-w-[818px] mx-auto px-4 pt-5 pb-6 md:pt-9 md:pb-8 flex flex-col gap-2.5">
+    <div className={clsx('w-full mx-auto px-4 pt-5 pb-6 md:pt-8 md:pb-7 flex flex-col gap-2.5', contentClassName)}>
       {back && (
         <button
           type="button"
@@ -152,7 +154,7 @@ export const Pill = ({ active, multi, small, onClick, children }: { active: bool
     onClick={onClick}
     className={clsx(
       'flex-1 rounded-full text-[13px] flex items-center justify-center gap-1.5 border-[1.5px] whitespace-nowrap text-[#214766]',
-      small ? 'h-9 px-2' : 'h-10',
+      small ? 'h-10 px-2' : 'h-11',
       press,
       pressScale,
       active ? 'bg-[#F4FCFA] border-[#51C8B4] font-semibold' : 'bg-white border-[#EEEEF0] hover:border-[#51C8B4]/60',
@@ -199,7 +201,7 @@ export const Option = ({ active, onClick, label, hint }: { active: boolean; onCl
     aria-pressed={active}
     onClick={onClick}
     className={clsx(
-      'flex-1 flex flex-col items-center gap-px py-[7px] px-1 rounded-lg border-[1.5px]',
+      'flex-1 flex flex-col items-center justify-center gap-px min-h-[44px] py-[7px] px-1 rounded-lg border-[1.5px]',
       press,
       pressScale,
       active ? 'bg-[#F4FCFA] border-[#51C8B4]' : 'bg-white border-[#EEEEF0] hover:border-[#51C8B4]/60',

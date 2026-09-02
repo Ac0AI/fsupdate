@@ -72,14 +72,11 @@ export const DWELLINGS: { value: Dwelling; label: string }[] = [
   { value: 'townhouse', label: 'Radhus' },
 ]
 
-// Källarplan räknas nedåt. 8 betyder åtta eller fler.
+// Våningen som chips: BV och 1 till 4, sedan 5+ (värdet 5 betyder fem eller högre).
 export const FLOORS: { value: number; label: string }[] = [
-  { value: -3, label: 'Källare, −3' },
-  { value: -2, label: 'Källare, −2' },
-  { value: -1, label: 'Källare, −1' },
-  { value: 0, label: 'Bottenvåning' },
-  ...[1, 2, 3, 4, 5, 6, 7].map((f) => ({ value: f, label: String(f) })),
-  { value: 8, label: '8 eller högre' },
+  { value: 0, label: 'BV' },
+  ...[1, 2, 3, 4].map((f) => ({ value: f, label: String(f) })),
+  { value: 5, label: '5+' },
 ]
 
 export const ELEVATORS: { value: Elevator; label: string }[] = [
@@ -127,29 +124,16 @@ export const CLEAN_DAYS: { value: CleanDay; title: string }[] = [
   { value: 'custom', title: 'Ett annat datum' },
 ]
 
-// Packhjälp och städ förvalda: de största merförsäljningarna och de flesta
-// vill ha dem. Resten är nischade nog att kräva ett aktivt val.
-export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boolean }[] = [
-  { value: 'packing', label: 'Packhjälp', hint: 'Vi packar allt, du får kvällarna tillbaka', defaultOn: true },
-  { value: 'moveclean', label: 'Flyttstädning', hint: 'Med städgaranti', defaultOn: true },
-  { value: 'boxes', label: 'Flyttkartonger', hint: 'Låna eller köp, levereras hem', defaultOn: false },
-  { value: 'assembly', label: 'Montering', hint: 'Ned och upp av möbler', defaultOn: false },
-  { value: 'storage', label: 'Magasinering', hint: 'Om datumen inte går ihop', defaultOn: false },
-  { value: 'recycling', label: 'Bortforsling', hint: 'Vi kör till tippen eller lämnar till återbruk', defaultOn: false },
+// Packhjälp och städ är toggles, förvalda på: de största merförsäljningarna och de
+// flesta vill ha dem. Resten är chips under "Lägg till", så kortet håller sig kort.
+export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boolean; kind: 'toggle' | 'chip' }[] = [
+  { value: 'packing', label: 'Packhjälp', hint: 'Vi packar allt, du får kvällarna tillbaka', defaultOn: true, kind: 'toggle' },
+  { value: 'moveclean', label: 'Flyttstädning', hint: 'Med städgaranti', defaultOn: true, kind: 'toggle' },
+  { value: 'boxes', label: 'Flyttkartonger', hint: 'Levereras hem', defaultOn: false, kind: 'chip' },
+  { value: 'assembly', label: 'Montering', hint: 'Ned och upp av möbler', defaultOn: false, kind: 'chip' },
+  { value: 'storage', label: 'Magasinering', hint: 'Om datumen inte går ihop', defaultOn: false, kind: 'chip' },
+  { value: 'recycling', label: 'Bortforsling', hint: 'Till tippen eller återbruk', defaultOn: false, kind: 'chip' },
 ]
-
-// Förklaringar bakom i-ikonen. Korta, och de säger alltid varför vi frågar.
-export const INFO = {
-  size: 'Boarean kommer från Skatteverket. Stämmer den inte, ändra den.',
-  distance: 'Sträckan bärarna går mellan bilen och din dörr. Räkna ungefär, vi frågar om det behövs.',
-  access: 'Hur tar sig flyttbilen till dörren? Smal trappa, ingen lastplats, gårdshus, bom. Vet du inte, lämna den av.',
-  outdoor: 'Trädgårdsmöbler, grill, studsmatta. Sånt som står ute tar plats i bilen och ska räknas med.',
-  secondary: 'Ytor utanför bostaden som ska tömmas eller städas. Lägg till en per utrymme.',
-  valuables: 'Enligt Bohag 2010 ska föremål värda över ett halvt prisbasbelopp, 29 600 kr, uppges i förväg. Annars kan ersättningen vid skada begränsas. Det hjälper oss också att packa och bära rätt.',
-  windows: 'Spröjsade fönster, takfönster eller fönster som är svåra att nå tar längre tid att göra rent.',
-  surfaces: 'Marmor, obehandlat trä, mässing och liknande ytor kräver särskilda medel.',
-  keys: 'Är någon på plats när vi städar? Annars behöver vi veta hur vi kommer in, till exempel nyckel i brevlådan eller kod.',
-}
 
 // Städytan är boarean plus de biytor som ska städas.
 export const cleanArea = (res: Residence) => res.size + res.secondaries.filter((s) => s.clean).reduce((sum, s) => sum + s.area, 0)
