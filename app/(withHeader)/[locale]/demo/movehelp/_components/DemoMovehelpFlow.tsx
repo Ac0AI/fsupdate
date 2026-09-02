@@ -207,9 +207,10 @@ const DemoMovehelpFlow = () => {
         contentClassName="max-w-[640px]"
         back={step === 2 ? undefined : step === 1 ? { label: 'Tillbaka till bostäderna', onClick: () => setStep(0) } : { label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
       >
-        {step === 0 && (
+        {/* Bylinen ger ingressens "jag" ett ansikte, samma storlek på Nina i hela flödet. */}
+        {step < 2 && (
           <div className="flex items-center gap-2 mt-1">
-            <Image src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-56,h-56,fo-face" alt="" width={28} height={28} className="w-7 h-7 rounded-full object-cover" />
+            <Image src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-64,h-64,fo-face" alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
             <span className="text-[13px] text-[#5F6062]">Nina Fredriksson · din flyttkoordinator</span>
           </div>
         )}
@@ -238,7 +239,7 @@ const DemoMovehelpFlow = () => {
                   <Image src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-64,h-64,fo-face" alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
                   <h3 className="text-[15px] font-bold text-[#214766]">Ninas förslag</h3>
                 </div>
-                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-2 pb-2">Med rutavdraget draget. Slå av det du inte vill ha.</p>
+                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-2 pb-2">Priset kommer i offerten, med rutavdraget draget.</p>
                 <div className="flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0]">
                   <span className="flex flex-col gap-px">
                     <span className="text-[13px] font-semibold text-[#214766]">Flytthjälp</span>
@@ -271,8 +272,8 @@ const DemoMovehelpFlow = () => {
                 <div className="pt-2 border-t border-[#EEEEF0]">
                   {noteOpen || req.note ? (
                     <div className={clsx('pt-1', rise)}>
-                      <Field label="Något mer vi bör veta?" hint="parkering, portkod, tider som inte funkar">
-                        <textarea className={textareaClass} autoFocus value={req.note} onChange={(e) => setReq((r) => ({ ...r, note: e.target.value }))} />
+                      <Field label="Något mer vi bör veta?">
+                        <textarea className={textareaClass} autoFocus placeholder="Parkering, portkod, tider som inte funkar" value={req.note} onChange={(e) => setReq((r) => ({ ...r, note: e.target.value }))} />
                       </Field>
                     </div>
                   ) : (
@@ -315,7 +316,7 @@ const DemoMovehelpFlow = () => {
                       active={req.dateMode === 'custom'}
                       onClick={() => setReq((r) => ({ ...r, dateMode: 'custom', customDate: r.customDate || isoDate(movingDate) }))}
                       title="Ett annat datum"
-                      hint="Välj själv, så räknar vi på den dagen"
+                      hint="Välj själv"
                     />
                   </div>
                   {req.dateMode === 'custom' && (
@@ -354,7 +355,7 @@ const DemoMovehelpFlow = () => {
             <div className={clsx(rise, '[animation-delay:100ms]')}>
               <Card>
                 <h3 className="text-[15px] font-bold text-[#214766]">Något tungt, ömtåligt eller värdefullt?</h3>
-                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Allt värt över 30 000 kr räknas hit. Vi sätter rätt antal bärare och försäkrar det rätt.</p>
+                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Över 80 kg eller värt över 30 000 kr? Då sätter vi fler bärare och tar med det i försäkringen.</p>
                 <div className="flex flex-wrap gap-1.5 mt-3">
                   {HEAVY_KINDS.map((k) => (
                     <Pill key={k.value} active={req.heavyKinds.includes(k.value)} onClick={() => toggleHeavy(k.value)}>
@@ -393,12 +394,7 @@ const DemoMovehelpFlow = () => {
               {hasShownErrors ? (
                 <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar vi rätt.</Foot>
               ) : (
-                <Foot>
-                  Inget är bokat förrän du sagt ja ·{' '}
-                  <Link href="/terms" className="underline underline-offset-2 hover:text-[#214766]">
-                    Villkor
-                  </Link>
-                </Foot>
+                <Foot>Inget är bokat förrän du sagt ja</Foot>
               )}
             </>
           )}
@@ -411,7 +407,7 @@ const DemoMovehelpFlow = () => {
                 <Foot tone="error">Något saknas ovan. Fyll i det markerade så vi kan räkna rätt.</Foot>
               ) : (
                 <Foot>
-                  Offerten kommer senast nästa vardag före lunch ·{' '}
+                  Offerten kommer senast nästa vardag före lunch. Inget är bokat förrän du sagt ja ·{' '}
                   <Link href="/terms" className="underline underline-offset-2 hover:text-[#214766]">
                     Villkor
                   </Link>
@@ -685,12 +681,10 @@ const CleaningCard = ({
   }
   return (
     <div>
-      <p className="text-[13px] leading-[19px] text-[#5F6062]">
-        {cleanArea(from)} m² städyta, {from.street}
-        {extra ? ', inklusive biytorna som ska städas' : ''}.
-      </p>
+      {/* Ytan står redan i raden ovanför; bara biytorna är ny information. */}
+      {extra && <p className="text-[13px] leading-[19px] text-[#5F6062]">{cleanArea(from)} m² städyta inklusive biytorna som ska städas.</p>}
 
-      <Field label="Något av det här i bostaden?" className="mt-3">
+      <Field label="Något av det här i bostaden?" className={extra ? 'mt-3' : undefined}>
         <div className="flex flex-wrap gap-1.5">
           <Pill active={cleaning.specialWindows} onClick={() => onChange({ specialWindows: !cleaning.specialWindows })}>
             Spröjs eller takfönster
@@ -791,11 +785,11 @@ const WaitingStep = ({ req, movingDate, onEdit, onOpen }: { req: QuoteRequest; m
         <Card>
           <div className="flex items-center gap-3">
             <Image
-              src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-88,h-88,fo-face"
+              src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-64,h-64,fo-face"
               alt="Nina Fredriksson"
-              width={44}
-              height={44}
-              className="w-11 h-11 rounded-full object-cover shrink-0"
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full object-cover shrink-0"
             />
             <span className="flex flex-col gap-0.5">
               <span className="text-[15px] font-bold text-[#214766]">Nina Fredriksson</span>

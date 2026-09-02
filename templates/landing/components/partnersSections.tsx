@@ -3,11 +3,11 @@
 import Image from 'next/image'
 import { coordinators } from '@/common/data/coordinators'
 
-// Bakgrund på länkar kräver ! : resetten nollar background-color på <a>.
+// Bakgrund och textfärg på länkar kräver ! : resetten nollar background-color och sätter color på <a>.
 const primaryButton =
-  'inline-flex items-center justify-center min-h-11 px-6 rounded-full bg-[var(--color-primary-main)]! text-[var(--color-secondary-main)] font-bold text-[15px] hover:opacity-90 transition-opacity whitespace-nowrap'
+  'inline-flex items-center justify-center min-h-11 px-6 rounded-full bg-[var(--color-primary-main)]! text-[var(--color-secondary-main)]! font-bold text-[15px] hover:opacity-90 transition-opacity whitespace-nowrap'
 const outlineButton =
-  'inline-flex items-center justify-center min-h-11 px-6 rounded-full border-2 border-white text-white font-bold text-[15px] hover:bg-white/10! transition-colors whitespace-nowrap'
+  'inline-flex items-center justify-center min-h-11 px-6 rounded-full border-2 border-white text-white! font-bold text-[15px] hover:bg-white/10! transition-colors whitespace-nowrap'
 
 // ─── Hero: vad partnern får, sedan valet ─────────────────────────────────────
 
@@ -15,7 +15,10 @@ const PartnersIntro = () => (
   <section className="bg-[var(--color-secondary-main)] text-white">
     <div className="max-w-[1200px] mx-auto px-4 md:px-8 pt-8 md:pt-16 pb-12 md:pb-16">
       <div className="max-w-[680px] mb-10">
-        <h1 className="text-[32px] md:text-[44px] font-bold mb-4 leading-[1.1] text-balance">Dina kunder får en flyttkoordinator. Du står som avsändare.</h1>
+        <h1 className="text-[32px] md:text-[44px] font-bold mb-4 leading-[1.1]">
+          Dina kunder får en flyttkoordinator.
+          <span className="block">Du står som avsändare.</span>
+        </h1>
         <p className="text-white/80 text-lg leading-relaxed">
           Kunden får en namngiven koordinator. Går något fel tar vi ansvaret, inte du.
         </p>
@@ -25,14 +28,14 @@ const PartnersIntro = () => (
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Mäklare, hyresvärdar och föreningar</h2>
           <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten och du syns som avsändare genom hela flytten. Kostnadsfritt, vi tar betalt av leverantörerna.</p>
-          <a href="#distributionspartners" className={`mt-2 ${primaryButton}`}>
+          <a href="#distributionspartners" className={`mt-auto pt-2 ${primaryButton}`}>
             Bli partner
           </a>
         </div>
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Flyttfirmor, elbolag och andra leverantörer</h2>
-          <p className="text-white/70 text-sm leading-relaxed">Du levererar tjänsten. Vi skickar kunder som ska flytta inom några veckor. Du betalar per uppdrag.</p>
-          <a href="#leverantorer" className={`mt-2 ${outlineButton}`}>
+          <p className="text-white/70 text-sm leading-relaxed">Vi skickar kunder som ska flytta inom några veckor. Du betalar per uppdrag.</p>
+          <a href="#leverantorer" className={`mt-auto pt-2 ${outlineButton}`}>
             Ansök som leverantör
           </a>
         </div>
@@ -60,7 +63,7 @@ const PARTNER_QUOTES = [
 
 const PartnerQuotes = () => (
   <section className="bg-white">
-    <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-12 md:py-16">
+    <div className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 md:pt-16">
       <h2 className="text-2xl md:text-3xl font-bold text-[var(--color-secondary-main)] mb-8 leading-snug">Det säger de som redan samarbetar med oss</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
         {PARTNER_QUOTES.map((q) => (
@@ -83,10 +86,12 @@ const PartnerQuotes = () => (
 
 // ─── Delade byggstenar ────────────────────────────────────────────────────────
 
-const SectionHeader = ({ title, text }: { title: string; text: string }) => (
+// Etiketten säger vem sektionen är till, så leverantören inte läser mäklarens sida.
+const SectionHeader = ({ audience, title, text }: { audience: string; title: string; text?: string }) => (
   <div className="mb-12 md:mb-16 max-w-[640px]">
-    <h2 className="text-2xl md:text-3xl font-bold text-[var(--color-secondary-main)] mb-4 leading-snug text-balance">{title}</h2>
-    <p className="text-[var(--color-secondary-main)]/80 text-[15px] leading-relaxed">{text}</p>
+    <p className="text-[#1a7a6e] text-xs font-semibold uppercase tracking-widest mb-3">{audience}</p>
+    <h2 className="text-2xl md:text-3xl font-bold text-[var(--color-secondary-main)] leading-snug text-balance">{title}</h2>
+    {text && <p className="text-[var(--color-secondary-main)]/80 text-[15px] leading-relaxed mt-4">{text}</p>}
   </div>
 )
 
@@ -121,9 +126,9 @@ const Steps = ({ items, cols }: { items: { title: string; description: string; p
   </ol>
 )
 
-const Bullets = ({ title, items }: { title: string; items: string[] }) => (
+const Bullets = ({ title, items }: { title?: string; items: string[] }) => (
   <div className="mb-14 md:mb-16 max-w-[640px]">
-    <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-5">{title}</h3>
+    {title && <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-5">{title}</h3>}
     <ul className="flex flex-col gap-3">
       {items.map((item) => (
         <li key={item} className="flex items-start gap-3">
@@ -147,17 +152,14 @@ const Cta = ({ title, href, label }: { title: string; href: string; label: strin
 // ─── Distributionspartners ────────────────────────────────────────────────────
 
 const brokerSteps = [
-  { title: 'Kunden bjuds in', description: 'Mäklare: automatiskt via mäklarsystemet när affären är klar. Andra partners: du bjuder in kunden, inget att bygga.' },
+  { title: 'Kunden bjuds in', description: 'Mäklare: vi kopplar in oss i ditt mäklarsystem, du gör inget. Andra partners bjuder in kunden själva.' },
   { title: 'Vi tar hand om resten', description: 'Flytt, städ, el, bredband, försäkring och adressändring, samlat på ett ställe med en kontaktpunkt.' },
-  { title: 'Kunden får en koordinator', description: 'Nina, Joel eller Maria bokar, följer upp och svarar i chatten, på mejl och i telefon.', people: true },
+  { title: 'Kunden får en koordinator', description: 'Koordinatorn bokar, följer upp och svarar i chatten, på mejl och i telefon.', people: true },
 ]
 
 const DistributionPartners = () => (
-  <section id="distributionspartners" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-16 md:pt-16 md:pb-24">
-    <SectionHeader
-      title="Skicka dina kunder till en flytt de kommer minnas."
-      text="Vi gör flytten enkel för dina kunder och du står som avsändare, helt utan kostnad för dig."
-    />
+  <section id="distributionspartners" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-12 md:pt-16 md:pb-16">
+    <SectionHeader audience="För mäklare, hyresvärdar och föreningar" title="Du slipper frågorna om flytten. Kunden minns vem som bjöd in." />
 
     <div className="mb-14 md:mb-16">
       <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-6">Så fungerar det</h3>
@@ -182,11 +184,12 @@ const supplierBenefits = ['Ingen marknadsföringskostnad, du betalar bara när d
 const Suppliers = () => (
   <section id="leverantorer" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-16 md:pt-16 md:pb-24">
     <SectionHeader
+      audience="För leverantörer"
       title="Nå kunder i exakt rätt ögonblick."
       text="Varje månad flyttar tusentals svenskar genom Flyttsmart. De behöver flyttfirma, städbolag, el, bredband, försäkring och hantverkare, och de letar just nu. Vi kopplar ihop er, men bara om du håller måttet."
     />
 
-    <Bullets title="Varför leverantörer väljer Flyttsmart" items={supplierBenefits} />
+    <Bullets items={supplierBenefits} />
 
     <div className="mb-14 md:mb-16">
       <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-6">Hur vi väljer leverantörer</h3>
