@@ -63,4 +63,6 @@ Hade låtit hero-rubriken säga vad tjänsten gör (el, bredband, flytt, städ, 
 - Gap 6: om "Just nu"-feeden är riktig data eller exempel behöver ägaren svara på.
 
 ## Åtgärdat 2026-09-02 (ägarens beslut)
-Byggt: tjänsteöversikten "Det här ingår" under heron (sex rader, du slipper / du får), sektionen "Dina flyttkoordinatorer" med Nina, Joel och Maria efter Så går det till, slutknappen "Redo? Det tar två minuter." efter FAQ och en sticky "Starta din flytt" på mobil som visas när herons knapp scrollat ur bild och döljs vid slutknappen. Ägaren behåller "Just nu"-feeden tills riktig data hämtas vid go-live. Inte rört: taglinen, heron, FAQ-copyn, "Vi rekommenderar. Du väljer.".
+Byggt: sektionen "Dina flyttkoordinatorer" med Nina, Joel och Maria efter Så går det till, slutknappen "Redo? Det tar två minuter." efter FAQ och en sticky "Starta din flytt" på mobil som visas när herons knapp scrollat ur bild och döljs vid slutknappen. Ägaren behåller "Just nu"-feeden tills riktig data hämtas vid go-live. Inte rört: taglinen, heron, FAQ-copyn, "Vi rekommenderar. Du väljer.".
+
+Tjänsteöversikten "Det här ingår" byggdes och togs bort samma dag på ägarens beslut ("blev bara lökig"). Gap 2 står därmed öppet, löses på annat sätt än en tabell.

@@ -14,7 +14,6 @@ import HowItWorks from './components/howItWorks'
 import LandingHero from './components/landingHero'
 import ProofBar from './components/ProofBar'
 import RecentMoves from './components/RecentMoves'
-import ServiceOverview from './components/ServiceOverview'
 
 const Testimonials = dynamic(() => import('./components/testimonials'), { ssr: false })
 
@@ -35,9 +34,6 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
       <div className="overflow-x-hidden overflow-y-auto scroll-smooth sm:scroll-auto">
         {/* Hero Section - component handles its own background */}
         <LandingHero />
-
-        {/* Det här ingår: vad kunden slipper och får, tjänst för tjänst */}
-        <ServiceOverview />
 
         {/* Bevisraden - backar upp "vi har gjort researchen så du slipper" */}
         <ProofBar />

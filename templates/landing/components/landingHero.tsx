@@ -1,153 +1,155 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { clsx } from 'clsx'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Button from '@/components/atoms/Button'
-import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT, MOVES_SINCE_2020 } from '@/constants/trustStats'
-import { HERO_SCENE as SCENE } from './heroScene'
-
-// Sex mäklarlogotyper som är rena SVG:er utan egen bakgrund, så de tål att
-// inverteras till vitt på navy. De 41 i partnerLogos har för många med opak
-// platta för att kunna stå på mörk botten.
-const HERO_LOGOS = [
-  // width/height ur SVG:ernas viewBox, så raden inte hoppar under laddning.
-  // Höjden sätts per logotyp: ordmärken lägre, staplade märken högre, så de väger lika. I egen färg på vit botten.
-  { src: '/images/partners/all/fastighetsbyran-logo-pobmqvfiy.svg', alt: 'Fastighetsbyrån', width: 268, height: 55, h: 'h-5' },
-  { src: '/images/partners/all/maklarhuset-logotyp-1wwxhjgay.svg', alt: 'Mäklarhuset', width: 1456, height: 188, h: 'h-[18px]' },
-  { src: '/images/partners/all/notar-new-4g0mb9fuo.svg', alt: 'Notar', width: 142, height: 42, h: 'h-[22px]' },
-  { src: '/images/partners/all/historiska-hem-logo-ri0m3fw-x.svg', alt: 'Historiska Hem', width: 174, height: 50, h: 'h-[30px]' },
-  { src: '/images/partners/all/lejons-makleri-logo-njpe-l-5m.svg', alt: 'Lejons Mäkleri', width: 1788, height: 980, h: 'h-10' },
-  { src: '/images/partners/all/edward-logo-mi5yjp1j1.svg', alt: 'Edward & Partners', width: 145, height: 66, h: 'h-9' },
-]
-
-
-const Arrow = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
-    <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-
-const Star = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
-    <path d="M12 2.5l2.9 6.2 6.8.8-5 4.7 1.3 6.7L12 17.6l-6 3.3 1.3-6.7-5-4.7 6.8-.8z" fill="var(--color-accent-main)" />
-  </svg>
-)
+import BankId from '@/public/images/BankId.svg'
+import AnimatedDashboard from './AnimatedDashboard'
+import { partnerLogos } from './partnerLogos'
 
 const LandingHero = () => {
   const router = useRouter()
-  const [showFloatingCta, setShowFloatingCta] = useState(false)
+  const pathname = usePathname()
   const loginUrl = '/i/testmode'
-  const rating = `${GOOGLE_RATING.toString().replace('.', ',')} av över ${GOOGLE_REVIEW_COUNT} recensioner på Google`
-
-  // En orange knapp per vy. Texten navy på orange, som i brandguiden.
-  const ctaClassName = clsx('!text-[var(--color-secondary-main)]', 'shadow-[0_10px_24px_rgba(33,71,102,0.18)]')
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // Flytande knapp på mobil när heron scrollat förbi
-      setShowFloatingCta(window.scrollY > window.innerHeight * 0.7)
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  const heroCtaClassName = clsx(
+    '!text-[var(--color-inactive-super-dark)]',
+    'shadow-[0_10px_24px_rgba(0,0,0,0.18)]'
+  )
 
   return (
-    <section className="relative flex flex-col overflow-hidden lg:min-h-[calc(100svh-72px)]" style={{ backgroundColor: SCENE.sky }}>
-      {/* Scenen bär hela heron: vägen hem, bilen som redan står vid huset och
-          lastar ur, paret som går upp tomhänta. Budskapet ligger i himlen.
-          På desktop delar scenen skärmhöjden med logotypremsan, så mäklarna
-          syns utan att scrolla. På mobil ankras bilden i underkanten i 240 %
-          bredd, så himlen ovanför blir ren yta och texten går fri. */}
-      <div className="relative flex-1 min-h-[760px] md:min-h-[800px] lg:min-h-[740px] lg:max-h-[960px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={SCENE.src}
-          srcSet={SCENE.srcSet}
-          sizes="100vw"
-          width={SCENE.width}
-          height={SCENE.height}
-          alt=""
-          fetchPriority="high"
-          decoding="async"
-          className="hero-scene-in absolute bottom-0 left-1/2 w-[240%] max-w-none h-auto -translate-x-1/2 md:inset-0 md:left-0 md:translate-x-0 md:w-full md:h-full md:object-cover md:object-bottom"
-        />
-
-        {/* Budskapet: beviset före löftet, ett löfte, en knapp. */}
-        <div className="stagger-rise relative z-10 w-full max-w-[1200px] mx-auto px-5 md:px-8 pt-7 md:pt-8 flex flex-col items-center text-center gap-4">
-          <p className="inline-flex items-center gap-2 h-9 md:h-10 pl-3 pr-4 rounded-full bg-white border border-[#EEEEF0] shadow-[0_4px_14px_rgba(33,71,102,0.10)] text-[13px] md:text-[14px] font-semibold text-[var(--color-secondary-main)]">
-            <Star />
-            {rating}
-          </p>
-
-          <h1 className="text-[var(--color-secondary-main)] font-bold tracking-[-0.02em] text-[40px] leading-[44px] md:text-[56px] md:leading-[60px] lg:text-[64px] lg:leading-[68px] 2xl:text-[72px] 2xl:leading-[76px] max-w-[1000px]">
-            Det enklaste sättet att flytta.
-          </h1>
-
-          <p className="text-[var(--color-secondary-main)] text-[17px] leading-[25px] md:text-[18px] md:leading-[26px] max-w-[640px]">
-            Färdigförhandlat, kvalitetssäkrat, och vi tar ansvar hela vägen.
-          </p>
-
-          <div data-hero-cta className="flex flex-col items-center gap-3 pt-1 w-full sm:w-auto">
-            <Button
-              className={ctaClassName}
-              padding="16px 32px"
-              variant="primaryAltInverted"
-              iconRight={<Arrow />}
-              text="Starta din flytt"
-              onClick={() => router.push(loginUrl)}
-              withFullWidth
-            />
-            <span className="text-[13px] leading-4 text-[#767678]">Kostnadsfritt · 2 min · logga in med BankID</span>
-          </div>
-        </div>
+    <section className="relative min-h-[100vh] md:min-h-0 flex flex-col bg-gradient-to-br from-[#1a3a52] via-[var(--color-secondary-main)] to-[#2d5a7b]">
+      {/* Subtle decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-[var(--color-primary-main)]/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-[var(--color-accent-main)]/10 rounded-full blur-3xl" />
       </div>
+      <div className="flex-1 flex items-center w-full relative z-10 py-6 md:py-16">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-8 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-center">
+          {/* Content */}
+          <div className="text-center lg:text-left order-1">
+            {/* Eyebrow */}
+            <p className="text-[var(--color-primary-main)] text-xs md:text-sm font-semibold uppercase tracking-[0.18em] mb-4 md:mb-5">
+              Ett beslut. Hela flytten.
+            </p>
 
-      {/* Remsan: vilka som rekommenderar oss. Ljus botten så logotyperna kan gå i
-          sin egen färg, som ägaren vill. */}
-      <div className="w-full shrink-0 bg-white border-b border-[#EEEEF0]">
-        <div className="max-w-[1248px] mx-auto px-5 md:px-8 py-4 md:py-0 md:h-16 flex flex-col md:flex-row items-center md:justify-between gap-3 md:gap-6">
-          <div className="flex flex-col md:flex-row items-center gap-3 md:gap-5">
-            <span className="text-[#767678] text-[11px] font-semibold uppercase tracking-[0.18em] whitespace-nowrap">Rekommenderas av</span>
-            <div className="flex items-center justify-center flex-wrap gap-x-6 gap-y-3 md:flex-nowrap">
-              {HERO_LOGOS.map((logo) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={logo.src}
-                  src={logo.src}
-                  alt={logo.alt}
-                  width={logo.width}
-                  height={logo.height}
-                  loading="lazy"
-                  decoding="async"
-                  className={clsx(logo.h, 'w-auto object-contain')}
-                />
-              ))}
+            {/* Headline */}
+            <h1 className="text-white mb-4 md:mb-6">
+              <span className="block text-[42px] md:text-[56px] lg:text-[64px] font-bold leading-[1.1]">
+                Slipp stressen –
+              </span>
+              <span className="block text-[42px] md:text-[56px] lg:text-[64px] font-bold leading-[1.1]">
+                <span className="text-[var(--color-accent-main)]">vi fixar</span> flytten
+              </span>
+            </h1>
+
+            {/* Subheadline */}
+            <p className="text-lg md:text-xl text-white/80 mb-7 md:mb-10 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">
+              El, bredband, hemförsäkring, flytthjälp och flyttstädning. Vi har redan valt leverantörerna och förhandlat priserna.
+            </p>
+
+            {/* CTA */}
+            <div data-hero-cta className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+              <Button
+                className={heroCtaClassName}
+                padding="16px 32px"
+                variant="primaryAltInverted"
+                iconRight={<BankId className="w-6 h-6" />}
+                text="STARTA DIN FLYTT"
+                onClick={() => router.push(loginUrl)}
+              />
+              <button
+                onClick={() => {
+                  document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="text-white/80 hover:text-white text-sm font-medium underline underline-offset-4 transition-colors"
+              >
+                Se hur det fungerar →
+              </button>
+            </div>
+            <span className="text-sm text-white/60 mt-4 block text-center lg:text-left">
+              Logga in med BankID. Kostnadsfritt, med eller utan inbjudan från din mäklare.
+            </span>
+
+            {/* Press - Som sett i */}
+            <div className="flex items-center gap-4 mt-6 md:mt-8 justify-center lg:justify-start">
+              <span className="text-white/35 text-[10px] font-medium uppercase tracking-widest shrink-0">Som sett i</span>
+              <div className="flex items-center gap-6">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/press/di-logo.svg" alt="Dagens industri" className="h-4 md:h-5 brightness-0 invert opacity-40" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/press/breakit-logo.svg" alt="Breakit" className="h-3.5 md:h-4 brightness-0 invert opacity-40" />
+              </div>
             </div>
           </div>
-          <span className="text-[var(--color-secondary-main)] text-[13px] whitespace-nowrap">{MOVES_SINCE_2020} flyttar sedan 2020</span>
+
+          {/* Phone Mockup */}
+          <div className="relative flex justify-center lg:justify-end order-2 -mt-2 lg:mt-0">
+            {/* Bright glow effect behind phone */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[400px] md:h-[400px] bg-[var(--color-primary-main)]/30 rounded-full blur-[60px]" />
+
+            {/* Phone frame - realistic iPhone style */}
+            <div className="relative z-10">
+              <div
+                className={clsx(
+                  'relative bg-[#1a1a1a] p-[8px] lg:p-[10px]',
+                  'rounded-[42px] md:rounded-[48px] lg:rounded-[54px]',
+                  'w-[272px] md:w-[304px] lg:w-[340px]',
+                  'shadow-[0_25px_60px_-10px_rgba(0,0,0,0.5)]'
+                )}
+              >
+                {/* Side buttons - left */}
+                <div className="absolute left-[-2px] top-[86px] w-[3px] h-[26px] bg-[#2a2a2a] rounded-l-sm" />
+                <div className="absolute left-[-2px] top-[126px] w-[3px] h-[48px] bg-[#2a2a2a] rounded-l-sm" />
+                <div className="absolute left-[-2px] top-[184px] w-[3px] h-[48px] bg-[#2a2a2a] rounded-l-sm" />
+
+                {/* Side button - right (power) */}
+                <div className="absolute right-[-2px] top-[140px] w-[3px] h-[62px] bg-[#2a2a2a] rounded-r-sm" />
+
+                {/* Screen - the UI is laid out once at 320x694 and scaled to each frame size */}
+                <div className="relative overflow-hidden bg-black aspect-[9/19.5] rounded-[34px] md:rounded-[40px] lg:rounded-[44px]">
+                  <div className="absolute top-0 left-0 w-[320px] h-[694px] origin-top-left scale-[0.8] md:scale-[0.9] lg:scale-100">
+                    {/* Animated dashboard checklist */}
+                    <AnimatedDashboard />
+
+                    {/* Dynamic Island */}
+                    <div className="absolute top-[11px] left-1/2 -translate-x-1/2 w-[100px] h-[30px] bg-black rounded-full z-20" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
         </div>
       </div>
 
-      {/* Flytande knapp på mobil, dyker upp när heron scrollat förbi. */}
-      <div
-        className={clsx(
-          'fixed bottom-0 left-0 right-0 z-50 p-4 pt-12 lg:hidden',
-          'bg-gradient-to-t from-white via-white/95 to-transparent',
-          'transition-[transform,opacity] duration-300 ease-entry',
-          showFloatingCta ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
-        )}
-      >
-        <Button
-          className={ctaClassName}
-          padding="16px 32px"
-          variant="primaryAltInverted"
-          iconRight={<Arrow />}
-          text="Starta din flytt"
-          onClick={() => router.push(loginUrl)}
-          withFullWidth
-        />
+      {/* Mäklarlogotyper flush i hero-underkanten. Ljust band eftersom 16 av 41
+          logotyper har opak bakgrund och inte tål det mörkblå. Logotyperna körs
+          i sin egen färg, så bandet måste förbli ljust. */}
+      <div className="relative z-10 w-full bg-[var(--color-background-default)] py-5 md:py-6">
+        <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+          <div className="flex w-max gap-6 animate-scroll-infinite">
+            {[...partnerLogos, ...partnerLogos].map((logo, i) => (
+              <span
+                key={`${logo.src}-${i}`}
+                className="flex-shrink-0 flex items-center justify-center px-5 h-11 md:h-12 w-28 md:w-32"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className="max-h-full max-w-full object-contain"
+                />
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
+
     </section>
   )
 }
