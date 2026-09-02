@@ -357,7 +357,8 @@ export const Checkbox = ({ checked }: { checked: boolean }) => (
 )
 
 export const Check = ({ size = 12, color = '#fff', pop }: { size?: number; color?: string; pop?: boolean }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className={clsx(pop && 'animate-[pop_.25s_ease-out_both] motion-reduce:animate-none')}>
+  // shrink-0: i trånga chips (sex våningar på en rad) krymper bocken annars till noll.
+  <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className={clsx('shrink-0', pop && 'animate-[pop_.25s_ease-out_both] motion-reduce:animate-none')}>
     <path d="M5 13l4 4L19 7" fill="none" stroke={color} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )

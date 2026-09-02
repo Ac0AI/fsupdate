@@ -85,9 +85,9 @@ export const FLOORS: { value: number; label: string }[] = [
 ]
 
 export const ELEVATORS: { value: Elevator; label: string }[] = [
-  { value: 'big', label: 'Stor (6+ pers)' },
+  { value: 'big', label: 'Stor, 6 personer eller fler' },
   { value: 'small', label: 'Liten' },
-  { value: 'none', label: 'Saknas' },
+  { value: 'none', label: 'Ingen hiss' },
   { value: 'unknown', label: 'Vet ej' },
 ]
 
