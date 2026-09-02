@@ -21,7 +21,7 @@ const Arrow = () => (
 const ClosingCta = () => {
   const router = useRouter()
   return (
-    <section id="closing-cta" aria-labelledby="closing-cta-heading" className="w-screen bg-[var(--color-secondary-main)]">
+    <section id="closing-cta" aria-labelledby="closing-cta-heading" className="w-screen bg-[var(--color-secondary-dark)]">
       <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-16 md:py-24 flex flex-col items-center text-center">
         <h2 id="closing-cta-heading" className="text-white font-bold leading-[1.08] text-[32px] md:text-[44px] lg:text-[52px] mb-4 max-w-[720px]">
           Redo? Det tar två minuter.

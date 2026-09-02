@@ -73,21 +73,21 @@ const Footer = ({ flyttsmartGoogleReviewCountAndRating, googleReviews, showBackg
         <div className={containerVariants()}>
           <div className={mainPartVariants()}>
             <Flex display="flex" direction="column" alignItems={!isTabletPortraitOrGreater ? 'center' : 'start'}>
-              <Logo width={!isTabletPortraitOrGreater ? 116 : 177} height={!isTabletPortraitOrGreater ? 21 : 32} alt="logo" />
+              <Logo width={!isTabletPortraitOrGreater ? 116 : 177} height={!isTabletPortraitOrGreater ? 21 : 32} alt="logo" className="brightness-0 invert" />
               <div className={iconsWrapperVariants()}>
                 <div className={iconWrapperVariants()}>
                   <Link href="https://www.instagram.com/flyttsmart" noUnderline>
-                    <Instagram width={28} height={28} alt="instagram" />
+                    <Instagram width={28} height={28} alt="instagram" className="brightness-[1.7]" />
                   </Link>
                 </div>
                 <div className={iconWrapperVariants()}>
                   <Link href="https://www.facebook.com/flyttsmart.se" noUnderline>
-                    <Facebook width={22} height={22} alt="facebook" />
+                    <Facebook width={22} height={22} alt="facebook" className="brightness-[1.7]" />
                   </Link>
                 </div>
                 <div className={iconWrapperVariants({ noMargin: true })}>
                   <Link href="https://www.linkedin.com/company/flyttsmart" noUnderline>
-                    <LinkedIn width={24} height={24} alt="linkedin" />
+                    <LinkedIn width={24} height={24} alt="linkedin" className="brightness-[1.7]" />
                   </Link>
                 </div>
               </div>
