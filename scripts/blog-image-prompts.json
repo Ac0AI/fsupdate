@@ -29,6 +29,18 @@
     {
       "slug": "vad-tullen-fragar-efter",
       "prompt": "A clipboard holding a blank form with ruled lines, standing next to a sealed cardboard moving box. Behind them a simple striped border barrier lifted halfway, and a soft outline of the European coastline in the far background."
+    },
+    {
+      "slug": "sa-gar-det-till-1-checklista",
+      "prompt": "A single phone-shaped card standing upright showing a short checklist of four rounded rows, the top two ticked with mint checkmarks. Next to it a small house with a mint door and a calendar page with one day marked by an orange dot. A thin dotted line connects the house to the checklist."
+    },
+    {
+      "slug": "sa-gar-det-till-2-rekommendation",
+      "prompt": "One contract card in the foreground with a large mint checkmark badge in its corner and a small orange price tag hanging from it. Two smaller faded cards behind it, slightly tilted. A simple curved arrow points to the front card."
+    },
+    {
+      "slug": "sa-gar-det-till-3-manniska",
+      "prompt": "A coordinator seen from behind, sitting at a rounded desk wearing a headset, with a laptop and a mug. Above the desk three speech bubbles: one with a phone handset icon, one with an envelope icon, one with three chat dots. A thin line connects the bubbles to a small house in the corner."
     }
   ]
 }

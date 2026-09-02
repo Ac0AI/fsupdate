@@ -1,30 +1,37 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
-import { clsx } from 'clsx'
-import { ChecklistVisual, RecommendationVisual, SupportVisual } from './howItWorksVisuals'
 
+/**
+ * Tre steg med brandets platta illustration i stället för beskurna
+ * telefonramar och glow. Bilderna är gjorda med receptet i
+ * scripts/blog-image-prompts.json och ligger i public/images/brand/sa-gar-det-till.
+ */
 const steps = [
   {
     number: '01',
     titleKey: 'HOW_WE_HELP.step1.title',
     descriptionKey: 'HOW_WE_HELP.step1.description',
     benefitKey: 'HOW_WE_HELP.step1.benefit',
-    Visual: ChecklistVisual,
+    image: '/images/brand/sa-gar-det-till/1-checklista.jpg',
+    alt: 'En checklista i mobilen med två punkter avbockade, bredvid ett hus och en kalender med flyttdagen markerad',
   },
   {
     number: '02',
     titleKey: 'HOW_WE_HELP.step2.title',
     descriptionKey: 'HOW_WE_HELP.step2.description',
     benefitKey: 'HOW_WE_HELP.step2.benefit',
-    Visual: RecommendationVisual,
+    image: '/images/brand/sa-gar-det-till/2-rekommendation.jpg',
+    alt: 'Ett rekommenderat avtal med bock och prislapp, två andra alternativ tonade i bakgrunden',
   },
   {
     number: '03',
     titleKey: 'HOW_WE_HELP.step3.title',
     descriptionKey: 'HOW_WE_HELP.step3.description',
     benefitKey: 'HOW_WE_HELP.step3.benefit',
-    Visual: SupportVisual,
+    image: '/images/brand/sa-gar-det-till/3-manniska.jpg',
+    alt: 'En flyttkoordinator vid ett skrivbord med headset, med pratbubblor för telefon, mejl och chatt',
   },
 ]
 
@@ -32,14 +39,8 @@ const HowItWorks = () => {
   const { t } = useTranslation('landing')
 
   return (
-    <section id="how-it-works" className="py-20 md:py-28 bg-gradient-to-b from-[var(--color-background-default)] to-white relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-20 left-[10%] w-64 h-64 bg-[var(--color-primary-main)]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-[10%] w-96 h-96 bg-[var(--color-accent-main)]/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="max-w-[1200px] mx-auto px-4 md:px-8 relative z-10">
+    <section id="how-it-works" className="py-20 md:py-28 bg-[var(--color-background-default)]">
+      <div className="max-w-[1200px] mx-auto px-4 md:px-8">
         {/* Section header */}
         <div className="text-center mb-14 md:mb-18">
           <span className="inline-block text-[var(--color-primary-main)] text-sm font-semibold uppercase tracking-wider mb-4">
@@ -54,19 +55,10 @@ const HowItWorks = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
-          {steps.map(({ number, titleKey, descriptionKey, benefitKey, Visual }) => (
+          {steps.map(({ number, titleKey, descriptionKey, benefitKey, image, alt }) => (
             <article key={number}>
-              {/* Beskuren gränssnittsbild - telefonen blöder ut ur underkanten */}
-              <div
-                className={clsx(
-                  'relative h-[260px] md:h-[280px] mb-6 overflow-hidden rounded-2xl',
-                  'bg-[var(--color-secondary-main)]/[0.045] border border-[var(--color-secondary-main)]/10'
-                )}
-              >
-                <span className="absolute top-4 left-5 z-10 text-sm font-bold text-[var(--color-secondary-main)]/25">
-                  {number}
-                </span>
-                <Visual />
+              <div className="relative aspect-[16/9] mb-6 overflow-hidden rounded-2xl bg-[#EAF2F8]">
+                <Image src={image} alt={alt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
               </div>
 
               <h3 className="text-lg md:text-xl font-bold text-[var(--color-secondary-main)] mb-3">
