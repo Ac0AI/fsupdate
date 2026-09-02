@@ -27,6 +27,13 @@ async function goto(page, path) {
 }
 async function shot(page, name) {
   await page.screenshot({ path: `${out}/${name}-fold.png` })
+  // Scrolla igenom sidan innan helsidesbilden så lazy-laddade bilder (koordinatorernas foton)
+  // hinner laddas; annars ser kritikern tomma ytor som inte finns.
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.documentElement.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)) }
+    window.scrollTo(0, 0)
+  })
+  await page.waitForTimeout(800)
   // I helsidesbilder hamnar en sticky bottenlist annars mitt i bilden (den ritas där
   // viewporten slutade). Släpp den till sin plats i flödet just för helsidan.
   await page.addStyleTag({ content: '.sticky{position:static!important}' })
@@ -51,6 +58,7 @@ for (const vp of VIEWPORTS) {
       await page.waitForTimeout(1200)
       await page.getByRole('button', { name: 'Ja, berätta', exact: true }).first().click()
       await page.waitForTimeout(600)
+      await page.addStyleTag({ content: '.sticky{position:static!important}' })
       await page.screenshot({ path: `${out}/movehelp-steg2-${vp.tag}-tungt-oppet-full.png`, fullPage: true })
       console.log('  ✓', `movehelp-steg2-${vp.tag}-tungt-oppet`)
       await context.close()

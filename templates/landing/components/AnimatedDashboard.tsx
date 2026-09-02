@@ -1,30 +1,25 @@
 const CHECKLIST_ITEMS = [
-  { iconPath: 'M13 10V3L4 14h7v7l9-11h-7z', label: 'Bästa elavtalet' },
+  { iconPath: 'M13 10V3L4 14h7v7l9-11h-7z', label: 'Elavtal tecknat' },
   {
     iconPath:
       'M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0',
-    label: 'Snabbaste bredbandet',
+    label: 'Bredband inkopplat',
   },
   { iconPath: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4', label: 'Flytthjälp bokad' },
   {
     iconPath:
       'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
-    label: 'Flyttstäd klart',
+    label: 'Flyttstädning bokad',
   },
   {
     iconPath:
       'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z',
-    label: 'Adress ändrad',
+    label: 'Flyttanmälan skickad',
   },
   {
     iconPath:
       'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
-    label: 'Försäkring tecknad',
-  },
-  {
-    iconPath:
-      'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-    label: 'Deklaration skickad',
+    label: 'Hemförsäkring flyttad',
   },
 ]
 
