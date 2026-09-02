@@ -21,7 +21,7 @@ const PartnersIntro = () => (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <a
           href="#distributionspartners"
-          className="group bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 hover:border-[var(--color-primary-main)]/60 transition-colors flex flex-col gap-3"
+          className="group bg-white/5! rounded-xl p-6 md:p-8 border border-white/10 hover:border-[var(--color-primary-main)]/60 transition-colors flex flex-col gap-3"
         >
           <h2 className="text-lg font-bold text-white">Mäklare, hyresvärdar och föreningar</h2>
           <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten, i ditt namn.</p>
@@ -32,7 +32,7 @@ const PartnersIntro = () => (
         </a>
         <a
           href="#leverantorer"
-          className="group bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 hover:border-[var(--color-primary-main)]/60 transition-colors flex flex-col gap-3"
+          className="group bg-white/5! rounded-xl p-6 md:p-8 border border-white/10 hover:border-[var(--color-primary-main)]/60 transition-colors flex flex-col gap-3"
         >
           <h2 className="text-lg font-bold text-white">Flyttfirmor, elbolag och andra leverantörer</h2>
           <p className="text-white/70 text-sm leading-relaxed">Du levererar tjänsten. Vi skickar kunder som ska flytta inom några veckor.</p>
@@ -131,7 +131,7 @@ const Cta = ({ title, href, label }: { title: string; href: string; label: strin
     <h3 className="text-lg md:text-xl font-bold text-white text-balance">{title}</h3>
     <a
       href={href}
-      className="inline-flex items-center justify-center gap-2 min-h-12 px-7 rounded-full bg-[var(--color-primary-main)] text-[var(--color-secondary-main)] font-bold text-[15px] hover:opacity-90 transition-opacity shrink-0 whitespace-nowrap"
+      className="inline-flex items-center justify-center gap-2 min-h-12 px-7 rounded-full bg-[var(--color-primary-main)]! text-[var(--color-secondary-main)] font-bold text-[15px] hover:opacity-90 transition-opacity shrink-0 whitespace-nowrap"
     >
       {label}
       <Arrow />
