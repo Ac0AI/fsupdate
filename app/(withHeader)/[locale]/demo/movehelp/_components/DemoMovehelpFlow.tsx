@@ -172,7 +172,7 @@ const DemoMovehelpFlow = () => {
         title={HERO_TITLE[step]}
         copy={HERO_COPY[step]}
         tone={step === 2 ? 'green' : 'blue'}
-        back={step === 2 ? undefined : { label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
+        back={step === 2 ? undefined : step === 1 ? { label: 'Tillbaka till bostaden', onClick: () => setStep(0) } : { label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
       >
         {/* Beviset står där beslutet att fortsätta tas. Siffrorna är brandguidens (Bevisen). */}
         {step === 0 && (
@@ -344,9 +344,10 @@ const DemoMovehelpFlow = () => {
                       <button
                         type="button"
                         onClick={() => setStartOpen(true)}
-                        className={clsx('min-h-11 -my-1 text-[13px] font-semibold text-[#214766] underline-offset-4 hover:underline rounded-sm', press)}
+                        className={clsx('min-h-11 -my-1 inline-flex items-center gap-1 text-[13px] font-semibold text-[#214766] underline underline-offset-4 decoration-[#214766]/40 hover:decoration-[#214766] rounded-sm', press)}
                       >
                         Behöver du en viss starttid?
+                        <Chevron size={16} />
                       </button>
                     ) : (
                       <Field label="Starttid">
