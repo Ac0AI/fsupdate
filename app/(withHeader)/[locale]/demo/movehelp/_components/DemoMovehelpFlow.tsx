@@ -8,6 +8,7 @@ import { useIntercom } from 'react-use-intercom'
 import { clsx } from 'clsx'
 import i18nConfig from 'i18nConfig'
 import { useDemoUser } from '@/common/data/useDemoUser'
+import type { DemoAddress } from '@/common/data/demoPersona'
 import { ADDONS, CLEAN_DAYS, DISTANCES, DWELLINGS, ELEVATORS, FLOORS, KEY_HANDLING, SECONDARY_KINDS, START_TIMES, STEP_TITLES,
   cleanArea, type Addon, type Cleaning, type QuoteRequest, type Residence, type Secondary, HEAVY_KINDS, type HeavyKind } from './steps'
 import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, MoreLink, Option, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, selectClass, textareaClass, pressSoft, pressScale } from '../../_components/flow-ui'
@@ -65,9 +66,9 @@ const stepErrors = (step: number, req: QuoteRequest, movingDate: Date): Errors =
 // Rubriken säger var du är. Tjänstens namn och stegräknaren står som rad ovanför.
 const HERO_TITLE = ['Berätta om bostäderna', 'Vad ska med, och när?', 'Din offert är på väg']
 const HERO_COPY = [
-  // Ninas röst hela vägen: hon har fyllt i, hon räknar, hon föreslår.
-  'Jag har fyllt i det jag redan vet. Fyll i resten, så räknar jag på din flytt.',
-  'Jag har lagt ett förslag utifrån din flytt. Slå av det du inte vill ha.',
+  // Vi-form i flödet; Nina kliver fram först på väntesidan, som koordinatorn kunden får.
+  'Vi har fyllt i det vi redan vet, du fyller i resten.',
+  'Vi har lagt ett förslag utifrån din flytt. Slå av det du inte vill ha.',
   // Steg 3 har ingen ingress: Ninas bubbla och tidslinjen säger det direkt under.
   '',
 ]
@@ -92,6 +93,8 @@ const DemoMovehelpFlow = () => {
   const { locale } = useParams<{ locale: string }>()
   const demoUser = useDemoUser()
   const move = demoUser.currentMove
+  // Köparens från-adress kommer från SPAR utan våning och hiss, säljarens från mäklaren med dem.
+  const soldHome: DemoAddress = move.fromAddress
   const movingDate = new Date(move.movingDate)
 
   const [step, setStep] = useState(0)
@@ -102,9 +105,10 @@ const DemoMovehelpFlow = () => {
   const [noteOpen, setNoteOpen] = useState(false)
   const [req, setReq] = useState<QuoteRequest>({
     from: initialResidence(move.fromAddress.street, move.fromAddress.city, 68, {
-      // Våning, hiss och bärsträcka vet vi inte: inget förval, kunden svarar.
-      floor: -1,
-      elevator: '',
+      // Våning och hiss förvalda när mäklarsystemet skickat dem, annars måste kunden svara.
+      // Bärsträckan vet ingen annan än kunden.
+      floor: soldHome.floor ?? -1,
+      elevator: soldHome.elevator ?? '',
       distance: '',
       // Biyta vet vi inget om från mäklaren. Kunden lägger till förråd, garage eller vind själv.
       secondaries: [],
@@ -207,13 +211,6 @@ const DemoMovehelpFlow = () => {
         contentClassName="max-w-[640px]"
         back={step === 2 ? undefined : step === 1 ? { label: 'Tillbaka till bostäderna', onClick: () => setStep(0) } : { label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
       >
-        {/* Bylinen ger ingressens "jag" ett ansikte, samma storlek på Nina i hela flödet. */}
-        {step < 2 && (
-          <div className="flex items-center gap-2 mt-1">
-            <Image src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-64,h-64,fo-face" alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
-            <span className="text-[13px] text-[#5F6062]">Nina Fredriksson · din flyttkoordinator</span>
-          </div>
-        )}
       </Hero>
 
       <div key={step} className={clsx('flex-1 w-full max-w-[640px] mx-auto px-4 py-4 md:py-6 flex flex-col gap-3.5', rise)}>
@@ -235,10 +232,7 @@ const DemoMovehelpFlow = () => {
             {/* Rekommendationen: packhjälp och flyttstädning på, resten bakom en länk. */}
             <div className={rise}>
               <Card>
-                <div className="flex items-center gap-2.5">
-                  <Image src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-64,h-64,fo-face" alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
-                  <h3 className="text-[15px] font-bold text-[#214766]">Ninas förslag</h3>
-                </div>
+                <h3 className="text-[15px] font-bold text-[#214766]">Vårt förslag</h3>
                 <p className="text-[13px] leading-[19px] text-[#5F6062] mt-2 pb-2">Priset kommer i offerten, med rutavdraget draget.</p>
                 <div className="flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0]">
                   <span className="flex flex-col gap-px">

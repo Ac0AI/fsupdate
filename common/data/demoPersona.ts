@@ -9,7 +9,8 @@ import { demoUser } from './demoMovepage'
  */
 export type DemoPersona = 'kopare' | 'saljare'
 
-export type DemoAddress = { street: string; apartmentNumber: string | null; zip: string; city: string }
+// Våning och hiss följer med från mäklarsystemet när de finns i objektet; annars frågar flödet.
+export type DemoAddress = { street: string; apartmentNumber: string | null; zip: string; city: string; floor?: number; elevator?: 'big' | 'small' | 'none' }
 
 export type DemoSession = {
   persona: DemoPersona
@@ -21,7 +22,7 @@ export type DemoSession = {
 }
 
 // Bostaden som sålts via mäklaren. Köparen får den från SPAR, säljaren från affären.
-export const SOLD_HOME: DemoAddress = { street: 'Storgatan 12', apartmentNumber: null, zip: '11435', city: 'Stockholm' }
+export const SOLD_HOME: DemoAddress = { street: 'Storgatan 12', apartmentNumber: null, zip: '11435', city: 'Stockholm', floor: 3, elevator: 'small' }
 // Bostaden köparen tillträder. Mäklaren skickar över den i inbjudan.
 export const BOUGHT_HOME: DemoAddress = { street: 'Ekvägen 8', apartmentNumber: null, zip: '41320', city: 'Göteborg' }
 

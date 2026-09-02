@@ -9,6 +9,18 @@ const primaryButton =
 const outlineButton =
   'inline-flex items-center justify-center min-h-11 px-6 rounded-full border-2 border-white text-white! font-bold text-[15px] hover:bg-white/10! transition-colors whitespace-nowrap'
 
+const STATS = [
+  { value: '5 000', label: 'flyttar i månaden' },
+  { value: '300', label: 'mäklarkontor' },
+  { value: '4,7 av 5', label: 'på Google, över 500 recensioner' },
+]
+
+// Partneransvariga. Sebastians adress finns i Mäklarhuset-mallen; Andreas nås tills vidare via leverantor@.
+const CONTACTS = {
+  brokers: { name: 'Sebastian Nielsen', role: 'Mäklarsamarbeten', email: 'sebastian@flyttsmart.se', photo: null as string | null },
+  suppliers: { name: 'Andreas Burman', role: 'Flytt- och städbolag', email: 'leverantor@flyttsmart.se', photo: '/images/team-andreas.webp' as string | null },
+}
+
 // ─── Hero: vad partnern får, sedan valet ─────────────────────────────────────
 
 const PartnersIntro = () => (
@@ -23,6 +35,16 @@ const PartnersIntro = () => (
           Kunden får en namngiven koordinator. Går något fel tar vi ansvaret, inte du.
         </p>
       </div>
+
+      {/* Tre tal med täckning: volymen från ägaren 2026-09-02, betyget från Google. */}
+      <dl className="flex flex-wrap gap-x-10 gap-y-4 mb-10">
+        {STATS.map((s) => (
+          <div key={s.label} className="flex flex-col">
+            <dt className="text-[28px] md:text-[32px] font-bold leading-none text-[var(--color-primary-main)]">{s.value}</dt>
+            <dd className="text-sm text-white/80 mt-1.5">{s.label}</dd>
+          </div>
+        ))}
+      </dl>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
@@ -140,10 +162,29 @@ const Bullets = ({ title, items }: { title?: string; items: string[] }) => (
   </div>
 )
 
-const Cta = ({ title, href, label }: { title: string; href: string; label: string }) => (
-  <div className="bg-[var(--color-secondary-main)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
-    <h3 className="text-lg md:text-xl font-bold text-white text-balance">{title}</h3>
-    <a href={href} className={`${primaryButton} shrink-0`}>
+// En människa att höra av sig till, inte bara en knapp.
+const Cta = ({ title, contact, label }: { title: string; contact: (typeof CONTACTS)[keyof typeof CONTACTS]; label: string }) => (
+  <div className="bg-[var(--color-secondary-main)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+    <div className="flex flex-col gap-4">
+      <h3 className="text-lg md:text-xl font-bold text-white text-balance">{title}</h3>
+      <div className="flex items-center gap-3">
+        {contact.photo ? (
+          <Image src={contact.photo} alt="" width={44} height={44} className="w-11 h-11 rounded-full object-cover shrink-0" />
+        ) : (
+          <span className="w-11 h-11 rounded-full bg-[var(--color-primary-main)] text-[var(--color-secondary-main)] font-bold text-sm flex items-center justify-center shrink-0">
+            {contact.name
+              .split(' ')
+              .map((n) => n[0])
+              .join('')}
+          </span>
+        )}
+        <span className="flex flex-col">
+          <span className="text-sm font-bold text-white">{contact.name}</span>
+          <span className="text-sm text-white/70">{contact.role}</span>
+        </span>
+      </div>
+    </div>
+    <a href={`mailto:${contact.email}`} className={`${primaryButton} shrink-0`}>
       {label}
     </a>
   </div>
@@ -159,14 +200,14 @@ const brokerSteps = [
 
 const DistributionPartners = () => (
   <section id="distributionspartners" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-12 md:pt-16 md:pb-16">
-    <SectionHeader audience="För mäklare, hyresvärdar och föreningar" title="Du slipper frågorna om flytten. Kunden minns vem som bjöd in." />
+    <SectionHeader audience="För mäklare, hyresvärdar och föreningar" title="Du slipper frågorna om flytten. Kunden minns vem som bjöd in." text="300 mäklarkontor gör det redan." />
 
     <div className="mb-14 md:mb-16">
       <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-6">Så fungerar det</h3>
       <Steps items={brokerSteps} cols={3} />
     </div>
 
-    <Cta title="Vill du erbjuda Flyttsmart till dina kunder?" href="mailto:partner@flyttsmart.se" label="Bli partner" />
+    <Cta title="Vill du erbjuda Flyttsmart till dina kunder?" contact={CONTACTS.brokers} label="Mejla Sebastian" />
   </section>
 )
 
@@ -186,7 +227,7 @@ const Suppliers = () => (
     <SectionHeader
       audience="För leverantörer"
       title="Nå kunder i exakt rätt ögonblick."
-      text="Varje månad flyttar tusentals svenskar genom Flyttsmart. De behöver flyttfirma, städbolag, el, bredband, försäkring och hantverkare, och de letar just nu. Vi kopplar ihop er, men bara om du håller måttet."
+      text="Varje månad flyttar 5 000 svenskar genom Flyttsmart. De behöver flyttfirma, städbolag, el, bredband, försäkring och hantverkare, och de letar just nu. Vi kopplar ihop er, men bara om du håller måttet."
     />
 
     <Bullets items={supplierBenefits} />
@@ -196,7 +237,7 @@ const Suppliers = () => (
       <Steps items={vettingSteps} cols={2} />
     </div>
 
-    <Cta title="Vill du nå fler kunder?" href="mailto:leverantor@flyttsmart.se" label="Ansök som leverantör" />
+    <Cta title="Vill du nå fler kunder?" contact={CONTACTS.suppliers} label="Mejla Andreas" />
   </section>
 )
 
