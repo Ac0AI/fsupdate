@@ -107,7 +107,7 @@ const TeamSection = () => {
 
         {/* CTA */}
         <div className="pb-12 md:pb-16">
-          <div className="bg-[var(--color-secondary-main)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+          <div className="bg-[var(--color-secondary-dark)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
             <div>
               <h3 className="text-[15px] md:text-base font-bold text-white mb-1">Vill du veta mer?</h3>
               <p className="text-white/45 text-sm">Hör av dig eller kolla våra lediga tjänster.</p>
