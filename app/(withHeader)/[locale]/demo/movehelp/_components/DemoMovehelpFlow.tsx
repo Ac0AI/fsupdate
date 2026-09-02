@@ -8,10 +8,8 @@ import { useIntercom } from 'react-use-intercom'
 import { clsx } from 'clsx'
 import i18nConfig from 'i18nConfig'
 import { useDemoUser } from '@/common/data/useDemoUser'
-import {
-  ADDONS, CLEAN_DAYS, DISTANCES, DWELLINGS, ELEVATORS, FLOORS, KEY_HANDLING, SECONDARY_KINDS, START_TIMES, STEP_TITLES,
-  cleanArea, type Addon, type Cleaning, type QuoteRequest, type Residence, type Secondary,
-} from './steps'
+import { ADDONS, CLEAN_DAYS, DISTANCES, DWELLINGS, ELEVATORS, FLOORS, KEY_HANDLING, SECONDARY_KINDS, START_TIMES, STEP_TITLES,
+  cleanArea, type Addon, type Cleaning, type QuoteRequest, type Residence, type Secondary, HEAVY_KINDS, type HeavyKind } from './steps'
 import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, MoreLink, Option, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, selectClass, textareaClass, pressSoft, pressScale } from '../../_components/flow-ui'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
@@ -65,7 +63,7 @@ const stepErrors = (step: number, req: QuoteRequest, movingDate: Date): Errors =
 }
 
 // Rubriken säger var du är. Tjänstens namn och stegräknaren står som rad ovanför.
-const HERO_TITLE = ['Berätta om bostäderna', 'Tunga saker och flyttdag', 'Din offert är på väg']
+const HERO_TITLE = ['Berätta om bostäderna', 'Tungt och flyttdag', 'Din offert är på väg']
 const HERO_COPY = [
   'Vi har fyllt i det vi redan vet, du fyller i resten.',
   '',
@@ -100,6 +98,7 @@ const DemoMovehelpFlow = () => {
   const [cleanOpen, setCleanOpen] = useState(false)
   const [dateOpen, setDateOpen] = useState(false)
   const [moreAddons, setMoreAddons] = useState(false)
+  const [noteOpen, setNoteOpen] = useState(false)
   const [req, setReq] = useState<QuoteRequest>({
     from: initialResidence(move.fromAddress.street, move.fromAddress.city, 68, {
       // Våning, hiss och bärsträcka vet vi inte: inget förval, kunden svarar.
@@ -111,6 +110,7 @@ const DemoMovehelpFlow = () => {
     }),
     to: initialResidence(move.toAddress.street, move.toAddress.city, move.residenceSize, { dwelling: 'house', floor: -1, elevator: '', distance: '' }),
     heavyItems: false,
+    heavyKinds: [],
     heavyNote: '',
     valuables: false,
     valuablesNote: '',
@@ -155,7 +155,14 @@ const DemoMovehelpFlow = () => {
   const patchResidence = (key: 'from' | 'to', patch: Partial<Residence>) => setReq((r) => ({ ...r, [key]: { ...r[key], ...patch } }))
   const patchCleaning = (patch: Partial<Cleaning>) => setReq((r) => ({ ...r, cleaning: { ...r.cleaning, ...patch } }))
   const toggleAddon = (a: Addon) => setReq((r) => ({ ...r, addons: r.addons.includes(a) ? r.addons.filter((x) => x !== a) : [...r.addons, a] }))
+  const toggleHeavy = (k: HeavyKind) =>
+    setReq((r) => {
+      const heavyKinds = r.heavyKinds.includes(k) ? r.heavyKinds.filter((x) => x !== k) : [...r.heavyKinds, k]
+      return { ...r, heavyKinds, heavyItems: heavyKinds.length > 0 }
+    })
   const cleaning = req.addons.includes('moveclean')
+  // Städraden bär sina egna fakta när städningen är på, i stället för en lös rad under.
+  const cleanHint = `Städgaranti · ${cleanArea(req.from)} m² · ${req.cleaning.day === 'same' ? 'samma dag som flytten' : 'dagen du valt'}`
 
   const send = () => {
     if (sending) return
@@ -181,7 +188,7 @@ const DemoMovehelpFlow = () => {
       >
         <span className="flex flex-col gap-px">
           <span className="text-[13px] font-semibold text-[#214766]">{a.label}</span>
-          <span className="text-xs text-[#5F6062]">{a.hint}</span>
+          <span className="text-xs text-[#5F6062]">{a.value === 'moveclean' && on ? cleanHint : a.hint}</span>
         </span>
         <Toggle on={on} />
       </button>
@@ -200,7 +207,7 @@ const DemoMovehelpFlow = () => {
         copy={HERO_COPY[step]}
         tone={step === 2 ? 'green' : 'blue'}
         contentClassName="max-w-[640px]"
-        back={step === 2 ? undefined : step === 1 ? { label: 'Tillbaka till bostaden', onClick: () => setStep(0) } : { label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
+        back={step === 2 ? undefined : step === 1 ? { label: 'Tillbaka till bostäderna', onClick: () => setStep(0) } : { label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
       >
         {step === 0 && (
           <div className="flex items-center gap-2 mt-1">
@@ -229,15 +236,23 @@ const DemoMovehelpFlow = () => {
             <div className={rise}>
               <Card>
                 <h3 className="text-[15px] font-bold text-[#214766]">Något tungt, ömtåligt eller värdefullt?</h3>
-                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">
-                  Piano, kassaskåp, akvarium, konst eller annat värt över 30 000 kr. Skriv vad det är, så sätter vi rätt antal bärare och försäkrar det rätt.
-                </p>
-                <textarea
-                  className={clsx(textareaClass, 'mt-3')}
-                  placeholder="T.ex. piano, ca 150 kg, står i vardagsrummet"
-                  value={req.heavyNote}
-                  onChange={(e) => setReq((r) => ({ ...r, heavyNote: e.target.value, heavyItems: e.target.value.trim() !== '' }))}
-                />
+                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Allt värt över 30 000 kr räknas hit. Vi sätter rätt antal bärare och försäkrar det rätt.</p>
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {HEAVY_KINDS.map((k) => (
+                    <Pill key={k.value} active={req.heavyKinds.includes(k.value)} onClick={() => toggleHeavy(k.value)}>
+                      {k.label}
+                    </Pill>
+                  ))}
+                </div>
+                {req.heavyKinds.includes('other') && (
+                  <textarea
+                    className={clsx(textareaClass, 'mt-3', rise)}
+                    autoFocus
+                    placeholder="Vad är det och ungefär hur tungt?"
+                    value={req.heavyNote}
+                    onChange={(e) => setReq((r) => ({ ...r, heavyNote: e.target.value }))}
+                  />
+                )}
               </Card>
             </div>
 
@@ -247,7 +262,7 @@ const DemoMovehelpFlow = () => {
                 {!dateOpen && req.dateMode === 'fixed' ? (
                   <>
                     <h3 className="text-[15px] font-bold text-[#214766]">Vi räknar på {formatDate(movingDate)}</h3>
-                    <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Tillträdesdagen, en {weekday(movingDate)}. Starttiden föreslår vi i offerten.</p>
+                    <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Tillträdesdagen, en {weekday(movingDate)}.</p>
                     <MoreLink className="mt-3" onClick={() => setDateOpen(true)}>
                       Ändra dag eller starttid
                     </MoreLink>
@@ -319,14 +334,13 @@ const DemoMovehelpFlow = () => {
                 <div className="flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0]">
                   <span className="flex flex-col gap-px">
                     <span className="text-[13px] font-semibold text-[#214766]">Flytthjälp</span>
-                    <span className="text-xs text-[#5F6062]">Bärare, bil och försäkring, det du bad om</span>
+                    <span className="text-xs text-[#5F6062]">Bärare, bil och försäkring</span>
                   </span>
                   <span className="text-xs font-semibold text-[#1F6156]">Ingår</span>
                 </div>
                 {ADDONS.filter((a) => a.value === 'packing' || a.value === 'moveclean').map(addonRow)}
                 {cleaning && !(cleanOpen || shownErrors.cleanDate) && (
-                  <div className={clsx('pb-2 flex flex-wrap items-center justify-between gap-x-3', rise)}>
-                    <span className="text-[13px] text-[#5F6062]">{cleanArea(req.from)} m² städyta, samma dag som flytten.</span>
+                  <div className={clsx('pb-2', rise)}>
                     <MoreLink onClick={() => setCleanOpen(true)}>Anpassa städningen</MoreLink>
                   </div>
                 )}
@@ -336,10 +350,13 @@ const DemoMovehelpFlow = () => {
                   </div>
                 )}
                 {moreAddons || ADDONS.some((a) => a.kind === 'chip' && req.addons.includes(a.value)) ? (
-                  ADDONS.filter((a) => a.value !== 'packing' && a.value !== 'moveclean').map(addonRow)
+                  <>
+                    <p className="pt-3 pb-1 text-[13px] font-semibold text-[#214766]">Fler tjänster</p>
+                    {ADDONS.filter((a) => a.value !== 'packing' && a.value !== 'moveclean').map(addonRow)}
+                  </>
                 ) : (
                   <div className="pt-2 border-t border-[#EEEEF0]">
-                    <MoreLink onClick={() => setMoreAddons(true)}>Lägg till fler tjänster</MoreLink>
+                    <MoreLink plus onClick={() => setMoreAddons(true)}>Lägg till fler tjänster</MoreLink>
                   </div>
                 )}
               </Card>
@@ -347,14 +364,18 @@ const DemoMovehelpFlow = () => {
 
             <div className={clsx(rise, '[animation-delay:140ms]')}>
               <Card>
-                <h3 className="text-[15px] font-bold text-[#214766]">Något mer vi bör veta?</h3>
-                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Parkering, portkod, tider som inte funkar.</p>
-                <textarea
-                    className={clsx(textareaClass, 'mt-3')}
-                    placeholder="T.ex. portkod 1234"
-                    value={req.note}
-                    onChange={(e) => setReq((r) => ({ ...r, note: e.target.value }))}
-                  />
+                {/* Hopfällt tills kunden har något att säga: de flesta har det inte. */}
+                {noteOpen || req.note ? (
+                  <>
+                    <h3 className="text-[15px] font-bold text-[#214766]">Något mer vi bör veta?</h3>
+                    <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Parkering, portkod, tider som inte funkar.</p>
+                    <textarea className={clsx(textareaClass, 'mt-3', rise)} autoFocus value={req.note} onChange={(e) => setReq((r) => ({ ...r, note: e.target.value }))} />
+                  </>
+                ) : (
+                  <MoreLink plus onClick={() => setNoteOpen(true)}>
+                    Lägg till portkod eller parkering
+                  </MoreLink>
+                )}
               </Card>
             </div>
           </div>
@@ -362,11 +383,13 @@ const DemoMovehelpFlow = () => {
 
         {step === 2 && (
           <div className="w-full flex flex-col gap-3.5">
-            <WaitingStep req={req} movingDate={movingDate} onEdit={() => setStep(0)} />
+            <WaitingStep req={req} movingDate={movingDate} onEdit={() => setStep(0)} onOpen={backToMovepage} />
           </div>
         )}
       </div>
 
+      {/* Steg 3 är ett kvitto utan sticky-knapp: utgången är en länk under Dina svar. */}
+      {step !== 2 && (
       <div className="sticky bottom-0 bg-white border-t border-[#EEEEF0]">
         <div className="w-full max-w-[640px] mx-auto px-4 py-4 flex flex-col gap-2.5 md:items-center">
           {step === 0 && (
@@ -395,7 +418,7 @@ const DemoMovehelpFlow = () => {
                 <Foot tone="error">Något saknas ovan. Fyll i det markerade så vi kan räkna rätt.</Foot>
               ) : (
                 <Foot>
-                  Prisintervall i offerten senast nästa vardag före lunch. Inget är bokat förrän du sagt ja ·{' '}
+                  Prisintervall senast nästa vardag före lunch ·{' '}
                   <Link href="/terms" className="underline underline-offset-2 hover:text-[#214766]">
                     Villkor
                   </Link>
@@ -403,9 +426,9 @@ const DemoMovehelpFlow = () => {
               )}
             </>
           )}
-          {step === 2 && <Primary onClick={backToMovepage}>Öppna flyttsidan</Primary>}
         </div>
       </div>
+      )}
     </div>
   )
 }
@@ -677,16 +700,15 @@ const CleaningCard = ({
       <Field label="Något av det här i bostaden?" className="mt-3">
         <div className="flex flex-wrap gap-1.5">
           <Pill active={cleaning.specialWindows} onClick={() => onChange({ specialWindows: !cleaning.specialWindows })}>
-            Specialfönster
+            Spröjs eller takfönster
           </Pill>
           <Pill active={cleaning.glazedBalcony} onClick={() => onChange({ glazedBalcony: !cleaning.glazedBalcony })}>
             Inglasad balkong
           </Pill>
           <Pill active={cleaning.sensitiveSurfaces} onClick={() => onChange({ sensitiveSurfaces: !cleaning.sensitiveSurfaces })}>
-            Känsliga ytor
+            Marmor eller obehandlat trä
           </Pill>
         </div>
-        <p className="text-[13px] leading-[18px] text-[#5F6062]">Spröjs och takfönster räknas som specialfönster, marmor och obehandlat trä som känsliga ytor.</p>
       </Field>
       <div>
         {cleaning.glazedBalcony && (
@@ -763,7 +785,7 @@ const CleaningCard = ({
   )
 }
 
-const WaitingStep = ({ req, movingDate, onEdit }: { req: QuoteRequest; movingDate: Date; onEdit: () => void }) => {
+const WaitingStep = ({ req, movingDate, onEdit, onOpen }: { req: QuoteRequest; movingDate: Date; onEdit: () => void; onOpen: () => void }) => {
   // Brandguidens Block 1: "Undrar du något hör du av dig i chatten." Kanalen står
   // direkt under Ninas bubbla, så löftet "säg till" har en knapp.
   const { show: openChat } = useIntercom()
@@ -787,7 +809,7 @@ const WaitingStep = ({ req, movingDate, onEdit }: { req: QuoteRequest; movingDat
               <span className="text-[13px] text-[#767678]">Din flyttkoordinator</span>
             </span>
           </div>
-          <p className={clsx('mt-3 rounded-[12px_12px_12px_2px] bg-[#EAF2F8] px-3.5 py-3 text-[13px] leading-5 text-[#214766]', rise, '[animation-delay:350ms]')}>
+          <p className={clsx('mt-3 rounded-[12px_12px_12px_2px] bg-[#EAF2F8] px-3.5 py-3 text-[13px] leading-[19px] text-[#214766]', rise, '[animation-delay:350ms]')}>
             Jag räknar på din flytt från {req.from.street} nu. Vill du lägga till eller ändra något, skriv till mig här så tar jag det direkt.
           </p>
           <button
@@ -827,6 +849,12 @@ const WaitingStep = ({ req, movingDate, onEdit }: { req: QuoteRequest; movingDat
         <Chevron />
       </button>
 
+      <div className={clsx('flex justify-center pt-1', rise, '[animation-delay:260ms]')}>
+        <MoreLink onClick={onOpen}>
+          Öppna flyttsidan
+          <Chevron size={14} />
+        </MoreLink>
+      </div>
     </>
   )
 }

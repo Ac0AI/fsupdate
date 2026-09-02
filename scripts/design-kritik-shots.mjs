@@ -74,6 +74,7 @@ for (const vp of VIEWPORTS) {
       await page.getByRole('button', { name: 'Ändra dag eller starttid', exact: true }).click()
       await page.getByRole('button', { name: 'Lägg till fler tjänster', exact: true }).click()
       await page.getByRole('button', { name: 'Anpassa städningen', exact: true }).click()
+      await page.getByRole('button', { name: 'Lägg till portkod eller parkering', exact: true }).click()
       await page.waitForTimeout(600)
       await page.addStyleTag({ content: '.sticky{position:static!important}' })
       await page.screenshot({ path: `${out}/movehelp-steg2-${vp.tag}-oppet-full.png`, fullPage: true })

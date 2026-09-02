@@ -1,46 +1,49 @@
 'use client'
 
+import Image from 'next/image'
+import { coordinators } from '@/common/data/coordinators'
+
 const Arrow = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden className="shrink-0">
     <path d="M5 12h14m-6-6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )
 
-// ─── Intro: valet först ────────────────────────────────────────────────────────
+// Bakgrund på länkar kräver ! : resetten nollar background-color på <a>.
+const primaryButton =
+  'inline-flex items-center justify-center gap-2 min-h-11 px-6 rounded-full bg-[var(--color-primary-main)]! text-[var(--color-secondary-main)] font-bold text-[15px] hover:opacity-90 transition-opacity whitespace-nowrap'
+const outlineButton =
+  'inline-flex items-center justify-center gap-2 min-h-11 px-6 rounded-full border-2 border-white/60 text-white font-bold text-[15px] hover:bg-white/10! transition-colors whitespace-nowrap'
+
+// ─── Hero: vad partnern får, sedan valet ─────────────────────────────────────
 
 const PartnersIntro = () => (
   <section className="bg-[var(--color-secondary-main)] text-white">
     <div className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 md:pt-16 pb-12 md:pb-16">
-      <div className="max-w-[640px] mb-10">
-        <h1 className="text-[32px] md:text-[44px] font-bold mb-4 leading-[1.1]">Tillsammans gör vi flytten enklare för alla.</h1>
+      <div className="max-w-[680px] mb-10">
+        <h1 className="text-[32px] md:text-[44px] font-bold mb-4 leading-[1.1] text-balance">Dina kunder får en flyttkoordinator. Du står som avsändare.</h1>
         <p className="text-white/80 text-lg leading-relaxed">
-          Vi tar hand om dina kunders flytt och du står som avsändare. Kostnadsfritt för dig som skickar kunder, betalt per uppdrag för dig som levererar.
+          Mäklare, hyresvärdar och föreningar skickar kunderna. Flyttfirmor, elbolag och andra leverantörer utför jobbet. Flyttsmart håller ihop flytten och tar ansvaret när något går fel.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <a
-          href="#distributionspartners"
-          className="group bg-white/5! rounded-xl p-6 md:p-8 border border-white/10 hover:border-[var(--color-primary-main)]/60 transition-colors flex flex-col gap-3"
-        >
+        <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Mäklare, hyresvärdar och föreningar</h2>
-          <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten, i ditt namn.</p>
-          <span className="mt-2 inline-flex items-center gap-2 min-h-11 text-[var(--color-primary-main)] font-semibold text-sm">
-            Bli distributionspartner
+          <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten, i ditt namn. Kostnadsfritt, vi tar betalt av leverantörerna.</p>
+          <a href="#distributionspartners" className={`mt-2 ${primaryButton}`}>
+            Bli partner
             <Arrow />
-          </span>
-        </a>
-        <a
-          href="#leverantorer"
-          className="group bg-white/5! rounded-xl p-6 md:p-8 border border-white/10 hover:border-[var(--color-primary-main)]/60 transition-colors flex flex-col gap-3"
-        >
+          </a>
+        </div>
+        <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Flyttfirmor, elbolag och andra leverantörer</h2>
-          <p className="text-white/70 text-sm leading-relaxed">Du levererar tjänsten. Vi skickar kunder som ska flytta inom några veckor.</p>
-          <span className="mt-2 inline-flex items-center gap-2 min-h-11 text-[var(--color-primary-main)] font-semibold text-sm">
-            Bli leverantör
+          <p className="text-white/70 text-sm leading-relaxed">Du levererar tjänsten. Vi skickar kunder som ska flytta inom några veckor. Du betalar per uppdrag.</p>
+          <a href="#leverantorer" className={`mt-2 ${outlineButton}`}>
+            Ansök som leverantör
             <Arrow />
-          </span>
-        </a>
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -64,11 +67,9 @@ const PARTNER_QUOTES = [
 ]
 
 const PartnerQuotes = () => (
-  <section aria-labelledby="partner-quotes-heading" className="bg-white">
-    <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-14 md:py-20">
-      <h2 id="partner-quotes-heading" className="text-2xl md:text-3xl font-bold text-[var(--color-secondary-main)] mb-8 md:mb-10 leading-snug">
-        Det säger de som redan samarbetar med oss
-      </h2>
+  <section className="bg-white">
+    <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-12 md:py-16">
+      <h2 className="text-2xl md:text-3xl font-bold text-[var(--color-secondary-main)] mb-8 leading-snug">Det säger de som redan samarbetar med oss</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
         {PARTNER_QUOTES.map((q) => (
           <figure key={q.name} className="bg-[var(--color-background-default)] rounded-2xl p-6 md:p-8 flex flex-col gap-6">
@@ -90,15 +91,29 @@ const PartnerQuotes = () => (
 
 // ─── Delade byggstenar ────────────────────────────────────────────────────────
 
-const SectionHeader = ({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) => (
+const SectionHeader = ({ title, text }: { title: string; text: string }) => (
   <div className="mb-12 md:mb-16 max-w-[640px]">
-    <p className="text-[#1a7a6e] text-xs font-semibold uppercase tracking-widest mb-3">{eyebrow}</p>
     <h2 className="text-2xl md:text-3xl font-bold text-[var(--color-secondary-main)] mb-4 leading-snug text-balance">{title}</h2>
     <p className="text-[var(--color-secondary-main)]/80 text-[15px] leading-relaxed">{text}</p>
   </div>
 )
 
-const Steps = ({ items, cols }: { items: { title: string; description: string }[]; cols: 2 | 3 }) => (
+const Coordinators = () => (
+  <span className="flex items-center mt-3">
+    {coordinators.map((c, i) => (
+      <Image
+        key={c.id}
+        src={`${c.imageKitPath.split('?')[0]}?tr=w-96,h-96,fo-face`}
+        alt={c.name}
+        width={32}
+        height={32}
+        className={`w-8 h-8 rounded-full object-cover ring-2 ring-white ${i > 0 ? '-ml-2' : ''}`}
+      />
+    ))}
+  </span>
+)
+
+const Steps = ({ items, cols }: { items: { title: string; description: string; people?: boolean }[]; cols: 2 | 3 }) => (
   <ol className={cols === 3 ? 'grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10' : 'grid grid-cols-1 sm:grid-cols-2 gap-6'}>
     {items.map((step, i) => (
       <li key={step.title} className="flex gap-4 items-start">
@@ -106,6 +121,7 @@ const Steps = ({ items, cols }: { items: { title: string; description: string }[
         <div>
           <h4 className="text-[15px] font-bold text-[var(--color-secondary-main)] mb-1">{step.title}</h4>
           <p className="text-[var(--color-secondary-main)]/80 text-sm leading-relaxed">{step.description}</p>
+          {step.people && <Coordinators />}
         </div>
       </li>
     ))}
@@ -129,10 +145,7 @@ const Bullets = ({ title, items }: { title: string; items: string[] }) => (
 const Cta = ({ title, href, label }: { title: string; href: string; label: string }) => (
   <div className="bg-[var(--color-secondary-main)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
     <h3 className="text-lg md:text-xl font-bold text-white text-balance">{title}</h3>
-    <a
-      href={href}
-      className="inline-flex items-center justify-center gap-2 min-h-12 px-7 rounded-full bg-[var(--color-primary-main)]! text-[var(--color-secondary-main)] font-bold text-[15px] hover:opacity-90 transition-opacity shrink-0 whitespace-nowrap"
-    >
+    <a href={href} className={`${primaryButton} shrink-0`}>
       {label}
       <Arrow />
     </a>
@@ -141,67 +154,33 @@ const Cta = ({ title, href, label }: { title: string; href: string; label: strin
 
 // ─── Distributionspartners ────────────────────────────────────────────────────
 
-const distributionTypes = [
-  { title: 'Mäklare', description: 'Ge dina köpare en komplett flytt. Kontot aktiveras automatiskt via ditt mäklarsystem.' },
-  { title: 'Hyresfastigheter', description: 'Ge inflyttande hyresgäster en smidig start. Vi tar hand om el, bredband, försäkring och flytt.' },
-  { title: 'Bostadsrättsföreningar', description: 'Välkomna nya medlemmar med en samlad flyttjänst. Enklare för styrelsen, bättre för de boende.' },
-  { title: 'Nyproduktion', description: 'Köpare av nybyggda bostäder startar allt från noll. Vi samlar hela processen åt dem.' },
-]
-
 const brokerSteps = [
-  { title: 'Affären är klar', description: 'Köparens och säljarens konton aktiveras automatiskt via ditt mäklarsystem. Du gör ingenting extra.' },
+  { title: 'Kunden bjuds in', description: 'Mäklare: automatiskt via mäklarsystemet när affären är klar. Andra partners: du bjuder in kunden, inget att bygga.' },
   { title: 'Vi tar hand om resten', description: 'Flytt, städ, el, bredband, försäkring och adressändring, samlat på ett ställe med en kontaktpunkt.' },
-  { title: 'Kunden får en koordinator', description: 'Nina, Joel eller Maria bokar, följer upp och svarar i chatten, på mejl och i telefon.' },
+  { title: 'Kunden får en koordinator', description: 'Nina, Joel eller Maria bokar, följer upp och svarar i chatten, på mejl och i telefon.', people: true },
 ]
 
-const distributionBenefits = [
-  'Kunden får en komplett flyttöversikt från dag ett',
-  'Du syns som avsändare genom hela flytten',
-  'Helt kostnadsfritt, vi tar betalt av leverantörerna',
-  'Inget att bygga, vi kopplar på ditt mäklarsystem',
-]
+const distributionBenefits = ['Du syns som avsändare genom hela flytten', 'Går något fel hör kunden av sig till oss, inte till dig']
 
 const DistributionPartners = () => (
   <section id="distributionspartners" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-16 md:pt-16 md:pb-24">
     <SectionHeader
-      eyebrow="Distributionspartners"
       title="Skicka dina kunder till en flytt de kommer minnas."
-      text="Alla som möter personer på väg in i en ny bostad kan bli distributionspartner. Mäklare, hyresvärd eller föreningsstyrelse: vi gör flytten enkel för dina kunder, helt utan kostnad för dig."
+      text="Alla som möter personer på väg in i en ny bostad: mäklare, hyresvärdar, bostadsrättsföreningar och nyproduktion. Vi gör flytten enkel för dina kunder, helt utan kostnad för dig."
     />
-
-    <div className="mb-14 md:mb-16">
-      <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-5">Vem kan bli distributionspartner?</h3>
-      <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6 max-w-[900px]">
-        {distributionTypes.map((type) => (
-          <div key={type.title}>
-            <dt className="text-[15px] font-bold text-[var(--color-secondary-main)] mb-1">{type.title}</dt>
-            <dd className="text-[var(--color-secondary-main)]/80 text-sm leading-relaxed">{type.description}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
 
     <div className="mb-14 md:mb-16">
       <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-6">Så fungerar det</h3>
       <Steps items={brokerSteps} cols={3} />
     </div>
 
-    <Bullets title="Varför bli distributionspartner?" items={distributionBenefits} />
+    <Bullets title="Det får du" items={distributionBenefits} />
 
     <Cta title="Vill du erbjuda Flyttsmart till dina kunder?" href="mailto:partner@flyttsmart.se" label="Kontakta oss" />
   </section>
 )
 
 // ─── Leverantörer ─────────────────────────────────────────────────────────────
-
-const supplierTypes = [
-  { title: 'Flyttfirmor', description: 'Flytthjälp, packhjälp och magasinering.' },
-  { title: 'Städbolag', description: 'Flyttstäd, byggstäd och hemstäd.' },
-  { title: 'Elbolag', description: 'Elavtal för nya bostäder, fast och rörligt.' },
-  { title: 'Bredbandsoperatörer', description: 'Fiber, 5G och bredband via kabel.' },
-  { title: 'Försäkringsbolag', description: 'Hemförsäkring, tillägg och bostadsrättsförsäkring.' },
-  { title: 'Hantverkare', description: 'Målning, renovering och reparationer.' },
-]
 
 const vettingSteps = [
   { title: 'Ansökan granskas', description: 'F-skattsedel, försäkringar och certifieringar kontrolleras.' },
@@ -210,30 +189,18 @@ const vettingSteps = [
   { title: 'Löpande uppföljning', description: 'Betyg samlas in efter varje uppdrag. Lågt betyg, borttagen.' },
 ]
 
-const supplierBenefits = [
-  'Kunderna har precis köpt bostad och ska flytta inom veckor',
-  'Ingen marknadsföringskostnad, du betalar bara när du får ett uppdrag',
-  'Flyttsmart sköter kundkontakt, fakturering och rut- och rothantering',
-]
+const supplierBenefits = ['Ingen marknadsföringskostnad, du betalar bara när du får ett uppdrag', 'Flyttsmart sköter kundkontakt, fakturering och rut- och rothantering']
 
 const Suppliers = () => (
   <section id="leverantorer" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-16 md:pt-16 md:pb-24">
     <SectionHeader
-      eyebrow="Leverantörer"
       title="Nå kunder i exakt rätt ögonblick."
       text="Varje månad flyttar tusentals svenskar genom Flyttsmart. De behöver flytt, städ, el, bredband och försäkring, och de letar efter leverantörer just nu. Vi kopplar ihop er, men bara om du håller måttet."
     />
 
-    <div className="mb-14 md:mb-16">
-      <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-5">Leverantörer vi samarbetar med</h3>
-      <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-5 max-w-[900px]">
-        {supplierTypes.map((type) => (
-          <div key={type.title}>
-            <dt className="text-[15px] font-bold text-[var(--color-secondary-main)] mb-0.5">{type.title}</dt>
-            <dd className="text-[var(--color-secondary-main)]/80 text-sm leading-relaxed">{type.description}</dd>
-          </div>
-        ))}
-      </dl>
+    <div className="mb-14 md:mb-16 max-w-[640px]">
+      <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-2">Leverantörer vi samarbetar med</h3>
+      <p className="text-[var(--color-secondary-main)] text-[15px] leading-relaxed">Flyttfirmor, städbolag, elbolag, bredbandsoperatörer, försäkringsbolag och hantverkare.</p>
     </div>
 
     <Bullets title="Varför leverantörer väljer Flyttsmart" items={supplierBenefits} />

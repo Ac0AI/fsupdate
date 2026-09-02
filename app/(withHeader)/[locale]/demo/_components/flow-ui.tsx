@@ -172,18 +172,14 @@ export const Radio = ({ active, onClick, title, hint }: { active: boolean; onCli
       'w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-left border-[1.5px]',
       press,
       pressSoft,
-      active ? 'border-[#51C8B4] bg-[#F4FCFA]' : 'border-[#D5D6DA] bg-white hover:border-[#51C8B4]/60',
+      active ? 'border-[#51C8B4] bg-[#51C8B4]' : 'border-[#D5D6DA] bg-white hover:border-[#51C8B4]/60',
     )}
   >
-    <span
-      className={clsx(
-        'w-5 h-5 rounded-full shrink-0 bg-white transition-[border-width,border-color] duration-200 ease-out motion-reduce:transition-none',
-        active ? 'border-[6px] border-[#51C8B4]' : 'border-[1.9px] border-[#9F9FA1]',
-      )}
-    />
+    {/* Samma uttryck för valt som chipsen: fylld mint med bock. Slotten är kvar när raden inte är vald så texten linjerar. */}
+    <span className="w-5 h-5 shrink-0 flex items-center justify-center">{active && <Check size={14} color="#214766" pop />}</span>
     <span className="flex flex-col gap-px">
       <span className={clsx('text-[15px] text-[#214766]', active && 'font-bold')}>{title}</span>
-      {hint && <span className="text-[13px] text-[#767678]">{hint}</span>}
+      {hint && <span className={clsx('text-[13px]', active ? 'text-[#214766]/80' : 'text-[#767678]')}>{hint}</span>}
     </span>
   </button>
 )
@@ -204,7 +200,10 @@ export const Option = ({ active, onClick, label, hint }: { active: boolean; onCl
       active ? 'bg-[#51C8B4] border-[#51C8B4]' : 'bg-white border-[#D5D6DA] hover:border-[#51C8B4]/60',
     )}
   >
-    <span className={clsx('text-[13px] text-[#214766] transition-colors duration-200', active && 'font-semibold')}>{label}</span>
+    <span className={clsx('flex items-center gap-1.5 text-[13px] text-[#214766] transition-colors duration-200', active && 'font-semibold')}>
+      {active && <Check size={12} color="#214766" />}
+      {label}
+    </span>
     <span className={clsx('text-xs leading-[14px] transition-colors duration-200', active ? 'text-[#214766]/80' : 'text-[#767678]')}>{hint}</span>
   </button>
 )
@@ -404,16 +403,19 @@ export const Primary = ({
   </button>
 )
 
-// Den enda stilen för "visa mer": plus och navy text, 44 px hög rad. Understrykning är bara för Villkor.
-export const MoreLink = ({ onClick, className, children }: { onClick: () => void; className?: string; children: React.ReactNode }) => (
+// Den enda stilen för "visa mer": navy text, 44 px hög rad. Plus bara när något läggs till;
+// ändra och anpassa är ren text. Understrykning är bara för Villkor.
+export const MoreLink = ({ onClick, plus, className, children }: { onClick: () => void; plus?: boolean; className?: string; children: React.ReactNode }) => (
   <button
     type="button"
     onClick={onClick}
     className={clsx('min-h-11 -my-1 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#214766] rounded-sm text-left', press, pressSoft, className)}
   >
-    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden className="shrink-0">
-      <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
+    {plus && (
+      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden className="shrink-0">
+        <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+      </svg>
+    )}
     {children}
   </button>
 )

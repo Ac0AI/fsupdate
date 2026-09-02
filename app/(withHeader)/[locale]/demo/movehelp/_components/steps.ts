@@ -50,10 +50,14 @@ export type Cleaning = {
   customDate: string
 }
 
+export type HeavyKind = 'piano' | 'safe' | 'aquarium' | 'art' | 'other'
+
 export type QuoteRequest = {
   from: Residence
   to: Residence
   heavyItems: boolean
+  // Chips i stället för fritext: kunden pekar, vi räknar. Fritext bara vid Annat.
+  heavyKinds: HeavyKind[]
   heavyNote: string
   // Bohag 2010: föremål värda över ett halvt prisbasbelopp ska uppges i förväg.
   valuables: boolean
@@ -133,6 +137,14 @@ export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boo
   { value: 'assembly', label: 'Montering', hint: 'Vi tar ned och sätter upp möbler, lampor och hyllor', defaultOn: false, kind: 'toggle' },
   { value: 'storage', label: 'Magasinering', hint: 'Från en månad, vi hämtar och lämnar', defaultOn: false, kind: 'toggle' },
   { value: 'recycling', label: 'Bortforsling', hint: 'Vi kör till tippen eller lämnar till återbruk', defaultOn: false, kind: 'toggle' },
+]
+
+export const HEAVY_KINDS: { value: HeavyKind; label: string }[] = [
+  { value: 'piano', label: 'Piano' },
+  { value: 'safe', label: 'Kassaskåp' },
+  { value: 'aquarium', label: 'Akvarium' },
+  { value: 'art', label: 'Konst eller värdesaker' },
+  { value: 'other', label: 'Annat' },
 ]
 
 // Städytan är boarean plus de biytor som ska städas.
