@@ -1145,9 +1145,13 @@ html {
   60% { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
-@keyframes dash-row {
-  0% { background-color: #f4fcfa; }
-  100% { background-color: #ffffff; }
+@keyframes dash-in {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes dash-out {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-8px); }
 }
 @keyframes dash-dot {
   0%, 100% { transform: translateY(0); opacity: 0.5; }
