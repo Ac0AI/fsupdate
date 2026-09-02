@@ -233,7 +233,7 @@ const DemoMovehelpFlow = () => {
             <div className={rise}>
               <Card>
                 <h3 className="text-[15px] font-bold text-[#214766]">Vårt förslag</h3>
-                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-2 pb-2">Priset kommer i offerten, med rutavdraget draget.</p>
+                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-2 pb-2">Priset kommer i offerten, efter rutavdrag.</p>
                 <div className="flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0]">
                   <span className="flex flex-col gap-px">
                     <span className="text-[13px] font-semibold text-[#214766]">Flytthjälp</span>
@@ -385,11 +385,8 @@ const DemoMovehelpFlow = () => {
           {step === 0 && (
             <>
               <Primary onClick={() => tryContinue(() => setStep(1))}>Fortsätt</Primary>
-              {hasShownErrors ? (
-                <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar vi rätt.</Foot>
-              ) : (
-                <Foot>Inget är bokat förrän du sagt ja</Foot>
-              )}
+              {/* Inget kan bokas i steg 1, så foten är tom tills något saknas. */}
+              {hasShownErrors && <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar vi rätt.</Foot>}
             </>
           )}
           {step === 1 && (

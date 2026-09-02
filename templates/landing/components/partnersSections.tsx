@@ -17,8 +17,8 @@ const STATS = [
 
 // Partneransvariga. Sebastians adress finns i Mäklarhuset-mallen; Andreas nås tills vidare via leverantor@.
 const CONTACTS = {
-  brokers: { name: 'Sebastian Nielsen', role: 'Mäklarsamarbeten', email: 'sebastian@flyttsmart.se', photo: null as string | null },
-  suppliers: { name: 'Andreas Burman', role: 'Flytt- och städbolag', email: 'leverantor@flyttsmart.se', photo: '/images/team-andreas.webp' as string | null },
+  brokers: { name: 'Sebastian Nielsen', role: 'Ansvarig för mäklarsamarbeten', email: 'sebastian@flyttsmart.se', photo: null as string | null },
+  suppliers: { name: 'Andreas Burman', role: 'Ansvarig för flytt- och städbolag', email: 'leverantor@flyttsmart.se', photo: '/images/team-andreas.webp' as string | null },
 }
 
 // ─── Hero: vad partnern får, sedan valet ─────────────────────────────────────
@@ -32,15 +32,15 @@ const PartnersIntro = () => (
           <span className="block">Du står som avsändare.</span>
         </h1>
         <p className="text-white/80 text-lg leading-relaxed">
-          Kunden får en namngiven koordinator. Går något fel tar vi ansvaret, inte du.
+          Går något fel tar vi ansvaret, inte du.
         </p>
       </div>
 
       {/* Tre tal med täckning: volymen från ägaren 2026-09-02, betyget från Google. */}
-      <dl className="flex flex-wrap gap-x-10 gap-y-4 mb-10">
+      <dl className="grid grid-cols-3 gap-4 md:flex md:gap-x-10 mb-10">
         {STATS.map((s) => (
           <div key={s.label} className="flex flex-col">
-            <dt className="text-[28px] md:text-[32px] font-bold leading-none text-[var(--color-primary-main)]">{s.value}</dt>
+            <dt className="text-[22px] md:text-[32px] font-bold leading-none text-[var(--color-primary-main)] whitespace-nowrap">{s.value}</dt>
             <dd className="text-sm text-white/80 mt-1.5">{s.label}</dd>
           </div>
         ))}
@@ -50,15 +50,15 @@ const PartnersIntro = () => (
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Mäklare, hyresvärdar och föreningar</h2>
           <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten och du syns som avsändare genom hela flytten. Kostnadsfritt, vi tar betalt av leverantörerna.</p>
-          <a href="#distributionspartners" className={`mt-auto pt-2 ${primaryButton}`}>
-            Bli partner
+          <a href={`mailto:${CONTACTS.brokers.email}`} className={`mt-auto pt-2 ${primaryButton}`}>
+            Mejla Sebastian
           </a>
         </div>
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Flyttfirmor, elbolag och andra leverantörer</h2>
           <p className="text-white/70 text-sm leading-relaxed">Vi skickar kunder som ska flytta inom några veckor. Du betalar per uppdrag.</p>
-          <a href="#leverantorer" className={`mt-auto pt-2 ${outlineButton}`}>
-            Ansök som leverantör
+          <a href={`mailto:${CONTACTS.suppliers.email}`} className={`mt-auto pt-2 ${outlineButton}`}>
+            Mejla Andreas
           </a>
         </div>
       </div>
@@ -148,20 +148,6 @@ const Steps = ({ items, cols }: { items: { title: string; description: string; p
   </ol>
 )
 
-const Bullets = ({ title, items }: { title?: string; items: string[] }) => (
-  <div className="mb-14 md:mb-16 max-w-[640px]">
-    {title && <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-5">{title}</h3>}
-    <ul className="flex flex-col gap-3">
-      {items.map((item) => (
-        <li key={item} className="flex items-start gap-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-main)] mt-2 shrink-0" />
-          <p className="text-[var(--color-secondary-main)] text-[15px]">{item}</p>
-        </li>
-      ))}
-    </ul>
-  </div>
-)
-
 // En människa att höra av sig till, inte bara en knapp.
 const Cta = ({ title, contact, label }: { title: string; contact: (typeof CONTACTS)[keyof typeof CONTACTS]; label: string }) => (
   <div className="bg-[var(--color-secondary-main)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
@@ -193,14 +179,14 @@ const Cta = ({ title, contact, label }: { title: string; contact: (typeof CONTAC
 // ─── Distributionspartners ────────────────────────────────────────────────────
 
 const brokerSteps = [
-  { title: 'Kunden bjuds in', description: 'Mäklare: vi kopplar in oss i ditt mäklarsystem, du gör inget. Andra partners bjuder in kunden själva.' },
+  { title: 'Kunden bjuds in', description: 'Vi kopplar in oss i ditt mäklarsystem, du gör inget. Hyresvärdar och föreningar bjuder in kunden själva.' },
   { title: 'Vi tar hand om resten', description: 'Flytt, städ, el, bredband, försäkring och adressändring, samlat på ett ställe med en kontaktpunkt.' },
   { title: 'Kunden får en koordinator', description: 'Koordinatorn bokar, följer upp och svarar i chatten, på mejl och i telefon.', people: true },
 ]
 
 const DistributionPartners = () => (
   <section id="distributionspartners" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-12 md:pt-16 md:pb-16">
-    <SectionHeader audience="För mäklare, hyresvärdar och föreningar" title="Du slipper frågorna om flytten. Kunden minns vem som bjöd in." text="300 mäklarkontor gör det redan." />
+    <SectionHeader audience="För mäklare, hyresvärdar och föreningar" title="Du slipper frågorna om flytten. Kunden minns vem som bjöd in." />
 
     <div className="mb-14 md:mb-16">
       <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-6">Så fungerar det</h3>
@@ -217,20 +203,16 @@ const vettingSteps = [
   { title: 'Ansökan granskas', description: 'F-skattsedel, försäkringar och certifieringar kontrolleras.' },
   { title: 'Referenscheck', description: 'Vi pratar med tidigare kunder och verifierar omdömen.' },
   { title: 'Provuppdrag', description: 'Du genomför ett kontrollerat uppdrag som vi följer upp.' },
-  { title: 'Löpande uppföljning', description: 'Betyg samlas in efter varje uppdrag. Lågt betyg, borttagen.' },
+  { title: 'Löpande uppföljning', description: 'Betyg samlas in efter varje uppdrag. Håller det inte tar vi bort dig.' },
 ]
-
-const supplierBenefits = ['Ingen marknadsföringskostnad, du betalar bara när du får ett uppdrag', 'Flyttsmart sköter kundkontakt, fakturering och rut- och rothantering']
 
 const Suppliers = () => (
   <section id="leverantorer" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-16 md:pt-16 md:pb-24">
     <SectionHeader
       audience="För leverantörer"
       title="Nå kunder i exakt rätt ögonblick."
-      text="Varje månad flyttar 5 000 svenskar genom Flyttsmart. De behöver flyttfirma, städbolag, el, bredband, försäkring och hantverkare, och de letar just nu. Vi kopplar ihop er, men bara om du håller måttet."
+      text="Varje månad går 5 000 flyttar genom Flyttsmart, och de som flyttar letar efter leverantörer just nu. Vi sköter kundkontakt, fakturering och rut- och rothantering. Vi kopplar ihop er, men bara om du håller måttet."
     />
-
-    <Bullets items={supplierBenefits} />
 
     <div className="mb-14 md:mb-16">
       <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-6">Hur vi väljer leverantörer</h3>
