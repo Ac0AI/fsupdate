@@ -72,7 +72,7 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
         <ClosingCta />
 
         {/* Contact - tight, centered */}
-        <section className="w-screen flex justify-center bg-[var(--color-secondary-dark)] border-t border-white/10">
+        <section className="w-screen flex justify-center bg-[var(--color-secondary-main)] border-t border-white/10">
           <div className="w-full px-4 md:px-8 max-w-[1232px] py-6">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
               <span className="text-white/50 text-sm">Har du frågor?</span>

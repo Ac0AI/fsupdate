@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority'
 
-// Mörk sidfot (navy-deep), samma ton som de mörka banden på Utland.
-export const wrapperVariants = cva(['bg-[var(--color-secondary-dark)]', 'text-white', 'py-16', 'z-[1]'])
+// Mörkblå sidfot, samma ton som heron. Det svarta (navy-deep) är bevisblocket mitt på startsidan.
+export const wrapperVariants = cva(['bg-[var(--color-secondary-main)]', 'text-white', 'py-16', 'z-[1]'])
 
 export const containerVariants = cva(['px-4', 'mx-auto', 'md:px-6', 'lg:max-w-[1280px]'])
 
