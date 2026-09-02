@@ -50,6 +50,50 @@ const PartnersIntro = () => {
   )
 }
 
+// ─── Partnercitat ─────────────────────────────────────────────────────────────
+
+const PARTNER_QUOTES = [
+  {
+    quote: 'Tillsammans skapar Valvet och Flyttsmart en trygg och smidig upplevelse hela vägen till det nya hemmet.',
+    name: 'Pernilla Modig',
+    role: 'Försäljningschef, Valvet',
+    logo: '/images/partners/all/valvet-uag4hmg6y.png',
+  },
+  {
+    quote: 'Notar och Flyttsmart – tillsammans skapar vi en smidigare flytt för våra kunder.',
+    name: 'Nina Gustavsson',
+    role: 'Vice VD, Notar',
+    logo: '/images/partners/all/notar-new-4g0mb9fuo.svg',
+  },
+]
+
+const PartnerQuotes = () => (
+  <section aria-labelledby="partner-quotes-heading" className="bg-white">
+    <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-14 md:py-20">
+      <h2 id="partner-quotes-heading" className="text-2xl md:text-3xl font-bold text-[var(--color-secondary-main)] mb-8 md:mb-10 leading-snug">
+        Det säger de som redan samarbetar med oss
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+        {PARTNER_QUOTES.map((q) => (
+          <figure key={q.name} className="bg-[var(--color-background-default)] rounded-2xl p-6 md:p-8 flex flex-col gap-6">
+            <span className="h-7 flex items-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={q.logo} alt={q.role.split(', ')[1]} loading="lazy" decoding="async" className="max-h-7 w-auto object-contain" />
+            </span>
+            <blockquote className="text-lg md:text-xl leading-relaxed text-[var(--color-secondary-main)] flex-1">
+              ”{q.quote}”
+            </blockquote>
+            <figcaption className="flex flex-col">
+              <span className="text-sm font-bold text-[var(--color-secondary-main)]">{q.name}</span>
+              <span className="text-sm text-[var(--color-secondary-main)]/70">{q.role}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+)
+
 // ─── Distribution Partners ────────────────────────────────────────────────────
 
 const distributionTypes = [
@@ -309,4 +353,4 @@ const Suppliers = () => {
   )
 }
 
-export { PartnersIntro, DistributionPartners, Suppliers }
+export { PartnersIntro, PartnerQuotes, DistributionPartners, Suppliers }

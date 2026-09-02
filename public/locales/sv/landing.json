@@ -7,7 +7,7 @@
   "stats_title": "Inte övertygad än?",
   "faq_title": "Vanliga frågor",
   "faq_link": "https://help.flyttsmart.se/sv",
-  "faq_more_questions": "Fler vanliga frågor",
+  "faq_more_questions": "Se alla frågor",
   "flyttsmart_email": "hej@flyttsmart.se",
   "flyttsmart_phone": "08-12 00 88 22",
   "flyttsmart_chat": "eller i chatten.",
@@ -34,7 +34,7 @@
     },
     "step2": {
       "title": "Säg ja till ett förslag per tjänst",
-      "description": "El, bredband, flytthjälp, flyttstädning och försäkring, ett rekommenderat val med skälet utskrivet. Färdigförhandlat, inga offerter att begära.",
+      "description": "El, bredband, flytthjälp, flyttstädning och försäkring, ett rekommenderat val med skälet utskrivet. Inga offerter att begära.",
       "benefit": ""
     },
     "step3": {

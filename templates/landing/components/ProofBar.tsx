@@ -31,14 +31,19 @@ const ProofBar = () => {
           </div>
         </div>
 
-        {/* Mäklarlogotyperna, statiska, bredvid påståendet de bevisar. Ljus remsa eftersom flera logotyper är opaka. */}
-        <div className="rounded-2xl bg-white px-6 py-5 md:py-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-          {partnerLogos.slice(0, 8).map((logo) => (
-            <span key={logo.src} className="h-8 md:h-9 w-[110px] md:w-[130px] flex items-center justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logo.src} alt={logo.alt} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain" />
-            </span>
-          ))}
+        {/* Mäklarlogotyperna som en lugn marquee: lika höga slots, tonade kanter,
+            enfärgade så att ingen logotyp skriker. Vit remsa eftersom flera är opaka. */}
+        <div className="rounded-2xl bg-white py-6 overflow-hidden">
+          <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+            <div className="flex w-max gap-12 md:gap-16 animate-scroll-infinite motion-reduce:animate-none">
+              {[...partnerLogos, ...partnerLogos].map((logo, i) => (
+                <span key={`${logo.src}-${i}`} className="h-9 w-[112px] md:w-[128px] flex items-center justify-center shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={logo.src} alt={logo.alt} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain grayscale opacity-80" />
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

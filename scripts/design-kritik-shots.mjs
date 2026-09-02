@@ -49,6 +49,12 @@ for (const vp of VIEWPORTS) {
     await shot(page, `landing-${vp.tag}`)
     await context.close()
   }
+  if (which === 'all' || which === 'partners') {
+    const { context, page } = await open(vp)
+    await goto(page, '/samarbetspartners')
+    await shot(page, `partners-${vp.tag}`)
+    await context.close()
+  }
   // Steg 1 har inga förval för våning, hiss och bärsträcka: svara som en kund innan Fortsätt.
   const fillStep1 = async (page) => {
     await page.getByRole('button', { name: '3', exact: true }).first().click()
@@ -65,11 +71,13 @@ for (const vp of VIEWPORTS) {
       await fillStep1(page)
       await page.getByRole('button', { name: 'Fortsätt', exact: true }).click()
       await page.waitForTimeout(1200)
-      await page.getByRole('button', { name: 'Ja, berätta', exact: true }).first().click()
+      await page.getByRole('button', { name: 'Ändra dag eller starttid', exact: true }).click()
+      await page.getByRole('button', { name: 'Lägg till montering, magasinering eller bortforsling', exact: true }).click()
+      await page.getByRole('button', { name: 'Anpassa städningen', exact: true }).click()
       await page.waitForTimeout(600)
       await page.addStyleTag({ content: '.sticky{position:static!important}' })
-      await page.screenshot({ path: `${out}/movehelp-steg2-${vp.tag}-tungt-oppet-full.png`, fullPage: true })
-      console.log('  ✓', `movehelp-steg2-${vp.tag}-tungt-oppet`)
+      await page.screenshot({ path: `${out}/movehelp-steg2-${vp.tag}-oppet-full.png`, fullPage: true })
+      console.log('  ✓', `movehelp-steg2-${vp.tag}-oppet`)
       await context.close()
     }
     const { context, page } = await open(vp)

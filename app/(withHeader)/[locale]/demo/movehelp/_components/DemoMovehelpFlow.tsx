@@ -12,7 +12,7 @@ import {
   ADDONS, CLEAN_DAYS, DISTANCES, DWELLINGS, ELEVATORS, FLOORS, KEY_HANDLING, SECONDARY_KINDS, START_TIMES, STEP_TITLES,
   cleanArea, type Addon, type Cleaning, type QuoteRequest, type Residence, type Secondary,
 } from './steps'
-import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, Option, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, selectClass, textareaClass, pressSoft, pressScale } from '../../_components/flow-ui'
+import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, MoreLink, Option, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, selectClass, textareaClass, pressSoft, pressScale } from '../../_components/flow-ui'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
 const weekday = (d: Date) => new Intl.DateTimeFormat('sv-SE', { weekday: 'long' }).format(d)
@@ -49,8 +49,6 @@ const stepErrors = (step: number, req: QuoteRequest, movingDate: Date): Errors =
   if (step === 1) {
     const e: Errors = {}
     const today = isoDate(new Date())
-    if (req.heavyItems && !req.heavyNote.trim()) e.heavyNote = 'Berätta vad som är tungt eller ömtåligt, så vi kan sätta rätt antal bärare.'
-    if (req.valuables && !req.valuablesNote.trim()) e.valuablesNote = 'Berätta vad det är, så packas och försäkras det rätt.'
     if (req.dateMode === 'custom') {
       if (!req.customDate) e.customDate = 'Välj vilken dag du vill flytta.'
       else if (req.customDate < today) e.customDate = 'Den dagen har redan varit. Välj en dag framåt.'
@@ -67,7 +65,7 @@ const stepErrors = (step: number, req: QuoteRequest, movingDate: Date): Errors =
 }
 
 // Rubriken säger var du är. Tjänstens namn och stegräknaren står som rad ovanför.
-const HERO_TITLE = ['Berätta om bostäderna', 'Något tungt, och när passar det?', 'Din offert är på väg']
+const HERO_TITLE = ['Berätta om bostäderna', 'Tunga saker och flyttdag', 'Din offert är på väg']
 const HERO_COPY = [
   'Du slipper ringa runt och jaga offerter. Vi har fyllt i det vi redan vet, du fyller i resten.',
   '',
@@ -99,8 +97,9 @@ const DemoMovehelpFlow = () => {
 
   const [step, setStep] = useState(0)
   const [sending, setSending] = useState(false)
-  const [startOpen, setStartOpen] = useState(false)
   const [cleanOpen, setCleanOpen] = useState(false)
+  const [dateOpen, setDateOpen] = useState(false)
+  const [moreAddons, setMoreAddons] = useState(false)
   const [req, setReq] = useState<QuoteRequest>({
     from: initialResidence(move.fromAddress.street, move.fromAddress.city, 68, {
       // Våning, hiss och bärsträcka vet vi inte: inget förval, kunden svarar.
@@ -169,9 +168,33 @@ const DemoMovehelpFlow = () => {
 
   const backToMovepage = () => router.push(locale === i18nConfig.defaultLocale ? '/demo/movepage' : `/${locale}/demo/movepage`)
 
+  const addonRow = (a: (typeof ADDONS)[number]) => {
+    const on = req.addons.includes(a.value)
+    return (
+      <button
+        key={a.value}
+        type="button"
+        role="switch"
+        aria-checked={on}
+        onClick={() => toggleAddon(a.value)}
+        className={clsx('w-full flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0] text-left rounded-sm', press, 'active:bg-[#F8FAF9]')}
+      >
+        <span className="flex flex-col gap-px">
+          <span className="text-[13px] font-semibold text-[#214766]">{a.label}</span>
+          <span className="text-xs text-[#5F6062]">{a.hint}</span>
+        </span>
+        <Toggle on={on} />
+      </button>
+    )
+  }
+
+  const dateLabel =
+    req.dateMode === 'flexible' ? 'flexibel dag' : req.dateMode === 'custom' ? (req.customDate ? formatDate(new Date(req.customDate)) : 'datum saknas') : formatDate(movingDate)
+  const summary = ['Flytthjälp', ...ADDONS.filter((a) => req.addons.includes(a.value)).map((a) => a.label.toLowerCase()), dateLabel].join(' · ')
+
   return (
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
-      <StepBar step={step} titles={STEP_TITLES} hints={['', '', '']} contentClassName="max-w-[640px]" />
+      <StepBar step={step} titles={STEP_TITLES} hints={['', '', '']} complete={step === 2} contentClassName="max-w-[640px]" />
       <Hero
         title={HERO_TITLE[step]}
         copy={HERO_COPY[step]}
@@ -179,7 +202,7 @@ const DemoMovehelpFlow = () => {
         contentClassName="max-w-[640px]"
         back={step === 2 ? undefined : step === 1 ? { label: 'Tillbaka till bostaden', onClick: () => setStep(0) } : { label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
       >
-        {step < 2 && (
+        {step === 0 && (
           <div className="flex items-center gap-2 mt-1">
             <Image src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-56,h-56,fo-face" alt="" width={28} height={28} className="w-7 h-7 rounded-full object-cover" />
             <span className="text-[13px] text-[#5F6062]">Nina räknar på din flytt när du är klar.</span>
@@ -203,143 +226,36 @@ const DemoMovehelpFlow = () => {
             (med städdetaljerna infällda under toggeln som tänder dem), övrigt. */}
         {step === 1 && (
           <div className="flex flex-col gap-3.5 w-full max-w-[640px] mx-auto">
-            <div className="contents">
-              <div className={clsx('order-3', rise, '[animation-delay:70ms]')}>
-                <Card>
-                  {/* Städningen står i flödets namn och får ett eget kort, toggeln i rubrikraden. */}
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={cleaning}
-                    onClick={() => toggleAddon('moveclean')}
-                    className={clsx('w-full flex items-center justify-between gap-3 text-left rounded-sm', press)}
-                  >
-                    <span className="flex flex-col gap-px">
-                      <span className="text-[15px] font-bold text-[#214766] flex items-center gap-2">
-                        Flyttstädning
-                        <span className="text-[11px] font-semibold text-[#1F6156] bg-[#F4FCFA] border border-[#51C8B4]/60 rounded-full px-2 py-px">Rekommenderas</span>
-                      </span>
-                      <span className="text-[13px] leading-[19px] text-[#5F6062]">Med städgaranti: godkänd besiktning eller omstädning</span>
-                    </span>
-                    <Toggle on={cleaning} />
-                  </button>
-                  {cleaning && !(cleanOpen || shownErrors.cleanDate) && (
-                    <div className={clsx('mt-3 pt-3 border-t border-[#EEEEF0] flex flex-wrap items-center justify-between gap-2', rise)}>
-                      <span className="text-[13px] text-[#5F6062]">
-                        {cleanArea(req.from)} m² städyta, samma dag som flytten.
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setCleanOpen(true)}
-                        className={clsx('min-h-11 -my-2 text-[13px] font-semibold text-[#214766] underline underline-offset-4 decoration-[#214766]/40 hover:decoration-[#214766] rounded-sm', press)}
-                      >
-                        Anpassa städningen
-                      </button>
-                    </div>
-                  )}
-                  {cleaning && (cleanOpen || shownErrors.cleanDate) && (
-                    <div className={clsx('mt-3 pt-3 border-t border-[#EEEEF0]', rise)}>
-                      <CleaningCard from={req.from} cleaning={req.cleaning} moveDate={moveDay(req, movingDate)} errors={shownErrors} onChange={patchCleaning} />
-                    </div>
-                  )}
-                </Card>
-              </div>
-
-              <div className={clsx('order-4', rise, '[animation-delay:100ms]')}>
-                <Card>
-                  <h3 className="text-[15px] font-bold text-[#214766]">Vill du ha hjälp med mer?</h3>
-                  <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1 pb-2">Varje tillägg blir en egen rad i offerten, med rutavdraget draget.</p>
-                  {ADDONS.filter((a) => a.value !== 'moveclean').map((a) => {
-                    const on = req.addons.includes(a.value)
-                    return (
-                      <Fragment key={a.value}>
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={on}
-                        onClick={() => toggleAddon(a.value)}
-                        className={clsx('w-full flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0] text-left rounded-sm', press, 'active:bg-[#F8FAF9]')}
-                      >
-                        <span className="flex flex-col gap-px">
-                          <span className="text-[13px] font-semibold text-[#214766] flex items-center gap-2">
-                            {a.label}
-                            {a.defaultOn && <span className="text-[11px] font-semibold text-[#1F6156] bg-[#F4FCFA] border border-[#51C8B4]/60 rounded-full px-2 py-px">Rekommenderas</span>}
-                          </span>
-                          <span className="text-xs text-[#5F6062]">{a.hint}</span>
-                        </span>
-                        <Toggle on={on} />
-                      </button>
-                      </Fragment>
-                    )
-                  })}
-                </Card>
-              </div>
-
+            <div className={rise}>
+              <Card>
+                <h3 className="text-[15px] font-bold text-[#214766]">Något tungt, ömtåligt eller värdefullt?</h3>
+                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">
+                  Piano, kassaskåp, akvarium, konst eller annat värt över 30 000 kr. Skriv vad det är, så sätter vi rätt antal bärare och försäkrar det rätt.
+                </p>
+                <textarea
+                  className={clsx(textareaClass, 'mt-3')}
+                  placeholder="T.ex. piano, ca 150 kg, står i vardagsrummet. Eller lämna tomt."
+                  value={req.heavyNote}
+                  onChange={(e) => setReq((r) => ({ ...r, heavyNote: e.target.value, heavyItems: e.target.value.trim() !== '' }))}
+                />
+              </Card>
             </div>
 
-            <div className="contents">
-              <div className={clsx('order-1', rise)}>
-                <Card>
-                  <h3 className="text-[15px] font-bold text-[#214766]">Något tungt eller ömtåligt?</h3>
-                  <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Över 80 kg räknas som tungt. Piano, kassaskåp, akvarium, sånt som behöver fler bärare.</p>
-                  <div className="flex gap-1.5 mt-3">
-                    <Pill active={!req.heavyItems} onClick={() => setReq((r) => ({ ...r, heavyItems: false }))}>
-                      Nej
-                    </Pill>
-                    <Pill active={req.heavyItems} onClick={() => setReq((r) => ({ ...r, heavyItems: true }))}>
-                      Ja, berätta
-                    </Pill>
-                  </div>
-                  {req.heavyItems && (
-                    <div className={clsx('mt-3 flex flex-col gap-1.5', rise)} data-invalid={shownErrors.heavyNote ? 'true' : undefined}>
-                      <textarea
-                        autoFocus
-                        aria-invalid={!!shownErrors.heavyNote}
-                        className={clsx(textareaClass, shownErrors.heavyNote && errorBorder)}
-                        placeholder="T.ex. piano på våning 3, ingen hiss"
-                        value={req.heavyNote}
-                        onChange={(e) => setReq((r) => ({ ...r, heavyNote: e.target.value }))}
-                      />
-                      {shownErrors.heavyNote && <ErrorText>{shownErrors.heavyNote}</ErrorText>}
-                    </div>
-                  )}
-
-                  {/* Bohag 2010 kräver att dyra föremål uppges i förväg. Samma kort
-                      som det tunga: båda handlar om vad som är speciellt i bohaget. */}
-                  <div className="mt-4 pt-3 border-t border-[#EEEEF0]">
-                    <h3 className="text-[15px] font-bold text-[#214766] flex items-center gap-1">
-                      Något värt över 30 000 kr?
-                    </h3>
-                    <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Konst, antikviteter, designmöbler. Anger du dem i förväg packas och försäkras de rätt.</p>
-                    <div className="flex gap-1.5 mt-3">
-                      <Pill active={!req.valuables} onClick={() => setReq((r) => ({ ...r, valuables: false }))}>
-                        Nej
-                      </Pill>
-                      <Pill active={req.valuables} onClick={() => setReq((r) => ({ ...r, valuables: true }))}>
-                        Ja, berätta
-                      </Pill>
-                    </div>
-                    {req.valuables && (
-                      <div className={clsx('mt-3 flex flex-col gap-1.5', rise)} data-invalid={shownErrors.valuablesNote ? 'true' : undefined}>
-                        <textarea
-                          autoFocus
-                          aria-invalid={!!shownErrors.valuablesNote}
-                          className={clsx(textareaClass, shownErrors.valuablesNote && errorBorder)}
-                          placeholder="T.ex. en tavla och en flygel"
-                          value={req.valuablesNote}
-                          onChange={(e) => setReq((r) => ({ ...r, valuablesNote: e.target.value }))}
-                        />
-                        {shownErrors.valuablesNote && <ErrorText>{shownErrors.valuablesNote}</ErrorText>}
-                      </div>
-                    )}
-                  </div>
-                </Card>
-              </div>
-
-              <div className={clsx('order-2', rise, '[animation-delay:140ms]')}>
-                <Card>
-                  <h3 className="text-[15px] font-bold text-[#214766]">Vilken dag vill du ha flytthjälpen?</h3>
-                  <div className="flex flex-col gap-2 mt-2.5">
+            {/* Flyttdagen är ett påstående med en tyst ändra-länk, inte en fråga kunden redan fått svar på. */}
+            <div className={clsx(rise, '[animation-delay:70ms]')}>
+              <Card>
+                {!dateOpen && req.dateMode === 'fixed' ? (
+                  <>
+                    <h3 className="text-[15px] font-bold text-[#214766]">Vi räknar på {formatDate(movingDate)}</h3>
+                    <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Tillträdesdagen, en {weekday(movingDate)}. Starttiden föreslår vi i offerten.</p>
+                    <MoreLink className="mt-3" onClick={() => setDateOpen(true)}>
+                      Ändra dag eller starttid
+                    </MoreLink>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-[15px] font-bold text-[#214766]">Vilken dag vill du ha flytthjälpen?</h3>
+                    <div className="flex flex-col gap-2 mt-2.5">
                     <Radio
                       active={req.dateMode === 'fixed'}
                       onClick={() => setReq((r) => ({ ...r, dateMode: 'fixed' }))}
@@ -380,42 +296,56 @@ const DemoMovehelpFlow = () => {
                       )}
                     </div>
                   )}
+                    <Field label="Starttid" className="mt-3">
+                      <div className={clsx('grid grid-cols-2 gap-1.5', rise)}>
+                        {START_TIMES.map((t) => (
+                          <Option key={t.value} active={req.startTime === t.value} onClick={() => setReq((r) => ({ ...r, startTime: t.value }))} label={t.label} hint={t.hint} />
+                        ))}
+                      </div>
+                    </Field>
+                  </>
+                )}
+              </Card>
+            </div>
 
-                  {/* Förvalet är att vi föreslår en starttid. Den som behöver en viss tid öppnar valet. */}
-                  <div className="mt-2">
-                    {req.startTime === 'any' && !startOpen ? (
-                      <button
-                        type="button"
-                        onClick={() => setStartOpen(true)}
-                        className={clsx('min-h-11 -my-1 inline-flex items-center gap-1 text-[13px] font-semibold text-[#214766] underline underline-offset-4 decoration-[#214766]/40 hover:decoration-[#214766] rounded-sm', press)}
-                      >
-                        Välj starttid
-                      </button>
-                    ) : (
-                      <Field label="Starttid">
-                        <div className={clsx('grid grid-cols-2 gap-1.5', rise)}>
-                          {START_TIMES.map((t) => (
-                            <Option key={t.value} active={req.startTime === t.value} onClick={() => setReq((r) => ({ ...r, startTime: t.value }))} label={t.label} hint={t.hint} />
-                          ))}
-                        </div>
-                      </Field>
-                    )}
+            {/* Rekommendationen: packhjälp och flyttstädning på, resten bakom en länk. */}
+            <div className={clsx(rise, '[animation-delay:100ms]')}>
+              <Card>
+                <h3 className="text-[15px] font-bold text-[#214766]">Det här ingår i vår rekommendation</h3>
+                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1 pb-2">Varje del blir en egen rad i offerten, med rutavdraget draget. Slå av det du inte vill ha.</p>
+                {ADDONS.filter((a) => a.value === 'packing' || a.value === 'moveclean').map(addonRow)}
+                {cleaning && !(cleanOpen || shownErrors.cleanDate) && (
+                  <div className={clsx('pb-2 flex flex-wrap items-center justify-between gap-x-3', rise)}>
+                    <span className="text-[13px] text-[#5F6062]">{cleanArea(req.from)} m² städyta, samma dag som flytten.</span>
+                    <MoreLink onClick={() => setCleanOpen(true)}>Anpassa städningen</MoreLink>
                   </div>
-                </Card>
-              </div>
+                )}
+                {cleaning && (cleanOpen || shownErrors.cleanDate) && (
+                  <div className={clsx('pb-3', rise)}>
+                    <CleaningCard from={req.from} cleaning={req.cleaning} moveDate={moveDay(req, movingDate)} errors={shownErrors} onChange={patchCleaning} />
+                  </div>
+                )}
+                {moreAddons || ADDONS.some((a) => a.kind === 'chip' && req.addons.includes(a.value)) ? (
+                  ADDONS.filter((a) => a.value !== 'packing' && a.value !== 'moveclean').map(addonRow)
+                ) : (
+                  <div className="pt-2 border-t border-[#EEEEF0]">
+                    <MoreLink onClick={() => setMoreAddons(true)}>Lägg till montering, magasinering eller bortforsling</MoreLink>
+                  </div>
+                )}
+              </Card>
+            </div>
 
-              <div className={clsx('order-5', rise, '[animation-delay:210ms]')}>
-                <Card>
-                  <h3 className="text-[15px] font-bold text-[#214766]">Något mer vi bör veta?</h3>
-                  <p className="text-[13px] leading-[19px] text-[#767678] mt-1">Parkering, portkod, tider som inte funkar. Allt som hjälper oss räkna rätt.</p>
-                  <textarea
+            <div className={clsx(rise, '[animation-delay:140ms]')}>
+              <Card>
+                <h3 className="text-[15px] font-bold text-[#214766]">Något mer vi bör veta?</h3>
+                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Parkering, portkod, tider som inte funkar.</p>
+                <textarea
                     className={clsx(textareaClass, 'mt-3')}
                     placeholder="Skriv fritt, eller lämna tomt"
                     value={req.note}
                     onChange={(e) => setReq((r) => ({ ...r, note: e.target.value }))}
                   />
-                </Card>
-              </div>
+              </Card>
             </div>
           </div>
         )}
@@ -446,6 +376,8 @@ const DemoMovehelpFlow = () => {
           )}
           {step === 1 && (
             <>
+              {/* Knappen skickar aldrig något kunden inte sett: raden speglar valen. */}
+              <p className="text-[13px] leading-[18px] text-[#214766] text-center md:w-[318px]">{summary}</p>
               <Primary onClick={() => tryContinue(send)} loading={sending}>
                 {sending ? 'Skickar' : 'Begär offert'}
               </Primary>
@@ -453,7 +385,7 @@ const DemoMovehelpFlow = () => {
                 <Foot tone="error">Något saknas ovan. Fyll i det markerade så vi kan räkna rätt.</Foot>
               ) : (
                 <Foot>
-                  Inget är bokat förrän du sagt ja. Kostnadsfritt ·{' '}
+                  Prisintervall i offerten senast nästa vardag före lunch. Inget är bokat förrän du sagt ja ·{' '}
                   <Link href="/terms" className="underline underline-offset-2 hover:text-[#214766]">
                     Villkor
                   </Link>
@@ -461,15 +393,7 @@ const DemoMovehelpFlow = () => {
               )}
             </>
           )}
-          {step === 2 && (
-            <button
-              type="button"
-              onClick={backToMovepage}
-              className={clsx('w-full md:w-[318px] min-h-[54px] rounded-full border-[1.5px] border-[#214766] bg-white text-[15px] font-bold text-[#214766] hover:bg-[#F8FAF9]', press, pressScale)}
-            >
-              Öppna flyttsidan
-            </button>
-          )}
+          {step === 2 && <Primary onClick={backToMovepage}>Öppna flyttsidan</Primary>}
         </div>
       </div>
     </div>
@@ -499,6 +423,8 @@ const ResidenceCard = ({
   onChange: (p: Partial<Residence>) => void
 }) => {
   const err = (key: string) => errors[`${prefix}.${key}`]
+  const [moreOpen, setMoreOpen] = useState(false)
+  const showMore = moreOpen || res.hardAccess || res.secondaries.length > 0 || !!err('accessNote')
   const apartment = res.dwelling === 'apartment'
   const patchSecondary = (id: number, p: Partial<Secondary>) => onChange({ secondaries: res.secondaries.map((s) => (s.id === id ? { ...s, ...p } : s)) })
   const addSecondary = () => onChange({ secondaries: [...res.secondaries, { id: Date.now(), kind: 'storage', area: 0, move: true, clean: true }] })
@@ -515,7 +441,6 @@ const ResidenceCard = ({
         </span>
       </div>
 
-      {origin && <p className="text-[13px] leading-[19px] text-[#5F6062] mt-3">Adress och boarea kommer från din flytt.</p>}
 
       <Field label="Bostadstyp" className="mt-3">
         <div className="flex gap-1.5">
@@ -552,7 +477,7 @@ const ResidenceCard = ({
 
       {apartment && (
         <Field label="Våning" className="mt-3" error={err('floor')}>
-          <div className="grid grid-cols-6 gap-1.5">
+          <div className="grid grid-cols-6 md:flex gap-1.5">
             {FLOORS.map((f) => (
               <Pill key={f.value} active={res.floor === f.value} onClick={() => onChange({ floor: f.value })}>
                 {f.label}
@@ -564,7 +489,7 @@ const ResidenceCard = ({
 
       {apartment ? (
         <Field label="Hiss" className="mt-3" error={err('elevator')}>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 md:flex md:flex-wrap gap-1.5">
             {ELEVATORS.map((e) => (
               <Pill key={e.value} active={res.elevator === e.value} onClick={() => onChange({ elevator: e.value })}>
                 {e.label}
@@ -590,7 +515,7 @@ const ResidenceCard = ({
       {/* Sex korta värden: piller som Hiss, inte en rullista. Då är Våning den
           enda nativa listan i kortet, där den hör hemma. */}
       <Field label="Bärsträcka, från porten till där bilen kan stå" className="mt-3" error={err('distance')}>
-        <div className="grid grid-cols-3 gap-1.5">
+        <div className="grid grid-cols-3 md:flex md:flex-wrap gap-1.5">
           {DISTANCES.map((d) => (
             <Pill key={d.value} active={res.distance === d.value} onClick={() => onChange({ distance: d.value })}>
               {d.label}
@@ -599,6 +524,8 @@ const ResidenceCard = ({
         </div>
       </Field>
 
+      {showMore ? (
+        <>
       <label
         data-invalid={err('accessNote') ? 'true' : undefined}
         className={clsx(
@@ -648,6 +575,12 @@ const ResidenceCard = ({
             </button>
           </span>
         </div>
+      )}
+        </>
+      ) : (
+        <MoreLink className="mt-3" onClick={() => setMoreOpen(true)}>
+          {origin ? 'Mer om adressen: trång gata, förråd, garage eller vind' : 'Mer om adressen: trång gata eller bom'}
+        </MoreLink>
       )}
     </Card>
   )
@@ -764,7 +697,7 @@ const CleaningCard = ({
       </div>
 
       <Field label="Hur kommer städarna in?" className="mt-3 pt-3 border-t border-[#EEEEF0]">
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="grid grid-cols-2 md:flex md:flex-wrap gap-1.5">
           {KEY_HANDLING.map((k) => (
             <Pill key={k.value} active={cleaning.keys === k.value} onClick={() => onChange({ keys: k.value })}>
               {k.label}

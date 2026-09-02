@@ -31,10 +31,11 @@ export const selectClass = clsx(areaInput, 'bg-white')
 
 export type Errors = Record<string, string>
 
-export const StepBar = ({ step, titles, hints, label, contentClassName = 'max-w-[818px]' }: { step: number; titles: readonly string[]; hints: readonly string[]; label?: string; contentClassName?: string }) => (
+export const StepBar = ({ step, titles, hints, label, complete, contentClassName = 'max-w-[818px]' }: { step: number; titles: readonly string[]; hints: readonly string[]; label?: string; complete?: boolean; contentClassName?: string }) => (
   <div className="bg-white border-b border-[#EEEEF0]">
     <div className={clsx('w-full mx-auto px-4 py-3 md:py-4 flex flex-col gap-2 md:gap-2.5', contentClassName)}>
-      <div className="flex items-baseline justify-between gap-3">
+      {/* På desktop står stegen med namn under strecken, raden ovanför vore dubbel numrering. */}
+      <div className="flex items-baseline justify-between gap-3 md:hidden">
         <span className="text-[13px] font-bold text-[#214766]">
           {label ?? `Steg ${step + 1} av ${titles.length}`}
           {/* På mobil får stegnamnet plats bara här. På desktop står det under sitt streck. */}
@@ -44,7 +45,7 @@ export const StepBar = ({ step, titles, hints, label, contentClassName = 'max-w-
       </div>
       <ol className="flex gap-1.5 md:gap-2">
         {titles.map((t, i) => {
-          const done = i < step || !!label
+          const done = i < step || !!label || !!complete
           const current = i === step && !label
           return (
             <li key={i} className="flex-1 min-w-0 flex flex-col gap-1.5" aria-current={current ? 'step' : undefined}>
@@ -125,10 +126,10 @@ export const Card = ({ children, className }: { children: React.ReactNode; class
 
 export const Field = ({ label, hint, info, error, invalid, className, children }: { label: string; hint?: string; info?: string; error?: string; invalid?: boolean; className?: string; children: React.ReactNode }) => (
   <div className={clsx('flex-1 flex flex-col gap-1.5', className)} data-invalid={error || invalid ? 'true' : undefined}>
-    <span className="text-xs text-[#767678] flex items-center gap-1">
+    <span className="text-[13px] font-semibold text-[#214766] flex items-center gap-1">
       <span>
         {label}
-        {hint && <span className="text-[#214766] font-semibold"> · {hint}</span>}
+        {hint && <span className="text-[#5F6062] font-normal"> · {hint}</span>}
       </span>
       {info && <Info text={info} />}
     </span>
@@ -149,7 +150,7 @@ export const Pill = ({ active, small, onClick, children }: { active: boolean; sm
     aria-pressed={active}
     onClick={onClick}
     className={clsx(
-      'flex-1 rounded-full text-[13px] flex items-center justify-center gap-1.5 border-[1.5px] whitespace-nowrap text-[#214766]',
+      'flex-1 md:flex-none md:px-5 md:min-w-[64px] rounded-full text-[13px] flex items-center justify-center gap-1.5 border-[1.5px] whitespace-nowrap text-[#214766]',
       small ? 'h-10 px-2' : 'h-11',
       press,
       pressScale,
@@ -399,6 +400,20 @@ export const Primary = ({
         <path d="M21 12a9 9 0 0 0-9-9" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
       </svg>
     )}
+    {children}
+  </button>
+)
+
+// Den enda stilen för "visa mer": plus och navy text, 44 px hög rad. Understrykning är bara för Villkor.
+export const MoreLink = ({ onClick, className, children }: { onClick: () => void; className?: string; children: React.ReactNode }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={clsx('min-h-11 -my-1 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#214766] rounded-sm text-left', press, pressSoft, className)}
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden className="shrink-0">
+      <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
     {children}
   </button>
 )
