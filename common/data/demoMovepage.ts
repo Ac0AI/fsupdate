@@ -18,7 +18,8 @@ const notStarted = { state: 'not_started' }
 export const demoUser = {
   currentMove: {
     id: 'demo-move-0001',
-    fromAddress: { street: 'Storgatan 12', apartmentNumber: null, zip: '11435', city: 'Stockholm' },
+    // Våning och hiss kommer från mäklarsystemet; samma som SOLD_HOME i demoPersona (som importerar härifrån).
+    fromAddress: { street: 'Storgatan 12', apartmentNumber: null, zip: '11435', city: 'Stockholm', floor: 3, elevator: 'small' as const },
     toAddress: { street: 'Ekvägen 8', apartmentNumber: null, zip: '41320', city: 'Göteborg' },
     movingDate: inTwoWeeks(),
     residenceType: 'apartment',
