@@ -33,6 +33,9 @@ const residenceErrors = (res: Residence, prefix: 'from' | 'to'): Errors => {
   // Boarean styr volym och städyta, och bara på adressen man flyttar från.
   // Dit man flyttar kostar bärsträckan (våning, hiss, avstånd), inte kvadratmetrarna.
   if (prefix === 'from' && !res.size) e[`${prefix}.size`] = 'Fyll i boarean så vi vet hur mycket som ska flyttas.'
+  if (res.dwelling === 'apartment' && res.floor < 0) e[`${prefix}.floor`] = 'Välj våning.'
+  if (res.dwelling === 'apartment' && !res.elevator) e[`${prefix}.elevator`] = 'Välj hiss. Vet ej går bra.'
+  if (!res.distance) e[`${prefix}.distance`] = 'Välj bärsträcka. Vet ej går bra.'
   for (const s of res.secondaries) {
     if (!s.area) e[`${prefix}.secondary.${s.id}`] = 'Fyll i ungefär hur stor ytan är, eller ta bort den.'
     else if (!s.move && !s.clean) e[`${prefix}.secondary.${s.id}`] = 'Välj om ytan ska flyttas eller städas.'
@@ -64,9 +67,9 @@ const stepErrors = (step: number, req: QuoteRequest, movingDate: Date): Errors =
 }
 
 // Rubriken säger var du är. Tjänstens namn och stegräknaren står som rad ovanför.
-const HERO_TITLE = ['Berätta om bostäderna', 'Tungt, datum och tillägg', 'Din offert är på väg']
+const HERO_TITLE = ['Berätta om bostäderna', 'Något tungt, och när passar det?', 'Din offert är på väg']
 const HERO_COPY = [
-  'Du slipper ringa runt och jaga offerter. Vi har fyllt i det vi redan vet, du fyller i resten. Sen räknar vi på din flytt.',
+  'Du slipper ringa runt och jaga offerter. Vi har fyllt i det vi redan vet, du fyller i resten.',
   '',
   // Steg 3 har ingen ingress: Ninas bubbla och tidslinjen säger det direkt under.
   '',
@@ -97,15 +100,17 @@ const DemoMovehelpFlow = () => {
   const [step, setStep] = useState(0)
   const [sending, setSending] = useState(false)
   const [startOpen, setStartOpen] = useState(false)
+  const [cleanOpen, setCleanOpen] = useState(false)
   const [req, setReq] = useState<QuoteRequest>({
     from: initialResidence(move.fromAddress.street, move.fromAddress.city, 68, {
-      floor: 3,
-      elevator: 'big',
-      distance: 'd50',
+      // Våning, hiss och bärsträcka vet vi inte: inget förval, kunden svarar.
+      floor: -1,
+      elevator: '',
+      distance: '',
       // Biyta vet vi inget om från mäklaren. Kunden lägger till förråd, garage eller vind själv.
       secondaries: [],
     }),
-    to: initialResidence(move.toAddress.street, move.toAddress.city, move.residenceSize, { dwelling: 'house', floor: 0 }),
+    to: initialResidence(move.toAddress.street, move.toAddress.city, move.residenceSize, { dwelling: 'house', floor: -1, elevator: '', distance: '' }),
     heavyItems: false,
     heavyNote: '',
     valuables: false,
@@ -166,14 +171,21 @@ const DemoMovehelpFlow = () => {
 
   return (
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
-      <StepBar step={step} titles={STEP_TITLES} hints={['', '', 'Pågår']} contentClassName="max-w-[640px]" />
+      <StepBar step={step} titles={STEP_TITLES} hints={['', '', '']} contentClassName="max-w-[640px]" />
       <Hero
         title={HERO_TITLE[step]}
         copy={HERO_COPY[step]}
         tone={step === 2 ? 'green' : 'blue'}
         contentClassName="max-w-[640px]"
         back={step === 2 ? undefined : step === 1 ? { label: 'Tillbaka till bostaden', onClick: () => setStep(0) } : { label: 'Tillbaka till flyttsidan', onClick: backToMovepage }}
-      />
+      >
+        {step < 2 && (
+          <div className="flex items-center gap-2 mt-1">
+            <Image src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-56,h-56,fo-face" alt="" width={28} height={28} className="w-7 h-7 rounded-full object-cover" />
+            <span className="text-[13px] text-[#5F6062]">Nina räknar på din flytt när du är klar.</span>
+          </div>
+        )}
+      </Hero>
 
       <div key={step} className={clsx('flex-1 w-full max-w-[640px] mx-auto px-4 py-4 md:py-6 flex flex-col gap-3.5', rise)}>
         {step === 0 && (
@@ -203,12 +215,29 @@ const DemoMovehelpFlow = () => {
                     className={clsx('w-full flex items-center justify-between gap-3 text-left rounded-sm', press)}
                   >
                     <span className="flex flex-col gap-px">
-                      <span className="text-[15px] font-bold text-[#214766]">Flyttstädning</span>
+                      <span className="text-[15px] font-bold text-[#214766] flex items-center gap-2">
+                        Flyttstädning
+                        <span className="text-[11px] font-semibold text-[#1F6156] bg-[#F4FCFA] border border-[#51C8B4]/60 rounded-full px-2 py-px">Rekommenderas</span>
+                      </span>
                       <span className="text-[13px] leading-[19px] text-[#5F6062]">Med städgaranti: godkänd besiktning eller omstädning</span>
                     </span>
                     <Toggle on={cleaning} />
                   </button>
-                  {cleaning && (
+                  {cleaning && !(cleanOpen || shownErrors.cleanDate) && (
+                    <div className={clsx('mt-3 pt-3 border-t border-[#EEEEF0] flex flex-wrap items-center justify-between gap-2', rise)}>
+                      <span className="text-[13px] text-[#5F6062]">
+                        {cleanArea(req.from)} m² städyta, samma dag som flytten.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setCleanOpen(true)}
+                        className={clsx('min-h-11 -my-2 text-[13px] font-semibold text-[#214766] underline underline-offset-4 decoration-[#214766]/40 hover:decoration-[#214766] rounded-sm', press)}
+                      >
+                        Anpassa städningen
+                      </button>
+                    </div>
+                  )}
+                  {cleaning && (cleanOpen || shownErrors.cleanDate) && (
                     <div className={clsx('mt-3 pt-3 border-t border-[#EEEEF0]', rise)}>
                       <CleaningCard from={req.from} cleaning={req.cleaning} moveDate={moveDay(req, movingDate)} errors={shownErrors} onChange={patchCleaning} />
                     </div>
@@ -232,8 +261,11 @@ const DemoMovehelpFlow = () => {
                         className={clsx('w-full flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0] text-left rounded-sm', press, 'active:bg-[#F8FAF9]')}
                       >
                         <span className="flex flex-col gap-px">
-                          <span className="text-[13px] font-semibold text-[#214766]">{a.label}</span>
-                          <span className="text-xs text-[#767678]">{a.hint}</span>
+                          <span className="text-[13px] font-semibold text-[#214766] flex items-center gap-2">
+                            {a.label}
+                            {a.defaultOn && <span className="text-[11px] font-semibold text-[#1F6156] bg-[#F4FCFA] border border-[#51C8B4]/60 rounded-full px-2 py-px">Rekommenderas</span>}
+                          </span>
+                          <span className="text-xs text-[#5F6062]">{a.hint}</span>
                         </span>
                         <Toggle on={on} />
                       </button>
@@ -348,10 +380,9 @@ const DemoMovehelpFlow = () => {
                       )}
                     </div>
                   )}
-                  <p className="text-xs leading-[17px] text-[#767678] mt-2.5">Helger och månadsskiften bokas ofta upp tidigt.</p>
 
                   {/* Förvalet är att vi föreslår en starttid. Den som behöver en viss tid öppnar valet. */}
-                  <div className="mt-3 pt-3 border-t border-[#EEEEF0]">
+                  <div className="mt-2">
                     {req.startTime === 'any' && !startOpen ? (
                       <button
                         type="button"
@@ -394,22 +425,22 @@ const DemoMovehelpFlow = () => {
             <WaitingStep req={req} movingDate={movingDate} onEdit={() => setStep(0)} />
           </div>
         )}
-        <p className="text-[13px] text-[#767678] text-center pt-4">
-          <Link href="/terms" className="underline underline-offset-2 hover:text-[#214766]">
-            Villkor
-          </Link>
-        </p>
       </div>
 
       <div className="sticky bottom-0 bg-white border-t border-[#EEEEF0]">
         <div className="w-full max-w-[640px] mx-auto px-4 py-4 flex flex-col gap-2.5 md:items-center">
           {step === 0 && (
             <>
-              <Primary onClick={() => tryContinue(() => setStep(1))}>Fortsätt till bohaget</Primary>
+              <Primary onClick={() => tryContinue(() => setStep(1))}>Fortsätt</Primary>
               {hasShownErrors ? (
                 <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar vi rätt.</Foot>
               ) : (
-                <Foot>Kostnadsfritt och inte bindande.</Foot>
+                <Foot>
+                  Inget är bokat förrän du sagt ja. Kostnadsfritt ·{' '}
+                  <Link href="/terms" className="underline underline-offset-2 hover:text-[#214766]">
+                    Villkor
+                  </Link>
+                </Foot>
               )}
             </>
           )}
@@ -421,11 +452,24 @@ const DemoMovehelpFlow = () => {
               {hasShownErrors ? (
                 <Foot tone="error">Något saknas ovan. Fyll i det markerade så vi kan räkna rätt.</Foot>
               ) : (
-                <Foot>Inget är bokat förrän du sagt ja. Rutavdraget sköter vi.</Foot>
+                <Foot>
+                  Inget är bokat förrän du sagt ja. Kostnadsfritt ·{' '}
+                  <Link href="/terms" className="underline underline-offset-2 hover:text-[#214766]">
+                    Villkor
+                  </Link>
+                </Foot>
               )}
             </>
           )}
-          {step === 2 && <Primary onClick={backToMovepage}>Öppna flyttsidan</Primary>}
+          {step === 2 && (
+            <button
+              type="button"
+              onClick={backToMovepage}
+              className={clsx('w-full md:w-[318px] min-h-[54px] rounded-full border-[1.5px] border-[#214766] bg-white text-[15px] font-bold text-[#214766] hover:bg-[#F8FAF9]', press, pressScale)}
+            >
+              Öppna flyttsidan
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -471,7 +515,7 @@ const ResidenceCard = ({
         </span>
       </div>
 
-      {origin && <p className="text-[13px] leading-[19px] text-[#5F6062] mt-3">Adress och boarea kommer från din flytt. Resten är gissat utifrån liknande bostäder, ändra det som inte stämmer.</p>}
+      {origin && <p className="text-[13px] leading-[19px] text-[#5F6062] mt-3">Adress och boarea kommer från din flytt.</p>}
 
       <Field label="Bostadstyp" className="mt-3">
         <div className="flex gap-1.5">
@@ -507,7 +551,7 @@ const ResidenceCard = ({
       {err('size') && <ErrorText className="mt-1.5">{err('size')}</ErrorText>}
 
       {apartment && (
-        <Field label="Våning" className="mt-3">
+        <Field label="Våning" className="mt-3" error={err('floor')}>
           <div className="grid grid-cols-6 gap-1.5">
             {FLOORS.map((f) => (
               <Pill key={f.value} active={res.floor === f.value} onClick={() => onChange({ floor: f.value })}>
@@ -519,7 +563,7 @@ const ResidenceCard = ({
       )}
 
       {apartment ? (
-        <Field label="Hiss" className="mt-3">
+        <Field label="Hiss" className="mt-3" error={err('elevator')}>
           <div className="grid grid-cols-2 gap-1.5">
             {ELEVATORS.map((e) => (
               <Pill key={e.value} active={res.elevator === e.value} onClick={() => onChange({ elevator: e.value })}>
@@ -545,7 +589,7 @@ const ResidenceCard = ({
 
       {/* Sex korta värden: piller som Hiss, inte en rullista. Då är Våning den
           enda nativa listan i kortet, där den hör hemma. */}
-      <Field label="Bärsträcka, från porten till där bilen kan stå" className="mt-3">
+      <Field label="Bärsträcka, från porten till där bilen kan stå" className="mt-3" error={err('distance')}>
         <div className="grid grid-cols-3 gap-1.5">
           {DISTANCES.map((d) => (
             <Pill key={d.value} active={res.distance === d.value} onClick={() => onChange({ distance: d.value })}>

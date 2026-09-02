@@ -49,12 +49,21 @@ for (const vp of VIEWPORTS) {
     await shot(page, `landing-${vp.tag}`)
     await context.close()
   }
+  // Steg 1 har inga förval för våning, hiss och bärsträcka: svara som en kund innan Fortsätt.
+  const fillStep1 = async (page) => {
+    await page.getByRole('button', { name: '3', exact: true }).first().click()
+    await page.getByRole('button', { name: 'Stor (6+ pers)', exact: true }).click()
+    await page.getByRole('button', { name: '26–50 m', exact: true }).first().click()
+    await page.getByRole('button', { name: '0–25 m', exact: true }).last().click()
+    await page.waitForTimeout(300)
+  }
   if (which === 'all' || which === 'movehelp') {
     // Läge med öppnad följdfråga, i egen sida så det inte påverkar det rena flödet.
     if (vp.mobile) {
       const { context, page } = await open(vp)
       await goto(page, '/demo/movehelp')
-      await page.getByRole('button', { name: 'Fortsätt till sista steget', exact: true }).click()
+      await fillStep1(page)
+      await page.getByRole('button', { name: 'Fortsätt', exact: true }).click()
       await page.waitForTimeout(1200)
       await page.getByRole('button', { name: 'Ja, berätta', exact: true }).first().click()
       await page.waitForTimeout(600)
@@ -66,7 +75,8 @@ for (const vp of VIEWPORTS) {
     const { context, page } = await open(vp)
     await goto(page, '/demo/movehelp')
     await shot(page, `movehelp-steg1-${vp.tag}`)
-    await page.getByRole('button', { name: 'Fortsätt till sista steget', exact: true }).click()
+    await fillStep1(page)
+    await page.getByRole('button', { name: 'Fortsätt', exact: true }).click()
     await page.waitForTimeout(1200)
     await shot(page, `movehelp-steg2-${vp.tag}`)
     await page.getByRole('button', { name: 'Begär offert', exact: true }).click()

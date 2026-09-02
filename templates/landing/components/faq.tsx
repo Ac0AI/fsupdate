@@ -38,7 +38,7 @@ const FAQ = ({ isServerIosOrSafari }: FAQProps) => {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8">
+      <div className="max-w-3xl mx-auto mb-8">
         <h2 className="text-3xl md:text-4xl font-bold text-[var(--color-secondary-main)]">
           {t('faq_title')}
         </h2>

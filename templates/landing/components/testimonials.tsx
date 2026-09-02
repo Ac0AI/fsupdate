@@ -34,12 +34,14 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
   const filteredGoogleReviews =
     googleReviews?.filter((r) => r.rating >= 4 && !!r.text && looksSwedish(r.text) && !/alternativ/i.test(r.text)) ?? []
 
-  const hasGoogleReviews = filteredGoogleReviews.length >= 3
+  const hasGoogleReviews = false && filteredGoogleReviews.length >= 3
+  // Tre kurerade citat om Flyttsmart och koordinatorn (Anna, Andreas, Eline i listan), hela meningar, aldrig klippta.
+  const picks = [10, 15, 27]
   const carouselItems = t('landing:TESTAMONIALS', { returnObjects: true }) as { rating: string; name: string; bio: string; words: string }[]
 
   const cards: Card[] = hasGoogleReviews
     ? filteredGoogleReviews.map((r) => ({ text: r.text ?? '', name: r.author_name, subtitle: r.relative_time_description, rating: r.rating }))
-    : carouselItems.map((r) => ({ text: r.words, name: r.name, subtitle: r.bio, rating: parseInt(r.rating || '5') }))
+    : picks.map((i) => carouselItems[i]).filter(Boolean).map((r) => ({ text: r.words, name: r.name, subtitle: r.bio, rating: parseInt(r.rating || '5') }))
 
   const visibleCards = cards.slice(0, 3)
 
@@ -54,30 +56,18 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
         {visibleCards.map((card, i) => (
           <div
             key={`${card.name}-${i}`}
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col min-h-[220px]"
+            className="bg-white rounded-2xl p-6 border border-gray-100 flex flex-col"
           >
-            {/* Stars */}
-            <div className="flex gap-0.5 mb-4">
-              {Array.from({ length: 5 }).map((_, j) => (
-                <Star
-                  key={j}
-                  className={clsx(
-                    'w-4 h-4',
-                    j < card.rating ? 'fill-amber-400' : 'fill-gray-200'
-                  )}
-                />
-              ))}
-            </div>
 
             {/* Quote */}
-            <p className="text-[var(--color-secondary-main)]/70 text-sm leading-relaxed italic flex-1 line-clamp-5">
+            <p className="text-[var(--color-secondary-main)] text-[15px] leading-relaxed flex-1">
               &ldquo;{card.text}&rdquo;
             </p>
 
             {/* Author */}
             <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-50">
               <span className="text-sm font-semibold text-[var(--color-secondary-main)]">{card.name}</span>
-              <GoogleIcon />
+              {card.subtitle && <span className="text-xs text-[var(--color-secondary-main)]/60">{card.subtitle}</span>}
             </div>
           </div>
         ))}

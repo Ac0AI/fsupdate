@@ -78,10 +78,8 @@ export const StepBar = ({ step, titles, hints, label, contentClassName = 'max-w-
 )
 
 export const Hero = ({
-  eyebrow,
   title,
   copy,
-  tone = 'blue',
   back,
   contentClassName = 'max-w-[818px]',
   children,
@@ -94,13 +92,13 @@ export const Hero = ({
   contentClassName?: string
   children?: React.ReactNode
 }) => (
-  <div className={clsx('transition-colors duration-700 motion-reduce:transition-none', tone === 'green' ? 'bg-[#1F6156]' : 'bg-[#3879AD]')}>
-    <div className={clsx('w-full mx-auto px-4 pt-3 pb-5 md:pt-8 md:pb-7 flex flex-col gap-2', contentClassName)}>
+  <div className="bg-[#F8FAF9]">
+    <div className={clsx('w-full mx-auto px-4 pt-3 pb-1 md:pt-6 md:pb-2 flex flex-col gap-1.5', contentClassName)}>
       {back && (
         <button
           type="button"
           onClick={back.onClick}
-          className={clsx('self-start -my-2.5 min-h-11 flex items-center gap-2 text-[13px] leading-[18px] text-white/90 hover:text-white rounded-sm', press)}
+          className={clsx('self-start -my-2.5 min-h-11 flex items-center gap-2 text-[13px] leading-[18px] text-[#214766]/80 hover:text-[#214766] rounded-sm', press)}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
             <path d="M15 19l-7-7 7-7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -108,13 +106,11 @@ export const Hero = ({
           {back.label}
         </button>
       )}
-      {/* Var är jag: tjänsten och steget som liten rad, steget som rubrik. */}
-      {eyebrow && <span className="text-[12px] md:text-[13px] font-bold uppercase tracking-[0.12em] leading-4 text-white/80">{eyebrow}</span>}
-      <h1 key={title} className={clsx('text-[28px] md:text-[42px] font-black tracking-[-0.02em] leading-8 md:leading-[48px] text-white', rise)}>
+      <h1 key={title} className={clsx('text-[24px] md:text-[32px] font-black tracking-[-0.02em] leading-7 md:leading-9 text-[#214766]', rise)}>
         {title}
       </h1>
       {copy && (
-        <p key={copy} className={clsx('text-[15px] md:text-[18px] leading-[21px] md:leading-[25px] text-white max-w-[330px] md:max-w-[560px]', rise)}>
+        <p key={copy} className={clsx('text-[15px] leading-[21px] text-[#5F6062] max-w-[560px]', rise)}>
           {copy}
         </p>
       )}
@@ -157,7 +153,7 @@ export const Pill = ({ active, small, onClick, children }: { active: boolean; sm
       small ? 'h-10 px-2' : 'h-11',
       press,
       pressScale,
-      active ? 'bg-[#51C8B4] border-[#51C8B4] font-semibold' : 'bg-white border-[#EEEEF0] hover:border-[#51C8B4]/60',
+      active ? 'bg-[#51C8B4] border-[#51C8B4] font-semibold' : 'bg-white border-[#D5D6DA] hover:border-[#51C8B4]/60',
     )}
   >
     {active && <Check size={12} color="#214766" />}
@@ -175,7 +171,7 @@ export const Radio = ({ active, onClick, title, hint }: { active: boolean; onCli
       'w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-left border-[1.5px]',
       press,
       pressSoft,
-      active ? 'border-[#51C8B4] bg-[#F4FCFA]' : 'border-[#EEEEF0] bg-white hover:border-[#51C8B4]/60',
+      active ? 'border-[#51C8B4] bg-[#F4FCFA]' : 'border-[#D5D6DA] bg-white hover:border-[#51C8B4]/60',
     )}
   >
     <span
@@ -204,7 +200,7 @@ export const Option = ({ active, onClick, label, hint }: { active: boolean; onCl
       'flex-1 flex flex-col items-center justify-center gap-px min-h-[44px] py-[7px] px-1 rounded-lg border-[1.5px]',
       press,
       pressScale,
-      active ? 'bg-[#51C8B4] border-[#51C8B4]' : 'bg-white border-[#EEEEF0] hover:border-[#51C8B4]/60',
+      active ? 'bg-[#51C8B4] border-[#51C8B4]' : 'bg-white border-[#D5D6DA] hover:border-[#51C8B4]/60',
     )}
   >
     <span className={clsx('text-[13px] text-[#214766] transition-colors duration-200', active && 'font-semibold')}>{label}</span>
@@ -414,8 +410,8 @@ export const Foot = ({ tone, children }: { tone?: 'error'; children: React.React
 export const Timeline = ({ items }: { items: { state: 'done' | 'current' | 'todo'; title: string; hint: string }[] }) => (
   <div className="flex flex-col">
     {items.map((it, i) => (
-      <div key={it.title} className={clsx('flex items-start gap-3', i < items.length - 1 && 'pb-3.5')}>
-        <div className="flex flex-col items-center gap-1 shrink-0 w-[22px]">
+      <div key={it.title} className="flex items-stretch gap-3">
+        <div className="flex flex-col items-center gap-1 shrink-0 w-[22px] self-stretch">
           {it.state === 'done' && (
             <span className="w-[22px] h-[22px] rounded-full bg-[#51C8B4] flex items-center justify-center animate-[pop_.45s_cubic-bezier(.2,.9,.3,1.3)_both] motion-reduce:animate-none">
               <Check size={12} />
@@ -427,9 +423,9 @@ export const Timeline = ({ items }: { items: { state: 'done' | 'current' | 'todo
             </span>
           )}
           {it.state === 'todo' && <span className="w-[22px] h-[22px] rounded-full border-2 border-[#EEEEF0] bg-white" />}
-          {i < items.length - 1 && <span className={clsx('w-0.5 h-[22px]', it.state === 'done' ? 'bg-[#51C8B4]' : 'bg-[#EEEEF0]')} />}
+          {i < items.length - 1 && <span className={clsx('w-0.5 flex-1 min-h-[14px]', it.state === 'done' ? 'bg-[#51C8B4]' : 'bg-[#EEEEF0]')} />}
         </div>
-        <div className="flex flex-col gap-0.5">
+        <div className={clsx('flex flex-col gap-0.5', i < items.length - 1 && 'pb-3.5')}>
           <span className={clsx('text-[13px] font-semibold', it.state === 'todo' ? 'text-[#767678]' : 'text-[#214766]')}>{it.title}</span>
           <span className="text-xs text-[#767678]">{it.hint}</span>
         </div>

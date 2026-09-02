@@ -1,6 +1,7 @@
 export type Dwelling = 'apartment' | 'house' | 'townhouse'
-export type Distance = 'd25' | 'd50' | 'd75' | 'd100' | 'far' | 'unknown'
-export type Elevator = 'big' | 'small' | 'none' | 'unknown'
+// Tom sträng = inte besvarat än. Vet ej är ett riktigt svar, tomt är det inte.
+export type Distance = 'd25' | 'd50' | 'd75' | 'd100' | 'far' | 'unknown' | ''
+export type Elevator = 'big' | 'small' | 'none' | 'unknown' | ''
 export type SecondaryKind = 'basement' | 'attic' | 'storage' | 'garage' | 'other'
 export type StartTime = 'morning' | 'forenoon' | 'afternoon' | 'any'
 export type KeyHandling = 'present' | 'absent' | 'unknown'
@@ -137,4 +138,4 @@ export const ADDONS: { value: Addon; label: string; hint: string; defaultOn: boo
 // Städytan är boarean plus de biytor som ska städas.
 export const cleanArea = (res: Residence) => res.size + res.secondaries.filter((s) => s.clean).reduce((sum, s) => sum + s.area, 0)
 
-export const STEP_TITLES = ['Bostaden', 'Tungt, datum och tillägg', 'Offert på väg'] as const
+export const STEP_TITLES = ['Bostaden', 'Tungt och datum', 'Offert på väg'] as const

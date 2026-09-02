@@ -31,16 +31,14 @@ const ProofBar = () => {
           </div>
         </div>
 
-        {/* Mäklarlogotyperna bredvid påståendet de bevisar. Ljus remsa eftersom flera logotyper är opaka. */}
-        <div className="rounded-2xl bg-white py-5 md:py-6 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-          <div className="flex w-max gap-10 animate-scroll-infinite">
-            {[...partnerLogos, ...partnerLogos].map((logo, i) => (
-              <span key={`${logo.src}-${i}`} className="h-8 md:h-9 w-[120px] md:w-[140px] shrink-0 flex items-center justify-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={logo.src} alt={logo.alt} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain" />
-              </span>
-            ))}
-          </div>
+        {/* Mäklarlogotyperna, statiska, bredvid påståendet de bevisar. Ljus remsa eftersom flera logotyper är opaka. */}
+        <div className="rounded-2xl bg-white px-6 py-5 md:py-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+          {partnerLogos.slice(0, 8).map((logo) => (
+            <span key={logo.src} className="h-8 md:h-9 w-[110px] md:w-[130px] flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={logo.src} alt={logo.alt} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain" />
+            </span>
+          ))}
         </div>
       </div>
     </section>

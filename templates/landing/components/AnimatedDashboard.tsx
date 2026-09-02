@@ -68,9 +68,6 @@ const AnimatedDashboard = () => {
             <p className="text-[11px] text-[#214766] font-medium leading-tight">Nacka</p>
           </div>
         </div>
-        <div className="h-[6px] rounded-full bg-[#e8eeef] overflow-hidden">
-          <div className="h-full rounded-full bg-[#51c8b4] animate-dashboard-progress" />
-        </div>
       </div>
 
       {/* Checklist */}

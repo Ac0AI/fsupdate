@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { clsx } from 'clsx'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/atoms/Button'
+import BankId from '@/public/images/BankId.svg'
 
 const LOGIN_URL = '/i/testmode'
 
@@ -33,12 +34,22 @@ const ClosingCta = () => {
             className="!text-[var(--color-secondary-main)]"
             padding="16px 32px"
             variant="primaryAltInverted"
-            iconRight={<Arrow />}
+            iconRight={<BankId className="w-6 h-6" />}
             text="Starta din flytt"
             onClick={() => router.push(LOGIN_URL)}
             withFullWidth
           />
         </div>
+        <p className="mt-8 text-sm text-white/70">
+          Hellre prata?{' '}
+          <a href="tel:+46812008822" className="!text-white underline underline-offset-2">
+            08-12 00 88 22
+          </a>{' '}
+          ·{' '}
+          <a href="mailto:hej@flyttsmart.se" className="!text-white underline underline-offset-2">
+            hej@flyttsmart.se
+          </a>
+        </p>
       </div>
     </section>
   )

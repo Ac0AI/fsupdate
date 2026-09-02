@@ -63,19 +63,9 @@ const LandingHero = () => {
               </button>
             </div>
             <span className="text-sm text-white/60 mt-4 block text-center lg:text-left">
-              Kostnadsfritt, med eller utan inbjudan från din mäklare.
+              Kostnadsfritt. Med eller utan mäklare.
             </span>
 
-            {/* Press - Som sett i */}
-            <div className="hidden md:flex items-center gap-4 mt-6 md:mt-8 justify-center lg:justify-start">
-              <span className="text-white/35 text-[10px] font-medium uppercase tracking-widest shrink-0">Omskrivna i</span>
-              <div className="flex items-center gap-6">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/press/di-logo.svg" alt="Dagens industri" className="h-4 md:h-5 brightness-0 invert opacity-40" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/press/breakit-logo.svg" alt="Breakit" className="h-3.5 md:h-4 brightness-0 invert opacity-40" />
-              </div>
-            </div>
           </div>
 
           {/* Phone Mockup */}
@@ -89,7 +79,7 @@ const LandingHero = () => {
                 className={clsx(
                   'relative p-[3px]',
                   'rounded-[46px] md:rounded-[52px] lg:rounded-[58px]',
-                  'w-[276px] md:w-[308px] lg:w-[342px]',
+                  'w-[240px] md:w-[308px] lg:w-[342px]',
                   'bg-[linear-gradient(150deg,#f4f4f5_0%,#c2c3c7_26%,#e9e9eb_48%,#a6a7ab_70%,#d7d8da_100%)]',
                   'shadow-[0_30px_70px_-16px_rgba(0,0,0,0.6),inset_0_0_0_1px_rgba(255,255,255,0.5)]'
                 )}
@@ -104,7 +94,7 @@ const LandingHero = () => {
                 <div className="relative bg-[#0b0b0c] p-[7px] lg:p-[8px] rounded-[43px] md:rounded-[49px] lg:rounded-[55px]">
                   {/* Skärm - gränssnittet ritas en gång i 320x694 och skalas till varje ramstorlek */}
                   <div className="relative overflow-hidden bg-black aspect-[9/19.5] rounded-[36px] md:rounded-[42px] lg:rounded-[47px]">
-                    <div className="absolute top-0 left-0 w-[320px] h-[694px] origin-top-left scale-[0.8] md:scale-[0.9] lg:scale-100">
+                    <div className="absolute top-0 left-0 w-[320px] h-[694px] origin-top-left scale-[0.6875] md:scale-[0.9] lg:scale-100">
                       <AnimatedDashboard />
 
                       {/* Dynamic Island med kameraöga */}
