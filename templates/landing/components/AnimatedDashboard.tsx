@@ -3,31 +3,51 @@
 import { useEffect, useState } from 'react'
 import { clsx } from 'clsx'
 import BankId from '@/public/images/BankId.svg'
+import Wordmark from '@/public/images/flyttsmart_blue.svg'
 
 // Berättelsen i mockupen, "så enkelt är det": mäklaren bjuder in, BankID,
-// flytten är redan ifylld, tre förslag som får ett Ja i taget, och Nina
-// säger att allt är bokat. Sedan börjar den om. Mäklarbyrån är påhittad,
-// adresserna är demopersonans (Storgatan 12 till Ekvägen 8).
+// hela flytten ligger färdig, ett Ja och allt blir klart på några sekunder,
+// Nina hör av sig, och skärmen slutar med Flyttsmart. Sedan börjar den om.
+// Mäklarbyrån är påhittad, adresserna är demopersonans.
 const BROKER = { agent: 'Erik Lind', office: 'Solhöjdens Mäklarbyrå' }
 const MOVE = { from: 'Storgatan 12, Stockholm', to: 'Ekvägen 8, Göteborg', toShort: 'Ekvägen 8', date: '23 september' }
 
 const SERVICES = [
-  { name: 'Flytthjälp', detail: '23 september kl 08, tre bärare', done: 'Flytthjälp bokad', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+  { name: 'Elavtal', detail: 'Rörligt pris utan påslag', done: 'Elavtal tecknat', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+  {
+    name: 'Bredband',
+    detail: 'Fiber, klart till inflytt',
+    done: 'Bredband beställt',
+    icon: 'M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0',
+  },
+  {
+    name: 'Hemförsäkring',
+    detail: 'Flyttas till Ekvägen 8',
+    done: 'Hemförsäkring flyttad',
+    icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+  },
+  { name: 'Flytthjälp', detail: '23 september, tre bärare', done: 'Flytthjälp bokad', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
   {
     name: 'Flyttstädning',
-    detail: '22 september, med städgaranti',
+    detail: '22 september, städgaranti',
     done: 'Flyttstädning bokad',
     icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
   },
-  { name: 'Elavtal', detail: 'Rörligt pris utan påslag', done: 'Elavtal tecknat', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+  {
+    name: 'Adressändring',
+    detail: 'Skatteverket, från 23 september',
+    done: 'Adressändring skickad',
+    icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z',
+  },
 ]
 
+type AllSub = 'enter' | 'idle' | 'press' | 'work' | 'complete'
 type Frame =
   | { k: 'invite'; sub: 'in' | 'press' }
   | { k: 'bankid'; sub: 'idle' | 'press' | 'wait' | 'ok' }
-  | { k: 'prepared' }
-  | { k: 'card'; i: number; sub: 'enter' | 'press' | 'done' | 'leave' }
+  | { k: 'all'; sub: AllSub; done: number }
   | { k: 'nina' }
+  | { k: 'brand' }
   | { k: 'fade' }
 
 type Step = Frame & { ms: number }
@@ -39,19 +59,18 @@ const TIMELINE: Step[] = [
   { k: 'bankid', sub: 'press', ms: 220 },
   { k: 'bankid', sub: 'wait', ms: 1100 },
   { k: 'bankid', sub: 'ok', ms: 800 },
-  { k: 'prepared', ms: 2200 },
-  ...SERVICES.flatMap((_, i): Step[] => [
-    { k: 'card', i, sub: 'enter', ms: 1500 },
-    { k: 'card', i, sub: 'press', ms: 220 },
-    { k: 'card', i, sub: 'done', ms: 800 },
-    { k: 'card', i, sub: 'leave', ms: 320 },
-  ]),
-  { k: 'nina', ms: 3200 },
+  { k: 'all', sub: 'enter', done: 0, ms: 900 },
+  { k: 'all', sub: 'idle', done: 0, ms: 1100 },
+  { k: 'all', sub: 'press', done: 0, ms: 220 },
+  ...SERVICES.map((_, i): Step => ({ k: 'all', sub: 'work', done: i + 1, ms: 200 })),
+  { k: 'all', sub: 'complete', done: SERVICES.length, ms: 1900 },
+  { k: 'nina', ms: 2600 },
+  { k: 'brand', ms: 2400 },
   { k: 'fade', ms: 400 },
 ]
 
-// Stillbilden vid reduced motion: andra förslaget, med det första redan klart.
-const STILL: Frame = { k: 'card', i: 1, sub: 'enter' }
+// Stillbilden vid reduced motion: allt klart.
+const STILL: Frame = { k: 'all', sub: 'complete', done: SERVICES.length }
 
 const Check = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="#214766" strokeWidth={3}>
@@ -145,7 +164,7 @@ const Login = ({ sub }: { sub: 'idle' | 'press' | 'wait' | 'ok' }) => (
   </div>
 )
 
-// Flytten som mäklaren skickat över: adresser och tillträde, inget att fylla i
+// Flytten som mäklaren skickat över: adresser och tillträde
 const MoveCard = () => (
   <div className="bg-white rounded-xl px-4 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
     <div className="flex items-center justify-between mb-2">
@@ -169,43 +188,36 @@ const MoveCard = () => (
   </div>
 )
 
-// Ett förslag i taget, med ett Ja som trycks
-const ProposalCard = ({ service, sub, still }: { service: (typeof SERVICES)[number]; sub: 'enter' | 'press' | 'done' | 'leave'; still: boolean }) => {
-  const said = sub === 'done' || sub === 'leave'
-  return (
-    <div
+// En rad per del av flytten: förslag tills den blir klar
+const Row = ({ service, done, delay, still }: { service: (typeof SERVICES)[number]; done: boolean; delay: number; still: boolean }) => (
+  <div
+    className={clsx('flex items-center gap-3 bg-white rounded-xl px-3.5 h-[42px] shadow-[0_1px_3px_rgba(0,0,0,0.04)]', !still && 'animate-[dash-in_.4s_ease-out_both]')}
+    style={{ animationDelay: `${delay}ms` }}
+  >
+    <span
       className={clsx(
-        'bg-white rounded-xl px-4 py-3.5 shadow-[0_2px_10px_rgba(33,71,102,0.08)] border border-[#EEEEF0]',
-        !still && (sub === 'leave' ? 'animate-[dash-out_.32s_ease-in_both]' : 'animate-[dash-in_.4s_ease-out_both]'),
+        'w-[26px] h-[26px] rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-200',
+        done ? 'bg-[#51C8B4]' : 'bg-[#EAF2F8]',
       )}
     >
-      <div className="flex items-center gap-3">
-        <span className="w-9 h-9 rounded-full bg-[#EAF2F8] flex items-center justify-center flex-shrink-0">
-          <svg className="w-[18px] h-[18px] text-[#214766]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-            <path strokeLinecap="round" strokeLinejoin="round" d={service.icon} />
-          </svg>
-        </span>
-        <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-bold text-[#214766]">{service.name}</p>
-          <p className="text-[11px] text-[#214766]/70 leading-snug mt-0.5">{service.detail}</p>
-        </div>
-      </div>
-      <div className="mt-3 flex items-center gap-2">
-        <span
-          className={clsx(
-            'h-9 flex-1 rounded-full flex items-center justify-center gap-1.5 text-[12px] font-bold text-[#214766] transition-[transform,background-color] duration-200',
-            said ? 'bg-[#51C8B4]' : 'bg-[#FFA65F]',
-            sub === 'press' && 'scale-95',
-          )}
-        >
-          {said && <Check className="w-3.5 h-3.5 animate-[dash-pop_.35s_ease-out_both]" />}
-          {said ? 'Klart' : 'Ja'}
-        </span>
-        <span className="text-[11px] text-[#214766]/60 px-2">Ändra</span>
-      </div>
-    </div>
-  )
-}
+      {done ? (
+        <Check className={clsx('w-3 h-3', !still && 'animate-[dash-pop_.35s_ease-out_both]')} />
+      ) : (
+        <svg className="w-3.5 h-3.5 text-[#214766]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+          <path strokeLinecap="round" strokeLinejoin="round" d={service.icon} />
+        </svg>
+      )}
+    </span>
+    {done ? (
+      <span className="text-[12px] font-medium text-[#214766]">{service.done}</span>
+    ) : (
+      <span className="flex flex-col min-w-0">
+        <span className="text-[12px] font-bold text-[#214766] leading-[14px]">{service.name}</span>
+        <span className="text-[10px] text-[#214766]/60 leading-[13px] truncate">{service.detail}</span>
+      </span>
+    )}
+  </div>
+)
 
 // Nina: kontaktkort som blir ett meddelande när hon har något att säga
 const NinaCard = ({ message, still }: { message: string | null; still: boolean }) => (
@@ -232,49 +244,47 @@ const NinaCard = ({ message, still }: { message: string | null; still: boolean }
   </div>
 )
 
-// Flyttsidan: kortet från mäklaren, förslagen ett i taget, klart-listan, Nina
+// Flyttsidan: kortet från mäklaren, hela flytten som förslag, ett Ja, allt klart
 const Home = ({ f, still }: { f: Frame; still: boolean }) => {
-  const doneCount = f.k === 'card' ? f.i : f.k === 'nina' || f.k === 'fade' ? SERVICES.length : 0
-  const talking = f.k === 'nina' || f.k === 'fade'
+  const sub: AllSub = f.k === 'all' ? f.sub : 'complete'
+  const done = f.k === 'all' ? f.done : SERVICES.length
+  const complete = sub === 'complete'
+  const stagger = (i: number) => (sub === 'enter' ? 80 + i * 70 : 0)
   return (
     <>
       <MoveCard />
-      {f.k === 'prepared' && (
-        <p className={clsx('text-[12px] font-medium text-[#214766]/60 mt-3 px-1', !still && 'animate-[dash-in_.4s_ease-out_.6s_both]')}>Inget att fylla i.</p>
-      )}
-      {f.k === 'card' && (
-        <>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#214766]/55 mt-4 mb-1.5 px-1">
-            Vårt förslag · {f.i + 1} av {SERVICES.length}
-          </p>
-          <ProposalCard key={f.i} service={SERVICES[f.i]} sub={f.sub} still={still} />
-        </>
-      )}
-      {doneCount > 0 && (
-        <>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#214766]/55 mt-4 mb-1.5 px-1">Klart</p>
-          <div className="flex flex-col gap-[5px]">
-            {SERVICES.slice(0, doneCount).map((s, j) => (
-              <div
-                key={s.name}
-                className={clsx(
-                  'flex items-center gap-3 bg-white rounded-xl px-4 py-[11px] shadow-[0_1px_3px_rgba(0,0,0,0.04)]',
-                  !still && j === doneCount - 1 && 'animate-[dash-in_.4s_ease-out_both]',
-                )}
-              >
-                <span className="w-[18px] h-[18px] rounded-full bg-[#51c8b4] flex items-center justify-center flex-shrink-0">
-                  <Check className="w-2.5 h-2.5 [&>path]:stroke-[3.5]" />
-                </span>
-                <span className="text-[12px] font-medium text-[#214766]">{s.done}</span>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-      <NinaCard message={talking ? 'Allt är bokat. Jag ringer dagen innan flytten.' : null} still={still} />
+      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#214766]/55 mt-3 mb-1.5 px-1">
+        {complete ? 'Klart' : 'Vårt förslag · hela flytten'}
+      </p>
+      <div className="flex flex-col gap-[5px]">
+        {SERVICES.map((s, i) => (
+          <Row key={s.name} service={s} done={i < done} delay={stagger(i)} still={still} />
+        ))}
+      </div>
+      <div
+        className={clsx(
+          'mt-3 h-10 rounded-full flex items-center justify-center gap-1.5 text-[12px] font-bold text-[#214766] transition-[transform,background-color] duration-200',
+          complete ? 'bg-[#51C8B4]' : sub === 'work' ? 'bg-[#EAF2F8]' : 'bg-[#FFA65F]',
+          sub === 'press' && 'scale-95',
+          !still && 'animate-[dash-in_.4s_ease-out_both]',
+        )}
+        style={{ animationDelay: `${stagger(SERVICES.length)}ms` }}
+      >
+        {complete && <Check className={clsx('w-3.5 h-3.5', !still && 'animate-[dash-pop_.35s_ease-out_both]')} />}
+        {complete ? 'Allt klart' : sub === 'work' ? 'Ordnar allt' : 'Ja till allt'}
+      </div>
+      <NinaCard message={f.k === 'nina' ? 'Allt är bokat. Jag ringer dagen innan flytten.' : null} still={still} />
     </>
   )
 }
+
+// Slutbilden: det här är Flyttsmart
+const Brand = () => (
+  <div className="flex flex-col flex-1 items-center justify-center gap-4 pb-16">
+    <Wordmark className="w-[168px] h-auto" />
+    <p className="text-[13px] font-medium text-[#214766]/70">Det enklaste sättet att flytta.</p>
+  </div>
+)
 
 const AnimatedDashboard = () => {
   const [fi, setFi] = useState(0)
@@ -290,7 +300,7 @@ const AnimatedDashboard = () => {
   }, [fi])
 
   const f: Frame = still ? STILL : TIMELINE[fi]
-  const scene = f.k === 'invite' ? 'invite' : f.k === 'bankid' ? 'bankid' : 'home'
+  const scene = f.k === 'invite' ? 'invite' : f.k === 'bankid' ? 'bankid' : f.k === 'brand' || f.k === 'fade' ? 'brand' : 'home'
 
   return (
     <div className="animated-dashboard absolute inset-0 flex flex-col bg-[#f8faf9] pt-12 px-3 pb-3">
@@ -302,6 +312,7 @@ const AnimatedDashboard = () => {
         {f.k === 'invite' && <Invite pressed={f.sub === 'press'} />}
         {f.k === 'bankid' && <Login sub={f.sub} />}
         {scene === 'home' && <Home f={f} still={still} />}
+        {scene === 'brand' && <Brand />}
       </div>
     </div>
   )
