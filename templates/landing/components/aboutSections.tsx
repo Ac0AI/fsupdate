@@ -38,7 +38,7 @@ const TeamSection = () => {
           <div className="max-w-[600px] mb-8">
             <p className="text-[var(--color-primary-main)] text-xs font-semibold uppercase tracking-widest mb-3">Om Flyttsmart</p>
             <h1 className="text-2xl md:text-3xl font-bold mb-4 leading-snug">
-              Vi äger inte en enda flyttbil. Det är hela poängen.
+              En enklare flytt. Det är hela poängen.
             </h1>
             <p className="text-white/50 text-[15px] leading-relaxed">
               Flyttsmart är Sveriges första och enda digitala flyttjänst. Du bokar allt på ett ställe - vi tar fullt ansvar för leveransen. Försäkring, support, fakturering. En kontaktperson hela vägen.
@@ -67,9 +67,7 @@ const TeamSection = () => {
         {/* The pitch */}
         <div className="py-12 md:py-14 grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-8 md:gap-14 items-start">
           <h2 className="text-base font-bold text-[var(--color-secondary-main)] leading-snug">
-            En enklare flytt.
-            <br />
-            Det är hela poängen.
+            Vi äger inte en enda flyttbil.
           </h2>
           <div className="space-y-3 text-[var(--color-secondary-main)]/60 text-sm leading-relaxed">
             <p>
@@ -112,14 +110,11 @@ const TeamSection = () => {
           <div className="bg-[var(--color-secondary-dark)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
             <div>
               <h3 className="text-[15px] md:text-base font-bold text-white mb-1">Vill du veta mer?</h3>
-              <p className="text-white/45 text-sm">Hör av dig eller kolla våra lediga tjänster.</p>
+              <p className="text-white/45 text-sm">Hör av dig.</p>
             </div>
             <div className="flex gap-3">
               <a href="mailto:hej@flyttsmart.se" style={{ backgroundColor: '#51c8b4', color: '#ffffff' }} className="inline-flex items-center px-5 py-2.5 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity whitespace-nowrap">
                 Maila oss &rarr;
-              </a>
-              <a href="https://jobb.flyttsmart.se/" target="_blank" rel="noopener noreferrer" style={{ color: '#ffffff' }} className="inline-flex items-center px-5 py-2.5 rounded-lg border border-white/50 font-semibold text-sm hover:bg-white/10 transition-colors whitespace-nowrap">
-                Lediga tjänster
               </a>
             </div>
           </div>

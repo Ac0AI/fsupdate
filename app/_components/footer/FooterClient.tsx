@@ -108,9 +108,6 @@ const Footer = ({ flyttsmartGoogleReviewCountAndRating, googleReviews, showBackg
                 <Link href={'/terms'}>{t('termsLinkText')}</Link>
               </div>
               <div className={linkButtonVariants()}>
-                <Link href="https://jobb.flyttsmart.se/">{t('jobs')}</Link>
-              </div>
-              <div className={linkButtonVariants()}>
                 <Link href="/cookie">{t('cookie')}</Link>
               </div>
               <Flex display="flex">
