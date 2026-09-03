@@ -18,7 +18,7 @@ export const PROOF_BLOCK = {
   eyebrow: 'Rekommenderas av',
   claim: 'Hälften av Sveriges mäklarkedjor',
   body: 'Färdigförhandlade leverantörer, och vi tar ansvar hela vägen till det nya hemmet.',
-  numbers: 'Över 230 000 flyttar sedan 2020.',
+  numbers: 'Över 230 000 personer har flyttat med oss sedan 2020.',
 } as const
 
 /**

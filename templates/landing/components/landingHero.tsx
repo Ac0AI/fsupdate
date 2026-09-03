@@ -25,22 +25,22 @@ const LandingHero = () => {
           <div className="text-center lg:text-left order-1">
             {/* Eyebrow */}
             <p className="text-[var(--color-primary-main)] text-xs md:text-sm font-semibold uppercase tracking-[0.18em] mb-4 md:mb-5">
-              Ett beslut. Hela flytten.
+              Kostnadsfritt · Hela Sverige
             </p>
 
             {/* Headline */}
             <h1 className="text-white mb-4 md:mb-6">
               <span className="block text-[42px] md:text-[56px] lg:text-[64px] font-bold leading-[1.1]">
-                Slipp stressen –
+                Det <span className="text-[var(--color-accent-main)]">enklaste</span>
               </span>
               <span className="block text-[42px] md:text-[56px] lg:text-[64px] font-bold leading-[1.1]">
-                <span className="text-[var(--color-accent-main)]">vi fixar</span> flytten
+                sättet att flytta
               </span>
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-white/80 mb-7 md:mb-10 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">
-              Färdigförhandlade förslag på el, bredband, flytthjälp och allt annat kring flytten. Enkelt att göra bra val.
+              Få färdigförhandlade förslag på el, bredband, flytthjälp och allt annat kring flytten. Tjänsten är kostnadsfri, och vi tar ansvar hela vägen.
             </p>
 
             {/* CTA */}
@@ -62,9 +62,6 @@ const LandingHero = () => {
                 Se hur det fungerar →
               </button>
             </div>
-            <span className="text-sm text-white/80 mt-4 block text-center lg:text-left">
-              Kostnadsfritt.
-            </span>
 
           </div>
 

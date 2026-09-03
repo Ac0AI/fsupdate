@@ -1,6 +1,7 @@
-// Generated from /partner logos assets
+// Mäklarkedjor och mäklarbyråer i bevisblockets remsa. Bara mäklare här (Sebastian
+// 2026-09-03): leverantörer som Tibber får egen sektion när avtalstexten finns.
 export const partnerLogos = [
-  { src: '/images/partners/all/37a6a99b-02be-4ed9-982d-293d57406519-logo-rbq6dryhs.png', alt: '37a6a99b 02be 4ed9 982d 293d57406519 logo' },
+  { src: '/images/partners/all/37a6a99b-02be-4ed9-982d-293d57406519-logo-rbq6dryhs.png', alt: 'Hjorth Fastighetsförmedling' },
   { src: '/images/partners/all/3etagee-i03mmm4nz.svg', alt: '3etagee' },
   { src: '/images/partners/all/alicia-edelman-1-1-sig6fpo1p.svg', alt: 'Alicia Edelman (1) 1' },
   { src: '/images/partners/all/br-5fa3fe4a84d0b100084bd69b-hagerstens-maklare-juxs3lsx9.png', alt: 'BR 5fa3fe4a84d0b100084bd69b Hagerstens Maklare' },
@@ -32,12 +33,10 @@ export const partnerLogos = [
   { src: '/images/partners/all/warberg-x6hya241n.png', alt: 'Warberg' },
   { src: '/images/partners/all/ahmanmakleri-ifgrm2syu.svg', alt: 'ahmanmakleri' },
   { src: '/images/partners/all/individia-ksqjxtdgs.svg', alt: 'individia' },
-  { src: '/images/partners/all/lansforsakring-hjpt2jmho.png', alt: 'lansforsakring' },
-  { src: '/images/partners/all/loga-lang-70htd6ozc.png', alt: 'loga lang' },
-  { src: '/images/partners/all/logo-2-yqud6fovx.png', alt: 'logo (2)' },
+  { src: '/images/partners/all/lansforsakring-hjpt2jmho.png', alt: 'Länsförsäkringar Fastighetsförmedling' },
+  { src: '/images/partners/all/loga-lang-70htd6ozc.png', alt: 'Bo Lundvall & Son' },
+  { src: '/images/partners/all/logo-2-yqud6fovx.png', alt: 'Agentur Fastighetsförmedling' },
   { src: '/images/partners/all/logo-b-ctot4o1sc.svg', alt: 'logo b' },
-  { src: '/images/partners/all/maklarhuset-og-image.webp', alt: 'maklarhuset og image' },
-  { src: '/images/partners/all/nedladdning-4-zdq1yij2p.png', alt: 'nedladdning (4)' },
+  { src: '/images/partners/all/nedladdning-4-zdq1yij2p.png', alt: 'Lannhill Fastighetsmäklare' },
   { src: '/images/partners/all/stadshem-logotyp-black-png-v2phosrd.png', alt: 'stadshem logotyp black png' },
-  { src: '/images/partners/all/tibber.jpeg', alt: 'tibber' },
 ]
