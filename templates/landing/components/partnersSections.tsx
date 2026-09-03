@@ -5,7 +5,7 @@ import { coordinators } from '@/common/data/coordinators'
 
 // Bakgrund och textfärg på länkar kräver ! : resetten nollar background-color och sätter color på <a>.
 const primaryButton =
-  'inline-flex items-center justify-center min-h-11 px-6 rounded-full bg-[var(--color-primary-main)]! text-[var(--color-secondary-main)]! font-bold text-[15px] hover:opacity-90 transition-opacity whitespace-nowrap'
+  'inline-flex items-center justify-center min-h-11 px-6 rounded-full bg-[#FFA65F]! text-[#214766]! font-bold text-[15px] hover:opacity-90 transition-opacity whitespace-nowrap'
 const outlineButton =
   'inline-flex items-center justify-center min-h-11 px-6 rounded-full border-2 border-white text-white! font-bold text-[15px] hover:bg-white/10! transition-colors whitespace-nowrap'
 
@@ -17,7 +17,7 @@ const STATS = [
 
 // Partneransvariga. Sebastians adress finns i Mäklarhuset-mallen; Andreas nås tills vidare via leverantor@.
 const CONTACTS = {
-  brokers: { name: 'Sebastian Nielsen', role: 'Ansvarig för mäklarsamarbeten', email: 'sebastian@flyttsmart.se', photo: null as string | null },
+  brokers: { name: 'Sebastian Nielsen', role: 'VD', email: 'sebastian@flyttsmart.se', photo: null as string | null },
   suppliers: { name: 'Andreas Burman', role: 'Ansvarig för flytt- och städbolag', email: 'leverantor@flyttsmart.se', photo: '/images/team-andreas.webp' as string | null },
 }
 
@@ -149,7 +149,7 @@ const Steps = ({ items, cols }: { items: { title: string; description: string; p
 
 // En människa att höra av sig till, inte bara en knapp.
 const Cta = ({ title, contact, label }: { title: string; contact: (typeof CONTACTS)[keyof typeof CONTACTS]; label: string }) => (
-  <div className="bg-[var(--color-secondary-main)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+  <div className="bg-[var(--color-secondary-dark)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
     <div className="flex flex-col gap-4">
       <h3 className="text-lg md:text-xl font-bold text-white text-balance">{title}</h3>
       <div className="flex items-center gap-3">
