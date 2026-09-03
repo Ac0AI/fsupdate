@@ -9,36 +9,75 @@ import BankId from '@/public/images/BankId.svg'
 // sekunder, Nina hör av sig, och slutbilden med fördelarna och Flyttsmart står
 // kvar. Spelas en gång. Mäklarbyrån är påhittad, adresserna är demopersonans.
 const BROKER = { agent: 'Erik Lind', office: 'Solhöjdens Mäklarbyrå' }
-const MOVE = { from: 'Storgatan 12, Stockholm', to: 'Ekvägen 8, Göteborg', toShort: 'Ekvägen 8', date: '23 september' }
+const MOVE = { from: 'Storgatan 12, Stockholm', to: 'Ekvägen 8, Göteborg', toShort: 'Ekvägen 8' }
 
-const SERVICES = [
-  { name: 'Elavtal', detail: 'Rörligt pris utan påslag', done: 'Elavtal tecknat', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
-  {
-    name: 'Bredband',
-    detail: 'Fiber, klart till inflytt',
-    done: 'Bredband beställt',
-    icon: 'M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0',
-  },
-  {
-    name: 'Hemförsäkring',
-    detail: 'Flyttas till Ekvägen 8',
-    done: 'Hemförsäkring flyttad',
-    icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
-  },
-  { name: 'Flytthjälp', detail: '23 september, tre bärare', done: 'Flytthjälp bokad', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
-  {
-    name: 'Flyttstädning',
-    detail: '22 september, städgaranti',
-    done: 'Flyttstädning bokad',
-    icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
-  },
-  {
-    name: 'Adressändring',
-    detail: 'Skatteverket, från 23 september',
-    done: 'Adressändring skickad',
-    icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z',
-  },
-]
+// Datumen räknas från dagens datum: flyttdagen 30 dagar fram, städningen dagen innan,
+// låsskärmen visar dagen i dag. Så blir mockupen aldrig gammal.
+const MONTHS_LONG = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
+const MONTHS_SHORT = ['jan', 'feb', 'mars', 'apr', 'maj', 'juni', 'juli', 'aug', 'sep', 'okt', 'nov', 'dec']
+const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag']
+const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
+const long = (d: Date) => `${d.getDate()} ${MONTHS_LONG[d.getMonth()]}`
+const short = (d: Date) => `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`
+
+const buildCopy = (today: Date) => {
+  const move = addDays(today, 30)
+  const clean = addDays(move, -1)
+  return {
+    lockDate: `${WEEKDAYS[today.getDay()]} ${long(today)}`,
+    moveDate: long(move),
+    services: [
+      { name: 'Elavtal', detail: 'Rörligt pris utan påslag', done: 'Elavtal tecknat', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+      {
+        name: 'Bredband',
+        detail: 'Fiber, klart till inflytt',
+        done: 'Bredband beställt',
+        icon: 'M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0',
+      },
+      {
+        name: 'Hemförsäkring',
+        detail: 'Flyttas till Ekvägen 8',
+        done: 'Hemförsäkring flyttad',
+        icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+      },
+      { name: 'Flytthjälp', detail: `${long(move)} kl 8, tre bärare`, done: 'Flytthjälp bokad', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+      {
+        name: 'Flyttstädning',
+        detail: `${long(clean)}, städgaranti`,
+        done: 'Flyttstädning bokad',
+        icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+      },
+      {
+        name: 'Adressändring',
+        detail: `Skatteverket, från ${long(move)}`,
+        done: 'Adressändring skickad',
+        icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z',
+      },
+    ],
+    blocks: [
+      {
+        title: 'Kommer',
+        rows: [
+          { name: 'Flyttstädning', value: `${short(clean)}, kl 8` },
+          { name: 'Flytthjälp', value: `${short(move)}, kl 8, tre bärare` },
+        ],
+      },
+      {
+        title: 'Klart',
+        done: true,
+        rows: [
+          { name: 'Elavtal', value: 'Tecknat' },
+          { name: 'Bredband', value: 'Beställt' },
+          { name: 'Hemförsäkring', value: 'Flyttad' },
+          { name: 'Adressändring', value: 'Skickad' },
+        ],
+      },
+    ] as { title: string; rows: { name: string; value: string }[]; done?: boolean }[],
+  }
+}
+type Copy = ReturnType<typeof buildCopy>
+type Service = Copy['services'][number]
+const SERVICE_COUNT = 6
 
 type AllSub = 'enter' | 'idle' | 'press' | 'work' | 'complete'
 type Frame =
@@ -60,8 +99,8 @@ const TIMELINE: Step[] = [
   { k: 'all', sub: 'enter', done: 0, ms: 900 },
   { k: 'all', sub: 'idle', done: 0, ms: 1100 },
   { k: 'all', sub: 'press', done: 0, ms: 220 },
-  ...SERVICES.map((_, i): Step => ({ k: 'all', sub: 'work', done: i + 1, ms: 200 })),
-  { k: 'all', sub: 'complete', done: SERVICES.length, ms: 1900 },
+  ...Array.from({ length: SERVICE_COUNT }, (_, i): Step => ({ k: 'all', sub: 'work', done: i + 1, ms: 200 })),
+  { k: 'all', sub: 'complete', done: SERVICE_COUNT, ms: 1900 },
   { k: 'nina', ms: 2600 },
   // Slutbilden står kvar, ingen tid
   { k: 'brand', ms: 0 },
@@ -97,10 +136,10 @@ const StatusBar = ({ showTime, dark = false }: { showTime: boolean; dark?: boole
 )
 
 // Låsskärmen: klockan och en notis från mäklaren
-const Invite = ({ pressed }: { pressed: boolean }) => (
+const Invite = ({ pressed, lockDate }: { pressed: boolean; lockDate: string }) => (
   <div className="flex flex-col flex-1 pt-8">
     <p className="text-[64px] font-bold text-[#214766] leading-none tracking-tight text-center">16:24</p>
-    <p className="text-[13px] font-medium text-[#214766]/60 text-center mt-2">Måndag 2 september</p>
+    <p className="text-[13px] font-medium text-[#214766]/60 text-center mt-2">{lockDate}</p>
     <div
       className={clsx(
         'mt-10 bg-white rounded-2xl px-3.5 py-3 shadow-[0_2px_12px_rgba(33,71,102,0.12)] flex gap-3 transition-transform duration-200',
@@ -164,7 +203,7 @@ const Login = ({ sub }: { sub: 'idle' | 'press' | 'wait' | 'ok' }) => (
 )
 
 // Flytten som mäklaren skickat över: adresser och tillträde
-const MoveCard = () => (
+const MoveCard = ({ date }: { date: string }) => (
   <div className="bg-white rounded-xl px-4 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
     <div className="flex items-center justify-between mb-2">
       <p className="text-[12px] font-bold text-[#214766]">Din flytt</p>
@@ -183,12 +222,12 @@ const MoveCard = () => (
         <p className="text-[11px] text-[#214766] font-medium leading-tight">{MOVE.to}</p>
       </div>
     </div>
-    <p className="text-[10px] text-[#214766]/60 mt-2 pt-2 border-t border-[#EEEEF0]">Tillträde {MOVE.date}</p>
+    <p className="text-[10px] text-[#214766]/60 mt-2 pt-2 border-t border-[#EEEEF0]">Tillträde {date}</p>
   </div>
 )
 
 // En rad per del av flytten: förslag tills den blir klar
-const Row = ({ service, done, delay, still }: { service: (typeof SERVICES)[number]; done: boolean; delay: number; still: boolean }) => (
+const Row = ({ service, done, delay, still }: { service: Service; done: boolean; delay: number; still: boolean }) => (
   <div
     className={clsx('flex items-center gap-3 bg-white rounded-xl px-3.5 h-[42px] shadow-[0_1px_3px_rgba(0,0,0,0.04)]', !still && 'animate-[dash-in_.4s_ease-out_both]')}
     style={{ animationDelay: `${delay}ms` }}
@@ -244,19 +283,19 @@ const NinaCard = ({ message, still }: { message: string | null; still: boolean }
 )
 
 // Flyttsidan: kortet från mäklaren, hela flytten som förslag, ett Ja, allt klart
-const Home = ({ f, still }: { f: Frame; still: boolean }) => {
+const Home = ({ f, still, copy }: { f: Frame; still: boolean; copy: Copy }) => {
   const sub: AllSub = f.k === 'all' ? f.sub : 'complete'
-  const done = f.k === 'all' ? f.done : SERVICES.length
+  const done = f.k === 'all' ? f.done : SERVICE_COUNT
   const complete = sub === 'complete'
   const stagger = (i: number) => (sub === 'enter' ? 80 + i * 70 : 0)
   return (
     <>
-      <MoveCard />
+      <MoveCard date={copy.moveDate} />
       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#214766]/55 mt-3 mb-1.5 px-1">
         {complete ? 'Klart' : 'Vårt förslag · hela flytten'}
       </p>
       <div className="flex flex-col gap-[5px]">
-        {SERVICES.map((s, i) => (
+        {copy.services.map((s, i) => (
           <Row key={s.name} service={s} done={i < done} delay={stagger(i)} still={still} />
         ))}
       </div>
@@ -267,7 +306,7 @@ const Home = ({ f, still }: { f: Frame; still: boolean }) => {
           sub === 'press' && 'scale-95',
           !still && 'animate-[dash-in_.4s_ease-out_both]',
         )}
-        style={{ animationDelay: `${stagger(SERVICES.length)}ms` }}
+        style={{ animationDelay: `${stagger(SERVICE_COUNT)}ms` }}
       >
         {complete && <Check className={clsx('w-3.5 h-3.5', !still && 'animate-[dash-pop_.35s_ease-out_both]')} />}
         {complete ? 'Allt klart' : sub === 'work' ? 'Ordnar allt' : 'Få det gjort'}
@@ -279,27 +318,8 @@ const Home = ({ f, still }: { f: Frame; still: boolean }) => {
 
 // Slutbilden: Ninas bekräftelse i appens röst. Det som kommer med datum och tid, det
 // som är klart med status i grått, första kvällen i nya hemmet, Nina som avslut. Står kvar.
-const BLOCKS: { title: string; rows: { name: string; value: string }[]; done?: boolean }[] = [
-  {
-    title: 'Kommer',
-    rows: [
-      { name: 'Flyttstädning', value: '22 sep, kl 8' },
-      { name: 'Flytthjälp', value: '23 sep, kl 8, tre bärare' },
-    ],
-  },
-  {
-    title: 'Klart',
-    done: true,
-    rows: [
-      { name: 'Elavtal', value: 'Tecknat' },
-      { name: 'Bredband', value: 'Beställt' },
-      { name: 'Hemförsäkring', value: 'Flyttad' },
-      { name: 'Adressändring', value: 'Skickad' },
-    ],
-  },
-]
 
-const Brand = ({ still }: { still: boolean }) => {
+const Brand = ({ still, blocks }: { still: boolean; blocks: Copy['blocks'] }) => {
   const rise = !still && 'animate-[dash-in_.4s_ease-out_both]'
   const at = (ms: number) => (still ? undefined : { animationDelay: `${ms}ms` })
   let n = 0
@@ -310,7 +330,7 @@ const Brand = ({ still }: { still: boolean }) => {
       </p>
 
       <div className="mt-5 flex flex-col gap-4">
-        {BLOCKS.map((b) => (
+        {blocks.map((b) => (
           <div key={b.title} className="flex flex-col">
             <p className={clsx('text-[11px] font-semibold uppercase tracking-[0.1em] text-[#214766]/70 mb-1', rise)} style={at(300 + n++ * 55)}>
               {b.title}
@@ -356,6 +376,11 @@ const Brand = ({ still }: { still: boolean }) => {
 const AnimatedDashboard = () => {
   const [fi, setFi] = useState(0)
   const [still, setStill] = useState(false)
+  const [copy, setCopy] = useState<Copy>(() => buildCopy(new Date()))
+
+  useEffect(() => {
+    setCopy(buildCopy(new Date()))
+  }, [])
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -377,10 +402,10 @@ const AnimatedDashboard = () => {
         key={scene}
         className={clsx('flex flex-col flex-1 min-h-0', !still && 'animate-[dash-in_.4s_ease-out_both]')}
       >
-        {f.k === 'invite' && <Invite pressed={f.sub === 'press'} />}
+        {f.k === 'invite' && <Invite pressed={f.sub === 'press'} lockDate={copy.lockDate} />}
         {f.k === 'bankid' && <Login sub={f.sub} />}
-        {scene === 'home' && <Home f={f} still={still} />}
-        {scene === 'brand' && <Brand still={still} />}
+        {scene === 'home' && <Home f={f} still={still} copy={copy} />}
+        {scene === 'brand' && <Brand still={still} blocks={copy.blocks} />}
       </div>
     </div>
   )
