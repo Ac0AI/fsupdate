@@ -277,8 +277,8 @@ const Home = ({ f, still }: { f: Frame; still: boolean }) => {
   )
 }
 
-// Slutbilden: Ninas bekräftelse. Det som kommer med datum och tid, det som är
-// klart med status i grått, summan som skärmens största siffra, Nina som avslut. Står kvar.
+// Slutbilden: Ninas bekräftelse i appens röst. Det som kommer med datum och tid, det
+// som är klart med status i grått, summan som skärmens största siffra, Nina som avslut. Står kvar.
 const BLOCKS: { title: string; rows: { name: string; value: string }[]; done?: boolean }[] = [
   {
     title: 'Kommer',
@@ -306,7 +306,7 @@ const Brand = ({ still }: { still: boolean }) => {
   return (
     <div className="flex flex-col flex-1 px-1 pt-2 pb-2">
       <p className={clsx('text-[26px] font-bold text-[#214766] leading-[1.12] tracking-tight', rise)} style={at(100)}>
-        Du sa ja en gång. Resten tog jag.
+        Allt är bokat, Anna.
       </p>
 
       <div className="mt-6 flex flex-col gap-5">
