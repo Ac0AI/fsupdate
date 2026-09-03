@@ -9,6 +9,12 @@ export const MOVES_SINCE_2020 = '230 000'
 // ("1035 rabatt på fortum"); ändras avtalet, ändra här och ingen annanstans.
 export const FORTUM_DISCOUNT_SEK = '1 035'
 
+// Inrikes flyttar i Sverige per år enligt SCB: 1 483 434 år 2025 ("nära 1,5 miljoner",
+// sidan Flyttar inom Sverige, uppdaterad 2026-02-24). SCB räknar flyttar, inte
+// personer. Kollat 2026-09-03 sedan VD föreslog 1,3 miljoner.
+export const MOVES_IN_SWEDEN_PER_YEAR = 'nära 1,5 miljoner'
+export const MOVES_IN_SWEDEN_SOURCE_URL = 'https://www.scb.se/hitta-statistik/sverige-i-siffror/manniskorna-i-sverige/flyttar-inom-sverige/'
+
 /**
  * Bevisblocket under heron. En stor sanning i stället för tre små - varje rad
  * ska gå att belägga.
@@ -32,12 +38,18 @@ export const PROOF_BLOCK = {
  *
  * Bekräftade av David:
  *  - 230 000+ hjälpta flyttare  (2026-08-29)
- *  - 120+ partners              (2026-08-25)
+ *  - 120+ partners              (2026-08-25). OBS: brandguidens Block 3 säger
+ *    "ett hundratal anslutna bolag" (Sebastian 2026-09-03); ägaren avgör vilket
+ *    tal som gäller eller om de räknar olika saker.
  *  - 3000+ mäklare              (2026-08-25)
+ *  - 4,7/5 på Google, över 500 omdömen (samma tal som startsidan, GOOGLE_RATING
+ *    och GOOGLE_REVIEW_COUNT ovan). 9,6/10 ströks 2026-09-03: två skalor på
+ *    samma sajt.
  *
- * ÄNNU INTE BELAGDA. Behöver källa och ägare, annars bort vid nästa genomgång:
- *  - 9,6/10 kundbetyg   (varifrån? Google visar 4,7 av 5, se GOOGLE_RATING ovan)
- *  - 98,6 % nöjda med personliga servicen  (används i qualities-listan)
+ * Strukna 2026-09-03 (Sebastian): 98,6 % nöjda (fjärde nöjdhetstalet utan källa),
+ * "Sveriges största" och "under fem år" (2020 till 2026 är sex år).
+ *
+ * ÄNNU INTE BELAGDA:
  *  - 16 personer i teamet
  *  - 2 300 användare första året
  */
@@ -45,5 +57,5 @@ export const ABOUT_STATS = [
   { value: '230 000+', label: 'Hjälpta flyttare' },
   { value: '120+', label: 'Partners' },
   { value: '3000+', label: 'Mäklare' },
-  { value: '9,6/10', label: 'Kundbetyg' },
+  { value: '4,7/5', label: `Kundbetyg på Google, över ${GOOGLE_REVIEW_COUNT} omdömen` },
 ] as const
