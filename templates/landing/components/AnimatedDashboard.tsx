@@ -317,7 +317,7 @@ const Home = ({ f, still, copy }: { f: Frame; still: boolean; copy: Copy }) => {
 }
 
 // Slutbilden: Ninas bekräftelse i appens röst. Det som kommer med datum och tid, det
-// som är klart med status i grått, första kvällen i nya hemmet, Nina som avslut. Står kvar.
+// som är klart med status i grått, första kvällen i nya hemmet. Står kvar.
 
 const Brand = ({ still, blocks }: { still: boolean; blocks: Copy['blocks'] }) => {
   const rise = !still && 'animate-[dash-in_.4s_ease-out_both]'
@@ -350,25 +350,10 @@ const Brand = ({ still, blocks }: { still: boolean; blocks: Copy['blocks'] }) =>
         alt="Första kvällen i nya hemmet"
         width={296}
         height={148}
-        className={clsx('mt-5 w-full h-[176px] object-cover rounded-2xl', rise)}
+        className={clsx('mt-5 w-full flex-1 min-h-[176px] object-cover rounded-2xl', rise)}
         style={at(850)}
       />
 
-      <div className={clsx('mt-auto pt-3 flex items-start gap-2.5', rise)} style={at(950)}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-96,h-96,fo-face"
-          alt="Nina Fredriksson"
-          className="w-9 h-9 rounded-full object-cover flex-shrink-0"
-        />
-        <span className="flex flex-col min-w-0">
-          <span className="text-[12px] text-[#214766]">
-            <span className="font-bold">Nina Fredriksson</span>
-            <span className="text-[#214766]/70"> · din koordinator</span>
-          </span>
-          <span className="text-[14px] font-medium text-[#214766] leading-snug mt-1">Jag ringer dig dagen innan flytten. Hör av dig om något ändras.</span>
-        </span>
-      </div>
     </div>
   )
 }
