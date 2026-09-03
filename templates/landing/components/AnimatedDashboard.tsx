@@ -5,10 +5,10 @@ import { clsx } from 'clsx'
 import BankId from '@/public/images/BankId.svg'
 import Wordmark from '@/public/images/flyttsmart_blue.svg'
 
-// Berättelsen i mockupen, "så enkelt är det": mäklaren bjuder in, BankID,
-// hela flytten ligger färdig, ett Ja och allt blir klart på några sekunder,
-// Nina hör av sig, och skärmen slutar med Flyttsmart. Sedan börjar den om.
-// Mäklarbyrån är påhittad, adresserna är demopersonans.
+// Berättelsen i mockupen, "så enkelt är det": inbjudan, BankID, hela flytten
+// ligger färdig, ett tryck på Få det gjort och allt blir klart på några
+// sekunder, Nina hör av sig, och slutbilden med fördelarna och Flyttsmart står
+// kvar. Spelas en gång. Mäklarbyrån är påhittad, adresserna är demopersonans.
 const BROKER = { agent: 'Erik Lind', office: 'Solhöjdens Mäklarbyrå' }
 const MOVE = { from: 'Storgatan 12, Stockholm', to: 'Ekvägen 8, Göteborg', toShort: 'Ekvägen 8', date: '23 september' }
 
@@ -48,7 +48,6 @@ type Frame =
   | { k: 'all'; sub: AllSub; done: number }
   | { k: 'nina' }
   | { k: 'brand' }
-  | { k: 'fade' }
 
 type Step = Frame & { ms: number }
 
@@ -65,12 +64,19 @@ const TIMELINE: Step[] = [
   ...SERVICES.map((_, i): Step => ({ k: 'all', sub: 'work', done: i + 1, ms: 200 })),
   { k: 'all', sub: 'complete', done: SERVICES.length, ms: 1900 },
   { k: 'nina', ms: 2600 },
-  { k: 'brand', ms: 2400 },
-  { k: 'fade', ms: 400 },
+  // Slutbilden står kvar, ingen tid
+  { k: 'brand', ms: 0 },
 ]
 
-// Stillbilden vid reduced motion: allt klart.
-const STILL: Frame = { k: 'all', sub: 'complete', done: SERVICES.length }
+// Stillbilden vid reduced motion: slutbilden.
+const STILL: Frame = { k: 'brand' }
+
+const BENEFITS = [
+  'Färdigförhandlade priser',
+  'En koordinator som tar ansvar',
+  'Hela flytten på ett ställe',
+  'Kostnadsfritt för dig',
+]
 
 const Check = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="#214766" strokeWidth={3}>
@@ -118,7 +124,7 @@ const Invite = ({ pressed }: { pressed: boolean }) => (
           <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#214766]/55">Flyttsmart</p>
           <p className="text-[10px] text-[#214766]/45">nu</p>
         </div>
-        <p className="text-[13px] font-bold text-[#214766] mt-0.5">Din mäklare har bjudit in dig</p>
+        <p className="text-[13px] font-bold text-[#214766] mt-0.5">Du har blivit inbjuden till Flyttsmart.</p>
         <p className="text-[11px] text-[#214766]/75 leading-snug mt-0.5">
           {BROKER.agent} på {BROKER.office} har förberett din flytt till {MOVE.toShort}.
         </p>
@@ -271,18 +277,32 @@ const Home = ({ f, still }: { f: Frame; still: boolean }) => {
         style={{ animationDelay: `${stagger(SERVICES.length)}ms` }}
       >
         {complete && <Check className={clsx('w-3.5 h-3.5', !still && 'animate-[dash-pop_.35s_ease-out_both]')} />}
-        {complete ? 'Allt klart' : sub === 'work' ? 'Ordnar allt' : 'Ja till allt'}
+        {complete ? 'Allt klart' : sub === 'work' ? 'Ordnar allt' : 'Få det gjort'}
       </div>
       <NinaCard message={f.k === 'nina' ? 'Allt är bokat. Jag ringer dagen innan flytten.' : null} still={still} />
     </>
   )
 }
 
-// Slutbilden: det här är Flyttsmart
-const Brand = () => (
-  <div className="flex flex-col flex-1 items-center justify-center gap-4 pb-16">
-    <Wordmark className="w-[168px] h-auto" />
-    <p className="text-[13px] font-medium text-[#214766]/70">Det enklaste sättet att flytta.</p>
+// Slutbilden: vad man får, och att det är Flyttsmart. Står kvar.
+const Brand = ({ still }: { still: boolean }) => (
+  <div className="flex flex-col flex-1 items-center justify-center px-1 pb-8">
+    <p className="text-[24px] font-bold text-[#214766] leading-tight text-center">Spara pengar och tid.</p>
+    <Wordmark className="w-[168px] h-auto mt-4" />
+    <div className="flex flex-col gap-[5px] mt-8 w-full">
+      {BENEFITS.map((b, i) => (
+        <div
+          key={b}
+          className={clsx('flex items-center gap-3 bg-white rounded-xl px-3.5 h-[42px] shadow-[0_1px_3px_rgba(0,0,0,0.04)]', !still && 'animate-[dash-in_.4s_ease-out_both]')}
+          style={{ animationDelay: `${350 + i * 120}ms` }}
+        >
+          <span className="w-[26px] h-[26px] rounded-full bg-[#51C8B4] flex items-center justify-center flex-shrink-0">
+            <Check className="w-3 h-3" />
+          </span>
+          <span className="text-[12px] font-medium text-[#214766]">{b}</span>
+        </div>
+      ))}
+    </div>
   </div>
 )
 
@@ -295,24 +315,25 @@ const AnimatedDashboard = () => {
       setStill(true)
       return
     }
-    const timer = setTimeout(() => setFi((i) => (i + 1) % TIMELINE.length), TIMELINE[fi].ms)
+    if (fi >= TIMELINE.length - 1) return
+    const timer = setTimeout(() => setFi((i) => i + 1), TIMELINE[fi].ms)
     return () => clearTimeout(timer)
   }, [fi])
 
   const f: Frame = still ? STILL : TIMELINE[fi]
-  const scene = f.k === 'invite' ? 'invite' : f.k === 'bankid' ? 'bankid' : f.k === 'brand' || f.k === 'fade' ? 'brand' : 'home'
+  const scene = f.k === 'invite' ? 'invite' : f.k === 'bankid' ? 'bankid' : f.k === 'brand' ? 'brand' : 'home'
 
   return (
     <div className="animated-dashboard absolute inset-0 flex flex-col bg-[#f8faf9] pt-12 px-3 pb-3">
       <StatusBar showTime={scene !== 'invite'} />
       <div
         key={scene}
-        className={clsx('flex flex-col flex-1 min-h-0', !still && (f.k === 'fade' ? 'animate-[dash-out_.4s_ease-in_both]' : 'animate-[dash-in_.4s_ease-out_both]'))}
+        className={clsx('flex flex-col flex-1 min-h-0', !still && 'animate-[dash-in_.4s_ease-out_both]')}
       >
         {f.k === 'invite' && <Invite pressed={f.sub === 'press'} />}
         {f.k === 'bankid' && <Login sub={f.sub} />}
         {scene === 'home' && <Home f={f} still={still} />}
-        {scene === 'brand' && <Brand />}
+        {scene === 'brand' && <Brand still={still} />}
       </div>
     </div>
   )
