@@ -278,7 +278,7 @@ const Home = ({ f, still }: { f: Frame; still: boolean }) => {
 }
 
 // Slutbilden: Ninas bekräftelse i appens röst. Det som kommer med datum och tid, det
-// som är klart med status i grått, summan som skärmens största siffra, Nina som avslut. Står kvar.
+// som är klart med status i grått, summan, första kvällen i nya hemmet, Nina som avslut. Står kvar.
 const BLOCKS: { title: string; rows: { name: string; value: string }[]; done?: boolean }[] = [
   {
     title: 'Kommer',
@@ -309,14 +309,14 @@ const Brand = ({ still }: { still: boolean }) => {
         Allt är bokat, Anna.
       </p>
 
-      <div className="mt-6 flex flex-col gap-5">
+      <div className="mt-5 flex flex-col gap-4">
         {BLOCKS.map((b) => (
           <div key={b.title} className="flex flex-col">
             <p className={clsx('text-[11px] font-semibold uppercase tracking-[0.1em] text-[#214766]/70 mb-1', rise)} style={at(300 + n++ * 55)}>
               {b.title}
             </p>
             {b.rows.map((r) => (
-              <div key={r.name} className={clsx('flex items-baseline justify-between gap-3 h-[34px]', rise)} style={at(300 + n++ * 55)}>
+              <div key={r.name} className={clsx('flex items-baseline justify-between gap-3 h-[30px]', rise)} style={at(300 + n++ * 55)}>
                 <span className="text-[14px] font-semibold text-[#214766]">{r.name}</span>
                 <span className={clsx('text-[13px] text-right', b.done ? 'text-[#214766]/55' : 'text-[#214766]')}>{r.value}</span>
               </div>
@@ -324,7 +324,7 @@ const Brand = ({ still }: { still: boolean }) => {
           </div>
         ))}
       </div>
-      <div className={clsx('mt-4 pt-3.5 border-t-2 border-[#214766]/30', rise)} style={at(750)}>
+      <div className={clsx('mt-3 pt-3 border-t-2 border-[#214766]/30', rise)} style={at(750)}>
         <div className="flex items-baseline justify-between gap-3">
           <span className="text-[14px] font-semibold text-[#214766]">Du betalar</span>
           <span className="text-[30px] font-bold text-[#214766] leading-none tracking-tight">0{'\u00a0'}kr</span>
@@ -332,7 +332,17 @@ const Brand = ({ still }: { still: boolean }) => {
         <p className="text-[11px] text-[#214766]/60 mt-1">Leverantörerna betalar oss.</p>
       </div>
 
-      <div className={clsx('mt-auto flex items-start gap-2.5', rise)} style={at(900)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/brand/inflyttad-888.webp"
+        alt="Första kvällen i nya hemmet"
+        width={296}
+        height={148}
+        className={clsx('mt-3 w-full h-[136px] object-cover rounded-2xl', rise)}
+        style={at(850)}
+      />
+
+      <div className={clsx('mt-auto pt-3 flex items-start gap-2.5', rise)} style={at(950)}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-96,h-96,fo-face"
