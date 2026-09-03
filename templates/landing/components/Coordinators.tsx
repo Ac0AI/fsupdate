@@ -44,13 +44,17 @@ const Coordinators = () => {
           <ul className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8">
             {TEAM.map((c) => (
               <li key={c.id} className="flex sm:flex-col items-center sm:items-start gap-4 sm:gap-4">
-                <Image
-                  src={`${c.imageKitPath.split('?')[0]}?tr=w-256,h-256,fo-face`}
-                  alt={c.name}
-                  width={128}
-                  height={128}
-                  className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full object-cover shrink-0 ring-1 ring-[#214766]/20"
-                />
+                {/* Ljusblå platta bakom porträttet; fotots vita studiobakgrund multipliceras bort
+                    så alla tre sitter i samma färg i stället för att flyta ut i sidans ground. */}
+                <span className="w-20 h-20 sm:w-28 sm:h-28 lg:w-36 lg:h-36 rounded-full bg-[var(--color-pale,#EAF2F8)] overflow-hidden shrink-0">
+                  <Image
+                    src={`${c.imageKitPath.split('?')[0]}?tr=w-288,h-288,fo-face`}
+                    alt={c.name}
+                    width={144}
+                    height={144}
+                    className="w-full h-full object-cover mix-blend-multiply"
+                  />
+                </span>
                 <span className="flex flex-col gap-0.5">
                   <span className="text-lg font-bold text-[var(--color-secondary-main)]">{c.name}</span>
                   <span className="text-sm text-[var(--color-secondary-main)]/60">{c.title}</span>
