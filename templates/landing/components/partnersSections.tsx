@@ -17,7 +17,7 @@ const STATS = [
 
 // Partneransvariga. Sebastians adress finns i Mäklarhuset-mallen; Andreas nås tills vidare via leverantor@.
 const CONTACTS = {
-  brokers: { name: 'Sebastian Nielsen', role: 'VD', email: 'sebastian@flyttsmart.se', photo: null as string | null },
+  brokers: { name: 'Sebastian Nielsen', role: 'VD', email: 'sebastian@flyttsmart.se', photo: '/images/team-sebastian.webp' as string | null },
   suppliers: { name: 'Andreas Burman', role: 'Ansvarig för flytt- och städbolag', email: 'leverantor@flyttsmart.se', photo: '/images/team-andreas.webp' as string | null },
 }
 
