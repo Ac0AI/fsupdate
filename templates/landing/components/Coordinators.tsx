@@ -49,7 +49,7 @@ const Coordinators = () => {
                   alt={c.name}
                   width={128}
                   height={128}
-                  className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full object-cover shrink-0"
+                  className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full object-cover shrink-0 ring-1 ring-[#214766]/20"
                 />
                 <span className="flex flex-col gap-0.5">
                   <span className="text-lg font-bold text-[var(--color-secondary-main)]">{c.name}</span>
