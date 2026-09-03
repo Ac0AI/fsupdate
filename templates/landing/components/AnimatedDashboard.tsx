@@ -74,7 +74,7 @@ const STILL: Frame = { k: 'brand' }
 const BENEFITS = [
   'Färdigförhandlade priser',
   'En koordinator som tar ansvar',
-  'Hela flytten på ett ställe',
+  'Hela flytten i en lista',
   'Kostnadsfritt för dig',
 ]
 
@@ -244,7 +244,7 @@ const NinaCard = ({ message, still }: { message: string | null; still: boolean }
           {message}
         </p>
       ) : (
-        <p className="text-[10px] leading-tight text-[#214766]/55 mt-0.5">Svarar i chatten, på mejl och i telefon</p>
+        <p className="text-[10px] leading-tight text-[#214766]/55 mt-0.5">Hör av dig när du vill</p>
       )}
     </div>
   </div>

@@ -24,10 +24,10 @@ const ClosingCta = () => {
     <section id="closing-cta" aria-labelledby="closing-cta-heading" className="w-screen bg-[var(--color-secondary-main)]">
       <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-16 md:py-24 flex flex-col items-center text-center">
         <h2 id="closing-cta-heading" className="text-white font-bold leading-[1.08] text-[32px] md:text-[44px] lg:text-[52px] mb-4 max-w-[720px]">
-          Redo? Det tar två minuter.
+          Det tar två minuter.
         </h2>
         <p className="text-lg text-white/75 leading-relaxed max-w-[520px] mb-8">
-          Logga in med BankID, så har du din checklista och ett förslag per tjänst.
+          Logga in med BankID. Inget bokas förrän du sagt ja.
         </p>
         <div className="flex flex-col items-center gap-3 w-full sm:w-auto">
           <Button

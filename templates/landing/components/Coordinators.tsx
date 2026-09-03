@@ -18,7 +18,7 @@ const Coordinators = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 lg:items-center">
           <div>
             <h2 id="coordinators-heading" className="text-[var(--color-secondary-main)] font-bold leading-[1.08] text-[32px] md:text-[44px] lg:text-[48px] mb-4">
-              Riktiga människor som kan din flytt
+              Koordinatorerna som kan din flytt
             </h2>
             <p className="text-lg text-[var(--color-secondary-main)] leading-relaxed max-w-[520px] mb-8">
               Går något fel hör du av dig till oss. Undrar du något hör du av dig i chatten.

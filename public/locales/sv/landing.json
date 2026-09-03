@@ -26,7 +26,7 @@
   },
   "HOW_WE_HELP": {
     "title": "Att flytta ska inte kräva tio beslut",
-    "subtitle": "Vi har förhandlat priserna och kvalitetskontrollerat leverantörerna i förväg. Du säger ja.",
+    "subtitle": "Vi har förhandlat priserna och kvalitetskontrollerat leverantörerna i förväg.",
     "step1": {
       "title": "Logga in med BankID",
       "description": "Två minuter. Din checklista står klar med adress, datum och det vi redan vet om din flytt.",
@@ -34,7 +34,7 @@
     },
     "step2": {
       "title": "Säg ja till ett förslag per tjänst",
-      "description": "El, bredband, flytthjälp, flyttstädning och försäkring, ett rekommenderat val med skälet utskrivet. Inga offerter att begära.",
+      "description": "El, bredband, flytthjälp, flyttstädning och försäkring, ett förslag med skälet utskrivet. Inga offerter att begära.",
       "benefit": ""
     },
     "step3": {
@@ -44,7 +44,7 @@
     }
   },
   "CONTACT": {
-    "title": "Hej! 👋",
+    "title": "Hej!",
     "opening_hours": "Måndag - Fredag: 09:00 - 16:00",
     "differentOpeningHours": "Avvikande öppettider:",
     "differentOpeningHoursDates": "23/12, 27/12, 30/12",
@@ -61,7 +61,7 @@
   "FAQITEMS": [
     {
       "question": "Vad händer efter att jag loggat in?",
-      "answer": "Du får en checklista för just din flytt, med adress, datum och det vi redan vet. Under varje punkt ligger ett rekommenderat val, färdigförhandlat. Du säger ja till det du vill ha, så bokar din koordinator."
+      "answer": "Du får en checklista för just din flytt, med adress, datum och det vi redan vet. Under varje punkt ligger ett förslag, färdigförhandlat. Du säger ja till det du vill ha, så bokar din koordinator."
     },
     {
       "question": "Kan jag ångra en bokning?",
@@ -69,18 +69,18 @@
     },
     {
       "question": "Hur långt innan flytten bör jag använda Flyttsmart?",
-      "answer": "Vi rekommenderar att du börjar så tidigt som möjligt, gärna två månader innan ditt inflyttningsdatum. Då hinner du teckna nya avtal och säga upp dina nuvarande i tid, och slipper onödiga kostnader kopplade till uppsägningstid.",
+      "answer": "Börja gärna två månader före inflytt. Då hinner du teckna nya avtal och säga upp de gamla i tid, så du slipper betala två avtal samtidigt.",
       "answer_last_header": "Är det mindre än 14 dagar kvar till din flytt?",
       "answer_last": "Kontakta oss på ",
       "answer_last_second_part": " Vi ska försöka hjälpa dig att ordna allt i tid."
     },
     {
       "question": "Vad kostar det att använda Flyttsmart?",
-      "answer": "Tjänsten är gratis att använda och fri från dolda avgifter. Du betalar samma pris som hos leverantören - eller lägre. Priserna varierar mellan olika leverantörer och kan även påverkas av faktorer som hur långt du ska flytta och hur stort ditt boende är."
+      "answer": "Tjänsten kostar inget för dig, leverantörerna betalar oss. Du betalar samma pris som hos leverantören eller lägre. Priset beror på leverantör, avstånd och bostadens storlek."
     },
     {
       "question": "Vilka leverantörer samarbetar ni med?",
-      "answer": "Vi väljer noga ut en eller ett par riktigt bra leverantörer inom varje område - alltid med hållbara villkor och priser vi har förhandlat i förväg. Du kan med andra ord vara säker på att du gör trygga och smarta val i vår tjänst. "
+      "answer": "Vi väljer en eller ett par leverantörer inom varje område. De kontrolleras på F-skatt, försäkringar och referenser, gör ett provuppdrag och får betyg efter varje uppdrag. Priserna har vi förhandlat i förväg."
     }
   ],
   "HOWITWORKS": {
