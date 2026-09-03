@@ -5,6 +5,10 @@ export const GOOGLE_REVIEW_COUNT = 500
 // Samma siffra som brandguiden. Ändras här, inte i komponenterna.
 export const MOVES_SINCE_2020 = '230 000'
 
+// Rabatten på elavtalet hos Fortum, bara via Flyttsmart. Siffran från ägaren 2026-09-03
+// ("1035 rabatt på fortum"); ändras avtalet, ändra här och ingen annanstans.
+export const FORTUM_DISCOUNT_SEK = '1 035'
+
 /**
  * Bevisblocket under heron. En stor sanning i stället för tre små - varje rad
  * ska gå att belägga.

@@ -12,6 +12,7 @@ import Coordinators from './components/Coordinators'
 import FAQ from './components/faq'
 import HowItWorks from './components/howItWorks'
 import LandingHero from './components/landingHero'
+import Negotiated from './components/Negotiated'
 import ProofBar from './components/ProofBar'
 
 const Testimonials = dynamic(() => import('./components/testimonials'), { ssr: false })
@@ -46,6 +47,9 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
 
         {/* How It Works Section */}
         <HowItWorks />
+
+        {/* Beviset: förhandlat i förväg, Fortum-rabatten */}
+        <Negotiated />
 
         {/* Människorna bakom tjänsten */}
         <Coordinators />
