@@ -47,13 +47,13 @@ const Coordinators = () => {
           <div className="flex flex-col gap-5">
             <ul className="flex items-center pl-1">
               {coordinators.map((c, i) => (
-                <li key={c.id} className={i > 0 ? 'relative -ml-5 sm:-ml-7' : 'relative'} style={{ zIndex: coordinators.length - i }}>
-                  <span className="block w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full bg-[#EAF2F8] overflow-hidden border-4 border-[#F8FAF9]">
+                <li key={c.id} className={i > 0 ? 'relative -ml-3 sm:-ml-4' : 'relative'} style={{ zIndex: coordinators.length - i }}>
+                  <span className="block w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full bg-[#EAF2F8] overflow-hidden border-[3px] border-[#F8FAF9]">
                     <Image
-                      src={`${c.imageKitPath.split('?')[0]}?tr=w-256,h-256,fo-face`}
+                      src={`${c.imageKitPath.split('?')[0]}?tr=w-192,h-192,fo-face,z-0.6`}
                       alt={c.name}
-                      width={128}
-                      height={128}
+                      width={96}
+                      height={96}
                       className="w-full h-full object-cover mix-blend-multiply"
                     />
                   </span>
