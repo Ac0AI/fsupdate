@@ -49,16 +49,20 @@ const PartnersIntro = () => (
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Mäklare, hyresvärdar och föreningar</h2>
           <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten, enkelt för kunden och utan extra jobb för dig. Kostnadsfritt, vi tar betalt av leverantörerna.</p>
-          <a href={`mailto:${CONTACTS.brokers.email}`} className={`mt-auto pt-2 ${primaryButton}`}>
-            Mejla Sebastian
-          </a>
+          <div className="mt-auto pt-2">
+            <a href={`mailto:${CONTACTS.brokers.email}`} className={primaryButton}>
+              Mejla Sebastian
+            </a>
+          </div>
         </div>
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Flyttfirmor, elbolag och andra leverantörer</h2>
           <p className="text-white/70 text-sm leading-relaxed">Vi skickar kunder som ska flytta inom några veckor. Du betalar per uppdrag.</p>
-          <a href={`mailto:${CONTACTS.suppliers.email}`} className={`mt-auto pt-2 ${outlineButton}`}>
-            Mejla Andreas
-          </a>
+          <div className="mt-auto pt-2">
+            <a href={`mailto:${CONTACTS.suppliers.email}`} className={outlineButton}>
+              Mejla Andreas
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -178,8 +182,8 @@ const Cta = ({ title, contact, label }: { title: string; contact: (typeof CONTAC
 // ─── Distributionspartners ────────────────────────────────────────────────────
 
 const brokerSteps = [
-  { title: 'Kunden bjuds in', description: 'Vi kopplar in oss i ditt mäklarsystem, du gör inget. Hyresvärdar och föreningar bjuder in kunden själva.' },
-  { title: 'Vi tar hand om resten', description: 'Flytt, städ, el, bredband, försäkring och adressändring, samlat på ett ställe med en kontaktpunkt.' },
+  { title: 'Kunden bjuds in', description: 'Vi kopplar in oss i ditt mäklarsystem eller fastighetssystem, du gör inget.' },
+  { title: 'Vi tar hand om resten', description: 'Flytt, städ, el, bredband, försäkring, adressändring och allt annat kring flytten, samlat på ett ställe med en kontaktperson.' },
   { title: 'Kunden får en koordinator', description: 'Koordinatorn bokar, följer upp och svarar i chatten, på mejl och i telefon.', people: true },
 ]
 

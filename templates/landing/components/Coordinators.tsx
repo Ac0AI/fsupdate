@@ -8,7 +8,8 @@ import { coordinators } from '@/common/data/coordinators'
  * Människorna bakom tjänsten, med namn och foto (designprincip 2). Texten under
  * rubriken är brandguidens Block 1 ordagrant, regel 05: den skrivs inte om.
  */
-const TEAM = coordinators.slice(0, 3)
+const FIRST = coordinators.map((c) => c.name.split(' ')[0])
+const FIRST_NAMES = `${FIRST.slice(0, -1).join(', ')} och ${FIRST[FIRST.length - 1]}`
 
 const Coordinators = () => {
   const { boot, show } = useIntercom()
@@ -41,28 +42,27 @@ const Coordinators = () => {
             </p>
           </div>
 
-          <ul className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8">
-            {TEAM.map((c) => (
-              <li key={c.id} className="flex sm:flex-col items-center sm:items-start gap-4 sm:gap-4">
-                {/* Ljusblå platta bakom porträttet; fotots vita studiobakgrund multipliceras bort
-                    så alla tre sitter i samma färg i stället för att flyta ut i sidans ground. */}
-                <span className="w-20 h-20 sm:w-28 sm:h-28 lg:w-36 lg:h-36 rounded-full bg-[var(--color-pale,#EAF2F8)] overflow-hidden shrink-0">
-                  <Image
-                    src={`${c.imageKitPath.split('?')[0]}?tr=w-288,h-288,fo-face`}
-                    alt={c.name}
-                    width={144}
-                    height={144}
-                    className="w-full h-full object-cover mix-blend-multiply"
-                  />
-                </span>
-                <span className="flex flex-col gap-0.5">
-                  <span className="text-lg font-bold text-[var(--color-secondary-main)]">{c.name}</span>
-                  <span className="text-sm text-[var(--color-secondary-main)]/60">{c.title}</span>
-                  <a href={`mailto:${c.email}`} className="text-sm text-[var(--color-secondary-main)] underline underline-offset-2">{c.email}</a>
-                </span>
-              </li>
-            ))}
-          </ul>
+          {/* Hela teamet som en grupp: överlappande porträtt på ljusblå plattor (fotonas vita
+              bakgrund multipliceras bort), en ring i sidans ground skiljer kanterna åt. */}
+          <div className="flex flex-col gap-5">
+            <ul className="flex items-center pl-1">
+              {coordinators.map((c, i) => (
+                <li key={c.id} className={i > 0 ? 'relative -ml-5 sm:-ml-7' : 'relative'} style={{ zIndex: coordinators.length - i }}>
+                  <span className="block w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full bg-[#EAF2F8] overflow-hidden border-4 border-[#F8FAF9]">
+                    <Image
+                      src={`${c.imageKitPath.split('?')[0]}?tr=w-256,h-256,fo-face`}
+                      alt={c.name}
+                      width={128}
+                      height={128}
+                      className="w-full h-full object-cover mix-blend-multiply"
+                    />
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-lg font-bold text-[var(--color-secondary-main)] leading-snug">{FIRST_NAMES}</p>
+            <p className="-mt-3 text-sm text-[var(--color-secondary-main)]/70">Flyttkoordinatorer. Du får en av dem genom hela flytten.</p>
+          </div>
         </div>
       </div>
     </section>
