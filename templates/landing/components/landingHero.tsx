@@ -63,7 +63,7 @@ const LandingHero = () => {
               </button>
             </div>
             <span className="text-sm text-white/80 mt-4 block text-center lg:text-left">
-              Kostnadsfritt. Med eller utan mäklare.
+              Kostnadsfritt.
             </span>
 
           </div>
