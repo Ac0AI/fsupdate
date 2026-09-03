@@ -76,6 +76,7 @@ const LandingHero = () => {
                 (ritad i 320) skalas exakt. */}
             <div className="relative z-10">
               <div
+                data-hero-phone=""
                 className={clsx(
                   'relative p-[3px]',
                   'rounded-[46px] md:rounded-[52px] lg:rounded-[58px]',
@@ -104,7 +105,7 @@ const LandingHero = () => {
                     </div>
 
                     {/* Glasreflex uppe till vänster */}
-                    <div className="pointer-events-none absolute inset-0 z-30 bg-[linear-gradient(115deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.04)_28%,transparent_46%)]" />
+                    <div className="pointer-events-none absolute inset-0 z-30 bg-[linear-gradient(115deg,rgba(255,255,255,0.07)_0%,rgba(255,255,255,0.02)_28%,transparent_46%)]" />
                   </div>
                 </div>
               </div>

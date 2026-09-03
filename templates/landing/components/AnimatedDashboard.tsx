@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { clsx } from 'clsx'
 import BankId from '@/public/images/BankId.svg'
-import Wordmark from '@/public/images/flyttsmart_blue.svg'
 
 // Berättelsen i mockupen, "så enkelt är det": inbjudan, BankID, hela flytten
 // ligger färdig, ett tryck på Få det gjort och allt blir klart på några
@@ -71,12 +70,6 @@ const TIMELINE: Step[] = [
 // Stillbilden vid reduced motion: slutbilden.
 const STILL: Frame = { k: 'brand' }
 
-const BENEFITS = [
-  'Färdigförhandlade priser',
-  'En koordinator som tar ansvar',
-  'Hela flytten i en lista',
-  'Kostnadsfritt för dig',
-]
 
 const Check = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="#214766" strokeWidth={3}>
@@ -84,10 +77,10 @@ const Check = ({ className }: { className?: string }) => (
   </svg>
 )
 
-const StatusBar = ({ showTime }: { showTime: boolean }) => (
-  <div className="absolute top-0 left-0 right-0 h-11 flex items-center justify-between px-6 pt-1">
-    <span className={clsx('text-[12px] font-semibold text-[#214766] tracking-tight', !showTime && 'invisible')}>9:41</span>
-    <div className="flex items-center gap-1.5 text-[#214766]">
+const StatusBar = ({ showTime, dark = false }: { showTime: boolean; dark?: boolean }) => (
+  <div className={clsx('absolute top-0 left-0 right-0 h-11 flex items-center justify-between px-6 pt-1 z-10', dark ? 'text-white' : 'text-[#214766]')}>
+    <span className={clsx('text-[12px] font-semibold tracking-tight', !showTime && 'invisible')}>16:24</span>
+    <div className="flex items-center gap-1.5">
       <svg className="w-4 h-3" viewBox="0 0 16 12" fill="currentColor">
         <rect x="0" y="8" width="3" height="4" rx="0.5" />
         <rect x="4.5" y="5.5" width="3" height="6.5" rx="0.5" />
@@ -106,7 +99,7 @@ const StatusBar = ({ showTime }: { showTime: boolean }) => (
 // Låsskärmen: klockan och en notis från mäklaren
 const Invite = ({ pressed }: { pressed: boolean }) => (
   <div className="flex flex-col flex-1 pt-8">
-    <p className="text-[64px] font-bold text-[#214766] leading-none tracking-tight text-center">9:41</p>
+    <p className="text-[64px] font-bold text-[#214766] leading-none tracking-tight text-center">16:24</p>
     <p className="text-[13px] font-medium text-[#214766]/60 text-center mt-2">Måndag 2 september</p>
     <div
       className={clsx(
@@ -284,27 +277,79 @@ const Home = ({ f, still }: { f: Frame; still: boolean }) => {
   )
 }
 
-// Slutbilden: vad man får, och att det är Flyttsmart. Står kvar.
-const Brand = ({ still }: { still: boolean }) => (
-  <div className="flex flex-col flex-1 items-center justify-center px-1 pb-8">
-    <p className="text-[24px] font-bold text-[#214766] leading-tight text-center">Spara pengar och tid.</p>
-    <Wordmark className="w-[168px] h-auto mt-4" />
-    <div className="flex flex-col gap-[5px] mt-8 w-full">
-      {BENEFITS.map((b, i) => (
-        <div
-          key={b}
-          className={clsx('flex items-center gap-3 bg-white rounded-xl px-3.5 h-[42px] shadow-[0_1px_3px_rgba(0,0,0,0.04)]', !still && 'animate-[dash-in_.4s_ease-out_both]')}
-          style={{ animationDelay: `${350 + i * 120}ms` }}
-        >
-          <span className="w-[26px] h-[26px] rounded-full bg-[#51C8B4] flex items-center justify-center flex-shrink-0">
-            <Check className="w-3 h-3" />
-          </span>
-          <span className="text-[12px] font-medium text-[#214766]">{b}</span>
+// Slutbilden: Ninas bekräftelse. Det som kommer med datum och tid, det som är
+// klart med status i grått, summan som skärmens största siffra, Nina som avslut. Står kvar.
+const BLOCKS: { title: string; rows: { name: string; value: string }[]; done?: boolean }[] = [
+  {
+    title: 'Kommer',
+    rows: [
+      { name: 'Flyttstädning', value: '22 sep, kl 8' },
+      { name: 'Flytthjälp', value: '23 sep, kl 8, tre bärare' },
+    ],
+  },
+  {
+    title: 'Klart',
+    done: true,
+    rows: [
+      { name: 'Elavtal', value: 'Tecknat' },
+      { name: 'Bredband', value: 'Beställt' },
+      { name: 'Hemförsäkring', value: 'Flyttad' },
+      { name: 'Adressändring', value: 'Skickad' },
+    ],
+  },
+]
+
+const Brand = ({ still }: { still: boolean }) => {
+  const rise = !still && 'animate-[dash-in_.4s_ease-out_both]'
+  const at = (ms: number) => (still ? undefined : { animationDelay: `${ms}ms` })
+  let n = 0
+  return (
+    <div className="flex flex-col flex-1 px-1 pt-2 pb-2">
+      <p className={clsx('text-[26px] font-bold text-[#214766] leading-[1.12] tracking-tight', rise)} style={at(100)}>
+        Du sa ja en gång. Resten tog jag.
+      </p>
+
+      <div className="mt-6 flex flex-col gap-5">
+        {BLOCKS.map((b) => (
+          <div key={b.title} className="flex flex-col">
+            <p className={clsx('text-[11px] font-semibold uppercase tracking-[0.1em] text-[#214766]/70 mb-1', rise)} style={at(300 + n++ * 55)}>
+              {b.title}
+            </p>
+            {b.rows.map((r) => (
+              <div key={r.name} className={clsx('flex items-baseline justify-between gap-3 h-[34px]', rise)} style={at(300 + n++ * 55)}>
+                <span className="text-[14px] font-semibold text-[#214766]">{r.name}</span>
+                <span className={clsx('text-[13px] text-right', b.done ? 'text-[#214766]/55' : 'text-[#214766]')}>{r.value}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className={clsx('mt-4 pt-3.5 border-t-2 border-[#214766]/30', rise)} style={at(750)}>
+        <div className="flex items-baseline justify-between gap-3">
+          <span className="text-[14px] font-semibold text-[#214766]">Du betalar</span>
+          <span className="text-[30px] font-bold text-[#214766] leading-none tracking-tight">0{'\u00a0'}kr</span>
         </div>
-      ))}
+        <p className="text-[11px] text-[#214766]/60 mt-1">Leverantörerna betalar oss.</p>
+      </div>
+
+      <div className={clsx('mt-auto flex items-start gap-2.5', rise)} style={at(900)}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://ik.imagekit.io/flyttsmart/Marketing/Nina_IPgqu3hJB.jpg?tr=w-96,h-96,fo-face"
+          alt="Nina Fredriksson"
+          className="w-9 h-9 rounded-full object-cover flex-shrink-0"
+        />
+        <span className="flex flex-col min-w-0">
+          <span className="text-[12px] text-[#214766]">
+            <span className="font-bold">Nina Fredriksson</span>
+            <span className="text-[#214766]/70"> · din koordinator</span>
+          </span>
+          <span className="text-[14px] font-medium text-[#214766] leading-snug mt-1">Jag ringer dig dagen innan flytten. Hör av dig om något ändras.</span>
+        </span>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const AnimatedDashboard = () => {
   const [fi, setFi] = useState(0)
