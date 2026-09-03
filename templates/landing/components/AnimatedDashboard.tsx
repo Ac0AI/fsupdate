@@ -278,7 +278,7 @@ const Home = ({ f, still }: { f: Frame; still: boolean }) => {
 }
 
 // Slutbilden: Ninas bekräftelse i appens röst. Det som kommer med datum och tid, det
-// som är klart med status i grått, summan, första kvällen i nya hemmet, Nina som avslut. Står kvar.
+// som är klart med status i grått, första kvällen i nya hemmet, Nina som avslut. Står kvar.
 const BLOCKS: { title: string; rows: { name: string; value: string }[]; done?: boolean }[] = [
   {
     title: 'Kommer',
@@ -324,21 +324,13 @@ const Brand = ({ still }: { still: boolean }) => {
           </div>
         ))}
       </div>
-      <div className={clsx('mt-3 pt-3 border-t-2 border-[#214766]/30', rise)} style={at(750)}>
-        <div className="flex items-baseline justify-between gap-3">
-          <span className="text-[14px] font-semibold text-[#214766]">Du betalar</span>
-          <span className="text-[30px] font-bold text-[#214766] leading-none tracking-tight">0{'\u00a0'}kr</span>
-        </div>
-        <p className="text-[11px] text-[#214766]/60 mt-1">Leverantörerna betalar oss.</p>
-      </div>
-
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/images/brand/inflyttad-888.webp"
         alt="Första kvällen i nya hemmet"
         width={296}
         height={148}
-        className={clsx('mt-3 w-full h-[136px] object-cover rounded-2xl', rise)}
+        className={clsx('mt-5 w-full h-[176px] object-cover rounded-2xl', rise)}
         style={at(850)}
       />
 
