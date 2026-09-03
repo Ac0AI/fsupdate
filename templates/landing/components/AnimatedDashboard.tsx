@@ -11,17 +11,22 @@ import BankId from '@/public/images/BankId.svg'
 const BROKER = { agent: 'Erik Lind', office: 'Solhöjdens Mäklarbyrå' }
 const MOVE = { from: 'Storgatan 12, Stockholm', to: 'Ekvägen 8, Göteborg', toShort: 'Ekvägen 8' }
 
-// Datumen räknas från dagens datum: flyttdagen 30 dagar fram, städningen dagen innan,
-// låsskärmen visar dagen i dag. Så blir mockupen aldrig gammal.
+// Datumen räknas från dagens datum: flyttdagen exakt en månad fram (samma dag i nästa
+// månad, sista dagen om den inte finns), städningen dagen innan, låsskärmen visar
+// dagen i dag. Så blir mockupen aldrig gammal.
 const MONTHS_LONG = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
 const MONTHS_SHORT = ['jan', 'feb', 'mars', 'apr', 'maj', 'juni', 'juli', 'aug', 'sep', 'okt', 'nov', 'dec']
 const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag']
 const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
+const addMonth = (d: Date) => {
+  const lastDayNextMonth = new Date(d.getFullYear(), d.getMonth() + 2, 0).getDate()
+  return new Date(d.getFullYear(), d.getMonth() + 1, Math.min(d.getDate(), lastDayNextMonth))
+}
 const long = (d: Date) => `${d.getDate()} ${MONTHS_LONG[d.getMonth()]}`
 const short = (d: Date) => `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`
 
 const buildCopy = (today: Date) => {
-  const move = addDays(today, 30)
+  const move = addMonth(today)
   const clean = addDays(move, -1)
   return {
     lockDate: `${WEEKDAYS[today.getDay()]} ${long(today)}`,
