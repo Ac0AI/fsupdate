@@ -67,7 +67,9 @@ const TeamSection = () => {
         {/* The pitch */}
         <div className="py-12 md:py-14 grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-8 md:gap-14 items-start">
           <h2 className="text-base font-bold text-[var(--color-secondary-main)] leading-snug">
-            Tänk Uber - fast för flytten.
+            En enklare flytt.
+            <br />
+            Det är hela poängen.
           </h2>
           <div className="space-y-3 text-[var(--color-secondary-main)]/60 text-sm leading-relaxed">
             <p>

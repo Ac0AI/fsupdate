@@ -31,7 +31,7 @@ const PartnersIntro = () => (
           Dina kunder får en flyttkoordinator.
         </h1>
         <p className="text-white/80 text-lg leading-relaxed">
-          Enklare för dem, och en kundupplevelse som sträcker sig bortom själva flytten. Går något fel tar vi ansvaret, inte du.
+          Enklare för dem, och en kundupplevelse som sträcker sig bortom själva bostadstransaktionen. Vi tar ansvar hela vägen till det nya hemmet.
         </p>
       </div>
 
@@ -57,7 +57,7 @@ const PartnersIntro = () => (
         </div>
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Flyttfirmor, elbolag och andra leverantörer</h2>
-          <p className="text-white/70 text-sm leading-relaxed">Vi skickar kunder som ska flytta inom några veckor. Du betalar per uppdrag.</p>
+          <p className="text-white/70 text-sm leading-relaxed">Vi skickar kunder som ska flytta inom kort. Du betalar bara för resultat.</p>
           <div className="mt-auto pt-2">
             <a href={`mailto:${CONTACTS.suppliers.email}`} className={outlineButton}>
               Mejla Andreas
@@ -189,7 +189,7 @@ const brokerSteps = [
 
 const DistributionPartners = () => (
   <section id="distributionspartners" className="max-w-[1200px] mx-auto px-4 md:px-8 pt-12 pb-12 md:pt-16 md:pb-16">
-    <SectionHeader audience="För mäklare, hyresvärdar och föreningar" title="Du slipper frågorna om flytten. Kunden minns vem som bjöd in." />
+    <SectionHeader audience="För mäklare, hyresvärdar och föreningar" title="Vi tar hand om flytten och skapar en bättre kundupplevelse." />
 
     <div className="mb-14 md:mb-16">
       <h3 className="text-base font-bold text-[var(--color-secondary-main)] mb-6">Så fungerar det</h3>
@@ -206,7 +206,7 @@ const vettingSteps = [
   { title: 'Ansökan granskas', description: 'F-skattsedel, försäkringar och certifieringar kontrolleras.' },
   { title: 'Referenscheck', description: 'Vi pratar med tidigare kunder och verifierar omdömen.' },
   { title: 'Provuppdrag', description: 'Du genomför ett kontrollerat uppdrag som vi följer upp.' },
-  { title: 'Löpande uppföljning', description: 'Betyg samlas in efter varje uppdrag. Håller det inte tar vi bort dig.' },
+  { title: 'Löpande uppföljning', description: 'Betyg samlas in efter varje uppdrag. Vi har löpande dialog om hur vi blir bättre och bättre tillsammans.' },
 ]
 
 const Suppliers = () => (
