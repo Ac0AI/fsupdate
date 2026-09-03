@@ -27,7 +27,7 @@ const ClosingCta = () => {
           Det tar två minuter.
         </h2>
         <p className="text-lg text-white/75 leading-relaxed max-w-[520px] mb-8">
-          Logga in med BankID. Inget bokas förrän du sagt ja.
+          Logga in med BankID. Inget bokas förrän du godkänt det.
         </p>
         <div className="flex flex-col items-center gap-3 w-full sm:w-auto">
           <Button

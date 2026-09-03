@@ -40,7 +40,7 @@ const LandingHero = () => {
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-white/80 mb-7 md:mb-10 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">
-              Vi har redan valt el, bredband, hemförsäkring, flytthjälp och flyttstädning åt dig. Du säger ja.
+              Färdigförhandlade förslag på el, bredband, flytthjälp och allt annat kring flytten. Enkelt att göra bra val.
             </p>
 
             {/* CTA */}

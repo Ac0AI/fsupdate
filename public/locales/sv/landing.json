@@ -33,7 +33,7 @@
       "benefit": ""
     },
     "step2": {
-      "title": "Säg ja till ett förslag per tjänst",
+      "title": "Godkänn eller ändra förslagen",
       "description": "El, bredband, flytthjälp, flyttstädning och försäkring, ett förslag med skälet utskrivet. Inga offerter att begära.",
       "benefit": ""
     },
@@ -61,11 +61,11 @@
   "FAQITEMS": [
     {
       "question": "Vad händer efter att jag loggat in?",
-      "answer": "Du får en checklista för just din flytt, med adress, datum och det vi redan vet. Under varje punkt ligger ett förslag, färdigförhandlat. Du säger ja till det du vill ha, så bokar din koordinator."
+      "answer": "Du får en checklista för just din flytt, med adress, datum och det vi redan vet. Under varje punkt ligger ett förslag, färdigförhandlat. Du godkänner det du vill ha, så bokar din koordinator."
     },
     {
       "question": "Kan jag ångra en bokning?",
-      "answer": "Inget är bokat förrän du sagt ja. Vill du ändra eller ångra något efteråt skriver du i chatten, så tar din koordinator det direkt."
+      "answer": "Inget är bokat förrän du godkänt det. Vill du ändra eller ångra något efteråt skriver du i chatten, så tar din koordinator det direkt."
     },
     {
       "question": "Hur långt innan flytten bör jag använda Flyttsmart?",
