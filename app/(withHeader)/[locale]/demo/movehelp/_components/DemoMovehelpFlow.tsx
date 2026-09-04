@@ -36,7 +36,7 @@ const residenceErrors = (res: Residence, prefix: 'from' | 'to'): Errors => {
   if (res.dwelling === 'apartment' && !res.elevator) e[`${prefix}.elevator`] = 'Välj hiss. Vet ej går bra.'
   if (!res.distance) e[`${prefix}.distance`] = 'Välj bärsträcka. Vet ej går bra.'
   if (prefix === 'from' && res.dwelling !== 'apartment' && res.outdoorFurniture === null) e[`${prefix}.outdoor`] = 'Svara ja eller nej, så räknar vi rätt plats i bilen.'
-  if (res.hardAccess === null) e[`${prefix}.access`] = 'Svara ja eller nej, så vet bärarna vad som väntar.'
+  if (res.hardAccess === null) e[`${prefix}.access`] = 'Svara ja eller nej, så räknar vi rätt.'
   if (res.hardAccess && !res.accessNote.trim()) e[`${prefix}.accessNote`] = 'Berätta kort vad som är krångligt, annars kan vi inte räkna rätt.'
   if (prefix === 'from') {
     if (res.hasSecondaries === null) e[`${prefix}.secondaries`] = 'Svara ja eller nej, så ingen yta glöms bort.'
@@ -559,13 +559,13 @@ const ResidenceCard = ({
 
       {/* Inget hopfällt: varje fråga kräver ett aktivt svar, även nej. Annars glöms
           det som kostar mest att upptäcka på flyttdagen. */}
-      <Field label="Kommer flyttbilen fram till porten?" className="mt-3" error={err('access')}>
+      <Field label="Trång gata, bom eller ingen plats för lastbilen?" className="mt-3" error={err('access')}>
         <div className="flex gap-1.5">
-          <Pill active={res.hardAccess === false} onClick={() => onChange({ hardAccess: false, accessNote: '' })}>
+          <Pill active={res.hardAccess === true} onClick={() => onChange({ hardAccess: true })}>
             Ja
           </Pill>
-          <Pill active={res.hardAccess === true} onClick={() => onChange({ hardAccess: true })}>
-            Nej, det är trångt
+          <Pill active={res.hardAccess === false} onClick={() => onChange({ hardAccess: false, accessNote: '' })}>
+            Nej
           </Pill>
         </div>
         {res.hardAccess && (
@@ -574,7 +574,7 @@ const ResidenceCard = ({
               autoFocus
               aria-invalid={!!err('accessNote')}
               className={clsx(textareaClass, err('accessNote') && errorBorder)}
-              placeholder="Trång gata, bom eller gårdshus. Ca 40 m från där bilen kan stå."
+              placeholder="Gårdshus, bilen får inte in på gården. Ca 40 m från gatan."
               value={res.accessNote}
               onChange={(e) => onChange({ accessNote: e.target.value })}
             />
