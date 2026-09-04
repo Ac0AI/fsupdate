@@ -11,7 +11,7 @@ import { useDemoUser } from '@/common/data/useDemoUser'
 import type { DemoAddress } from '@/common/data/demoPersona'
 import { ADDONS, CLEAN_DAYS, DISTANCES, DWELLINGS, ELEVATORS, FLOORS, KEY_HANDLING, SECONDARY_KINDS, START_TIMES, STEP_TITLES,
   cleanArea, type Addon, type Cleaning, type QuoteRequest, type Residence, type Secondary, HEAVY_KINDS, type HeavyKind } from './steps'
-import { Card, Checkbox, Chevron, type Errors, ErrorText, Field, Foot, Hero, MoreLink, Option, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, selectClass, textareaClass, pressSoft, pressScale } from '../../_components/flow-ui'
+import { Card, Chevron, type Errors, ErrorText, Field, Foot, Hero, MoreLink, Option, Pill, Primary, Radio, StepBar, Timeline, Toggle, areaInput, errorBorder, focusFirstInvalid, scrollFlowToTop, useNoScrollAnchoring, press, rise, selectClass, textareaClass, pressSoft, pressScale } from '../../_components/flow-ui'
 
 const formatDate = (d: Date) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(d)
 const weekday = (d: Date) => new Intl.DateTimeFormat('sv-SE', { weekday: 'long' }).format(d)
@@ -201,11 +201,11 @@ const DemoMovehelpFlow = () => {
         role="switch"
         aria-checked={on}
         onClick={() => toggleAddon(a.value)}
-        className={clsx('w-full flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0] text-left rounded-sm', press, 'active:bg-[#F8FAF9]')}
+        className={clsx('w-full flex items-center justify-between gap-3 py-[11px] border-t border-[var(--color-inactive-main)] text-left rounded-sm', press, 'active:bg-[var(--color-background-default)]')}
       >
         <span className="flex flex-col gap-px">
-          <span className="text-[13px] font-semibold text-[#214766]">{a.label}</span>
-          <span className="text-xs text-[#5F6062]">{a.value === 'moveclean' && on ? cleanHint : a.hint}</span>
+          <span className="text-[13px] font-semibold text-[var(--color-text-main)]">{a.label}</span>
+          <span className="text-xs text-[var(--color-inactive-extra-dark)]">{a.value === 'moveclean' && on ? cleanHint : a.hint}</span>
         </span>
         <Toggle on={on} />
       </button>
@@ -214,7 +214,7 @@ const DemoMovehelpFlow = () => {
 
 
   return (
-    <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
+    <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[var(--color-background-default)] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={['', '', '']} contentClassName="max-w-[640px]" />
       <Hero
         eyebrow="Flytthjälp och städning"
@@ -245,14 +245,14 @@ const DemoMovehelpFlow = () => {
             {/* Rekommendationen: packhjälp och flyttstädning på, resten bakom en länk. */}
             <div className={rise}>
               <Card>
-                <h3 className="text-[15px] font-bold text-[#214766]">Vårt förslag</h3>
-                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-2 pb-2">Priset kommer i offerten, efter rutavdrag.</p>
-                <div className="flex items-center justify-between gap-3 py-[11px] border-t border-[#EEEEF0]">
+                <h3 className="text-[15px] font-bold text-[var(--color-text-main)]">Vårt förslag</h3>
+                <p className="text-[13px] leading-[19px] text-[var(--color-inactive-extra-dark)] mt-2 pb-2">Priset kommer i offerten, efter rutavdrag.</p>
+                <div className="flex items-center justify-between gap-3 py-[11px] border-t border-[var(--color-inactive-main)]">
                   <span className="flex flex-col gap-px">
-                    <span className="text-[13px] font-semibold text-[#214766]">Flytthjälp</span>
-                    <span className="text-xs text-[#5F6062]">Bärare, bil och försäkring</span>
+                    <span className="text-[13px] font-semibold text-[var(--color-text-main)]">Flytthjälp</span>
+                    <span className="text-xs text-[var(--color-inactive-extra-dark)]">Bärare, bil och försäkring</span>
                   </span>
-                  <span className="text-xs font-semibold text-[#1F6156]">Ingår</span>
+                  <span className="text-xs font-semibold text-[var(--color-primary-dark)]">Ingår</span>
                 </div>
                 {ADDONS.filter((a) => a.value === 'packing' || a.value === 'moveclean').map(addonRow)}
                 {cleaning && (
@@ -262,16 +262,16 @@ const DemoMovehelpFlow = () => {
                 )}
                 {moreAddons || ADDONS.some((a) => a.kind === 'chip' && req.addons.includes(a.value)) ? (
                   <>
-                    <p className="pt-3 pb-1 text-[13px] font-semibold text-[#214766]">Fler tjänster</p>
+                    <p className="pt-3 pb-1 text-[13px] font-semibold text-[var(--color-text-main)]">Fler tjänster</p>
                     {ADDONS.filter((a) => a.value !== 'packing' && a.value !== 'moveclean').map(addonRow)}
                   </>
                 ) : (
-                  <div className="pt-2 border-t border-[#EEEEF0]">
+                  <div className="pt-2 border-t border-[var(--color-inactive-main)]">
                     <MoreLink plus onClick={() => setMoreAddons(true)}>Lägg till fler tjänster</MoreLink>
                   </div>
                 )}
                 {/* Övrigt är en rad i förslaget, hopfälld tills kunden har något att säga. */}
-                <div className="pt-2 border-t border-[#EEEEF0]">
+                <div className="pt-2 border-t border-[var(--color-inactive-main)]">
                   {noteOpen || req.note ? (
                     <div className={clsx('pt-1', rise)}>
                       <Field label="Något mer vi bör veta?">
@@ -292,15 +292,15 @@ const DemoMovehelpFlow = () => {
               <Card>
                 {!dateOpen && req.dateMode === 'fixed' ? (
                   <>
-                    <h3 className="text-[15px] font-bold text-[#214766]">Vi räknar på {formatDate(movingDate)}</h3>
-                    <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Tillträdesdagen, en {weekday(movingDate)}.</p>
+                    <h3 className="text-[15px] font-bold text-[var(--color-text-main)]">Vi räknar på {formatDate(movingDate)}</h3>
+                    <p className="text-[13px] leading-[19px] text-[var(--color-inactive-extra-dark)] mt-1">Tillträdesdagen, en {weekday(movingDate)}.</p>
                     <MoreLink className="mt-3" onClick={() => setDateOpen(true)}>
                       Ändra dag eller starttid
                     </MoreLink>
                   </>
                 ) : (
                   <>
-                    <h3 className="text-[15px] font-bold text-[#214766]">Vilken dag vill du ha flytthjälpen?</h3>
+                    <h3 className="text-[15px] font-bold text-[var(--color-text-main)]">Vilken dag vill du ha flytthjälpen?</h3>
                     <div className="flex flex-col gap-2 mt-2.5">
                     <Radio
                       active={req.dateMode === 'fixed'}
@@ -335,7 +335,7 @@ const DemoMovehelpFlow = () => {
                         />
                       </Field>
                       {req.customDate && !shownErrors.customDate && (
-                        <p className="mt-1.5 text-xs leading-[17px] text-[#767678]">
+                        <p className="mt-1.5 text-xs leading-[17px] text-[var(--color-inactive-dark)]">
                           {formatDate(new Date(req.customDate))}, en {weekday(new Date(req.customDate))}.
                           {isWeekend(new Date(req.customDate)) ? ' Helger kostar ofta mer, vardagar är billigare.' : ''}
                         </p>
@@ -356,8 +356,8 @@ const DemoMovehelpFlow = () => {
 
             <div className={clsx(rise, '[animation-delay:100ms]')}>
               <Card>
-                <h3 className="text-[15px] font-bold text-[#214766]">Något tungt, ömtåligt eller värdefullt?</h3>
-                <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Över 80 kg eller värt över 30 000 kr? Då sätter vi fler bärare och tar med det i försäkringen.</p>
+                <h3 className="text-[15px] font-bold text-[var(--color-text-main)]">Något tungt, ömtåligt eller värdefullt?</h3>
+                <p className="text-[13px] leading-[19px] text-[var(--color-inactive-extra-dark)] mt-1">Över 80 kg eller värt över 30 000 kr? Då sätter vi fler bärare och tar med det i försäkringen.</p>
                 <div className="flex flex-col gap-1.5 mt-3" data-invalid={shownErrors.heavy ? 'true' : undefined}>
                   <div className="flex flex-wrap gap-1.5">
                     {HEAVY_KINDS.map((k) => (
@@ -392,7 +392,7 @@ const DemoMovehelpFlow = () => {
 
       {/* Steg 3 är ett kvitto utan sticky-knapp: utgången är en länk under Dina svar. */}
       {step !== 2 && (
-      <div className="sticky bottom-0 bg-white border-t border-[#EEEEF0]">
+      <div className="sticky bottom-0 bg-white border-t border-[var(--color-inactive-main)]">
         <div className="w-full max-w-[640px] mx-auto px-4 py-4 flex flex-col gap-2.5 md:items-center">
           {step === 0 && (
             <>
@@ -414,7 +414,7 @@ const DemoMovehelpFlow = () => {
               ) : (
                 <Foot>
                   Offerten kommer senast nästa vardag före lunch. Inget är bokat förrän du sagt ja ·{' '}
-                  <Link href="/terms" className="underline underline-offset-2 hover:text-[#214766]">
+                  <Link href="/terms" className="underline underline-offset-2 hover:text-[var(--color-text-main)]">
                     Villkor
                   </Link>
                 </Foot>
@@ -461,9 +461,9 @@ const ResidenceCard = ({
     <Card>
       {/* Adressen är kortets rubrik, etiketten ovanför säger vilken av de två
           det är. Linjen under skiljer rubriken från fälten. */}
-      <div className="flex flex-col gap-1 pb-3 border-b border-[#EEEEF0]">
-        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#767678]">{label}</span>
-        <span className="text-[18px] leading-6 font-bold text-[#214766] tracking-[-0.01em]">
+      <div className="flex flex-col gap-1 pb-3 border-b border-[var(--color-inactive-main)]">
+        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-inactive-dark)]">{label}</span>
+        <span className="text-[18px] leading-6 font-bold text-[var(--color-text-main)] tracking-[-0.01em]">
           {res.street}, {res.city}
         </span>
       </div>
@@ -593,7 +593,7 @@ const ResidenceCard = ({
               <button
                 type="button"
                 onClick={addSecondary}
-                className={clsx('self-start min-h-11 -my-1 flex items-center gap-1.5 text-[13px] font-semibold text-[#214766] rounded-sm', press, pressSoft)}
+                className={clsx('self-start min-h-11 -my-1 flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-text-main)] rounded-sm', press, pressSoft)}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
                   <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -612,7 +612,7 @@ const ResidenceCard = ({
 const SecondaryRow = ({ s, error, onChange, onRemove }: { s: Secondary; error?: string; onChange: (p: Partial<Secondary>) => void; onRemove: () => void }) => (
   <div
     data-invalid={error ? 'true' : undefined}
-    className={clsx('flex flex-col gap-2 rounded-lg border p-2.5', rise, error ? 'bg-[#FFF5F5] border-[var(--color-error-red)]' : 'bg-[#F8FAF9] border-[#EEEEF0]')}
+    className={clsx('flex flex-col gap-2 rounded-lg border p-2.5', rise, error ? 'bg-[var(--color-inactive-super-light)] border-[var(--color-error-red)]' : 'bg-[var(--color-background-default)] border-[var(--color-inactive-main)]')}
   >
     <div className="flex gap-1.5 items-center">
       <select aria-label="Typ av biyta" className={clsx(selectClass, 'basis-0 grow min-w-0')} value={s.kind} onChange={(e) => onChange({ kind: e.target.value as Secondary['kind'] })}>
@@ -636,7 +636,7 @@ const SecondaryRow = ({ s, error, onChange, onRemove }: { s: Secondary; error?: 
         type="button"
         aria-label="Ta bort biytan"
         onClick={onRemove}
-        className={clsx('w-11 h-11 -mr-2 shrink-0 flex items-center justify-center rounded-full text-[#767678] hover:text-[#214766] hover:bg-white', press)}
+        className={clsx('w-11 h-11 -mr-2 shrink-0 flex items-center justify-center rounded-full text-[var(--color-inactive-dark)] hover:text-[var(--color-text-main)] hover:bg-white', press)}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
           <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -682,7 +682,7 @@ const CleaningCard = ({
   return (
     <div>
       {/* Ytan står redan i raden ovanför; bara biytorna är ny information. */}
-      {extra && <p className="text-[13px] leading-[19px] text-[#5F6062]">{cleanArea(from)} m² städyta inklusive biytorna som ska städas.</p>}
+      {extra && <p className="text-[13px] leading-[19px] text-[var(--color-inactive-extra-dark)]">{cleanArea(from)} m² städyta inklusive biytorna som ska städas.</p>}
 
       <Field label="Något av det här i bostaden?" className={extra ? 'mt-3' : undefined} error={errors.cleanDetails}>
         <div className="flex flex-wrap gap-1.5">
@@ -718,7 +718,7 @@ const CleaningCard = ({
         )}
       </div>
 
-      <Field label="Hur kommer städarna in?" className="mt-3 pt-3 border-t border-[#EEEEF0]">
+      <Field label="Hur kommer städarna in?" className="mt-3 pt-3 border-t border-[var(--color-inactive-main)]">
         <div className="grid grid-cols-2 gap-1.5">
           {KEY_HANDLING.map((k) => (
             <Pill key={k.value} active={cleaning.keys === k.value} onClick={() => onChange({ keys: k.value })}>
@@ -795,17 +795,17 @@ const WaitingStep = ({ req, movingDate, onEdit, onOpen }: { req: QuoteRequest; m
               className="w-8 h-8 rounded-full object-cover shrink-0"
             />
             <span className="flex flex-col gap-0.5">
-              <span className="text-[15px] font-bold text-[#214766]">Nina Fredriksson</span>
-              <span className="text-[13px] text-[#767678]">Din flyttkoordinator</span>
+              <span className="text-[15px] font-bold text-[var(--color-text-main)]">Nina Fredriksson</span>
+              <span className="text-[13px] text-[var(--color-inactive-dark)]">Din flyttkoordinator</span>
             </span>
           </div>
-          <p className={clsx('mt-3 rounded-[12px_12px_12px_2px] bg-[#EAF2F8] px-3.5 py-3 text-[13px] leading-[19px] text-[#214766]', rise, '[animation-delay:350ms]')}>
+          <p className={clsx('mt-3 rounded-[12px_12px_12px_2px] bg-[var(--color-secondary-extra-extra-light)] px-3.5 py-3 text-[13px] leading-[19px] text-[var(--color-text-main)]', rise, '[animation-delay:350ms]')}>
             Jag räknar på din flytt från {req.from.street} nu. Vill du lägga till eller ändra något, skriv till mig här så tar jag det direkt.
           </p>
           <button
             type="button"
             onClick={() => openChat()}
-            className={clsx('mt-4 min-h-11 px-4 rounded-full border border-[#214766] bg-white text-[13px] font-semibold text-[#214766] hover:bg-[#F8FAF9]', press, pressScale)}
+            className={clsx('mt-4 min-h-11 px-4 rounded-full border border-[var(--color-secondary-main)] bg-white text-[13px] font-semibold text-[var(--color-text-main)] hover:bg-[var(--color-background-default)]', press, pressScale)}
           >
             Öppna chatten
           </button>
@@ -827,11 +827,11 @@ const WaitingStep = ({ req, movingDate, onEdit, onOpen }: { req: QuoteRequest; m
       <button
         type="button"
         onClick={onEdit}
-        className={clsx('w-full text-left rounded-[10px] bg-white border border-[#EEEEF0] px-3.5 py-3.5 flex items-center justify-between gap-3 hover:border-[#214766]/40', press, pressSoft, rise, '[animation-delay:200ms]')}
+        className={clsx('w-full text-left rounded-[10px] bg-white border border-[var(--color-inactive-main)] px-3.5 py-3.5 flex items-center justify-between gap-3 hover:border-(--color-secondary-main)/40', press, pressSoft, rise, '[animation-delay:200ms]')}
       >
         <span className="flex flex-col gap-0.5">
-          <span className="text-[15px] font-bold text-[#214766]">Dina svar</span>
-          <span className="text-[13px] text-[#767678]">
+          <span className="text-[15px] font-bold text-[var(--color-text-main)]">Dina svar</span>
+          <span className="text-[13px] text-[var(--color-inactive-dark)]">
             {req.from.street} → {req.to.street}{'\u00a0· '}{req.dateMode === 'fixed' ? formatDate(movingDate) : req.dateMode === 'custom' && req.customDate ? formatDate(new Date(req.customDate)) : 'flexibelt datum'}
             {'\u00a0· '}flytthjälp{addonLabels.length ? `, ${addonLabels.join(', ')}` : ''}
           </span>

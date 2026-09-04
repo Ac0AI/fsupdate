@@ -127,7 +127,7 @@ const DemoMovecleanFlow = () => {
   const patchSec = (id: number, p: Partial<Secondary>) => setSecondaries((list) => list.map((s) => (s.id === id ? { ...s, ...p } : s)))
 
   return (
-    <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
+    <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[var(--color-background-default)] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={STEP_HINTS} label={step === 2 ? 'Klart · 3 av 3' : undefined} />
       <Hero
         eyebrow="Flyttstädning"
@@ -143,8 +143,8 @@ const DemoMovecleanFlow = () => {
             <div className="flex flex-col gap-3.5 md:grid md:grid-cols-[1fr_320px] md:items-start">
               <Card className="flex flex-col gap-4">
                 <div>
-                  <div className="text-[11px] font-bold tracking-[0.12em] uppercase text-[#767678]">Städas</div>
-                  <div className="text-[17px] font-black text-[#214766] mt-0.5">
+                  <div className="text-[11px] font-bold tracking-[0.12em] uppercase text-[var(--color-inactive-dark)]">Städas</div>
+                  <div className="text-[17px] font-black text-[var(--color-text-main)] mt-0.5">
                     {move.fromAddress.street}, {move.fromAddress.city}
                   </div>
                 </div>
@@ -159,7 +159,7 @@ const DemoMovecleanFlow = () => {
                   />
                 </Field>
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs text-[#767678]">Förråd, garage eller vind som också ska städas</span>
+                  <span className="text-xs text-[var(--color-inactive-dark)]">Förråd, garage eller vind som också ska städas</span>
                   {secondaries.map((s) => (
                     <div key={s.id} className="flex flex-col gap-1.5">
                       <div className="flex items-center gap-2">
@@ -182,7 +182,7 @@ const DemoMovecleanFlow = () => {
                         <button
                           type="button"
                           onClick={() => setSecondaries((l) => l.filter((x) => x.id !== s.id))}
-                          className={clsx('min-h-11 min-w-11 flex items-center justify-center text-[#767678] hover:text-[#214766] rounded-sm', press)}
+                          className={clsx('min-h-11 min-w-11 flex items-center justify-center text-[var(--color-inactive-dark)] hover:text-[var(--color-text-main)] rounded-sm', press)}
                           aria-label="Ta bort biytan"
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
@@ -196,7 +196,7 @@ const DemoMovecleanFlow = () => {
                   <button
                     type="button"
                     onClick={() => setSecondaries((l) => [...l, { id: Date.now(), kind: 'storage', area: 0 }])}
-                    className={clsx('self-start min-h-11 -my-1 flex items-center gap-1.5 text-[13px] font-semibold text-[#214766] rounded-sm', press, pressSoft)}
+                    className={clsx('self-start min-h-11 -my-1 flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-text-main)] rounded-sm', press, pressSoft)}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
                       <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -204,7 +204,7 @@ const DemoMovecleanFlow = () => {
                     {secondaries.length ? 'Lägg till en till' : 'Lägg till biyta'}
                   </button>
                 </div>
-                <Field label="Städdag" hint="Dagen efter flytten är vanligast, då är bostaden tom." error={shown.day} className="pt-3 border-t border-[#EEEEF0]">
+                <Field label="Städdag" hint="Dagen efter flytten är vanligast, då är bostaden tom." error={shown.day} className="pt-3 border-t border-[var(--color-inactive-main)]">
                   <input
                     type="date"
                     value={day}
@@ -216,10 +216,10 @@ const DemoMovecleanFlow = () => {
               </Card>
               <div className="flex flex-col gap-3.5">
                 <Card className="flex flex-col gap-2">
-                  <div className="text-[11px] font-bold tracking-[0.12em] uppercase text-[#767678]">Fast pris</div>
-                  <div className="text-[32px] font-black text-[#214766] leading-9 tabular-nums">{formatKr(total)}</div>
-                  <div className="text-[13px] text-[#767678]">Efter RUT-avdrag. Vi sköter avdraget.</div>
-                  <div className="flex flex-col gap-1 pt-2 border-t border-[#EEEEF0] text-[13px] text-[#214766]">
+                  <div className="text-[11px] font-bold tracking-[0.12em] uppercase text-[var(--color-inactive-dark)]">Fast pris</div>
+                  <div className="text-[32px] font-black text-[var(--color-text-main)] leading-9 tabular-nums">{formatKr(total)}</div>
+                  <div className="text-[13px] text-[var(--color-inactive-dark)]">Efter RUT-avdrag. Vi sköter avdraget.</div>
+                  <div className="flex flex-col gap-1 pt-2 border-t border-[var(--color-inactive-main)] text-[13px] text-[var(--color-text-main)]">
                     <span>Bostad {kvm || 0} m²</span>
                     {secondaries
                       .filter((s) => s.area > 0)
@@ -233,13 +233,13 @@ const DemoMovecleanFlow = () => {
                   </div>
                 </Card>
                 <Card className="flex flex-col gap-2">
-                  <div className="text-[15px] font-black text-[#214766]">Ska något flyttas också?</div>
-                  <p className="text-[13px] leading-[18px] text-[#767678]">Vi tar med flytten i samma offert. Städet behåller sitt fasta pris.</p>
+                  <div className="text-[15px] font-black text-[var(--color-text-main)]">Ska något flyttas också?</div>
+                  <p className="text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">Vi tar med flytten i samma offert. Städet behåller sitt fasta pris.</p>
                   <button
                     type="button"
                     onClick={() => router.push(pathTo('/demo/movehelp'))}
                     className={clsx(
-                      'self-start min-h-10 px-4 rounded-full border-2 border-[#214766] bg-white text-[13px] font-bold text-[#214766] hover:bg-[#F4FCFA]',
+                      'self-start min-h-10 px-4 rounded-full border-2 border-[var(--color-secondary-main)] bg-white text-[13px] font-bold text-[var(--color-text-main)] hover:bg-[var(--color-primary-extra-light)]',
                       press,
                       'motion-safe:active:scale-[0.97]',
                     )}
@@ -280,9 +280,9 @@ const DemoMovecleanFlow = () => {
                 ['Pris', `${formatKr(total)} efter RUT-avdrag, fast`],
                 ['Garanti', 'Godkänd besiktning eller omstädning'],
               ].map(([k, v]) => (
-                <div key={k} className="flex items-baseline justify-between gap-4 border-b border-[#EEEEF0] last:border-0 pb-2.5 last:pb-0">
-                  <span className="text-[13px] text-[#767678] shrink-0">{k}</span>
-                  <span className="text-[14px] font-semibold text-[#214766] text-right">{v}</span>
+                <div key={k} className="flex items-baseline justify-between gap-4 border-b border-[var(--color-inactive-main)] last:border-0 pb-2.5 last:pb-0">
+                  <span className="text-[13px] text-[var(--color-inactive-dark)] shrink-0">{k}</span>
+                  <span className="text-[14px] font-semibold text-[var(--color-text-main)] text-right">{v}</span>
                 </div>
               ))}
             </Card>
@@ -291,7 +291,7 @@ const DemoMovecleanFlow = () => {
                 {booking ? 'Bokar…' : 'Boka städningen'}
               </Primary>
               <Foot>Inget dras nu. Bekräftelsen kommer via SMS.</Foot>
-              <button type="button" onClick={() => setStep(0)} className={clsx('min-h-11 text-[13px] font-semibold text-[#214766] underline underline-offset-2 rounded-sm', press)}>
+              <button type="button" onClick={() => setStep(0)} className={clsx('min-h-11 text-[13px] font-semibold text-[var(--color-text-main)] underline underline-offset-2 rounded-sm', press)}>
                 Ändra något
               </button>
             </div>
@@ -315,13 +315,13 @@ const DemoMovecleanFlow = () => {
             </Card>
             <Card className="flex items-center gap-4">
               <div className="flex flex-col gap-1 flex-1">
-                <div className="text-[15px] font-black text-[#214766]">Näst på tur: elavtal</div>
-                <p className="text-[13px] leading-[18px] text-[#767678]">Teckna nu: 100 kr rabatt på städet. Tre minuter, tänd lampa när du kommer.</p>
+                <div className="text-[15px] font-black text-[var(--color-text-main)]">Näst på tur: elavtal</div>
+                <p className="text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">Teckna nu: 100 kr rabatt på städet. Tre minuter, tänd lampa när du kommer.</p>
               </div>
               <button
                 type="button"
                 onClick={() => router.push(pathTo('/demo/electricity'))}
-                className={clsx('shrink-0 min-h-10 px-4 rounded-full bg-[#214766] text-[13px] font-bold text-white hover:bg-[#1A3A54]', press, 'motion-safe:active:scale-[0.97]')}
+                className={clsx('shrink-0 min-h-10 px-4 rounded-full bg-[var(--color-secondary-main)] text-[13px] font-bold text-white hover:bg-[var(--color-secondary-main-dark)]', press, 'motion-safe:active:scale-[0.97]')}
               >
                 Visa mitt förslag
               </button>
