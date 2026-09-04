@@ -6,20 +6,24 @@ import LogoMarquee from './LogoMarquee'
  * Leverantörerna vi förhandlat med. Egen remsa här, aldrig i bevisblocket:
  * den rubriken säger mäklarkedjor (Sebastian 2026-09-03).
  *
- * Ordningen är el, försäkring, bredband, så remsan läser som tjänsterna.
+ * Ordningen är el, bredband, tv och försäkring, så remsan läser som tjänsterna.
  *
- * SAKNAS: Telia, Tele2 och Telenor. Ägaren bad om dem 2026-09-04, men det finns
- * inga logotypfiler i repot och deras varumärkesfiler hämtar jag inte själv.
- * Bredbandsval-API:et returnerar heller inga logotyp-URL:er. Lägg filerna i
- * public/images/suppliers och skriv in dem här, så kommer de med i rullningen.
+ * Logotyperna är Flyttsmarts egna, hämtade från företagets ImageKit 2026-09-04
+ * och sparade lokalt: en marknadsföringssida ska inte vara beroende av ett
+ * externt CDN mitt i sidan. Telia låg som SVG med en inbäddad base64-bild på
+ * 164 kB, den ligger som 4,6 kB webp i stället.
  */
 const SUPPLIER_LOGOS = [
   { src: '/images/suppliers/fortum.svg', alt: 'Fortum' },
   { src: '/images/suppliers/vattenfall.svg', alt: 'Vattenfall' },
   { src: '/images/suppliers/skekraft.svg', alt: 'Skellefteå Kraft' },
   { src: '/images/suppliers/tibber-crop.svg', alt: 'Tibber' },
-  { src: '/images/hedvig_logotype_black.png', alt: 'Hedvig' },
+  { src: '/images/suppliers/telia.webp', alt: 'Telia' },
+  { src: '/images/suppliers/telenor.svg', alt: 'Telenor' },
+  { src: '/images/suppliers/tele2.svg', alt: 'Tele2' },
   { src: '/images/Bredbandsval.svg', alt: 'Bredbandsval' },
+  { src: '/images/suppliers/allente.svg', alt: 'Allente' },
+  { src: '/images/hedvig_logotype_black.png', alt: 'Hedvig' },
 ]
 
 /**
