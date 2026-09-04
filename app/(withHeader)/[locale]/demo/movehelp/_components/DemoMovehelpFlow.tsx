@@ -359,9 +359,9 @@ const DemoMovehelpFlow = () => {
                 <h3 className="text-[15px] font-bold text-[var(--color-text-main)]">Något tungt, ömtåligt eller värdefullt?</h3>
                 <p className="text-[13px] leading-[19px] text-[var(--color-inactive-extra-dark)] mt-1">Över 80 kg eller värt över 30 000 kr? Då sätter vi fler bärare och tar med det i försäkringen.</p>
                 <div className="flex flex-col gap-1.5 mt-3" data-invalid={shownErrors.heavy ? 'true' : undefined}>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-2">
                     {HEAVY_KINDS.map((k) => (
-                      <Pill key={k.value} multi className="flex-none" active={req.heavyKinds.includes(k.value)} onClick={() => toggleHeavy(k.value)}>
+                      <Pill key={k.value} multi active={req.heavyKinds.includes(k.value)} onClick={() => toggleHeavy(k.value)}>
                         {k.label}
                       </Pill>
                     ))}
@@ -470,7 +470,7 @@ const ResidenceCard = ({
 
 
       <Field label="Bostadstyp" className="mt-3">
-        <div className="flex gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {DWELLINGS.map((d) => (
             <Pill key={d.value} active={res.dwelling === d.value} onClick={() => onChange({ dwelling: d.value })}>
               {d.label}
@@ -502,7 +502,7 @@ const ResidenceCard = ({
 
       {apartment && (
         <Field label="Våning" className="mt-3" error={err('floor')}>
-          <div className="grid grid-cols-6 gap-1.5">
+          <div className="grid grid-cols-6 gap-2">
             {FLOORS.map((f) => (
               <Pill key={f.value} active={res.floor === f.value} onClick={() => onChange({ floor: f.value })}>
                 {f.label}
@@ -514,7 +514,7 @@ const ResidenceCard = ({
 
       {apartment ? (
         <Field label="Hiss" className="mt-3" error={err('elevator')}>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {ELEVATORS.map((e) => (
               <Pill key={e.value} active={res.elevator === e.value} onClick={() => onChange({ elevator: e.value })}>
                 {e.label}
@@ -525,7 +525,7 @@ const ResidenceCard = ({
       ) : (
         origin && (
           <Field label="Utemöbler, grill eller studsmatta som ska med?" className="mt-3" error={err('outdoor')}>
-            <div className={clsx('flex gap-1.5', rise)}>
+            <div className={clsx('flex flex-wrap gap-2', rise)}>
               <Pill active={res.outdoorFurniture === true} onClick={() => onChange({ outdoorFurniture: true })}>
                 Ja
               </Pill>
@@ -540,7 +540,7 @@ const ResidenceCard = ({
       {/* Sex korta värden: piller som Hiss, inte en rullista. Då är Våning den
           enda nativa listan i kortet, där den hör hemma. */}
       <Field label="Bärsträcka, från porten till där bilen kan stå" className="mt-3" error={err('distance')}>
-        <div className="grid grid-cols-3 gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {DISTANCES.map((d) => (
             <Pill key={d.value} active={res.distance === d.value} onClick={() => onChange({ distance: d.value })}>
               {d.label}
@@ -552,7 +552,7 @@ const ResidenceCard = ({
       {/* Inget hopfällt: varje fråga kräver ett aktivt svar, även nej. Annars glöms
           det som kostar mest att upptäcka på flyttdagen. */}
       <Field label="Trång gata, bom eller ingen plats för lastbilen?" className="mt-3" error={err('access')}>
-        <div className="flex gap-1.5">
+        <div className="flex flex-wrap gap-2">
           <Pill active={res.hardAccess === true} onClick={() => onChange({ hardAccess: true })}>
             Ja
           </Pill>
@@ -577,7 +577,7 @@ const ResidenceCard = ({
 
       {origin && (
         <Field label="Förråd, garage eller vind som ska tömmas eller städas?" className="mt-3" error={err('secondaries')}>
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-2">
             <Pill active={res.hasSecondaries === true} onClick={() => onChange({ hasSecondaries: true, secondaries: res.secondaries.length ? res.secondaries : [newSecondary()] })}>
               Ja
             </Pill>
@@ -643,7 +643,7 @@ const SecondaryRow = ({ s, error, onChange, onRemove }: { s: Secondary; error?: 
         </svg>
       </button>
     </div>
-    <div className="flex gap-1.5">
+    <div className="flex flex-wrap gap-2">
       <Pill multi active={s.move} onClick={() => onChange({ move: !s.move })}>
         Flyttas
       </Pill>
@@ -685,17 +685,17 @@ const CleaningCard = ({
       {extra && <p className="text-[13px] leading-[19px] text-[var(--color-inactive-extra-dark)]">{cleanArea(from)} m² städyta inklusive biytorna som ska städas.</p>}
 
       <Field label="Något av det här i bostaden?" className={extra ? 'mt-3' : undefined} error={errors.cleanDetails}>
-        <div className="flex flex-wrap gap-1.5">
-          <Pill multi className="flex-none" active={cleaning.specialWindows} onClick={() => onChange({ specialWindows: !cleaning.specialWindows, nothingSpecial: false })}>
+        <div className="flex flex-wrap gap-2">
+          <Pill multi active={cleaning.specialWindows} onClick={() => onChange({ specialWindows: !cleaning.specialWindows, nothingSpecial: false })}>
             Spröjs eller takfönster
           </Pill>
-          <Pill multi className="flex-none" active={cleaning.glazedBalcony} onClick={() => onChange({ glazedBalcony: !cleaning.glazedBalcony, nothingSpecial: false })}>
+          <Pill multi active={cleaning.glazedBalcony} onClick={() => onChange({ glazedBalcony: !cleaning.glazedBalcony, nothingSpecial: false })}>
             Inglasad balkong
           </Pill>
-          <Pill multi className="flex-none" active={cleaning.sensitiveSurfaces} onClick={() => onChange({ sensitiveSurfaces: !cleaning.sensitiveSurfaces, nothingSpecial: false })}>
+          <Pill multi active={cleaning.sensitiveSurfaces} onClick={() => onChange({ sensitiveSurfaces: !cleaning.sensitiveSurfaces, nothingSpecial: false })}>
             Marmor eller obehandlat trä
           </Pill>
-          <Pill multi className="flex-none" active={cleaning.nothingSpecial} onClick={() => onChange({ nothingSpecial: true, specialWindows: false, glazedBalcony: false, sensitiveSurfaces: false, balconyArea: 0 })}>
+          <Pill multi active={cleaning.nothingSpecial} onClick={() => onChange({ nothingSpecial: true, specialWindows: false, glazedBalcony: false, sensitiveSurfaces: false, balconyArea: 0 })}>
             Inget av det här
           </Pill>
         </div>
@@ -719,7 +719,7 @@ const CleaningCard = ({
       </div>
 
       <Field label="Hur kommer städarna in?" className="mt-3 pt-3 border-t border-[var(--color-inactive-main)]">
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {KEY_HANDLING.map((k) => (
             <Pill key={k.value} active={cleaning.keys === k.value} onClick={() => onChange({ keys: k.value })}>
               {k.label}
