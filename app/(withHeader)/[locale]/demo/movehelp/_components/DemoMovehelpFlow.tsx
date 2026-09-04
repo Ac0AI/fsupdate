@@ -502,7 +502,7 @@ const ResidenceCard = ({
 
       {apartment && (
         <Field label="Våning" className="mt-3" error={err('floor')}>
-          <div className="grid grid-cols-6 md:flex gap-1.5">
+          <div className="grid grid-cols-6 gap-1.5">
             {FLOORS.map((f) => (
               <Pill key={f.value} active={res.floor === f.value} onClick={() => onChange({ floor: f.value })}>
                 {f.label}
@@ -514,7 +514,7 @@ const ResidenceCard = ({
 
       {apartment ? (
         <Field label="Hiss" className="mt-3" error={err('elevator')}>
-          <div className="grid grid-cols-2 md:flex md:flex-wrap gap-1.5">
+          <div className="grid grid-cols-2 gap-1.5">
             {ELEVATORS.map((e) => (
               <Pill key={e.value} active={res.elevator === e.value} onClick={() => onChange({ elevator: e.value })}>
                 {e.label}
@@ -540,7 +540,7 @@ const ResidenceCard = ({
       {/* Sex korta värden: piller som Hiss, inte en rullista. Då är Våning den
           enda nativa listan i kortet, där den hör hemma. */}
       <Field label="Bärsträcka, från porten till där bilen kan stå" className="mt-3" error={err('distance')}>
-        <div className="grid grid-cols-3 md:flex md:flex-wrap gap-1.5">
+        <div className="grid grid-cols-3 gap-1.5">
           {DISTANCES.map((d) => (
             <Pill key={d.value} active={res.distance === d.value} onClick={() => onChange({ distance: d.value })}>
               {d.label}
@@ -719,7 +719,7 @@ const CleaningCard = ({
       </div>
 
       <Field label="Hur kommer städarna in?" className="mt-3 pt-3 border-t border-[#EEEEF0]">
-        <div className="grid grid-cols-2 md:flex md:flex-wrap gap-1.5">
+        <div className="grid grid-cols-2 gap-1.5">
           {KEY_HANDLING.map((k) => (
             <Pill key={k.value} active={cleaning.keys === k.value} onClick={() => onChange({ keys: k.value })}>
               {k.label}

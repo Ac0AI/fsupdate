@@ -147,13 +147,14 @@ export const ErrorText = ({ className, children }: { className?: string; childre
 )
 
 // Utseendet från 2 september 16:03 (ägarens val): 44 px, tunn ljus kant, mint med bock när vald.
+// Chipsen fyller sin kolumn på alla bredder, så raderna är jämna även på desktop.
 export const Pill = ({ active, multi, small, className, onClick, children }: { active: boolean; multi?: boolean; small?: boolean; className?: string; onClick: () => void; children: React.ReactNode }) => (
   <button
     type="button"
     aria-pressed={active}
     onClick={onClick}
     className={clsx(
-      'flex-1 md:flex-none md:px-5 md:min-w-[64px] rounded-full text-[13px] flex items-center justify-center gap-1.5 border-[1.5px] whitespace-nowrap text-[#214766]',
+      'flex-1 rounded-full text-[13px] flex items-center justify-center gap-1.5 border-[1.5px] whitespace-nowrap text-[#214766]',
       small ? 'h-10 px-2' : 'h-11 px-3',
       press,
       pressScale,
