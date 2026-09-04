@@ -36,3 +36,11 @@ Slop-fynd efteråt: "kostnadsfritt" står två gånger i heron (eyebrow och unde
 - **Försäkringserbjudandet** ("första månaden kostnadsfritt på hemförsäkringen") väntar på exakta villkor innan det får ett kort bredvid Fortum.
 - **Mäklarloggorna**: Camilla levererar rätt loggor i rätt kvalitet till remsan.
 - **"Kostnadsfritt" två gånger i heron**: behåll båda, eller stryk en.
+
+## Sebastians kommentar 2026-09-04 (Google-dokumentet, 09:28)
+
+| Var | Före | Efter | Skäl |
+|---|---|---|---|
+| Bevisblocket, eyebrow + rubrik | Rekommenderas av / Hälften av Sveriges mäklarkedjor | Förtroende från / Över hälften av Sveriges mäklarkedjor | Sebastians formulering; "över hälften" är hans tal |
+| Bevisblocket, brödtext | Färdigförhandlade leverantörer, och vi tar ansvar hela vägen till det nya hemmet. | (borta) | "Denna ska inte vara på mäklarytan"; meningen bor redan i hero-underrubriken och Förhandlat i förväg |
+| Bevisblocket, siffran | Över 230 000 personer har flyttat med oss sedan 2020. | (oförändrad, nu ensam bredvid rubriken, ett snäpp större) | Bekräftad av Sebastian |

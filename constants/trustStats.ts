@@ -16,18 +16,24 @@ export const MOVES_IN_SWEDEN_PER_YEAR = 'nära 1,5 miljoner'
 export const MOVES_IN_SWEDEN_SOURCE_URL = 'https://www.scb.se/hitta-statistik/sverige-i-siffror/manniskorna-i-sverige/flyttar-inom-sverige/'
 
 /**
- * Bevisblocket under heron. En stor sanning i stället för tre små - varje rad
- * ska gå att belägga.
+ * Bevisblocket under heron är mäklarytan. Här står bara mäklarnas förtroende och
+ * det verifierade talet (Sebastian 2026-09-04). Leverantörsmeningen
+ * ("färdigförhandlade leverantörer, ansvar hela vägen") hör inte hemma här; den
+ * bor i hero-underrubriken och i sektionen Förhandlat i förväg.
+ *
+ * Eyebrow och rubrik läses som en mening: "Förtroende från / Över hälften av
+ * Sveriges mäklarkedjor".
  *
  * Källor:
- *  - "Hälften av Sveriges mäklarkedjor": varumärkesplattformen aug 2026.
- *  - "Över 230 000 flyttar sedan 2020": bekräftad av David 2026-08-29 (höjt från 200 000, samma siffra som brandguiden).
- *  - "Tjänsten kostar dig ingenting": bevis 2, leverantörerna betalar.
+ *  - "Förtroende från över hälften av Sveriges mäklarkedjor": Sebastians
+ *    formulering 2026-09-04 (varumärkesplattformen aug 2026 sa "hälften").
+ *  - "Över 230 000 personer har flyttat med oss sedan 2020": bekräftad av David
+ *    2026-08-29 (höjt från 200 000, samma siffra som brandguiden). Talet räknar
+ *    människor, därför "personer" (Sebastian 2026-09-03).
  */
 export const PROOF_BLOCK = {
-  eyebrow: 'Rekommenderas av',
-  claim: 'Hälften av Sveriges mäklarkedjor',
-  body: 'Färdigförhandlade leverantörer, och vi tar ansvar hela vägen till det nya hemmet.',
+  eyebrow: 'Förtroende från',
+  claim: 'Över hälften av Sveriges mäklarkedjor',
   numbers: 'Över 230 000 personer har flyttat med oss sedan 2020.',
 } as const
 

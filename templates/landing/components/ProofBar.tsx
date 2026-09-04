@@ -21,11 +21,10 @@ const ProofBar = () => {
             </h2>
           </div>
 
-          <div className="lg:pb-2">
-            <p className="text-lg text-white/75 leading-relaxed max-w-[520px]">
-              {PROOF_BLOCK.body}
-            </p>
-            <p className="text-lg text-white font-medium leading-relaxed max-w-[520px] mt-4">
+          {/* Bara det verifierade talet bredvid rubriken. Leverantörsmeningen togs
+              bort härifrån 2026-09-04: mäklarytan ska bara tala om mäklarna. */}
+          <div className="lg:pb-3">
+            <p className="text-xl md:text-2xl text-white font-medium leading-snug max-w-[520px]">
               {PROOF_BLOCK.numbers}
             </p>
           </div>
