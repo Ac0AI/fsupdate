@@ -28,10 +28,13 @@ export type Residence = {
   // Hiss frågas bara i lägenhet. Villa och radhus har ingen.
   elevator: Elevator
   distance: Distance
-  hardAccess: boolean
+  // null = inte besvarat än. Varje fråga kräver ett aktivt svar, även nej.
+  hardAccess: boolean | null
   accessNote: string
   // Bara från-adressen och bara villa eller radhus: trädgårdsmöbler tar plats i bilen.
-  outdoorFurniture: boolean
+  outdoorFurniture: boolean | null
+  // Bara från-adressen. Ja lägger till en rad, nej tömmer listan.
+  hasSecondaries: boolean | null
   secondaries: Secondary[]
 }
 
@@ -43,6 +46,8 @@ export type Cleaning = {
   // Ungefärlig yta när balkongen är inglasad. Städas som en del av bostaden.
   balconyArea: number
   sensitiveSurfaces: boolean
+  // Aktivt nej på frågan om fönster, balkong och ytor. Utesluter de tre ovan.
+  nothingSpecial: boolean
   keys: KeyHandling
   // Var nyckeln finns när ingen är hemma: brevlåda, granne, kod.
   keyNote: string
@@ -50,7 +55,8 @@ export type Cleaning = {
   customDate: string
 }
 
-export type HeavyKind = 'piano' | 'safe' | 'aquarium' | 'art' | 'other'
+// none = aktivt nej, utesluter de andra.
+export type HeavyKind = 'piano' | 'safe' | 'aquarium' | 'art' | 'other' | 'none'
 
 export type QuoteRequest = {
   from: Residence
@@ -145,6 +151,7 @@ export const HEAVY_KINDS: { value: HeavyKind; label: string }[] = [
   { value: 'aquarium', label: 'Akvarium' },
   { value: 'art', label: 'Konst eller värdesaker' },
   { value: 'other', label: 'Annat' },
+  { value: 'none', label: 'Nej, inget sådant' },
 ]
 
 // Städytan är boarean plus de biytor som ska städas.

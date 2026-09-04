@@ -61,6 +61,10 @@ for (const vp of VIEWPORTS) {
     await page.getByRole('button', { name: 'Stor, 6+ personer', exact: true }).click()
     await page.getByRole('button', { name: '26–50 m', exact: true }).first().click()
     await page.getByRole('button', { name: '0–25 m', exact: true }).last().click()
+    // Framkomlighet (från, till) och biytor (från) kräver aktivt svar.
+    await page.getByRole('button', { name: 'Ja', exact: true }).nth(0).click()
+    await page.getByRole('button', { name: 'Nej', exact: true }).nth(1).click()
+    await page.getByRole('button', { name: 'Ja', exact: true }).nth(2).click()
     await page.waitForTimeout(300)
   }
   if (which === 'all' || which === 'movehelp') {
@@ -73,7 +77,6 @@ for (const vp of VIEWPORTS) {
       await page.waitForTimeout(1200)
       await page.getByRole('button', { name: 'Ändra dag eller starttid', exact: true }).click()
       await page.getByRole('button', { name: 'Lägg till fler tjänster', exact: true }).click()
-      await page.getByRole('button', { name: 'Anpassa städningen', exact: true }).click()
       await page.getByRole('button', { name: 'Lägg till portkod eller parkering', exact: true }).click()
       await page.waitForTimeout(600)
       await page.addStyleTag({ content: '.sticky{position:static!important}' })
@@ -88,6 +91,8 @@ for (const vp of VIEWPORTS) {
     await page.getByRole('button', { name: 'Fortsätt', exact: true }).click()
     await page.waitForTimeout(1200)
     await shot(page, `movehelp-steg2-${vp.tag}`)
+    await page.getByRole('button', { name: 'Inget av det här', exact: true }).click()
+    await page.getByRole('button', { name: 'Nej, inget sådant', exact: true }).click()
     await page.getByRole('button', { name: 'Begär offert', exact: true }).click()
     await page.waitForTimeout(2500)
     const h1 = await page.locator('h1').first().innerText().catch(() => '?')

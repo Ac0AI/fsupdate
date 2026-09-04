@@ -35,11 +35,17 @@ const residenceErrors = (res: Residence, prefix: 'from' | 'to'): Errors => {
   if (res.dwelling === 'apartment' && res.floor < 0) e[`${prefix}.floor`] = 'Välj våning.'
   if (res.dwelling === 'apartment' && !res.elevator) e[`${prefix}.elevator`] = 'Välj hiss. Vet ej går bra.'
   if (!res.distance) e[`${prefix}.distance`] = 'Välj bärsträcka. Vet ej går bra.'
+  if (prefix === 'from' && res.dwelling !== 'apartment' && res.outdoorFurniture === null) e[`${prefix}.outdoor`] = 'Svara ja eller nej, så räknar vi rätt plats i bilen.'
+  if (res.hardAccess === null) e[`${prefix}.access`] = 'Svara ja eller nej, så vet bärarna vad som väntar.'
+  if (res.hardAccess && !res.accessNote.trim()) e[`${prefix}.accessNote`] = 'Berätta kort vad som är krångligt, annars kan vi inte räkna rätt.'
+  if (prefix === 'from') {
+    if (res.hasSecondaries === null) e[`${prefix}.secondaries`] = 'Svara ja eller nej, så ingen yta glöms bort.'
+    else if (res.hasSecondaries && res.secondaries.length === 0) e[`${prefix}.secondaries`] = 'Lägg till minst en yta, eller svara nej.'
+  }
   for (const s of res.secondaries) {
     if (!s.area) e[`${prefix}.secondary.${s.id}`] = 'Fyll i ungefär hur stor ytan är, eller ta bort den.'
     else if (!s.move && !s.clean) e[`${prefix}.secondary.${s.id}`] = 'Välj om ytan ska flyttas eller städas.'
   }
-  if (res.hardAccess && !res.accessNote.trim()) e[`${prefix}.accessNote`] = 'Berätta kort vad som är krångligt, annars kan vi inte räkna rätt.'
   return e
 }
 
@@ -48,6 +54,12 @@ const stepErrors = (step: number, req: QuoteRequest, movingDate: Date): Errors =
   if (step === 1) {
     const e: Errors = {}
     const today = isoDate(new Date())
+    if (req.heavyKinds.length === 0) e.heavy = 'Välj vad som finns, eller Nej, inget sådant.'
+    else if (req.heavyKinds.includes('other') && !req.heavyNote.trim()) e.heavyNote = 'Berätta vad det är och ungefär hur tungt.'
+    if (req.addons.includes('moveclean')) {
+      const c = req.cleaning
+      if (!(c.specialWindows || c.glazedBalcony || c.sensitiveSurfaces || c.nothingSpecial)) e.cleanDetails = 'Välj vad som finns i bostaden, eller Inget av det här.'
+    }
     if (req.dateMode === 'custom') {
       if (!req.customDate) e.customDate = 'Välj vilken dag du vill flytta.'
       else if (req.customDate < today) e.customDate = 'Den dagen har redan varit. Välj en dag framåt.'
@@ -81,9 +93,10 @@ const initialResidence = (street: string, city: string, size: number, overrides:
   floor: 1,
   elevator: 'none',
   distance: 'd25',
-  hardAccess: false,
+  hardAccess: null,
   accessNote: '',
-  outdoorFurniture: false,
+  outdoorFurniture: null,
+  hasSecondaries: null,
   secondaries: [],
   ...overrides,
 })
@@ -99,7 +112,6 @@ const DemoMovehelpFlow = () => {
 
   const [step, setStep] = useState(0)
   const [sending, setSending] = useState(false)
-  const [cleanOpen, setCleanOpen] = useState(false)
   const [dateOpen, setDateOpen] = useState(false)
   const [moreAddons, setMoreAddons] = useState(false)
   const [noteOpen, setNoteOpen] = useState(false)
@@ -125,7 +137,7 @@ const DemoMovehelpFlow = () => {
     // Förvalt "spelar ingen roll": inget att ångra, och koordinatorn föreslår.
     startTime: 'any',
     note: '',
-    cleaning: { specialWindows: false, glazedBalcony: false, balconyArea: 0, sensitiveSurfaces: false, keys: 'present', keyNote: '', day: 'same', customDate: '' },
+    cleaning: { specialWindows: false, glazedBalcony: false, balconyArea: 0, sensitiveSurfaces: false, nothingSpecial: false, keys: 'present', keyNote: '', day: 'same', customDate: '' },
   })
 
   // Felen visas först när man försöker gå vidare, inte medan man fyller i.
@@ -162,8 +174,8 @@ const DemoMovehelpFlow = () => {
   const toggleAddon = (a: Addon) => setReq((r) => ({ ...r, addons: r.addons.includes(a) ? r.addons.filter((x) => x !== a) : [...r.addons, a] }))
   const toggleHeavy = (k: HeavyKind) =>
     setReq((r) => {
-      const heavyKinds = r.heavyKinds.includes(k) ? r.heavyKinds.filter((x) => x !== k) : [...r.heavyKinds, k]
-      return { ...r, heavyKinds, heavyItems: heavyKinds.length > 0 }
+      const heavyKinds = k === 'none' ? ['none' as HeavyKind] : r.heavyKinds.includes(k) ? r.heavyKinds.filter((x) => x !== k) : [...r.heavyKinds.filter((x) => x !== 'none'), k]
+      return { ...r, heavyKinds, heavyItems: heavyKinds.some((x) => x !== 'none') }
     })
   const cleaning = req.addons.includes('moveclean')
   // Städraden bär sina egna fakta när städningen är på, i stället för en lös rad under.
@@ -243,12 +255,7 @@ const DemoMovehelpFlow = () => {
                   <span className="text-xs font-semibold text-[#1F6156]">Ingår</span>
                 </div>
                 {ADDONS.filter((a) => a.value === 'packing' || a.value === 'moveclean').map(addonRow)}
-                {cleaning && !(cleanOpen || shownErrors.cleanDate) && (
-                  <div className={clsx('pb-2', rise)}>
-                    <MoreLink onClick={() => setCleanOpen(true)}>Anpassa städningen</MoreLink>
-                  </div>
-                )}
-                {cleaning && (cleanOpen || shownErrors.cleanDate) && (
+                {cleaning && (
                   <div className={clsx('pb-3', rise)}>
                     <CleaningCard from={req.from} cleaning={req.cleaning} moveDate={moveDay(req, movingDate)} errors={shownErrors} onChange={patchCleaning} />
                   </div>
@@ -351,16 +358,20 @@ const DemoMovehelpFlow = () => {
               <Card>
                 <h3 className="text-[15px] font-bold text-[#214766]">Något tungt, ömtåligt eller värdefullt?</h3>
                 <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Över 80 kg eller värt över 30 000 kr? Då sätter vi fler bärare och tar med det i försäkringen.</p>
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                  {HEAVY_KINDS.map((k) => (
-                    <Pill key={k.value} multi className="flex-none" active={req.heavyKinds.includes(k.value)} onClick={() => toggleHeavy(k.value)}>
-                      {k.label}
-                    </Pill>
-                  ))}
+                <div className="flex flex-col gap-1.5 mt-3" data-invalid={shownErrors.heavy ? 'true' : undefined}>
+                  <div className="flex flex-wrap gap-1.5">
+                    {HEAVY_KINDS.map((k) => (
+                      <Pill key={k.value} multi className="flex-none" active={req.heavyKinds.includes(k.value)} onClick={() => toggleHeavy(k.value)}>
+                        {k.label}
+                      </Pill>
+                    ))}
+                  </div>
+                  {shownErrors.heavy && <ErrorText>{shownErrors.heavy}</ErrorText>}
                 </div>
                 {req.heavyKinds.includes('other') && (
                   <textarea
-                    className={clsx(textareaClass, 'mt-3', rise)}
+                    className={clsx(textareaClass, 'mt-3', rise, shownErrors.heavyNote && errorBorder)}
+                    aria-invalid={!!shownErrors.heavyNote}
                     autoFocus
                     placeholder="Vad är det och ungefär hur tungt?"
                     value={req.heavyNote}
@@ -437,11 +448,10 @@ const ResidenceCard = ({
   onChange: (p: Partial<Residence>) => void
 }) => {
   const err = (key: string) => errors[`${prefix}.${key}`]
-  const [moreOpen, setMoreOpen] = useState(false)
-  const showMore = moreOpen || res.hardAccess || res.secondaries.length > 0 || !!err('accessNote')
   const apartment = res.dwelling === 'apartment'
   const patchSecondary = (id: number, p: Partial<Secondary>) => onChange({ secondaries: res.secondaries.map((s) => (s.id === id ? { ...s, ...p } : s)) })
-  const addSecondary = () => onChange({ secondaries: [...res.secondaries, { id: Date.now(), kind: 'storage', area: 0, move: true, clean: true }] })
+  const newSecondary = (): Secondary => ({ id: Date.now(), kind: 'storage', area: 0, move: true, clean: true })
+  const addSecondary = () => onChange({ hasSecondaries: true, secondaries: [...res.secondaries, newSecondary()] })
   const removeSecondary = (id: number) => onChange({ secondaries: res.secondaries.filter((s) => s.id !== id) })
 
   return (
@@ -522,13 +532,13 @@ const ResidenceCard = ({
         </Field>
       ) : (
         origin && (
-          <Field label="Utemöbler, grill eller studsmatta som ska med?" className="mt-3">
+          <Field label="Utemöbler, grill eller studsmatta som ska med?" className="mt-3" error={err('outdoor')}>
             <div className={clsx('flex gap-1.5', rise)}>
-              <Pill active={!res.outdoorFurniture} onClick={() => onChange({ outdoorFurniture: false })}>
-                Nej
-              </Pill>
-              <Pill active={res.outdoorFurniture} onClick={() => onChange({ outdoorFurniture: true })}>
+              <Pill active={res.outdoorFurniture === true} onClick={() => onChange({ outdoorFurniture: true })}>
                 Ja
+              </Pill>
+              <Pill active={res.outdoorFurniture === false} onClick={() => onChange({ outdoorFurniture: false })}>
+                Nej
               </Pill>
             </div>
           </Field>
@@ -547,63 +557,60 @@ const ResidenceCard = ({
         </div>
       </Field>
 
-      {showMore ? (
-        <>
-      <label
-        data-invalid={err('accessNote') ? 'true' : undefined}
-        className={clsx(
-          'mt-3 flex flex-col gap-2.5 rounded-lg px-3.5 py-3 border cursor-pointer transition-colors duration-200 motion-reduce:transition-none',
-          err('accessNote') ? 'bg-[#FFF5F5] border-[var(--color-error-red)]' : res.hardAccess ? 'bg-[#F4FCFA] border-[#51C8B4]' : 'bg-transparent border-transparent hover:bg-[#F8FAF9]',
-        )}
-      >
-        <span className="flex items-start gap-3">
-          <input type="checkbox" className="sr-only" checked={res.hardAccess} onChange={(e) => onChange({ hardAccess: e.target.checked })} />
-          <Checkbox checked={res.hardAccess} />
-          <span className="flex flex-col gap-0.5">
-            <span className="text-[13px] font-medium text-[#214766] flex items-center gap-1">
-              Trång gata, bom eller ingen plats för lastbilen
-            </span>
-          </span>
-        </span>
+      {/* Inget hopfällt: varje fråga kräver ett aktivt svar, även nej. Annars glöms
+          det som kostar mest att upptäcka på flyttdagen. */}
+      <Field label="Kommer flyttbilen fram till porten?" className="mt-3" error={err('access')}>
+        <div className="flex gap-1.5">
+          <Pill active={res.hardAccess === false} onClick={() => onChange({ hardAccess: false, accessNote: '' })}>
+            Ja
+          </Pill>
+          <Pill active={res.hardAccess === true} onClick={() => onChange({ hardAccess: true })}>
+            Nej, det är trångt
+          </Pill>
+        </div>
         {res.hardAccess && (
-          <>
+          <div className={clsx('flex flex-col gap-1.5', rise)} data-invalid={err('accessNote') ? 'true' : undefined}>
             <textarea
               autoFocus
               aria-invalid={!!err('accessNote')}
-              className={clsx(textareaClass, rise, err('accessNote') && errorBorder)}
-              placeholder="Gårdshus, bilen får inte in på gården. Ca 40 m från gatan."
+              className={clsx(textareaClass, err('accessNote') && errorBorder)}
+              placeholder="Trång gata, bom eller gårdshus. Ca 40 m från där bilen kan stå."
               value={res.accessNote}
               onChange={(e) => onChange({ accessNote: e.target.value })}
             />
             {err('accessNote') && <ErrorText>{err('accessNote')}</ErrorText>}
-          </>
+          </div>
         )}
-      </label>
+      </Field>
 
       {origin && (
-        <div className="mt-3 pt-3 border-t border-[#EEEEF0] flex flex-col gap-1.5">
-          {res.secondaries.map((s) => (
-            <SecondaryRow key={s.id} s={s} error={err(`secondary.${s.id}`)} onChange={(p) => patchSecondary(s.id, p)} onRemove={() => removeSecondary(s.id)} />
-          ))}
-          <span className="self-start flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={addSecondary}
-              className={clsx('min-h-11 -my-1 flex items-center gap-1.5 text-[13px] font-semibold text-[#214766] rounded-sm', press, pressSoft)}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
-                <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
-              {res.secondaries.length ? 'Lägg till en till' : 'Lägg till förråd, garage eller vind'}
-            </button>
-          </span>
-        </div>
-      )}
-        </>
-      ) : (
-        <MoreLink className="mt-3" onClick={() => setMoreOpen(true)}>
-          Mer om adressen
-        </MoreLink>
+        <Field label="Förråd, garage eller vind som ska tömmas eller städas?" className="mt-3" error={err('secondaries')}>
+          <div className="flex gap-1.5">
+            <Pill active={res.hasSecondaries === true} onClick={() => onChange({ hasSecondaries: true, secondaries: res.secondaries.length ? res.secondaries : [newSecondary()] })}>
+              Ja
+            </Pill>
+            <Pill active={res.hasSecondaries === false} onClick={() => onChange({ hasSecondaries: false, secondaries: [] })}>
+              Nej
+            </Pill>
+          </div>
+          {res.hasSecondaries && (
+            <div className={clsx('flex flex-col gap-1.5', rise)}>
+              {res.secondaries.map((s) => (
+                <SecondaryRow key={s.id} s={s} error={err(`secondary.${s.id}`)} onChange={(p) => patchSecondary(s.id, p)} onRemove={() => removeSecondary(s.id)} />
+              ))}
+              <button
+                type="button"
+                onClick={addSecondary}
+                className={clsx('self-start min-h-11 -my-1 flex items-center gap-1.5 text-[13px] font-semibold text-[#214766] rounded-sm', press, pressSoft)}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
+                Lägg till en till
+              </button>
+            </div>
+          )}
+        </Field>
       )}
     </Card>
   )
@@ -685,16 +692,19 @@ const CleaningCard = ({
       {/* Ytan står redan i raden ovanför; bara biytorna är ny information. */}
       {extra && <p className="text-[13px] leading-[19px] text-[#5F6062]">{cleanArea(from)} m² städyta inklusive biytorna som ska städas.</p>}
 
-      <Field label="Något av det här i bostaden?" className={extra ? 'mt-3' : undefined}>
+      <Field label="Något av det här i bostaden?" className={extra ? 'mt-3' : undefined} error={errors.cleanDetails}>
         <div className="flex flex-wrap gap-1.5">
-          <Pill multi className="flex-none" active={cleaning.specialWindows} onClick={() => onChange({ specialWindows: !cleaning.specialWindows })}>
+          <Pill multi className="flex-none" active={cleaning.specialWindows} onClick={() => onChange({ specialWindows: !cleaning.specialWindows, nothingSpecial: false })}>
             Spröjs eller takfönster
           </Pill>
-          <Pill multi className="flex-none" active={cleaning.glazedBalcony} onClick={() => onChange({ glazedBalcony: !cleaning.glazedBalcony })}>
+          <Pill multi className="flex-none" active={cleaning.glazedBalcony} onClick={() => onChange({ glazedBalcony: !cleaning.glazedBalcony, nothingSpecial: false })}>
             Inglasad balkong
           </Pill>
-          <Pill multi className="flex-none" active={cleaning.sensitiveSurfaces} onClick={() => onChange({ sensitiveSurfaces: !cleaning.sensitiveSurfaces })}>
+          <Pill multi className="flex-none" active={cleaning.sensitiveSurfaces} onClick={() => onChange({ sensitiveSurfaces: !cleaning.sensitiveSurfaces, nothingSpecial: false })}>
             Marmor eller obehandlat trä
+          </Pill>
+          <Pill multi className="flex-none" active={cleaning.nothingSpecial} onClick={() => onChange({ nothingSpecial: true, specialWindows: false, glazedBalcony: false, sensitiveSurfaces: false, balconyArea: 0 })}>
+            Inget av det här
           </Pill>
         </div>
       </Field>
