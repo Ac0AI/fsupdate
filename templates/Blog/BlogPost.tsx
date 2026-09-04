@@ -3,7 +3,7 @@ import NextLink from 'next/link'
 import { BLOG_CTA, BLOG_POSTS, type BlogPost as Post } from '@/constants/blog'
 
 /**
- * /blogg/[slug]. Centrerad artikel, mörkt CTA-band sist.
+ * En guide i Flyttguiden (/blogg/[slug]). Centrerad artikel, mörkt CTA-band sist.
  *
  * Textbredden är låst till 818px enligt --container-content i Paper. Bredare
  * än så blir raderna för långa att läsa i ett svep.
@@ -21,8 +21,11 @@ const BlogPost = ({ post }: { post: Post }) => {
               <span className="rounded-[var(--radius-button)] bg-[var(--color-primary-light)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-primary-dark)]">
                 {post.category}
               </span>
+              {/* Datumet står här för att uppsägningstider och tullregler
+                  ändras. Är texten avstämd mot källan igen visas det datumet,
+                  annars publiceringsdagen. */}
               <span className="text-[13px] text-[var(--color-inactive-dark)]">
-                {post.readingMinutes} min läsning · {post.published}
+                {post.readingMinutes} min läsning · {post.updated ? `Uppdaterad ${post.updated}` : `Publicerad ${post.published}`}
               </span>
             </div>
 
@@ -84,6 +87,25 @@ const BlogPost = ({ post }: { post: Post }) => {
         </div>
       </article>
 
+      {/* Tjänsten artikeln gränsar till. Utan den läser hon om tullhandlingar
+          och får sedan leta rätt på sidan som gör jobbet. */}
+      {post.serviceLink && (
+        <section className="bg-white">
+          <div className="mx-auto w-full max-w-[818px] px-6 pb-4">
+            <NextLink
+              href={post.serviceLink.href}
+              className="group flex flex-col gap-2 rounded-[var(--radius-border-radius-main)] border border-[var(--color-inactive-main)] p-6 transition-colors hover:border-[var(--color-secondary-main)]"
+            >
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-primary-dark)]">Tjänsten</span>
+              <span className="text-[19px] font-bold text-[var(--color-secondary-dark)] transition-colors group-hover:text-[var(--color-primary-dark)]">
+                {post.serviceLink.label}
+              </span>
+              <span className="text-[15px] leading-[24px] text-[var(--color-inactive-dark)]">{post.serviceLink.body}</span>
+            </NextLink>
+          </div>
+        </section>
+      )}
+
       {/* CTA-bandet. bg-...! med utropstecken eftersom styles/_reset.css sätter
           background-color: transparent på a utan cascade layer och därmed slår
           Tailwinds utilities. Utan important försvinner den orange knappen. */}
@@ -103,7 +125,7 @@ const BlogPost = ({ post }: { post: Post }) => {
       {/* Vidare läsning */}
       <section className="bg-[var(--color-background-default)]">
         <div className="mx-auto w-full max-w-[1200px] px-6 md:px-8 py-14 md:py-20">
-          <h2 className="text-xl font-bold text-[var(--color-secondary-dark)]">Mer att läsa</h2>
+          <h2 className="text-xl font-bold text-[var(--color-secondary-dark)]">Mer i Flyttguiden</h2>
           <ul className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
             {more.map((item) => (
               <li key={item.slug}>
@@ -121,7 +143,7 @@ const BlogPost = ({ post }: { post: Post }) => {
           </ul>
           <p className="mt-8 text-[15px]">
             <NextLink href="/blogg" className="font-semibold text-[var(--color-secondary-main)] underline underline-offset-4 hover:text-[var(--color-primary-main)]">
-              Alla artiklar
+              Hela Flyttguiden
             </NextLink>
           </p>
         </div>

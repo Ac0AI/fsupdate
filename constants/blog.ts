@@ -1,10 +1,21 @@
 /**
- * Innehållet för /blogg och inläggen under den.
+ * Innehållet för Flyttguiden (/blogg) och artiklarna under den.
  *
- * Bloggen är redaktionell och länkar in till tjänsten. Den konkurrerar aldrig
+ * Ytan heter Flyttguiden, aldrig "bloggen" (Sebastian 2026-09-04): blogg
+ * signalerar företagsnyheter, flyttguide är både det folk söker på och det som
+ * beskriver innehållet. Ordet står i footern, i headern och som sidans egen
+ * etikett. Adressen är kvar på /blogg tills ägaren säger annat.
+ *
+ * Guiden är redaktionell och länkar in till tjänsten. Den konkurrerar aldrig
  * med landssidorna under /flytta-utomlands om samma köpord: den som söker
- * "flytta till Spanien" ska landa på landssidan, inte på ett blogginlägg. Se
- * artboarden "Sidstruktur och sök" i Paper (sidan Utland).
+ * "flytta till Spanien" ska landa på landssidan, inte på en artikel. Artiklar
+ * som gränsar till en tjänst länkar dit i stället för att tävla, se
+ * serviceLink nedan. Se artboarden "Sidstruktur och sök" i Paper (sidan Utland).
+ *
+ * Regel 4 gäller här som överallt: på fysiska tjänster kommer priset aldrig
+ * först. Rubrik, ingress och första stycket ska bära tid och trygghet, och
+ * kronorna får komma när läsaren redan vet vad hon jämför. Vi ber henne heller
+ * aldrig räkna ut svaret själv, det är vårt jobb.
  *
  * Bilderna är platshållare, genererade med nanobanana via
  * `scripts/generate-blog-images.mjs`. De illustrerar ämnet och föreställer
@@ -31,15 +42,28 @@ export type BlogPost = {
   lead: string
   readingMinutes: number
   published: string
+  /**
+   * Sätts när texten stämts av mot källan igen. Visas som "Uppdaterad" i
+   * listan och på artikeln. Uppsägningstider och tullregler ändras, och en
+   * text om regler utan datum är inte värd att lita på. Sätt datumet den dag
+   * någon faktiskt läst källan, aldrig i förväg.
+   */
+  updated?: string
   /** Platshållarillustration, genererad med scripts/generate-blog-images.mjs. */
   image: string
-  /** Sätts på ett inlägg. Det får den stora platsen högst upp på /blogg. */
+  /** Sätts på en artikel. Den får den stora platsen högst upp i guiden. */
   featured?: boolean
+  /**
+   * Tjänsten artikeln gränsar till. Utan den konkurrerar artikeln och sidan om
+   * samma läsare; med den blir artikeln vägen in. Sätts bara när tjänsten
+   * verkligen svarar på det artikeln väcker.
+   */
+  serviceLink?: { href: string; label: string; body: string }
   body: BlogBlock[]
 }
 
 export const BLOG_INTRO = {
-  eyebrow: 'Blogg',
+  eyebrow: 'Flyttguiden',
   headline: 'Det ingen berättar innan du flyttar',
   body: 'Uppsägningstider, dolda avgifter och sådant som bara syns i efterhand. Vi skriver om det vi själva fått reda ut åt kunder.',
 } as const
@@ -140,16 +164,22 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     slug: 'vad-kostar-en-flyttfirma',
     category: 'Flytthjälp',
-    title: 'Vad kostar en flyttfirma egentligen',
-    excerpt: 'Timpris säger lite. Det är framkörning, tung utrustning och trappor som avgör slutnotan.',
-    lead: 'Timpriset är det du jämför. Slutnotan är något annat. Här är posterna som skiljer offerten från fakturan.',
+    // Regel 4: rubrik och ingress bär trygghet, inte pris. Ordet flyttfirma
+    // står kvar i rubriken för att det är det folk söker på.
+    title: 'Så vet du att flyttfirmans offert håller',
+    excerpt: 'Takpris eller estimat avgör vem som bär risken när flytten drar över. Tre frågor gör offerterna jämförbara.',
+    lead: 'En offert är inte ett pris förrän du vet vad som ingår. Här är posterna som skiljer offerten från fakturan, och de tre frågorna som gör svaret bindande.',
     readingMinutes: 7,
     published: '4 augusti 2026',
     image: '/images/blog/vad-kostar-en-flyttfirma.jpg',
     body: [
       {
         type: 'paragraph',
-        text: 'Två firmor med samma timpris kan landa tusenlappar ifrån varandra. Timpriset täcker nämligen bara tiden på plats, och tiden på plats är sällan det som kostar mest.',
+        text: 'Ett takpris betyder att firman bär risken om flytten tar längre tid än de räknat med. Ett estimat betyder att du gör det. Den skillnaden avgör hur nära fakturan hamnar offerten, mer än timpriset gör.',
+      },
+      {
+        type: 'paragraph',
+        text: 'Två firmor med samma timpris kan därför landa tusenlappar ifrån varandra. Timpriset täcker bara tiden på plats, och tiden på plats är sällan det som kostar mest.',
       },
       { type: 'heading', text: 'Det som ligger utanför timpriset' },
       {
@@ -258,9 +288,10 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     slug: 'stada-sjalv-eller-boka',
     category: 'Flyttstädning',
-    title: 'Städa själv eller boka: en ärlig kalkyl',
-    excerpt: 'Räkna med tolv timmar för en trea. Sätt ett timpris på din egen tid först.',
-    lead: 'Flyttstädning är den sista posten i budgeten och den första folk stryker. Här är vad den faktiskt kostar i tid.',
+    // Ägarens formulering 2026-09-04. Tankstreck, aldrig emdash.
+    title: 'Städa själv eller boka',
+    excerpt: 'Tolv timmar för en trea – så mycket av helgen kostar det att städa själv.',
+    lead: 'Flyttstädningen är det sista som ska göras och det som tar mest tid av allt du gör själv. Här är timmarna, momenten och vad som händer om besiktningen underkänner.',
     readingMinutes: 6,
     published: '14 juli 2026',
     image: '/images/blog/stada-sjalv-eller-boka.jpg',
@@ -279,10 +310,10 @@ export const BLOG_POSTS: BlogPost[] = [
         label: 'Kom ihåg',
         text: 'Städningen ska vara klar innan besiktningen, inte innan avflyttningen. Boka den till dagen efter att bohaget är ute.',
       },
-      { type: 'heading', text: 'Så jämför du rakt' },
+      { type: 'heading', text: 'Vad du byter bort' },
       {
         type: 'paragraph',
-        text: 'Ta timpriset efter RUT och multiplicera med kvadratmetern enligt firmans egen schablon. Ställ det mot din egen tid, värderad till vad du faktiskt tjänar. För de flesta landar en trea på ungefär en arbetsdag, och en arbetsdag är sällan billigare än städningen.',
+        text: 'En trea tar ungefär en arbetsdag att städa själv, mitt i den vecka då allt annat också ska hinnas med. Bokar du städningen flyttas den dagen till någon som gör de här momenten varje vecka och vet vad besiktningen tittar efter.',
       },
       {
         type: 'paragraph',
@@ -296,6 +327,13 @@ export const BLOG_POSTS: BlogPost[] = [
     title: 'Det tullen faktiskt frågar efter',
     excerpt: 'Flyttgods är tullfritt om du ägt sakerna tillräckligt länge. Listan är kortare än du tror.',
     lead: 'Flyttar du utanför EU ska bohaget deklareras. Det betyder inte att du betalar tull, men det betyder att pappersarbetet måste stämma.',
+    // Artikeln och /flytta-utomlands ligger nära varandra. Länken gör artikeln
+    // till vägen in i tjänsten i stället för en konkurrent om samma läsare.
+    serviceLink: {
+      href: '/flytta-utomlands',
+      label: 'Flytta utomlands',
+      body: 'Vi går igenom handlingarna med dig och bokar transporten. Du får ett datumfönster innan du bokar.',
+    },
     readingMinutes: 8,
     published: '7 juli 2026',
     image: '/images/blog/vad-tullen-fragar-efter.jpg',
@@ -338,6 +376,13 @@ export const BLOG_POSTS: BlogPost[] = [
 ]
 
 export const getPost = (slug: string) => BLOG_POSTS.find((post) => post.slug === slug)
+
+/**
+ * Kategorierna i den ordning artiklarna ligger, utan dubbletter. Etiketterna
+ * fanns redan på korten men gick inte att klicka på; filtret i listan använder
+ * den här listan så att en ny kategori dyker upp av sig själv.
+ */
+export const BLOG_CATEGORIES = Array.from(new Set(BLOG_POSTS.map((post) => post.category)))
 
 export const featuredPost = BLOG_POSTS.find((post) => post.featured) ?? BLOG_POSTS[0]
 

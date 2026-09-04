@@ -236,6 +236,25 @@ const AbroadHub = () => (
     </section>
 
     <FaqSection heading="Det folk brukar undra" items={ABROAD_FAQ} />
+
+    {/* Guiden och den här sidan tog förut samma läsare från två håll. Den som
+        vill läsa först hittar hit, den som vill boka stannar (kritik 2026-09-04). */}
+    <section className="bg-white">
+      <div className="mx-auto w-full max-w-[1200px] px-6 md:px-8 pb-16 md:pb-24">
+        <NextLink
+          href="/blogg/vad-tullen-fragar-efter"
+          className="group flex flex-col gap-2 rounded-[var(--radius-border-radius-main)] border border-[var(--color-inactive-main)] p-6 md:p-7 transition-colors hover:border-[var(--color-secondary-main)] md:max-w-[620px]"
+        >
+          <span className={`${eyebrow} text-[var(--color-primary-dark)]`}>Läs först</span>
+          <span className="text-[19px] font-bold text-[var(--color-secondary-dark)] transition-colors group-hover:text-[var(--color-primary-dark)]">
+            Det tullen faktiskt frågar efter
+          </span>
+          <span className="text-[15px] leading-[24px] text-[var(--color-inactive-dark)]">
+            Handlingarna som ska med, och det som aldrig räknas som flyttgods. Åtta minuter i Flyttguiden.
+          </span>
+        </NextLink>
+      </div>
+    </section>
   </>
 )
 

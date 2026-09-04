@@ -1,7 +1,7 @@
 import NextLink from 'next/link'
 
 /**
- * Not-found-vyn för /flytta-utomlands och /blogg.
+ * Not-found-vyn för /flytta-utomlands och Flyttguiden (/blogg).
  *
  * Roten har redan en app/not-found.tsx, men den renderar inget synligt inne i
  * [locale]-gruppen. Samma sak gäller /coordinator sedan tidigare. Tills det är

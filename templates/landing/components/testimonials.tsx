@@ -3,6 +3,7 @@
 import { useTranslation } from 'react-i18next'
 import { clsx } from 'clsx'
 import type { GoogleReview, GoogleReviewCountAndRating } from 'app/_actions/googleReviews.types'
+import { GOOGLE_REVIEW_COUNT } from '@/constants/trustStats'
 
 interface TestimonialsProps {
   googleReviews?: GoogleReview[] | null
@@ -79,25 +80,30 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
         ))}
       </div>
 
-      {/* Google rating badge */}
-      <div className="flex items-center justify-center gap-2.5 mt-8">
-        <GoogleIcon />
-        <span className="text-[var(--color-secondary-main)]/70 text-sm">
-          {String(googleRating?.rating ?? '4.7').replace('.', ',')} av 5 på Google
-        </span>
-        <div className="flex gap-0.5" aria-hidden>
-          {Array.from({ length: 5 }).map((_, i) => {
-            const fill = Math.max(0, Math.min(1, Number(googleRating?.rating ?? 4.7) - i))
-            return (
-              <span key={i} className="relative w-3.5 h-3.5">
-                <StarIcon className="absolute inset-0 w-3.5 h-3.5 fill-gray-200" />
-                <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
-                  <StarIcon className="w-3.5 h-3.5 fill-amber-400" />
+      {/* Google rating badge. Antalet recensioner står under betyget (ägaren
+          2026-09-04): ett snitt utan volym går inte att lita på. Talet är
+          avrundat nedåt och bor i GOOGLE_REVIEW_COUNT, inte här. */}
+      <div className="flex flex-col items-center gap-1.5 mt-8">
+        <div className="flex items-center justify-center gap-2.5">
+          <GoogleIcon />
+          <span className="text-[var(--color-secondary-main)]/70 text-sm">
+            {String(googleRating?.rating ?? '4.7').replace('.', ',')} av 5 på Google
+          </span>
+          <div className="flex gap-0.5" aria-hidden>
+            {Array.from({ length: 5 }).map((_, i) => {
+              const fill = Math.max(0, Math.min(1, Number(googleRating?.rating ?? 4.7) - i))
+              return (
+                <span key={i} className="relative w-3.5 h-3.5">
+                  <StarIcon className="absolute inset-0 w-3.5 h-3.5 fill-gray-200" />
+                  <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
+                    <StarIcon className="w-3.5 h-3.5 fill-amber-400" />
+                  </span>
                 </span>
-              </span>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
+        <p className="text-[13px] text-[var(--color-secondary-main)]/60">över {GOOGLE_REVIEW_COUNT} recensioner</p>
       </div>
     </div>
   )

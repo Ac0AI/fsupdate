@@ -4,16 +4,16 @@ import { OG_IMAGES } from '@/constants/seo'
 import { BlogIndex } from '@/templates/Blog'
 
 export const metadata: Metadata = {
-  title: 'Blogg | Flyttsmart',
+  title: 'Flyttguiden | Flyttsmart',
   description: BLOG_INTRO.body,
   alternates: { canonical: '/blogg' },
-  openGraph: { title: 'Blogg | Flyttsmart', description: BLOG_INTRO.body, url: '/blogg', images: OG_IMAGES },
+  openGraph: { title: 'Flyttguiden | Flyttsmart', description: BLOG_INTRO.body, url: '/blogg', images: OG_IMAGES },
 }
 
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'Blog',
-  name: 'Flyttsmarts blogg',
+  name: 'Flyttguiden',
   description: BLOG_INTRO.body,
   blogPost: BLOG_POSTS.map((post) => ({
     '@type': 'BlogPosting',

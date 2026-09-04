@@ -3,10 +3,10 @@ import SegmentNotFound from '@/components/molecules/SegmentNotFound'
 export default function BlogNotFound() {
   return (
     <SegmentNotFound
-      title="Den artikeln finns inte"
-      body="Adressen kan ha ändrats eller så är artikeln borttagen. De vi har publicerat ligger kvar i listan."
+      title="Den guiden finns inte"
+      body="Adressen kan ha ändrats eller så är guiden borttagen. De vi har publicerat ligger kvar i Flyttguiden."
       backHref="/blogg"
-      backLabel="Till alla artiklar"
+      backLabel="Till Flyttguiden"
     />
   )
 }

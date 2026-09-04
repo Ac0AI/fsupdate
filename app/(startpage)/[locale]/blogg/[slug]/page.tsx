@@ -53,7 +53,7 @@ export default async function BlogPostPage(props: Props) {
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Blogg', item: '/blogg' },
+          { '@type': 'ListItem', position: 1, name: 'Flyttguiden', item: '/blogg' },
           { '@type': 'ListItem', position: 2, name: post.title, item: `/blogg/${post.slug}` },
         ],
       },

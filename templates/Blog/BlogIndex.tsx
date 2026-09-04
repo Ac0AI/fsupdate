@@ -1,9 +1,11 @@
 import NextImage from 'next/image'
 import NextLink from 'next/link'
 import { BLOG_INTRO, featuredPost, otherPosts, type BlogPost } from '@/constants/blog'
+import BlogList from './BlogList'
 
 /**
- * /blogg. Ett utvalt inlägg högst upp, resten i rutnät under.
+ * Flyttguiden (/blogg). En utvald guide högst upp, resten i rutnät under med
+ * kategorierna som filter.
  *
  * Bilderna är platshållarillustrationer, se scripts/generate-blog-images.mjs.
  * De är dekor, inte innehåll, därför tomt alt-attribut: skärmläsaren ska läsa
@@ -12,9 +14,10 @@ import { BLOG_INTRO, featuredPost, otherPosts, type BlogPost } from '@/constants
  */
 
 const Meta = ({ post }: { post: BlogPost }) => (
-  <div className="flex flex-wrap items-center gap-3">
+  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
     <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-primary-dark)]">{post.category}</span>
     <span className="text-[13px] text-[var(--color-inactive-dark)]">{post.readingMinutes} min läsning</span>
+    <span className="text-[13px] text-[var(--color-inactive-dark)]">{post.updated ? `Uppdaterad ${post.updated}` : post.published}</span>
   </div>
 )
 
@@ -49,41 +52,14 @@ const BlogIndex = () => (
             <h2 className="mt-4 text-[28px] md:text-[32px] font-bold leading-tight text-[var(--color-secondary-dark)]">{featuredPost.title}</h2>
             <p className="mt-4 text-[15px] leading-[26px] text-[var(--color-inactive-dark)]">{featuredPost.excerpt}</p>
             <span className="mt-6 inline-block text-[15px] font-bold text-[var(--color-secondary-main)] transition-colors group-hover:text-[var(--color-primary-main)]">
-              Läs artikeln →
+              Läs guiden →
             </span>
           </div>
         </NextLink>
       </div>
     </section>
 
-    {/* Övriga inlägg */}
-    <section className="bg-[var(--color-background-default)]">
-      <div className="mx-auto w-full max-w-[1200px] px-6 md:px-8 py-16 md:py-20">
-        <h2 className="border-b border-[var(--color-secondary-main)]/20 pb-4 text-xl font-bold text-[var(--color-secondary-dark)]">Fler artiklar</h2>
-
-        <ul className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {otherPosts.map((post) => (
-            <li key={post.slug}>
-              <NextLink
-                href={`/blogg/${post.slug}`}
-                className="group flex h-full flex-col rounded-[var(--radius-border-radius-main)] bg-white! p-5 transition-shadow duration-200 ease-[var(--ease-standard)] hover:shadow-[var(--shadow-regular)]"
-              >
-                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-border-radius-small)] bg-[var(--color-secondary-extra-extra-light)]">
-                  <NextImage src={post.image} alt="" fill sizes="(max-width: 768px) 100vw, 360px" className="object-cover" />
-                </div>
-                <div className="mt-5">
-                  <Meta post={post} />
-                  <h3 className="mt-3 text-[17px] font-bold leading-snug text-[var(--color-secondary-dark)] transition-colors group-hover:text-[var(--color-primary-dark)]">
-                    {post.title}
-                  </h3>
-                  <p className="mt-3 text-[15px] leading-[24px] text-[var(--color-inactive-dark)]">{post.excerpt}</p>
-                </div>
-              </NextLink>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+    <BlogList posts={otherPosts} />
   </>
 )
 
