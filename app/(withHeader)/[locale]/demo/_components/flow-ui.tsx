@@ -77,8 +77,10 @@ export const StepBar = ({ step, titles, hints, label, complete, contentClassName
 )
 
 export const Hero = ({
+  eyebrow,
   title,
   copy,
+  tone = 'blue',
   back,
   contentClassName = 'max-w-[818px]',
   children,
@@ -91,13 +93,13 @@ export const Hero = ({
   contentClassName?: string
   children?: React.ReactNode
 }) => (
-  <div className="bg-[#F8FAF9]">
-    <div className={clsx('w-full mx-auto px-4 pt-3 pb-1 md:pt-6 md:pb-2 flex flex-col gap-1.5', contentClassName)}>
+  <div className={clsx('transition-colors duration-700 motion-reduce:transition-none', tone === 'green' ? 'bg-[#1F6156]' : 'bg-[#3879AD]')}>
+    <div className={clsx('w-full mx-auto px-4 pt-5 pb-6 md:pt-8 md:pb-7 flex flex-col gap-2.5', contentClassName)}>
       {back && (
         <button
           type="button"
           onClick={back.onClick}
-          className={clsx('self-start -my-2.5 min-h-11 flex items-center gap-2 text-[13px] leading-[18px] text-[#214766]/80 hover:text-[#214766] rounded-sm', press)}
+          className={clsx('self-start -my-2 min-h-11 flex items-center gap-2 text-[13px] leading-[18px] text-white/90 hover:text-white rounded-sm', press)}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
             <path d="M15 19l-7-7 7-7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -105,11 +107,13 @@ export const Hero = ({
           {back.label}
         </button>
       )}
-      <h1 key={title} className={clsx('text-[24px] md:text-[32px] font-black tracking-[-0.02em] leading-7 md:leading-9 text-[#214766]', rise)}>
+      {/* Var är jag: tjänsten som liten rad, steget som rubrik. Stegräknaren står redan i stegraden. */}
+      {eyebrow && <span className="text-[12px] md:text-[13px] font-bold uppercase tracking-[0.12em] leading-4 text-white/80">{eyebrow}</span>}
+      <h1 key={title} className={clsx('text-[32px] md:text-[40px] font-black tracking-[-0.02em] leading-9 md:leading-[46px] text-white', rise)}>
         {title}
       </h1>
       {copy && (
-        <p key={copy} className={clsx('text-[15px] leading-[21px] text-[#5F6062] max-w-[560px]', rise)}>
+        <p key={copy} className={clsx('text-[15px] md:text-[17px] leading-[21px] md:leading-6 text-white max-w-[560px]', rise)}>
           {copy}
         </p>
       )}
@@ -124,10 +128,10 @@ export const Card = ({ children, className }: { children: React.ReactNode; class
 
 export const Field = ({ label, hint, info, error, invalid, className, children }: { label: string; hint?: string; info?: string; error?: string; invalid?: boolean; className?: string; children: React.ReactNode }) => (
   <div className={clsx('flex-1 flex flex-col gap-1.5', className)} data-invalid={error || invalid ? 'true' : undefined}>
-    <span className="text-[13px] font-semibold text-[#214766] flex items-center gap-1">
+    <span className="text-xs text-[#767678] flex items-center gap-1">
       <span>
         {label}
-        {hint && <span className="text-[#5F6062] font-normal"> · {hint}</span>}
+        {hint && <span className="text-[#214766] font-semibold"> · {hint}</span>}
       </span>
       {info && <Info text={info} />}
     </span>
@@ -142,20 +146,23 @@ export const ErrorText = ({ className, children }: { className?: string; childre
   </span>
 )
 
-export const Pill = ({ active, small, onClick, children }: { active: boolean; small?: boolean; onClick: () => void; children: React.ReactNode }) => (
+// Synligt 40 px hög så raden håller sig lätt; träffytan är 44 px via ett osynligt
+// pseudo-element som sticker ut 2 px upp och ned (radavståndet är 6 px, så inget överlappar).
+export const Pill = ({ active, multi, small, className, onClick, children }: { active: boolean; multi?: boolean; small?: boolean; className?: string; onClick: () => void; children: React.ReactNode }) => (
   <button
     type="button"
     aria-pressed={active}
     onClick={onClick}
     className={clsx(
-      'flex-1 md:flex-none md:px-5 md:min-w-[64px] rounded-full text-[13px] flex items-center justify-center gap-1.5 border-[1.5px] whitespace-nowrap text-[#214766]',
-      small ? 'h-10 px-2' : 'h-11 px-3.5',
+      "relative before:absolute before:inset-x-0 before:-inset-y-0.5 before:content-[''] flex-1 md:flex-none md:px-5 md:min-w-[64px] rounded-full text-[13px] flex items-center justify-center gap-1.5 border whitespace-nowrap",
+      small ? 'h-9 px-2' : 'h-10 px-3.5',
       press,
       pressScale,
-      active ? 'bg-[#51C8B4] border-[#51C8B4] font-semibold' : 'bg-white border-[#D5D6DA] hover:border-[#51C8B4]/60',
+      active ? 'bg-[#214766] border-[#214766] text-white font-semibold' : 'bg-white border-[#EEEEF0] text-[#214766] hover:border-[#214766]/40',
+      className,
     )}
   >
-    {active && <Check size={12} color="#214766" />}
+    {multi && active && <Check size={12} />}
     {children}
   </button>
 )
@@ -167,17 +174,21 @@ export const Radio = ({ active, onClick, title, hint }: { active: boolean; onCli
     aria-checked={active}
     onClick={onClick}
     className={clsx(
-      'w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-left border-[1.5px]',
+      'w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-left border-2',
       press,
       pressSoft,
-      active ? 'border-[#51C8B4] bg-[#51C8B4]' : 'border-[#D5D6DA] bg-white hover:border-[#51C8B4]/60',
+      active ? 'border-[#51C8B4] bg-[#F4FCFA]' : 'border-[#76767666] bg-white hover:border-[#214766]/40',
     )}
   >
-    {/* Samma uttryck för valt som chipsen: fylld mint med bock. Slotten är kvar när raden inte är vald så texten linjerar. */}
-    <span className="w-5 h-5 shrink-0 flex items-center justify-center">{active && <Check size={14} color="#214766" pop />}</span>
+    <span
+      className={clsx(
+        'w-5 h-5 rounded-full shrink-0 bg-white transition-[border-width,border-color] duration-200 ease-out motion-reduce:transition-none',
+        active ? 'border-[6px] border-[#51C8B4]' : 'border-[1.9px] border-[#9F9FA1]',
+      )}
+    />
     <span className="flex flex-col gap-px">
       <span className={clsx('text-[15px] text-[#214766]', active && 'font-bold')}>{title}</span>
-      {hint && <span className={clsx('text-[13px]', active ? 'text-[#214766]/80' : 'text-[#767678]')}>{hint}</span>}
+      {hint && <span className="text-[13px] text-[#767678]">{hint}</span>}
     </span>
   </button>
 )
@@ -192,17 +203,14 @@ export const Option = ({ active, onClick, label, hint }: { active: boolean; onCl
     aria-pressed={active}
     onClick={onClick}
     className={clsx(
-      'flex-1 flex flex-col items-center justify-center gap-px min-h-[44px] py-[7px] px-1 rounded-lg border-[1.5px]',
+      'flex-1 flex flex-col items-center justify-center gap-px min-h-[44px] py-[7px] px-1 rounded-lg border',
       press,
       pressScale,
-      active ? 'bg-[#51C8B4] border-[#51C8B4]' : 'bg-white border-[#D5D6DA] hover:border-[#51C8B4]/60',
+      active ? 'bg-[#214766] border-[#214766]' : 'bg-white border-[#EEEEF0] hover:border-[#214766]/40',
     )}
   >
-    <span className={clsx('flex items-center gap-1.5 text-[13px] text-[#214766] transition-colors duration-200', active && 'font-semibold')}>
-      {active && <Check size={12} color="#214766" />}
-      {label}
-    </span>
-    <span className={clsx('text-xs leading-[14px] transition-colors duration-200', active ? 'text-[#214766]/80' : 'text-[#767678]')}>{hint}</span>
+    <span className={clsx('text-[13px] transition-colors duration-200', active ? 'text-white font-semibold' : 'text-[#214766]')}>{label}</span>
+    <span className={clsx('text-xs leading-[14px] transition-colors duration-200', active ? 'text-white/80' : 'text-[#767678]')}>{hint}</span>
   </button>
 )
 

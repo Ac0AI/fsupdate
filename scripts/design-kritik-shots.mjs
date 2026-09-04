@@ -57,8 +57,8 @@ for (const vp of VIEWPORTS) {
   }
   // Steg 1 har inga förval för våning, hiss och bärsträcka: svara som en kund innan Fortsätt.
   const fillStep1 = async (page) => {
-    await page.getByRole('button', { name: '3', exact: true }).first().click()
-    await page.getByRole('button', { name: 'Stor (6+ pers)', exact: true }).click()
+    await page.locator('select[aria-label="Våning"]').first().selectOption('3').catch(() => {})
+    await page.getByRole('button', { name: 'Stor, 6+ personer', exact: true }).click()
     await page.getByRole('button', { name: '26–50 m', exact: true }).first().click()
     await page.getByRole('button', { name: '0–25 m', exact: true }).last().click()
     await page.waitForTimeout(300)

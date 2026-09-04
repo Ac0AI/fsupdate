@@ -77,15 +77,15 @@ export const DWELLINGS: { value: Dwelling; label: string }[] = [
   { value: 'townhouse', label: 'Radhus' },
 ]
 
-// Våningen som chips: BV och 1 till 4, sedan 5+ (värdet 5 betyder fem eller högre).
+// Våningen som rullista. 8 betyder åtta eller fler. -1 i state betyder obesvarat.
 export const FLOORS: { value: number; label: string }[] = [
-  { value: 0, label: 'BV' },
-  ...[1, 2, 3, 4].map((f) => ({ value: f, label: String(f) })),
-  { value: 5, label: '5+' },
+  { value: 0, label: 'Bottenvåning' },
+  ...[1, 2, 3, 4, 5, 6, 7].map((f) => ({ value: f, label: String(f) })),
+  { value: 8, label: '8 eller högre' },
 ]
 
 export const ELEVATORS: { value: Elevator; label: string }[] = [
-  { value: 'big', label: 'Stor, 6 personer eller fler' },
+  { value: 'big', label: 'Stor, 6+ personer' },
   { value: 'small', label: 'Liten' },
   { value: 'none', label: 'Ingen hiss' },
   { value: 'unknown', label: 'Vet ej' },

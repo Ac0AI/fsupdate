@@ -205,6 +205,7 @@ const DemoMovehelpFlow = () => {
     <div ref={rootRef} className="min-h-[calc(100dvh-56px)] bg-[#F8FAF9] flex flex-col [overflow-anchor:none]">
       <StepBar step={step} titles={STEP_TITLES} hints={['', '', '']} contentClassName="max-w-[640px]" />
       <Hero
+        eyebrow="Flytthjälp och städning"
         title={HERO_TITLE[step]}
         copy={HERO_COPY[step]}
         tone={step === 2 ? 'green' : 'blue'}
@@ -352,7 +353,7 @@ const DemoMovehelpFlow = () => {
                 <p className="text-[13px] leading-[19px] text-[#5F6062] mt-1">Över 80 kg eller värt över 30 000 kr? Då sätter vi fler bärare och tar med det i försäkringen.</p>
                 <div className="flex flex-wrap gap-1.5 mt-3">
                   {HEAVY_KINDS.map((k) => (
-                    <Pill key={k.value} active={req.heavyKinds.includes(k.value)} onClick={() => toggleHeavy(k.value)}>
+                    <Pill key={k.value} multi className="flex-none" active={req.heavyKinds.includes(k.value)} onClick={() => toggleHeavy(k.value)}>
                       {k.label}
                     </Pill>
                   ))}
@@ -468,7 +469,7 @@ const ResidenceCard = ({
       {/* Boarean frågas bara där man flyttar från: den styr volym och städyta.
           Våningen frågas bara i lägenhet, villa och radhus har ingen. Det som
           blir ensamt i raden håller sin halva. */}
-      {origin && (
+      {(origin || apartment) && (
         <div className="flex gap-1.5 mt-3">
           {origin && (
             <Field label="Boarea" invalid={!!err('size')}>
@@ -483,22 +484,31 @@ const ResidenceCard = ({
               />
             </Field>
           )}
-          <div className="flex-1" aria-hidden="true" />
+          {apartment && (
+            <Field label="Våning" invalid={!!err('floor')}>
+              <select
+                aria-label="Våning"
+                aria-invalid={!!err('floor')}
+                className={clsx(selectClass, err('floor') && errorBorder, res.floor < 0 && 'text-[#9F9FA1]')}
+                value={res.floor}
+                onChange={(e) => onChange({ floor: Number(e.target.value) })}
+              >
+                <option value={-1} disabled>
+                  Välj
+                </option>
+                {FLOORS.map((f) => (
+                  <option key={f.value} value={f.value}>
+                    {f.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          )}
+          {!(origin && apartment) && <div className="flex-1" aria-hidden="true" />}
         </div>
       )}
       {err('size') && <ErrorText className="mt-1.5">{err('size')}</ErrorText>}
-
-      {apartment && (
-        <Field label="Våning" className="mt-3" error={err('floor')}>
-          <div className="grid grid-cols-6 md:flex gap-1.5">
-            {FLOORS.map((f) => (
-              <Pill key={f.value} active={res.floor === f.value} onClick={() => onChange({ floor: f.value })}>
-                {f.label}
-              </Pill>
-            ))}
-          </div>
-        </Field>
-      )}
+      {err('floor') && <ErrorText className="mt-1.5">{err('floor')}</ErrorText>}
 
       {apartment ? (
         <Field label="Hiss" className="mt-3" error={err('elevator')}>
@@ -635,10 +645,10 @@ const SecondaryRow = ({ s, error, onChange, onRemove }: { s: Secondary; error?: 
       </button>
     </div>
     <div className="flex gap-1.5">
-      <Pill active={s.move} onClick={() => onChange({ move: !s.move })}>
+      <Pill multi active={s.move} onClick={() => onChange({ move: !s.move })}>
         Flyttas
       </Pill>
-      <Pill active={s.clean} onClick={() => onChange({ clean: !s.clean })}>
+      <Pill multi active={s.clean} onClick={() => onChange({ clean: !s.clean })}>
         Städas
       </Pill>
     </div>
@@ -677,13 +687,13 @@ const CleaningCard = ({
 
       <Field label="Något av det här i bostaden?" className={extra ? 'mt-3' : undefined}>
         <div className="flex flex-wrap gap-1.5">
-          <Pill active={cleaning.specialWindows} onClick={() => onChange({ specialWindows: !cleaning.specialWindows })}>
+          <Pill multi className="flex-none" active={cleaning.specialWindows} onClick={() => onChange({ specialWindows: !cleaning.specialWindows })}>
             Spröjs eller takfönster
           </Pill>
-          <Pill active={cleaning.glazedBalcony} onClick={() => onChange({ glazedBalcony: !cleaning.glazedBalcony })}>
+          <Pill multi className="flex-none" active={cleaning.glazedBalcony} onClick={() => onChange({ glazedBalcony: !cleaning.glazedBalcony })}>
             Inglasad balkong
           </Pill>
-          <Pill active={cleaning.sensitiveSurfaces} onClick={() => onChange({ sensitiveSurfaces: !cleaning.sensitiveSurfaces })}>
+          <Pill multi className="flex-none" active={cleaning.sensitiveSurfaces} onClick={() => onChange({ sensitiveSurfaces: !cleaning.sensitiveSurfaces })}>
             Marmor eller obehandlat trä
           </Pill>
         </div>
