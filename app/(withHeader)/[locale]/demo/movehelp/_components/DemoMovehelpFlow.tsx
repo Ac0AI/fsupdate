@@ -79,7 +79,7 @@ const stepErrors = (step: number, req: QuoteRequest, movingDate: Date): Errors =
 const HERO_TITLE = ['Berätta om bostäderna', 'Vad ska med, och när?', 'Din offert är på väg']
 const HERO_COPY = [
   // Vi-form i flödet; Nina kliver fram först på väntesidan, som koordinatorn kunden får.
-  'Vi har fyllt i det vi redan vet, du fyller i resten.',
+  'Du slipper ringa runt och jaga offerter. Vi har fyllt i det vi redan vet, du fyller i resten. Sen räknar vi på din flytt.',
   'Vi har lagt ett förslag utifrån din flytt. Slå av det du inte vill ha.',
   // Steg 3 har ingen ingress: Ninas bubbla och tidslinjen säger det direkt under.
   '',
@@ -397,8 +397,11 @@ const DemoMovehelpFlow = () => {
           {step === 0 && (
             <>
               <Primary onClick={() => tryContinue(() => setStep(1))}>Fortsätt</Primary>
-              {/* Inget kan bokas i steg 1, så foten är tom tills något saknas. */}
-              {hasShownErrors && <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar vi rätt.</Foot>}
+              {hasShownErrors ? (
+                <Foot tone="error">Något saknas i underlaget. Fyll i det markerade så räknar vi rätt.</Foot>
+              ) : (
+                <Foot>Kostnadsfritt och inte bindande.</Foot>
+              )}
             </>
           )}
           {step === 1 && (
@@ -479,46 +482,35 @@ const ResidenceCard = ({
       {/* Boarean frågas bara där man flyttar från: den styr volym och städyta.
           Våningen frågas bara i lägenhet, villa och radhus har ingen. Det som
           blir ensamt i raden håller sin halva. */}
-      {(origin || apartment) && (
+      {origin && (
         <div className="flex gap-1.5 mt-3">
-          {origin && (
-            <Field label="Boarea" invalid={!!err('size')}>
-              <input
-                type="text"
-                inputMode="numeric"
-                aria-invalid={!!err('size')}
-                className={clsx(areaInput, err('size') && errorBorder)}
-                placeholder="m²"
-                value={res.size ? `${res.size} m²` : ''}
-                onChange={(e) => onChange({ size: digits(e.target.value) })}
-              />
-            </Field>
-          )}
-          {apartment && (
-            <Field label="Våning" invalid={!!err('floor')}>
-              <select
-                aria-label="Våning"
-                aria-invalid={!!err('floor')}
-                className={clsx(selectClass, err('floor') && errorBorder, res.floor < 0 && 'text-[#9F9FA1]')}
-                value={res.floor}
-                onChange={(e) => onChange({ floor: Number(e.target.value) })}
-              >
-                <option value={-1} disabled>
-                  Välj
-                </option>
-                {FLOORS.map((f) => (
-                  <option key={f.value} value={f.value}>
-                    {f.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          )}
-          {!(origin && apartment) && <div className="flex-1" aria-hidden="true" />}
+          <Field label="Boarea" invalid={!!err('size')}>
+            <input
+              type="text"
+              inputMode="numeric"
+              aria-invalid={!!err('size')}
+              className={clsx(areaInput, err('size') && errorBorder)}
+              placeholder="m²"
+              value={res.size ? `${res.size} m²` : ''}
+              onChange={(e) => onChange({ size: digits(e.target.value) })}
+            />
+          </Field>
+          <div className="flex-1" aria-hidden="true" />
         </div>
       )}
       {err('size') && <ErrorText className="mt-1.5">{err('size')}</ErrorText>}
-      {err('floor') && <ErrorText className="mt-1.5">{err('floor')}</ErrorText>}
+
+      {apartment && (
+        <Field label="Våning" className="mt-3" error={err('floor')}>
+          <div className="grid grid-cols-6 md:flex gap-1.5">
+            {FLOORS.map((f) => (
+              <Pill key={f.value} active={res.floor === f.value} onClick={() => onChange({ floor: f.value })}>
+                {f.label}
+              </Pill>
+            ))}
+          </div>
+        </Field>
+      )}
 
       {apartment ? (
         <Field label="Hiss" className="mt-3" error={err('elevator')}>

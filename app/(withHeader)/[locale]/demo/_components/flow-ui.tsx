@@ -94,12 +94,12 @@ export const Hero = ({
   children?: React.ReactNode
 }) => (
   <div className={clsx('transition-colors duration-700 motion-reduce:transition-none', tone === 'green' ? 'bg-[#1F6156]' : 'bg-[#3879AD]')}>
-    <div className={clsx('w-full mx-auto px-4 pt-5 pb-6 md:pt-8 md:pb-7 flex flex-col gap-2.5', contentClassName)}>
+    <div className={clsx('w-full mx-auto px-4 pt-3 pb-5 md:pt-8 md:pb-7 flex flex-col gap-2', contentClassName)}>
       {back && (
         <button
           type="button"
           onClick={back.onClick}
-          className={clsx('self-start -my-2 min-h-11 flex items-center gap-2 text-[13px] leading-[18px] text-white/90 hover:text-white rounded-sm', press)}
+          className={clsx('self-start -my-2.5 min-h-11 flex items-center gap-2 text-[13px] leading-[18px] text-white/90 hover:text-white rounded-sm', press)}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
             <path d="M15 19l-7-7 7-7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -109,11 +109,11 @@ export const Hero = ({
       )}
       {/* Var är jag: tjänsten som liten rad, steget som rubrik. Stegräknaren står redan i stegraden. */}
       {eyebrow && <span className="text-[12px] md:text-[13px] font-bold uppercase tracking-[0.12em] leading-4 text-white/80">{eyebrow}</span>}
-      <h1 key={title} className={clsx('text-[32px] md:text-[40px] font-black tracking-[-0.02em] leading-9 md:leading-[46px] text-white', rise)}>
+      <h1 key={title} className={clsx('text-[28px] md:text-[42px] font-black tracking-[-0.02em] leading-8 md:leading-[48px] text-white', rise)}>
         {title}
       </h1>
       {copy && (
-        <p key={copy} className={clsx('text-[15px] md:text-[17px] leading-[21px] md:leading-6 text-white max-w-[560px]', rise)}>
+        <p key={copy} className={clsx('text-[15px] md:text-[18px] leading-[21px] md:leading-[25px] text-white max-w-[330px] md:max-w-[560px]', rise)}>
           {copy}
         </p>
       )}
@@ -146,23 +146,22 @@ export const ErrorText = ({ className, children }: { className?: string; childre
   </span>
 )
 
-// Synligt 40 px hög så raden håller sig lätt; träffytan är 44 px via ett osynligt
-// pseudo-element som sticker ut 2 px upp och ned (radavståndet är 6 px, så inget överlappar).
+// Utseendet från 2 september 16:03 (ägarens val): 44 px, tunn ljus kant, mint med bock när vald.
 export const Pill = ({ active, multi, small, className, onClick, children }: { active: boolean; multi?: boolean; small?: boolean; className?: string; onClick: () => void; children: React.ReactNode }) => (
   <button
     type="button"
     aria-pressed={active}
     onClick={onClick}
     className={clsx(
-      "relative before:absolute before:inset-x-0 before:-inset-y-0.5 before:content-[''] flex-1 md:flex-none md:px-5 md:min-w-[64px] rounded-full text-[13px] flex items-center justify-center gap-1.5 border whitespace-nowrap",
-      small ? 'h-9 px-2' : 'h-10 px-3.5',
+      'flex-1 md:flex-none md:px-5 md:min-w-[64px] rounded-full text-[13px] flex items-center justify-center gap-1.5 border-[1.5px] whitespace-nowrap text-[#214766]',
+      small ? 'h-10 px-2' : 'h-11 px-3',
       press,
       pressScale,
-      active ? 'bg-[#214766] border-[#214766] text-white font-semibold' : 'bg-white border-[#EEEEF0] text-[#214766] hover:border-[#214766]/40',
+      active ? 'bg-[#51C8B4] border-[#51C8B4] font-semibold' : 'bg-white border-[#EEEEF0] hover:border-[#51C8B4]/60',
       className,
     )}
   >
-    {multi && active && <Check size={12} />}
+    {active && <Check size={12} color="#214766" />}
     {children}
   </button>
 )
@@ -174,10 +173,10 @@ export const Radio = ({ active, onClick, title, hint }: { active: boolean; onCli
     aria-checked={active}
     onClick={onClick}
     className={clsx(
-      'w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-left border-2',
+      'w-full flex items-center gap-3 px-3.5 py-3 rounded-lg text-left border-[1.5px]',
       press,
       pressSoft,
-      active ? 'border-[#51C8B4] bg-[#F4FCFA]' : 'border-[#76767666] bg-white hover:border-[#214766]/40',
+      active ? 'border-[#51C8B4] bg-[#F4FCFA]' : 'border-[#EEEEF0] bg-white hover:border-[#51C8B4]/60',
     )}
   >
     <span
@@ -203,14 +202,14 @@ export const Option = ({ active, onClick, label, hint }: { active: boolean; onCl
     aria-pressed={active}
     onClick={onClick}
     className={clsx(
-      'flex-1 flex flex-col items-center justify-center gap-px min-h-[44px] py-[7px] px-1 rounded-lg border',
+      'flex-1 flex flex-col items-center justify-center gap-px min-h-[44px] py-[7px] px-1 rounded-lg border-[1.5px]',
       press,
       pressScale,
-      active ? 'bg-[#214766] border-[#214766]' : 'bg-white border-[#EEEEF0] hover:border-[#214766]/40',
+      active ? 'bg-[#51C8B4] border-[#51C8B4]' : 'bg-white border-[#EEEEF0] hover:border-[#51C8B4]/60',
     )}
   >
-    <span className={clsx('text-[13px] transition-colors duration-200', active ? 'text-white font-semibold' : 'text-[#214766]')}>{label}</span>
-    <span className={clsx('text-xs leading-[14px] transition-colors duration-200', active ? 'text-white/80' : 'text-[#767678]')}>{hint}</span>
+    <span className={clsx('text-[13px] text-[#214766] transition-colors duration-200', active && 'font-semibold')}>{label}</span>
+    <span className={clsx('text-xs leading-[14px] transition-colors duration-200', active ? 'text-[#214766]/80' : 'text-[#767678]')}>{hint}</span>
   </button>
 )
 
