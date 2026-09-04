@@ -330,6 +330,11 @@ const Brand = ({ still, blocks }: { still: boolean; blocks: Copy['blocks'] }) =>
       <p className={clsx('text-[26px] font-bold text-[#214766] leading-[1.12] tracking-tight', rise)} style={at(100)}>
         Allt är bokat, Anna.
       </p>
+      {/* Koordinatorn ska synas innan steg 3. Att visa slår att påstå, och
+          heron är redan full (Sebastian, PDF s.5, förslag 1). */}
+      <p className={clsx('mt-1.5 text-[12px] text-[#214766]/70', rise)} style={at(200)}>
+        Din koordinator · Nina
+      </p>
 
       <div className="mt-5 flex flex-col gap-4">
         {blocks.map((b) => (

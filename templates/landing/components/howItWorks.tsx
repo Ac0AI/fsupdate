@@ -60,7 +60,7 @@ const HowItWorks = () => {
                 {t(titleKey)}
               </h3>
 
-              <p className="text-[var(--color-secondary-main)]/60 text-sm leading-relaxed mb-4">
+              <p className="text-[var(--color-secondary-main)]/85 text-[15px] md:text-base leading-relaxed mb-4">
                 {t(descriptionKey)}
               </p>
 

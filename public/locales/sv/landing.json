@@ -3,7 +3,7 @@
   "intro_2": "enklaste",
   "intro_3": "sättet att flytta!",
   "start": "STARTA FLYTTEN",
-  "testamonial_title": "Det säger de som redan flyttat",
+  "testamonial_title": "Det säger de som flyttat med oss",
   "stats_title": "Inte övertygad än?",
   "faq_title": "Vanliga frågor",
   "faq_link": "https://help.flyttsmart.se/sv",
@@ -25,21 +25,21 @@
     "partners": "Våra samarbetspartners"
   },
   "HOW_WE_HELP": {
-    "title": "Att flytta ska inte kräva tio beslut",
+    "title": "Så blir över tio beslut till ett",
     "subtitle": "Vi har förhandlat priserna och kvalitetskontrollerat leverantörerna i förväg.",
     "step1": {
       "title": "Logga in med BankID",
-      "description": "Två minuter. Din checklista står klar med adress, datum och det vi redan vet om din flytt.",
+      "description": "Några minuter. Din checklista står klar med adress, datum och det vi redan vet om din flytt.",
       "benefit": ""
     },
     "step2": {
-      "title": "Godkänn eller ändra förslagen",
-      "description": "El, bredband, flytthjälp, flyttstädning och försäkring, ett förslag med skälet utskrivet. Inga offerter att begära.",
+      "title": "Din rekommendation är klar",
+      "description": "El, bredband, hemförsäkring, flytthjälp och flyttstädning: rekommenderade val per tjänst, med fokus på vad som är bäst för dig. Vill du se fler alternativ finns de ett klick bort.",
       "benefit": ""
     },
     "step3": {
       "title": "Din koordinator bokar och följer upp",
-      "description": "Din koordinator lägger beställningarna, sköter rutavdraget och svarar i chatten, på mejl och i telefon.",
+      "description": "Vi lägger beställningarna, ser till att de blir rätt och att tiderna hänger ihop med tillträdet. Du väljer kontaktväg: telefon, mejl eller chatt. En kontakt för hela din flytt, och vi finns med dig hela vägen.",
       "benefit": ""
     }
   },
@@ -60,6 +60,18 @@
   },
   "FAQITEMS": [
     {
+      "question": "Vad kostar det att använda Flyttsmart?",
+      "answer": "Tjänsten kostar inget för dig, leverantörerna betalar oss. Du betalar samma pris som hos leverantören eller lägre. Priset beror på leverantör, avstånd och bostadens storlek."
+    },
+    {
+      "question": "Hur tjänar Flyttsmart pengar?",
+      "answer": "Du betalar aldrig extra för att gå via oss. Vi rekommenderar aldrig den leverantör som ger oss mest, utan den som passar din flytt bäst, utifrån din situation, dina önskemål och vad vi lärt oss av 230 000 flyttar. Vår affär bygger på att du blir nöjd."
+    },
+    {
+      "question": "Vem ansvarar om något går fel?",
+      "answer": "Du hör alltid av dig till oss, inte till leverantören. På flytt och städ är vi leverantören: där utreder vi, återkopplar och står för kostnaden om felet är vårt. På el och bredband är avtalet mellan dig och leverantören, men det är oss du ringer och vi driver ärendet åt dig."
+    },
+    {
       "question": "Vad händer efter att jag loggat in?",
       "answer": "Du får en checklista för just din flytt, med adress, datum och det vi redan vet. Under varje punkt ligger ett förslag, färdigförhandlat. Du godkänner det du vill ha, så bokar din koordinator."
     },
@@ -75,10 +87,6 @@
       "answer_last_second_part": " Vi ska försöka hjälpa dig att ordna allt i tid."
     },
     {
-      "question": "Vad kostar det att använda Flyttsmart?",
-      "answer": "Tjänsten kostar inget för dig, leverantörerna betalar oss. Du betalar samma pris som hos leverantören eller lägre. Priset beror på leverantör, avstånd och bostadens storlek."
-    },
-    {
       "question": "Vilka leverantörer samarbetar ni med?",
       "answer": "Vi väljer en eller ett par leverantörer inom varje område. De kontrolleras på F-skatt, försäkringar och referenser, gör ett provuppdrag och får betyg efter varje uppdrag. Priserna har vi förhandlat i förväg."
     }
@@ -86,7 +94,7 @@
   "HOWITWORKS": {
     "title": "Så funkar det",
     "checklist": "Få en personlig checklista",
-    "how_to_checklist": "Logga in med BankID för att få en översikt av vad du behöver ordna inför flytten. Börja bocka av din checklista direkt och bli klar på 10 minuter.",
+    "how_to_checklist": "Logga in med BankID för att få en översikt av vad du behöver ordna inför flytten. Börja bocka av din checklista direkt och bli klar på några minuter.",
     "smart_choices": "Gör smarta och trygga val",
     "suppliers": "Våra leverantörer är noga utvalda och kvalitetssäkrade. Det kostar inte mer att boka via oss - vår tjänst är helt kostnadsfri.",
     "help": "Få hjälp hela vägen hem",

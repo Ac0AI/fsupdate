@@ -22,7 +22,7 @@ const Coordinators = () => {
               Koordinatorerna som kan din flytt
             </h2>
             <p className="text-lg text-[var(--color-secondary-main)] leading-relaxed max-w-[520px] mb-8">
-              Går något fel hör du av dig till oss. Undrar du något hör du av dig i chatten.
+              Undrar du något finns vi i chatten, på mejl och i telefon. Vi ser fram emot att höra från dig!
             </p>
             <button
               type="button"

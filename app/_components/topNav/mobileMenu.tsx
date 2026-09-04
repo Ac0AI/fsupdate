@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { isClientDemoMode } from '@/common/utils/demoMode'
 import Button from '@/components/atoms/Button'
 import Flex from '@/components/atoms/Flex'
+import { LanguageSelect } from '@/components/molecules/LanguageSelect'
 import Link from '@/components/molecules/Link'
 import CloseIcon from '@/public/images/Close_large.svg'
 import Logo from '@/public/images/Logo2.svg'
@@ -108,6 +109,12 @@ const MobileMenu = ({ onlyLogin }: Props) => {
 
                   <div className="mt-8">
                     <Button onClick={() => { setOpen(false); router.push(loginPath) }} text="Logga in" />
+                  </div>
+
+                  {/* Språkvalet finns även i sidfoten, men den som öppnar menyn
+                      ska inte behöva scrolla till botten för att byta. */}
+                  <div className="mt-6">
+                    <LanguageSelect />
                   </div>
                 </>
               )}

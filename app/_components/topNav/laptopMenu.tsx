@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { isClientDemoMode } from '@/common/utils/demoMode'
 import Button from '@/components/atoms/Button'
 import Flex from '@/components/atoms/Flex'
+import { LanguageSelect } from '@/components/molecules/LanguageSelect'
 
 interface DropdownItem {
   label: string
@@ -81,10 +82,12 @@ const LaptopMenu = ({ onlyLogin }: Props) => {
   }
 
   return (
-    <Flex alignItems="center" className="gap-10">
+    <Flex alignItems="center" className="gap-8">
       <NavItem label="Våra tjänster" href="/#how-it-works" currentPath={cleanPath} />
       <NavItem label="Samarbetspartners" href="/samarbetspartners" currentPath={cleanPath} />
       <NavItem label="Om oss" href="/om-oss" currentPath={cleanPath} />
+      {/* Språkvalet ska gå att nå både högst upp och längst ner (Sebastian, PDF s.5). */}
+      <LanguageSelect />
       <Button onClick={() => router.push(loginPath)} text="Logga in" className="!px-13 !py-3" />
     </Flex>
   )
