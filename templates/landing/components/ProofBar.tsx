@@ -31,11 +31,11 @@ const ProofBar = () => {
           </div>
         </div>
 
-        {/* Mäklarlogotyperna som en lugn marquee: lika höga slots, tonade
-            kanter, enfärgade så att ingen logotyp skriker. Vit remsa eftersom
-            flera är opaka. Rullningen och bildladdningen bor i LogoMarquee. */}
+        {/* Mäklarlogotyperna i färg (ägaren 2026-09-04), lika höga slots och
+            tonade kanter. Vit remsa eftersom flera loggor är opaka.
+            Rullningen och bildladdningen bor i LogoMarquee. */}
         <div className="rounded-2xl bg-white py-6 overflow-hidden">
-          <LogoMarquee logos={partnerLogos} imageClassName="max-h-full max-w-[112px] md:max-w-[128px] object-contain grayscale opacity-80" />
+          <LogoMarquee logos={partnerLogos} imageClassName="max-h-full max-w-[112px] md:max-w-[128px] object-contain" />
         </div>
       </div>
     </section>
