@@ -1,4 +1,5 @@
 import { PROOF_BLOCK } from '@/constants/trustStats'
+import LogoMarquee from './LogoMarquee'
 import { partnerLogos } from './partnerLogos'
 
 const ProofBar = () => {
@@ -30,19 +31,11 @@ const ProofBar = () => {
           </div>
         </div>
 
-        {/* Mäklarlogotyperna som en lugn marquee: lika höga slots, tonade kanter,
-            enfärgade så att ingen logotyp skriker. Vit remsa eftersom flera är opaka. */}
+        {/* Mäklarlogotyperna som en lugn marquee: lika höga slots, tonade
+            kanter, enfärgade så att ingen logotyp skriker. Vit remsa eftersom
+            flera är opaka. Rullningen och bildladdningen bor i LogoMarquee. */}
         <div className="rounded-2xl bg-white py-6 overflow-hidden">
-          <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-            <div className="flex w-max gap-12 md:gap-16 animate-scroll-infinite motion-reduce:animate-none">
-              {[...partnerLogos, ...partnerLogos].map((logo, i) => (
-                <span key={`${logo.src}-${i}`} className="h-9 w-[112px] md:w-[128px] flex items-center justify-center shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={logo.src} alt={logo.alt} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain grayscale opacity-80" />
-                </span>
-              ))}
-            </div>
-          </div>
+          <LogoMarquee logos={partnerLogos} imageClassName="max-h-full max-w-[112px] md:max-w-[128px] object-contain grayscale opacity-80" />
         </div>
       </div>
     </section>

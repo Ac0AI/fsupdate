@@ -1101,9 +1101,8 @@ html {
   animation: scroll-infinite 60s linear infinite;
 }
 
-.animate-scroll-infinite:hover {
-  animation-play-state: paused;
-}
+/* Ingen paus vid hover: remsan ska rulla löpande (ägaren 2026-09-04). Den som
+   inte vill ha rörelse får den stillastående via motion-reduce på spåret. */
 
 .animate-scroll-infinite-reverse {
   animation: scroll-infinite-reverse 55s linear infinite;

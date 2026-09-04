@@ -81,12 +81,8 @@ const LaptopMenu = ({ onlyLogin }: Props) => {
   }
 
   return (
-    <Flex alignItems="center" className="gap-8">
+    <Flex alignItems="center" className="gap-10">
       <NavItem label="Våra tjänster" href="/#how-it-works" currentPath={cleanPath} />
-      {/* Flyttguiden, inte "Blogg" (Sebastian 2026-09-04): blogg låter som
-          företagsnyheter, guiden är det folk söker på. Adressen är kvar på
-          /blogg tills ägaren säger annat. */}
-      <NavItem label="Flyttguiden" href="/blogg" currentPath={cleanPath} />
       <NavItem label="Samarbetspartners" href="/samarbetspartners" currentPath={cleanPath} />
       <NavItem label="Om oss" href="/om-oss" currentPath={cleanPath} />
       <Button onClick={() => router.push(loginPath)} text="Logga in" className="!px-13 !py-3" />

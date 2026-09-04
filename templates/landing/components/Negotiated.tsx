@@ -1,5 +1,22 @@
 import Image from 'next/image'
 import { FORTUM_DISCOUNT_SEK } from '@/constants/trustStats'
+import LogoMarquee from './LogoMarquee'
+
+/**
+ * Leverantörerna vi förhandlat med. Egen remsa här, aldrig i bevisblocket:
+ * den rubriken säger mäklarkedjor (Sebastian 2026-09-03).
+ *
+ * SAKNAS: Telia, Tele2 och Telenor. Ägaren bad om dem 2026-09-04 men det finns
+ * inga logotypfiler i repot, och deras varumärkesfiler hämtar jag inte själv.
+ * Lägg filerna i public/images/suppliers och skriv in dem här.
+ */
+const SUPPLIER_LOGOS = [
+  { src: '/images/suppliers/fortum.svg', alt: 'Fortum' },
+  { src: '/images/suppliers/vattenfall.svg', alt: 'Vattenfall' },
+  { src: '/images/suppliers/skekraft.svg', alt: 'Skellefteå Kraft' },
+  { src: '/images/suppliers/tibber-crop.svg', alt: 'Tibber' },
+  { src: '/images/hedvig_logotype_black.png', alt: 'Hedvig' },
+]
 
 /**
  * Beviset för att förhandlingen redan är gjord (Sebastian 2026-09-03: inte en
@@ -33,6 +50,20 @@ const Negotiated = () => (
           <p className="text-base text-[var(--color-secondary-main)]/80 leading-relaxed">
             På elavtalet hos Fortum. Erbjudandet finns bara på Flyttsmart.
           </p>
+        </div>
+      </div>
+
+      {/* Loggorna i färg, inte gråskala: poängen är att varumärkena känns igen. */}
+      <div className="mt-14 md:mt-20">
+        <p className="text-center text-[13px] font-semibold uppercase tracking-[0.14em] text-[var(--color-secondary-main)]/60">
+          Trygga partnerskap från bland annat
+        </p>
+        <div className="mt-6">
+          <LogoMarquee
+            logos={SUPPLIER_LOGOS}
+            slotClassName="h-8 w-[150px] md:w-[180px]"
+            imageClassName="max-h-full max-w-[110px] md:max-w-[130px] object-contain"
+          />
         </div>
       </div>
     </div>

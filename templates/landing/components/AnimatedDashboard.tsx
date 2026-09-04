@@ -11,23 +11,20 @@ import BankId from '@/public/images/BankId.svg'
 const BROKER = { agent: 'Erik Lind', office: 'Solhöjdens Mäklarbyrå' }
 const MOVE = { from: 'Storgatan 12, Stockholm', to: 'Ekvägen 8, Göteborg', toShort: 'Ekvägen 8' }
 
-// Datumen räknas från dagens datum: flyttdagen exakt en månad fram (samma dag i nästa
-// månad, sista dagen om den inte finns), städningen dagen innan, låsskärmen visar
-// dagen i dag. Så blir mockupen aldrig gammal.
+// Datumen räknas från dagens datum: flyttdagen exakt 30 dagar fram, städningen
+// dagen innan (29 dagar fram), låsskärmen visar dagen i dag. Så blir mockupen
+// aldrig gammal. Ägaren 2026-09-04: alltid 30 dagar, inte "en månad" - en månad
+// är 28 dagar i februari och då stämmer inte löftet om planeringstid.
 const MONTHS_LONG = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
 const MONTHS_SHORT = ['jan', 'feb', 'mars', 'apr', 'maj', 'juni', 'juli', 'aug', 'sep', 'okt', 'nov', 'dec']
 const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag']
 const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
-const addMonth = (d: Date) => {
-  const lastDayNextMonth = new Date(d.getFullYear(), d.getMonth() + 2, 0).getDate()
-  return new Date(d.getFullYear(), d.getMonth() + 1, Math.min(d.getDate(), lastDayNextMonth))
-}
 const long = (d: Date) => `${d.getDate()} ${MONTHS_LONG[d.getMonth()]}`
 const short = (d: Date) => `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`
 
 const buildCopy = (today: Date) => {
-  const move = addMonth(today)
-  const clean = addDays(move, -1)
+  const move = addDays(today, 30)
+  const clean = addDays(today, 29)
   return {
     lockDate: `${WEEKDAYS[today.getDay()]} ${long(today)}`,
     moveDate: long(move),
@@ -45,7 +42,7 @@ const buildCopy = (today: Date) => {
         done: 'Hemförsäkring flyttad',
         icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
       },
-      { name: 'Flytthjälp', detail: `${long(move)} kl 8, tre bärare`, done: 'Flytthjälp bokad', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+      { name: 'Flytthjälp', detail: `${long(move)} kl 8`, done: 'Flytthjälp bokad', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
       {
         name: 'Flyttstädning',
         detail: `${long(clean)}, städgaranti`,
@@ -64,7 +61,7 @@ const buildCopy = (today: Date) => {
         title: 'Kommer',
         rows: [
           { name: 'Flyttstädning', value: `${short(clean)}, kl 8` },
-          { name: 'Flytthjälp', value: `${short(move)}, kl 8, tre bärare` },
+          { name: 'Flytthjälp', value: `${short(move)}, kl 8` },
         ],
       },
       {
