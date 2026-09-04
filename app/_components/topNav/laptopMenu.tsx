@@ -24,7 +24,7 @@ function NavItem({ label, href, items, currentPath }: NavItemProps) {
   const [open, setOpen] = useState(false)
   const isActive = href ? currentPath === href : items?.some((item) => currentPath === item.href)
 
-  const baseClass = `relative text-sm font-semibold transition-colors pb-1 ${isActive ? 'text-[var(--color-primary-main)]' : 'text-[var(--color-secondary-main)] hover:text-[var(--color-primary-main)]'}`
+  const baseClass = `relative whitespace-nowrap text-sm font-semibold transition-colors pb-1 ${isActive ? 'text-[var(--color-primary-main)]' : 'text-[var(--color-secondary-main)] hover:text-[var(--color-primary-main)]'}`
   const underline = isActive ? <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-primary-main)] rounded-full" /> : null
 
   if (!items) {
@@ -78,17 +78,17 @@ const LaptopMenu = ({ onlyLogin }: Props) => {
   const cleanPath = pathname.replace(/^\/(sv|en)/, '') || '/'
 
   if (onlyLogin) {
-    return <Button onClick={() => router.push(loginPath)} text="Logga in" className="!px-13 !py-3" />
+    return <Button onClick={() => router.push(loginPath)} text="Logga in" className="!px-10 !py-3 whitespace-nowrap" />
   }
 
   return (
-    <Flex alignItems="center" className="gap-8">
+    <Flex alignItems="center" className="gap-6 xl:gap-8">
       <NavItem label="Våra tjänster" href="/#how-it-works" currentPath={cleanPath} />
       <NavItem label="Samarbetspartners" href="/samarbetspartners" currentPath={cleanPath} />
       <NavItem label="Om oss" href="/om-oss" currentPath={cleanPath} />
       {/* Språkvalet ska gå att nå både högst upp och längst ner (Sebastian, PDF s.5). */}
       <LanguageSelect />
-      <Button onClick={() => router.push(loginPath)} text="Logga in" className="!px-13 !py-3" />
+      <Button onClick={() => router.push(loginPath)} text="Logga in" className="!px-10 !py-3 whitespace-nowrap" />
     </Flex>
   )
 }
