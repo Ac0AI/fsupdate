@@ -10,8 +10,10 @@ const outlineButton =
   'inline-flex items-center justify-center min-h-11 px-6 rounded-full border-2 border-white text-white! font-bold text-[15px] hover:bg-white/10! transition-colors whitespace-nowrap'
 
 const STATS = [
-  { value: '5 000', label: 'flyttar i månaden' },
-  { value: '300', label: 'mäklarkontor' },
+  // Sebastian, PDF s.13: 5 000 är inflödet, inte genomförda flyttar, och
+  // kontoren är 450+. Tre olika nämnare på sajten var lätta att motsäga.
+  { value: '5 000', label: 'nya flyttar i månaden' },
+  { value: '450+', label: 'mäklarkontor' },
   { value: '4,7 av 5', label: 'på Google, över 500 recensioner' },
 ]
 
@@ -48,7 +50,7 @@ const PartnersIntro = () => (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Mäklare, hyresvärdar och föreningar</h2>
-          <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten, enkelt för kunden och utan extra jobb för dig. Kostnadsfritt, vi tar betalt av leverantörerna.</p>
+          <p className="text-white/70 text-sm leading-relaxed">Du möter personer som ska flytta. Vi tar hand om resten. Det är enkelt för kunden, utan extra jobb för dig, och det kostar er ingenting.</p>
           <div className="mt-auto pt-2">
             <a href={`mailto:${CONTACTS.brokers.email}`} className={primaryButton}>
               Mejla Sebastian
@@ -182,9 +184,12 @@ const Cta = ({ title, contact, label }: { title: string; contact: (typeof CONTAC
 // ─── Distributionspartners ────────────────────────────────────────────────────
 
 const brokerSteps = [
-  { title: 'Kunden bjuds in', description: 'Vi kopplar in oss i ditt mäklarsystem eller fastighetssystem, du gör inget.' },
-  { title: 'Vi tar hand om resten', description: 'Flytt, städ, el, bredband, försäkring, adressändring och allt annat kring flytten, samlat på ett ställe med en kontaktperson.' },
-  { title: 'Kunden får en koordinator', description: 'Koordinatorn bokar, följer upp och svarar i chatten, på mejl och i telefon.', people: true },
+  // Mäklarsystemet nämns inte (Sebastian, PDF s.14): det beskriver
+  // distributionen, och den frågan får vi regelbundet från andra bolag.
+  // Rubrikerna beskriver utfallet för kunden i stället för arbetet vi utför.
+  { title: 'Kunden får en inbjudan till Flyttsmart', description: 'Du gör inget annorlunda mot idag, vi löser det.' },
+  { title: 'Kunden får en enkel och trygg flytt', description: 'Flytt, städ, el, bredband, försäkring, adressändring och allt annat kring flytten, samlat på ett ställe med en kontaktperson.' },
+  { title: 'Kunden får samma koordinator genom hela flytten', description: 'Koordinatorn bokar, följer upp och svarar i chatten, på mejl och i telefon.', people: true },
 ]
 
 const DistributionPartners = () => (
@@ -214,7 +219,7 @@ const Suppliers = () => (
     <SectionHeader
       audience="För leverantörer"
       title="Nå kunder i exakt rätt ögonblick."
-      text="Varje månad går 5 000 flyttar genom Flyttsmart, och de som flyttar letar efter leverantörer just nu. Vi sköter kundkontakt, fakturering och rut- och rothantering. Vi kopplar ihop er, men bara om du håller måttet."
+      text="Varje månad kommer 5 000 nya flyttar in till Flyttsmart, och de som flyttar letar efter leverantörer just nu. Vi sköter kundkontakt, fakturering och rutavdraget. Vi kopplar ihop er, men bara om du håller måttet."
     />
 
     <div className="mb-14 md:mb-16">
