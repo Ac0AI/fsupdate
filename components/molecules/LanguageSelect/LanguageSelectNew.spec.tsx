@@ -1,6 +1,6 @@
 import { act } from 'react'
 import { Context as ResponsiveContext } from 'react-responsive'
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
@@ -21,11 +21,7 @@ jest.mock('next/navigation', () => ({
   }),
 }))
 
-const server = setupServer(
-  rest.patch('/web/user/change-language', (req, res, ctx) => {
-    return res(ctx.status(200))
-  }),
-)
+const server = setupServer(http.patch('/web/user/change-language', () => new HttpResponse(null, { status: 200 })))
 
 describe.skip('LanguageSelectNew', () => {
   const desktopWidth = 1500

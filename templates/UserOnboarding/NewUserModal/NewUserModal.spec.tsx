@@ -1,5 +1,5 @@
 import { Context as ResponsiveContext } from 'react-responsive'
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
@@ -8,16 +8,12 @@ import SSOModal, { SSOModalProps } from './NewUserModal'
 describe.skip('SSOModal', () => {
   const server = setupServer(
     ...[
-      rest.post('auth/users/login/sso/accept', (req, res, ctx) => {
-        return res(ctx.status(200))
-      }),
-      rest.post('auth/users/login/sso', (req, res, ctx) => {
-        return res(
-          ctx.json({
-            accessToken: 'test_1231123',
-          }),
-        )
-      }),
+      http.post('auth/users/login/sso/accept', () => new HttpResponse(null, { status: 200 })),
+      http.post('auth/users/login/sso', () =>
+        HttpResponse.json({
+          accessToken: 'test_1231123',
+        }),
+      ),
     ],
   )
 

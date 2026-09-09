@@ -1,7 +1,7 @@
 import React from 'react'
 import { act } from 'react'
 import { Context as ResponsiveContext } from 'react-responsive'
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { LoginProvider } from '@/common/context/login/Login.provider'
 import { ColourModeProvider, CreateThemeContext } from '@/common/context/theme/themeContext.provider'
@@ -39,42 +39,40 @@ jest.mock('@/common/context/login/Login.provider', () => {
 describe.skip('Login init', () => {
   const server = setupServer(
     ...[
-      rest.post('users/login/init', (req, res, ctx) => {
-        return res(
-          ctx.json({
-            orderRef: 's12312-12342141-24112412',
-            autoStartToken: null,
-            qrStartSecret: null,
-            qrStartToken: null,
-          }),
-        )
-      }),
+      http.post('users/login/init', () =>
+        HttpResponse.json({
+          orderRef: 's12312-12342141-24112412',
+          autoStartToken: null,
+          qrStartSecret: null,
+          qrStartToken: null,
+        }),
+      ),
     ],
   )
   const serverError = setupServer(
     ...[
-      rest.post('users/login/init', (req, res, ctx) => {
-        return res(
-          ctx.status(500),
-          ctx.json({
+      http.post('users/login/init', () =>
+        HttpResponse.json(
+          {
             statusCode: 500,
             messageKey: ERRORCODES.NOTFOUND,
-          }),
-        )
-      }),
+          },
+          { status: 500 },
+        ),
+      ),
     ],
   )
   const serverErrorUnder18 = setupServer(
     ...[
-      rest.post('users/login/init', (req, res, ctx) => {
-        return res(
-          ctx.status(500),
-          ctx.json({
+      http.post('users/login/init', () =>
+        HttpResponse.json(
+          {
             statusCode: 500,
             messageKey: ERRORCODES.USERUNDER18,
-          }),
-        )
-      }),
+          },
+          { status: 500 },
+        ),
+      ),
     ],
   )
 

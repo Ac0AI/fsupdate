@@ -1,5 +1,5 @@
 import { Context as ResponsiveContext } from 'react-responsive'
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { LoginProvider } from '@/common/context/login/Login.provider'
 import { CreateUserContext, UserProvider } from '@/common/context/user/UserProvider'
@@ -26,40 +26,26 @@ jest.mock('next/navigation', () => ({
 describe.skip('Collect login', () => {
   const server = setupServer(
     ...[
-      rest.post('users/login/collect', (req, res, ctx) => {
-        return res(ctx.json({ status: 'complete', token: 6912312312312, userCreated: false }))
-      }),
-      rest.get('/users/me', (req, res, ctx) => {
-        return res(ctx.status(200))
-      }),
-      rest.get('/moves/current', (req, res, ctx) => {
-        return res(ctx.status(200))
-      }),
-      rest.get('/users/contact', (req, res, ctx) => {
-        return res(ctx.status(200))
-      }),
+      http.post('users/login/collect', () => HttpResponse.json({ status: 'complete', token: 6912312312312, userCreated: false })),
+      http.get('/users/me', () => new HttpResponse(null, { status: 200 })),
+      http.get('/moves/current', () => new HttpResponse(null, { status: 200 })),
+      http.get('/users/contact', () => new HttpResponse(null, { status: 200 })),
     ],
   )
   const serverError = setupServer(
     ...[
-      rest.post('users/login/collect', (req, res, ctx) => {
-        return res(
-          ctx.status(500),
-          ctx.json({
+      http.post('users/login/collect', () =>
+        HttpResponse.json(
+          {
             statusCode: 500,
             messageKey: ERRORCODES.USERUNDER18,
-          }),
-        )
-      }),
-      rest.get('/users/me', (req, res, ctx) => {
-        return res(ctx.status(200))
-      }),
-      rest.get('/moves/current', (req, res, ctx) => {
-        return res(ctx.status(200))
-      }),
-      rest.get('/users/contact', (req, res, ctx) => {
-        return res(ctx.status(200))
-      }),
+          },
+          { status: 500 },
+        ),
+      ),
+      http.get('/users/me', () => new HttpResponse(null, { status: 200 })),
+      http.get('/moves/current', () => new HttpResponse(null, { status: 200 })),
+      http.get('/users/contact', () => new HttpResponse(null, { status: 200 })),
     ],
   )
 
