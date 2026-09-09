@@ -43,7 +43,7 @@ const Negotiated = () => (
             Priserna är redan förhandlade när du loggar in
           </h2>
           <p className="text-lg text-[var(--color-secondary-main)]/80 leading-relaxed">
-            Vi förhandlar med leverantörerna för alla som flyttar med oss. Erbjudandena ligger som förslag i din checklista, och du godkänner det du vill ha.
+            Vi har förhandlat fram prispressade erbjudanden för alla som flyttar med oss. Priserna ligger som förslag i din checklista vid vardera tjänst, och du väljer själv vad du vill gå vidare med.
           </p>
         </div>
 
@@ -53,7 +53,7 @@ const Negotiated = () => (
             och kortets brödtext upprepar därför inte "bara på Flyttsmart". */}
         <div>
           <p className="mb-3 text-[13px] font-semibold text-[var(--color-secondary-main)]/60">
-            Exempel på erbjudande som finns bara på Flyttsmart
+            Exempel på erbjudande som finns exklusivt hos Flyttsmart
           </p>
           <div className="rounded-2xl border border-[#E1E7EE] bg-[var(--color-background-default)] p-7 md:p-9 flex flex-col gap-6">
             <div className="flex items-center justify-between gap-4">

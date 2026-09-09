@@ -19,10 +19,10 @@ const Coordinators = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 lg:items-center">
           <div>
             <h2 id="coordinators-heading" className="text-[var(--color-secondary-main)] font-bold leading-[1.08] text-[32px] md:text-[44px] lg:text-[48px] mb-4">
-              Koordinatorerna som kan din flytt
+              Vi kan allt kring flytt
             </h2>
             <p className="text-lg text-[var(--color-secondary-main)] leading-relaxed max-w-[520px] mb-8">
-              Undrar du något finns vi i chatten, på mejl och i telefon. Vi ser fram emot att höra från dig!
+              Har du några frågor så finns vi behjälpliga i chatten, på mejl och i telefon. Vi ser fram emot att höra från dig!
             </p>
             <button
               type="button"
@@ -35,7 +35,7 @@ const Coordinators = () => {
               Öppna chatten
             </button>
             <p className="mt-4 text-sm text-[var(--color-secondary-main)]/70">
-              Hellre ringa?{' '}
+              Vill du hellre ringa?{' '}
               <a href="tel:+46812008822" className="font-semibold text-[var(--color-secondary-main)] underline underline-offset-2">
                 08-12 00 88 22
               </a>
@@ -61,7 +61,7 @@ const Coordinators = () => {
               ))}
             </ul>
             <p className="text-lg font-bold text-[var(--color-secondary-main)] leading-snug">{FIRST_NAMES}</p>
-            <p className="-mt-3 text-sm text-[var(--color-secondary-main)]/70">Flyttkoordinatorer. Du får en av dem genom hela flytten.</p>
+            <p className="-mt-3 text-sm text-[var(--color-secondary-main)]/70">Du får en flyttkoordinator som hjälper dig genom hela flytten.</p>
           </div>
         </div>
       </div>

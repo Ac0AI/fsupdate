@@ -3,7 +3,7 @@
 export const GOOGLE_RATING = 4.7
 export const GOOGLE_REVIEW_COUNT = 500
 // Samma siffra som brandguiden. Ändras här, inte i komponenterna.
-export const MOVES_SINCE_2020 = '230 000'
+export const MOVES_SINCE_2020 = '250 000'
 
 // Rabatten på elavtalet hos Fortum, bara via Flyttsmart. Siffran från ägaren 2026-09-03
 // ("1035 rabatt på fortum"); ändras avtalet, ändra här och ingen annanstans.
@@ -21,20 +21,21 @@ export const MOVES_IN_SWEDEN_SOURCE_URL = 'https://www.scb.se/hitta-statistik/sv
  * ("färdigförhandlade leverantörer, ansvar hela vägen") hör inte hemma här; den
  * bor i hero-underrubriken och i sektionen Förhandlat i förväg.
  *
- * Eyebrow och rubrik läses som en mening: "Förtroende från / Över hälften av
- * Sveriges mäklarkedjor".
+ * Eyebrow och rubrik bytta 2026-09-09 på ägarens copyfeedback: rubriken blev en hel
+ * mening ("... är anslutna"), så eyebrowen fick bli en etikett i stället för meningsstart.
  *
  * Källor:
  *  - "Förtroende från över hälften av Sveriges mäklarkedjor": Sebastians
  *    formulering 2026-09-04 (varumärkesplattformen aug 2026 sa "hälften").
- *  - "Över 230 000 personer har flyttat med oss sedan 2020": bekräftad av David
+ *  - "Över 250 000 hjälpta kunder sedan 2020": ägarens siffra och formulering 2026-09-09
+ *    (höjt från 230 000). Tidigare: "Över 230 000 personer ..." bekräftad av David
  *    2026-08-29 (höjt från 200 000, samma siffra som brandguiden). Talet räknar
  *    människor, därför "personer" (Sebastian 2026-09-03).
  */
 export const PROOF_BLOCK = {
-  eyebrow: 'Förtroende från',
-  claim: 'Över hälften av Sveriges mäklarkedjor',
-  numbers: 'Över 230 000 personer har flyttat med oss sedan 2020.',
+  eyebrow: 'Mäklarnas förtroende',
+  claim: 'Fler än hälften av alla Sveriges mäklarkedjor är anslutna',
+  numbers: 'Över 250 000 hjälpta kunder sedan 2020.',
 } as const
 
 /**
@@ -43,7 +44,7 @@ export const PROOF_BLOCK = {
  * stå kvar för att den ser bra ut.
  *
  * Bekräftade av David:
- *  - 230 000+ hjälpta flyttare  (2026-08-29)
+ *  - 250 000+ hjälpta flyttare  (ägaren 2026-09-09, höjt från 230 000 bekräftat 2026-08-29)
  *  - 120+ partners              (2026-08-25). OBS: brandguidens Block 3 säger
  *    "ett hundratal anslutna bolag" (Sebastian 2026-09-03); ägaren avgör vilket
  *    tal som gäller eller om de räknar olika saker.
@@ -60,7 +61,7 @@ export const PROOF_BLOCK = {
  *  - 2 300 användare första året
  */
 export const ABOUT_STATS = [
-  { value: '230 000+', label: 'Hjälpta flyttare' },
+  { value: '250 000+', label: 'Hjälpta flyttare' },
   { value: '120+', label: 'Partners' },
   { value: '3000+', label: 'Mäklare' },
   { value: '4,7/5', label: `Kundbetyg på Google, över ${GOOGLE_REVIEW_COUNT} omdömen` },
