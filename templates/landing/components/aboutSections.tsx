@@ -77,7 +77,7 @@ const TeamSection = () => {
               Vi är inte en marknadsplats som skickar dig eller dina uppgifter vidare. På flytt och städ är vi din avtalspart: vi har försäkringarna, supporten och sköter faktureringen. På el och bredband tecknar du avtalet direkt, men du har fortfarande kontakten med oss. En person, hela vägen.
             </p>
             <p>
-              120+ kvalitetssäkrade leverantörer i hela Sverige. 16 personer i teamet. Från 2 300 användare första året till över 230 000 hjälpta personer på sex år.
+              120+ kvalitetssäkrade leverantörer i hela Sverige. 16 personer i teamet. Från 2 300 användare första året till över 250 000 hjälpta personer på sex år.
             </p>
           </div>
         </div>

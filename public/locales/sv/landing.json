@@ -3,7 +3,7 @@
   "intro_2": "enklaste",
   "intro_3": "sättet att flytta!",
   "start": "STARTA FLYTTEN",
-  "testamonial_title": "Det säger de som flyttat med oss",
+  "testamonial_title": "Det säger våra kunder",
   "stats_title": "Inte övertygad än?",
   "faq_title": "Vanliga frågor",
   "faq_link": "https://help.flyttsmart.se/sv",
@@ -12,7 +12,7 @@
   "flyttsmart_phone": "08-12 00 88 22",
   "flyttsmart_chat": "eller i chatten.",
   "HERO": {
-    "badge": "230 000+ nöjda flyttare",
+    "badge": "250 000+ nöjda flyttare",
     "headline_1": "Slipp stressen -",
     "headline_2": "vi fixar",
     "headline_3": "flytten åt dig",
@@ -25,11 +25,11 @@
     "partners": "Våra samarbetspartners"
   },
   "HOW_WE_HELP": {
-    "title": "Så blir över tio beslut till ett",
+    "title": "Allt samlat på en och samma plats",
     "subtitle": "Vi har förhandlat priserna och kvalitetskontrollerat leverantörerna i förväg.",
     "step1": {
       "title": "Logga in med BankID",
-      "description": "Några minuter. Din checklista står klar med adress, datum och det vi redan vet om din flytt.",
+      "description": "På några klick har du en personlig checklista klar med adress, datum och annat kring din flytt.",
       "benefit": ""
     },
     "step2": {
@@ -38,8 +38,8 @@
       "benefit": ""
     },
     "step3": {
-      "title": "Din koordinator bokar och följer upp",
-      "description": "Vi lägger beställningarna, ser till att de blir rätt och att tiderna hänger ihop med tillträdet. Du väljer kontaktväg: telefon, mejl eller chatt. En kontakt för hela din flytt, och vi finns med dig hela vägen.",
+      "title": "Din koordinator hjälper dig hela vägen",
+      "description": "Vi lägger beställningarna, hanterar rut-avdrag och ser till att allt sker i rätt tid med tillträdet. Du väljer kontaktväg - telefon, mejl eller chatt. Du får en kontakt som följer hela din flytt, hela vägen till ditt nya hem.",
       "benefit": ""
     }
   },
@@ -65,7 +65,7 @@
     },
     {
       "question": "Hur tjänar Flyttsmart pengar?",
-      "answer": "Du betalar aldrig extra för att gå via oss. Vi rekommenderar aldrig den leverantör som ger oss mest, utan den som passar din flytt bäst, utifrån din situation, dina önskemål och vad vi lärt oss av 230 000 flyttar. Vår affär bygger på att du blir nöjd."
+      "answer": "Du betalar aldrig extra för att gå via oss. Vi rekommenderar aldrig den leverantör som ger oss mest, utan den som passar din flytt bäst, utifrån din situation, dina önskemål och vad vi lärt oss av 250 000 flyttar. Vår affär bygger på att du blir nöjd."
     },
     {
       "question": "Vem ansvarar om något går fel?",

@@ -36,7 +36,7 @@ const AbroadHub = () => (
       body={ABROAD_HERO.body}
       bullets={ABROAD_HERO.bullets}
       stats={[
-        { value: '230 000+', label: 'personer har flyttat med oss' },
+        { value: '250 000+', label: 'personer har flyttat med oss' },
         { value: String(GOOGLE_RATING).replace('.', ','), label: 'betyg på Google' },
       ]}
     />

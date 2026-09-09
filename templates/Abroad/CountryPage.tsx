@@ -44,7 +44,7 @@ const CountryPage = ({ country }: Props) => {
         stats={[
           { value: country.transitDays, label: country.transitNote },
           { value: country.customsLabel, label: country.customsNote },
-          { value: '230 000+', label: 'personer har flyttat med oss' },
+          { value: '250 000+', label: 'personer har flyttat med oss' },
           { value: String(GOOGLE_RATING).replace('.', ','), label: 'betyg på Google' },
         ]}
       />
