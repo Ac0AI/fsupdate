@@ -2,6 +2,9 @@
 
 import Image from 'next/image'
 import { coordinators } from '@/common/data/coordinators'
+import LogoMarquee from './LogoMarquee'
+import { partnerLogos } from './partnerLogos'
+import { supplierLogos } from './supplierLogos'
 
 // Bakgrund och textfärg på länkar kräver ! : resetten nollar background-color och sätter color på <a>.
 const primaryButton =
@@ -29,8 +32,9 @@ const PartnersIntro = () => (
   <section className="bg-[var(--color-secondary-main)] text-white">
     <div className="max-w-[1200px] mx-auto px-4 md:px-8 pt-8 md:pt-16 pb-12 md:pb-16">
       <div className="max-w-[680px] mb-10">
+        {/* Rubriken säger vad kunden får, inte vad vi kallar rollen (Camilla 2026-09-11). */}
         <h1 className="text-[32px] md:text-[44px] font-bold mb-4 leading-[1.1]">
-          Dina kunder får en flyttkoordinator.
+          Med oss får kunden en personlig kontakt, genom hela flytten.
         </h1>
         <p className="text-white/80 text-lg leading-relaxed">
           Enklare för dem, och en kundupplevelse som sträcker sig bortom själva bostadstransaktionen. Vi tar ansvar hela vägen till det nya hemmet.
@@ -67,6 +71,35 @@ const PartnersIntro = () => (
           </div>
         </div>
       </div>
+    </div>
+  </section>
+)
+
+// ─── Loggor: mäklare och leverantörer ─────────────────────────────────────────
+
+/**
+ * Två remsor, en per målgrupp (Camilla 2026-09-11: "här borde vi påvisa
+ * mäklarloggor samt leverantörer"). Aldrig blandade i samma remsa: mäklarna
+ * är bevis för mäklaren, leverantörerna för leverantören.
+ */
+const LOGO_ROWS = [
+  { label: 'Mäklare som redan är anslutna', logos: partnerLogos },
+  { label: 'Leverantörer vi samarbetar med', logos: supplierLogos },
+]
+
+const PartnerLogos = () => (
+  <section aria-label="Mäklare och leverantörer som samarbetar med Flyttsmart" className="bg-white border-b border-[#E1E7EE]">
+    <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-10 md:py-14 flex flex-col gap-8 md:gap-10">
+      {LOGO_ROWS.map((row) => (
+        <div key={row.label}>
+          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[var(--color-secondary-main)]/60 mb-4">{row.label}</p>
+          <LogoMarquee
+            logos={row.logos}
+            slotClassName="h-10 md:h-12 w-[176px] md:w-[216px]"
+            imageClassName="max-h-full max-w-[130px] md:max-w-[156px] object-contain"
+          />
+        </div>
+      ))}
     </div>
   </section>
 )
@@ -153,11 +186,13 @@ const Steps = ({ items, cols }: { items: { title: string; description: string; p
   </ol>
 )
 
-// En människa att höra av sig till, inte bara en knapp.
+// En människa att höra av sig till, inte bara en knapp. Ljus ruta och knappen
+// direkt efter texten (Camilla 2026-09-11: svart ruta med knappen i motsatt
+// hörn kändes inte inbjudande). Samma stil som slutrutan på Om oss.
 const Cta = ({ title, contact, label }: { title: string; contact: (typeof CONTACTS)[keyof typeof CONTACTS]; label: string }) => (
-  <div className="bg-[var(--color-secondary-dark)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+  <div className="rounded-xl border-2 border-[var(--color-primary-main)] bg-[var(--color-primary-main)]/10 p-7 md:p-10 flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
     <div className="flex flex-col gap-4">
-      <h3 className="text-lg md:text-xl font-bold text-white text-balance">{title}</h3>
+      <h3 className="text-lg md:text-xl font-bold text-[var(--color-secondary-main)] text-balance">{title}</h3>
       <div className="flex items-center gap-3">
         {contact.photo ? (
           <Image src={contact.photo} alt="" width={44} height={44} className="w-11 h-11 rounded-full object-cover shrink-0" />
@@ -170,12 +205,12 @@ const Cta = ({ title, contact, label }: { title: string; contact: (typeof CONTAC
           </span>
         )}
         <span className="flex flex-col">
-          <span className="text-sm font-bold text-white">{contact.name}</span>
-          <span className="text-sm text-white/70">{contact.role}</span>
+          <span className="text-sm font-bold text-[var(--color-secondary-main)]">{contact.name}</span>
+          <span className="text-sm text-[var(--color-secondary-main)]/70">{contact.role}</span>
         </span>
       </div>
     </div>
-    <a href={`mailto:${contact.email}`} className={`${primaryButton} shrink-0`}>
+    <a href={`mailto:${contact.email}`} className={`${primaryButton} shrink-0 self-start sm:self-auto`}>
       {label}
     </a>
   </div>
@@ -231,4 +266,4 @@ const Suppliers = () => (
   </section>
 )
 
-export { PartnersIntro, PartnerQuotes, DistributionPartners, Suppliers }
+export { PartnersIntro, PartnerLogos, PartnerQuotes, DistributionPartners, Suppliers }

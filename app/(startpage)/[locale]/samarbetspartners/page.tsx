@@ -1,11 +1,12 @@
 'use client'
 
-import { PartnersIntro, PartnerQuotes, DistributionPartners, Suppliers } from '@/templates/landing/components/partnersSections'
+import { PartnersIntro, PartnerLogos, PartnerQuotes, DistributionPartners, Suppliers } from '@/templates/landing/components/partnersSections'
 
 export default function SamarbetspartnersPage() {
   return (
     <main>
       <PartnersIntro />
+      <PartnerLogos />
       <PartnerQuotes />
       <div id="distributionspartners-section" className="bg-white">
         <DistributionPartners />

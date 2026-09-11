@@ -1,6 +1,8 @@
 'use client'
 
 import { ABOUT_STATS, MOVES_IN_SWEDEN_PER_YEAR, MOVES_IN_SWEDEN_SOURCE_URL } from '@/constants/trustStats'
+import LogoMarquee from './LogoMarquee'
+import { partnerLogos } from './partnerLogos'
 
 // ---------------------------------------------------------------------------
 // Data
@@ -10,13 +12,13 @@ import { ABOUT_STATS, MOVES_IN_SWEDEN_PER_YEAR, MOVES_IN_SWEDEN_SOURCE_URL } fro
 // datum. Ändra dem där, inte här.
 const stats = ABOUT_STATS
 
-// Copyn följer Sebastians genomgång 2026-09-03: inga nöjdhetstal utan källa,
-// inga superlativ, och avtalsparten beskrivs som den är (flytt och städ hos oss,
-// el och bredband direkt hos leverantören).
+// Copyn följer Sebastians genomgång 2026-09-03 (inga nöjdhetstal utan källa,
+// inga superlativ, avtalsparten som den är) och Camillas språkliga putsning
+// 2026-09-11: hela meningar i stället för uppräkningar, och "vi" som subjekt.
 const qualities = [
   {
     title: 'Kvalitetssäkrade leverantörer',
-    description: 'Varje leverantör granskas: försäkringar, trafiktillstånd, F-skatt, omdömen och Konsumentverket. Löpande uppföljning, och de som inte håller måttet åker ut.',
+    description: 'Varje leverantör granskas: försäkringar, trafiktillstånd, F-skatt, omdömen och Konsumentverket. Vi gör uppföljningar löpande och plockar bort de som inte håller måttet.',
   },
   {
     title: 'Personlig koordinator',
@@ -44,7 +46,7 @@ const TeamSection = () => {
               En enklare flytt. Det är hela poängen.
             </h1>
             <p className="text-white/70 text-base leading-relaxed">
-              Flyttsmart är en digital flyttjänst för hela flytten. Du bokar allt på ett ställe, och vi tar ansvar för leveransen. Försäkring, support, fakturering. En kontaktperson hela vägen.
+              Flyttsmart är en digital flyttjänst för hela flytten. Hos oss bokar du allt på ett ställe och får försäkring och support på köpet. Vi hanterar även faktureringen. Enkelt, helt enkelt!
             </p>
           </div>
 
@@ -56,6 +58,20 @@ const TeamSection = () => {
                 <div className="text-white/60 text-sm">{stat.label}</div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Mäklarkedjorna under siffrorna (Camilla 2026-09-11: "större loggor").
+            Samma lista som bevisblocket på startsidan men i större slots, så
+            loggorna läses som bevis och inte som en dekorremsa. Vit remsa
+            eftersom flera loggor är opaka. */}
+        <div className="max-w-[1200px] mx-auto px-4 md:px-8 pb-6 md:pb-8">
+          <div className="rounded-xl bg-white py-6 md:py-8 overflow-hidden">
+            <LogoMarquee
+              logos={partnerLogos}
+              slotClassName="h-12 md:h-14 w-[200px] md:w-[240px]"
+              imageClassName="max-h-full max-w-[150px] md:max-w-[176px] object-contain"
+            />
           </div>
         </div>
 
@@ -71,7 +87,7 @@ const TeamSection = () => {
         <div className="py-12 md:py-14">
           <div className="max-w-[720px] mx-auto space-y-4 text-[var(--color-secondary-main)] text-base md:text-lg leading-relaxed">
             <p>
-              Vi startade 2020 för att lösa ett problem alla som flyttat känner igen: tio samtal, tio bolag, noll koll. Så vi byggde ett ställe där du gör allt en gång, och vi tar ansvar för resten.
+              Vi startade 2020 för att lösa ett problem alla som flyttat känner igen: tio samtal, tio bolag, noll koll. Därför skapade vi en plats där du kan samla allt. Ett nummer, en kontakt.
             </p>
             <p>
               Vi är inte en marknadsplats som skickar dig eller dina uppgifter vidare. På flytt och städ är vi din avtalspart: vi har försäkringarna, supporten och sköter faktureringen. På el och bredband tecknar du avtalet direkt, men du har fortfarande kontakten med oss. En person, hela vägen.
@@ -84,7 +100,7 @@ const TeamSection = () => {
 
         {/* What sets us apart */}
         <div className="pb-12 md:pb-14">
-          <h2 className="text-base font-bold text-[var(--color-secondary-main)] mb-6">Vad gör vi annorlunda</h2>
+          <h2 className="text-base font-bold text-[var(--color-secondary-main)] mb-6">Vad vi gör annorlunda</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-gray-100 rounded-xl overflow-hidden">
             {qualities.map((q) => (
               <div key={q.title} className="bg-white p-6">
@@ -95,12 +111,14 @@ const TeamSection = () => {
           </div>
         </div>
 
-        {/* Vision */}
+        {/* Vision. På mobil går rutan ut till skärmkanten så texten börjar i
+            samma kant som rubriken ovanför (Camilla 2026-09-11: texten låg
+            indragen två steg jämfört med stycket ovan). */}
         <div className="pb-12 md:pb-14">
-          <div className="bg-[var(--color-background-default)] rounded-xl p-7 md:p-10">
+          <div className="bg-[var(--color-background-default)] -mx-4 px-4 py-8 md:mx-0 md:p-10 md:rounded-xl">
             <h2 className="text-base font-bold text-[var(--color-secondary-main)] mb-3">Vart vi är på väg</h2>
             <p className="text-[var(--color-secondary-main)]/80 text-base leading-relaxed max-w-[640px]">
-              Varje år görs {MOVES_IN_SWEDEN_PER_YEAR} flyttar inom Sverige. Vi vill vara det självklara valet vid var och en av dem, oavsett om du köper, säljer eller byter hyresrätt, flyttar över gatan eller över landet. Målet är att flytten bara fungerar, från dag ett till sista kartongen.
+              Varje år görs {MOVES_IN_SWEDEN_PER_YEAR} flyttar inom Sverige. Flyttsmart är det självklara valet vid var och en av dem, oavsett om du köper, säljer eller byter hyresrätt, flyttar över gatan eller över halva landet. Vi får din flytt att fungera, från dag ett till sista uppackade kartongen.
             </p>
             <p className="text-[var(--color-secondary-main)]/60 text-sm mt-4">
               Källa:{' '}
@@ -111,18 +129,18 @@ const TeamSection = () => {
           </div>
         </div>
 
-        {/* CTA */}
+        {/* CTA. Ljus ruta i stället för svart, och knappen direkt under texten
+            i stället för i motsatt hörn (Camilla 2026-09-11: "för mörk och för
+            långt till knapp"). Ramen i primärfärg skiljer den från visionsrutan. */}
         <div className="pb-12 md:pb-16">
-          <div className="bg-[var(--color-secondary-dark)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+          <div className="rounded-xl border-2 border-[var(--color-primary-main)] bg-[var(--color-primary-main)]/10 p-7 md:p-10 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
             <div>
-              <h3 className="text-[15px] md:text-base font-bold text-white mb-1">Vill du veta mer?</h3>
-              <p className="text-white/60 text-sm">Hör av dig.</p>
+              <h3 className="text-lg md:text-xl font-bold text-[var(--color-secondary-main)] mb-1">Vill du veta mer?</h3>
+              <p className="text-[var(--color-secondary-main)]/80 text-base">Hör av dig, så berättar vi mer.</p>
             </div>
-            <div className="flex gap-3">
-              <a href="mailto:hej@flyttsmart.se" className="inline-flex items-center min-h-11 px-6 rounded-full bg-[#FFA65F]! text-[#214766]! font-bold text-[15px] hover:opacity-90 transition-opacity whitespace-nowrap">
-                Maila oss
-              </a>
-            </div>
+            <a href="mailto:hej@flyttsmart.se" className="inline-flex items-center justify-center min-h-11 px-6 rounded-full bg-[#FFA65F]! text-[#214766]! font-bold text-[15px] hover:opacity-90 transition-opacity whitespace-nowrap self-start sm:self-auto shrink-0">
+              Maila oss
+            </a>
           </div>
         </div>
       </div>
