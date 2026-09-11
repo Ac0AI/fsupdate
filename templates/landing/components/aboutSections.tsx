@@ -129,14 +129,15 @@ const TeamSection = () => {
           </div>
         </div>
 
-        {/* CTA. Ljus ruta i stället för svart, och knappen direkt under texten
-            i stället för i motsatt hörn (Camilla 2026-09-11: "för mörk och för
-            långt till knapp"). Ramen i primärfärg skiljer den från visionsrutan. */}
+        {/* CTA. Svart som bevisblocket på startsidan, men knappen direkt intill
+            texten och en grön eyebrow (ägaren valde varianten 2026-09-11 efter
+            Camillas invändning att knappen låg för långt bort). */}
         <div className="pb-12 md:pb-16">
-          <div className="rounded-xl border-2 border-[var(--color-primary-main)] bg-[var(--color-primary-main)]/10 p-7 md:p-10 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
+          <div className="bg-[var(--color-secondary-dark)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
             <div>
-              <h3 className="text-lg md:text-xl font-bold text-[var(--color-secondary-main)] mb-1">Vill du veta mer?</h3>
-              <p className="text-[var(--color-secondary-main)]/80 text-base">Hör av dig, så berättar vi mer.</p>
+              <p className="text-[var(--color-primary-main)] text-xs font-semibold uppercase tracking-[0.14em] mb-1">Kontakt</p>
+              <h3 className="text-lg md:text-xl font-bold text-white mb-1">Vill du veta mer?</h3>
+              <p className="text-white/65 text-base">Hör av dig, så berättar vi mer.</p>
             </div>
             <a href="mailto:hej@flyttsmart.se" className="inline-flex items-center justify-center min-h-11 px-6 rounded-full bg-[#FFA65F]! text-[#214766]! font-bold text-[15px] hover:opacity-90 transition-opacity whitespace-nowrap self-start sm:self-auto shrink-0">
               Maila oss

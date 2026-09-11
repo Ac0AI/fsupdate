@@ -186,18 +186,22 @@ const Steps = ({ items, cols }: { items: { title: string; description: string; p
   </ol>
 )
 
-// En människa att höra av sig till, inte bara en knapp. Ljus ruta och knappen
-// direkt efter texten (Camilla 2026-09-11: svart ruta med knappen i motsatt
-// hörn kändes inte inbjudande). Samma stil som slutrutan på Om oss.
-const Cta = ({ title, contact, label }: { title: string; contact: (typeof CONTACTS)[keyof typeof CONTACTS]; label: string }) => (
-  <div className="rounded-xl border-2 border-[var(--color-primary-main)] bg-[var(--color-primary-main)]/10 p-7 md:p-10 flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
+// En människa att höra av sig till, inte bara en knapp. Svart som bevisblocket
+// på startsidan, men knappen står direkt intill texten och en grön eyebrow säger
+// vem rutan är till (ägaren valde den här varianten 2026-09-11 efter Camillas
+// invändning att knappen låg för långt bort).
+const Cta = ({ eyebrow, title, contact, label }: { eyebrow: string; title: string; contact: (typeof CONTACTS)[keyof typeof CONTACTS]; label: string }) => (
+  <div className="bg-[var(--color-secondary-dark)] rounded-xl p-7 md:p-10 flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
     <div className="flex flex-col gap-4">
-      <h3 className="text-lg md:text-xl font-bold text-[var(--color-secondary-main)] text-balance">{title}</h3>
+      <div>
+        <p className="text-[var(--color-primary-main)] text-xs font-semibold uppercase tracking-[0.14em] mb-1">{eyebrow}</p>
+        <h3 className="text-lg md:text-xl font-bold text-white text-balance">{title}</h3>
+      </div>
       <div className="flex items-center gap-3">
         {contact.photo ? (
           <Image src={contact.photo} alt="" width={44} height={44} className="w-11 h-11 rounded-full object-cover shrink-0" />
         ) : (
-          <span className="w-11 h-11 rounded-full bg-[var(--color-primary-main)] text-[var(--color-secondary-main)] font-bold text-sm flex items-center justify-center shrink-0">
+          <span className="w-11 h-11 rounded-full bg-[var(--color-primary-main)] text-[var(--color-secondary-dark)] font-bold text-sm flex items-center justify-center shrink-0">
             {contact.name
               .split(' ')
               .map((n) => n[0])
@@ -205,8 +209,8 @@ const Cta = ({ title, contact, label }: { title: string; contact: (typeof CONTAC
           </span>
         )}
         <span className="flex flex-col">
-          <span className="text-sm font-bold text-[var(--color-secondary-main)]">{contact.name}</span>
-          <span className="text-sm text-[var(--color-secondary-main)]/70">{contact.role}</span>
+          <span className="text-sm font-bold text-white">{contact.name}</span>
+          <span className="text-sm text-white/65">{contact.role}</span>
         </span>
       </div>
     </div>
@@ -236,7 +240,7 @@ const DistributionPartners = () => (
       <Steps items={brokerSteps} cols={3} />
     </div>
 
-    <Cta title="Vill du erbjuda Flyttsmart till dina kunder?" contact={CONTACTS.brokers} label="Mejla Sebastian" />
+    <Cta eyebrow="För mäklare" title="Vill du erbjuda Flyttsmart till dina kunder?" contact={CONTACTS.brokers} label="Mejla Sebastian" />
   </section>
 )
 
@@ -262,7 +266,7 @@ const Suppliers = () => (
       <Steps items={vettingSteps} cols={2} />
     </div>
 
-    <Cta title="Vill du nå fler kunder?" contact={CONTACTS.suppliers} label="Mejla Andreas" />
+    <Cta eyebrow="För leverantörer" title="Vill du nå fler kunder?" contact={CONTACTS.suppliers} label="Mejla Andreas" />
   </section>
 )
 
