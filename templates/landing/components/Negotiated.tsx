@@ -1,30 +1,7 @@
 import Image from 'next/image'
 import { FORTUM_DISCOUNT_SEK } from '@/constants/trustStats'
 import LogoMarquee from './LogoMarquee'
-
-/**
- * Leverantörerna vi förhandlat med. Egen remsa här, aldrig i bevisblocket:
- * den rubriken säger mäklarkedjor (Sebastian 2026-09-03).
- *
- * Ordningen är el, bredband, tv och försäkring, så remsan läser som tjänsterna.
- *
- * Logotyperna är Flyttsmarts egna, hämtade från företagets ImageKit 2026-09-04
- * och sparade lokalt: en marknadsföringssida ska inte vara beroende av ett
- * externt CDN mitt i sidan. Telia låg som SVG med en inbäddad base64-bild på
- * 164 kB, den ligger som 4,6 kB webp i stället.
- */
-const SUPPLIER_LOGOS = [
-  { src: '/images/suppliers/fortum.svg', alt: 'Fortum' },
-  { src: '/images/suppliers/vattenfall.svg', alt: 'Vattenfall' },
-  { src: '/images/suppliers/skekraft.svg', alt: 'Skellefteå Kraft' },
-  { src: '/images/suppliers/tibber-crop.svg', alt: 'Tibber' },
-  { src: '/images/suppliers/telia.webp', alt: 'Telia' },
-  { src: '/images/suppliers/telenor.svg', alt: 'Telenor' },
-  { src: '/images/suppliers/tele2.svg', alt: 'Tele2' },
-  { src: '/images/Bredbandsval.svg', alt: 'Bredbandsval' },
-  { src: '/images/suppliers/allente.svg', alt: 'Allente' },
-  { src: '/images/hedvig_logotype_black.png', alt: 'Hedvig' },
-]
+import { supplierLogos } from './supplierLogos'
 
 /**
  * Beviset för att förhandlingen redan är gjord (Sebastian 2026-09-03: inte en
@@ -75,7 +52,7 @@ const Negotiated = () => (
         </p>
         <div className="mt-6">
           <LogoMarquee
-            logos={SUPPLIER_LOGOS}
+            logos={supplierLogos}
             slotClassName="h-8 w-[150px] md:w-[180px]"
             imageClassName="max-h-full max-w-[110px] md:max-w-[130px] object-contain"
           />
