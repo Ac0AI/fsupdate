@@ -264,19 +264,24 @@
     "title": "Moving should not take ten decisions",
     "subtitle": "We negotiated the prices and vetted the suppliers in advance. You just say yes.",
     "step1": {
-      "title": "Your move, not a generic list",
-      "description": "We know what needs doing for your address and your moving date, and in what order. You see where you are now and what comes next.",
-      "benefit": "Done in 10 minutes"
+      "title": "Log in with BankID",
+      "description": "In a few clicks you have a personal checklist ready with your address, moving date and everything else around your move.",
+      "benefit": ""
     },
     "step2": {
-      "title": "We recommend. You choose.",
-      "description": "One recommended option per service with the reasoning spelled out. Prices already negotiated, no quotes to chase. More options are one click away.",
-      "benefit": "Prices already negotiated"
+      "title": "Negotiated recommendations, picked for you",
+      "description": "Electricity, broadband, home insurance, movers and move-out cleaning: one recommended option per service, with the price already negotiated. More options are one click away.",
+      "benefit": ""
     },
     "step3": {
-      "title": "A person, not a phone queue",
-      "description": "Your moving coordinator answers in chat, by email and by phone. If something goes wrong you come to us, not to the supplier.",
-      "benefit": "We take responsibility"
+      "title": "Book and order",
+      "description": "Approve what you want right in the checklist, in a few clicks. Nothing is booked until you say yes.",
+      "benefit": ""
+    },
+    "step4": {
+      "title": "Sit back and let us do the work",
+      "description": "Your coordinator places the orders, handles the tax deduction and makes sure everything lines up with your move-in date. Questions along the way? Call, email or chat with the same person all the way to your new home.",
+      "benefit": ""
     }
   }
 }

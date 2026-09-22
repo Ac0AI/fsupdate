@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
 
 /**
- * Tre steg med brandets platta illustration i stället för beskurna
+ * Fyra steg med brandets platta illustration i stället för beskurna
  * telefonramar och glow. Bilderna är gjorda med receptet i
  * scripts/blog-image-prompts.json och ligger i public/images/brand/sa-gar-det-till.
  */
@@ -27,8 +27,15 @@ const steps = [
     number: '03',
     titleKey: 'HOW_WE_HELP.step3.title',
     descriptionKey: 'HOW_WE_HELP.step3.description',
-    image: '/images/brand/sa-gar-det-till/3-manniska.jpg',
-    alt: 'En flyttkoordinator vid ett skrivbord med headset, med pratbubblor för telefon, mejl och chatt',
+    image: '/images/brand/sa-gar-det-till/3-boka.jpg',
+    alt: 'En checklista i mobilen där två rader är godkända med gröna bockar, med en kalender bredvid',
+  },
+  {
+    number: '04',
+    titleKey: 'HOW_WE_HELP.step4.title',
+    descriptionKey: 'HOW_WE_HELP.step4.description',
+    image: '/images/brand/sa-gar-det-till/4-luta-dig-tillbaka.jpg',
+    alt: 'En fåtölj med kudde och en kopp kaffe, medan en flyttbil i bakgrunden kör mot ett hus med en grön bock ovanför',
   },
 ]
 
@@ -48,22 +55,31 @@ const HowItWorks = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-7 sm:gap-6">
           {steps.map(({ number, titleKey, descriptionKey, image, alt }) => (
-            <article key={number}>
-              <div className="relative aspect-[16/9] mb-6 overflow-hidden rounded-2xl bg-[#EAF2F8]">
-                <Image src={image} alt={alt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
+            <article key={number} className="flex gap-4 sm:block">
+              {/* Mobil: liten kvadrat bredvid texten så sektionen inte bygger på höjden.
+                  Från 768: fullbredd 16:9 ovanför texten. */}
+              <div className="relative shrink-0 w-[96px] h-[96px] sm:w-auto sm:h-auto sm:aspect-[16/9] sm:mb-6 overflow-hidden rounded-xl sm:rounded-2xl bg-[#EAF2F8]">
+                <Image
+                  src={image}
+                  alt={alt}
+                  fill
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 96px"
+                  className="object-contain sm:object-cover scale-[1.4] sm:scale-100"
+                />
               </div>
 
-              <h3 className="text-lg md:text-xl font-bold text-[var(--color-secondary-main)] mb-3 flex items-baseline gap-2.5">
-                <span className="text-[var(--color-primary-main)] tabular-nums">{Number(number)}.</span>
-                {t(titleKey)}
-              </h3>
+              <div className="min-w-0">
+                <h3 className="text-lg md:text-xl font-bold text-[var(--color-secondary-main)] mb-2 sm:mb-3 flex items-baseline gap-2.5">
+                  <span className="text-[var(--color-primary-main)] tabular-nums">{Number(number)}.</span>
+                  {t(titleKey)}
+                </h3>
 
-              <p className="text-[var(--color-secondary-main)]/85 text-[15px] md:text-base leading-relaxed mb-4">
-                {t(descriptionKey)}
-              </p>
-
+                <p className="text-[var(--color-secondary-main)]/85 text-[15px] md:text-base leading-relaxed">
+                  {t(descriptionKey)}
+                </p>
+              </div>
             </article>
           ))}
         </div>
