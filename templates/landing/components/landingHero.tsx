@@ -17,7 +17,7 @@ const LandingHero = () => {
   )
 
   return (
-    <section className="relative min-h-[100vh] md:min-h-0 flex flex-col bg-[var(--color-secondary-dark)]">
+    <section className="relative min-h-[100vh] md:min-h-0 flex flex-col bg-gradient-to-br from-[var(--color-secondary-dark)] via-[#11324b] to-[var(--color-secondary-main)]">
       <div className="flex-1 flex items-center w-full relative z-10 py-6 md:py-16">
         <div className="max-w-[1200px] mx-auto px-6 md:px-8 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-center">
