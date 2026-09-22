@@ -6,7 +6,7 @@ const ProofBar = () => {
   return (
     <section
       aria-labelledby="proof-bar-heading"
-      className="w-screen bg-[var(--color-secondary-dark)]"
+      className="w-screen bg-gradient-to-br from-[#1a3a52] via-[var(--color-secondary-main)] to-[#2d5a7b]"
     >
       <div className="max-w-[1200px] mx-auto px-6 md:px-8 py-16 md:py-24 flex flex-col gap-10 md:gap-14">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 lg:items-end">

@@ -123,6 +123,9 @@ export const BookingDetails = ({ formMethods, formFullWidth, showAddressInput, s
     } else return undefined
   }
 
+  const monthlyFee = Math.max(Number(currentProvider?.subscriptionFee ?? 0) - Number(currentProvider?.subscriptionFeeDiscount ?? 0), 0)
+  const hasMonthlyFeeDiscount = Number(currentProvider?.subscriptionFeeDiscount ?? 0) > 0 && Number(currentProvider?.discountPeriod ?? 0) > 0
+
   return (
     <>
       <div className={clsx('w-full h-full relative', showAddressInput ? 'max-w-[400px]' : 'max-w-full')}>
@@ -143,19 +146,24 @@ export const BookingDetails = ({ formMethods, formFullWidth, showAddressInput, s
           <Text spacing="none" className="!text-[16px] pb-1">
             {t(`electricity:STEP3DETAILS.PROVIDERS.${currentProvider?.provider}`)}
           </Text>
-          <ul className="list-disc pl-10" style={{ margin: 0 }}>
-            {currentProvider?.monthlyCostWithDiscount && (
-              <li>
-                {Math.floor(currentProvider.monthlyCostWithDiscount)} {t('common:monthlyPriceUnit')}
-              </li>
-            )}
-            {!!currentProvider?.discountPeriod && currentProvider?.discountPeriod > 0 && (
-              <li>
-                {currentProvider?.discountPeriod} {t('electricity:STEP3DETAILS.monthlyDiscount')}
-              </li>
-            )}
-            <li>{t('electricity:STEP3DETAILS.zeroMonthsCancel')}</li>
-          </ul>
+          <dl className="grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 text-[16px]">
+            <dt className="font-bold">{t('electricity:STEP3DETAILS.agreementType')}</dt>
+            <dd>{t('electricity:STEP3DETAILS.variablePriceAgreement')}</dd>
+            <dt className="font-bold">{t('electricity:STEP3DETAILS.monthlyFee')}</dt>
+            <dd>
+              {hasMonthlyFeeDiscount
+                ? t('electricity:STEP3DETAILS.discountedMonthlyFee', {
+                    price: monthlyFee,
+                    months: currentProvider?.discountPeriod,
+                    regularPrice: currentProvider?.subscriptionFee,
+                  })
+                : t('electricity:STEP3DETAILS.regularMonthlyFee', { price: monthlyFee })}
+            </dd>
+            <dt className="font-bold">{t('electricity:STEP3DETAILS.bindingTime')}</dt>
+            <dd>{t('electricity:STEP3DETAILS.noBindingTime')}</dd>
+            <dt className="font-bold">{t('electricity:STEP3DETAILS.spotPrice')}</dt>
+            <dd>{t('electricity:STEP3DETAILS.variableSpotPrice')}</dd>
+          </dl>
         </div>
         {currentMove?.toAddress && (
           <>

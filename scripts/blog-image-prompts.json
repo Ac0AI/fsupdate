@@ -41,6 +41,14 @@
     {
       "slug": "sa-gar-det-till-3-manniska",
       "prompt": "A coordinator seen from behind, standing and waving with one hand toward a small house in the distance, holding a clipboard in the other hand. No headset, no desk, no chair. Above the coordinator three speech bubbles: one with a phone handset icon, one with an envelope icon, one with three chat dots. Flat front view, no isometric perspective, no 3D."
+    },
+    {
+      "slug": "sa-gar-det-till-3-boka",
+      "prompt": "A white phone-shaped card with a thin navy outline standing upright, showing three rounded rows in navy outline, each row ending in a small pill-shaped button. The top two buttons are filled mint with a white checkmark inside, the third button is only outlined. A large mint checkmark badge pops out from the top right corner of the card. Beside the card a small white calendar page with one day marked by an orange dot. Flat front view, no isometric perspective, no 3D, no people, no hands."
+    },
+    {
+      "slug": "sa-gar-det-till-4-luta-dig-tillbaka",
+      "prompt": "A cozy rounded armchair seen from the side with a soft cushion, a small round side table next to it holding a steaming mug and a small potted plant. In the background, far away and small, a boxy moving truck drives along a thin dotted path toward a little house with a mint door, and a mint checkmark badge floats above the house. Flat front view, no isometric perspective, no 3D, no people."
     }
   ]
 }

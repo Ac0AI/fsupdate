@@ -33,13 +33,18 @@
       "benefit": ""
     },
     "step2": {
-      "title": "Din rekommendation är klar",
-      "description": "El, bredband, hemförsäkring, flytthjälp och flyttstädning: rekommenderade val per tjänst, med fokus på vad som är bäst för dig. Vill du se fler alternativ finns de ett klick bort.",
+      "title": "Färdigförhandlade rekommendationer för dig",
+      "description": "El, bredband, hemförsäkring, flytthjälp och flyttstädning: ett rekommenderat val per tjänst, med priset redan förhandlat. Vill du se fler alternativ finns de ett klick bort.",
       "benefit": ""
     },
     "step3": {
-      "title": "Din koordinator hjälper dig hela vägen",
-      "description": "Vi lägger beställningarna, hanterar rut-avdrag och ser till att allt sker i rätt tid med tillträdet. Du väljer kontaktväg - telefon, mejl eller chatt. Du får en kontakt som följer hela din flytt, hela vägen till ditt nya hem.",
+      "title": "Boka och beställ",
+      "description": "Godkänn det du vill ha direkt i checklistan, på några klick. Inget bokas förrän du sagt ja.",
+      "benefit": ""
+    },
+    "step4": {
+      "title": "Luta dig tillbaka och låt oss göra jobbet",
+      "description": "Din koordinator lägger beställningarna, hanterar rut-avdraget och ser till att allt sker i rätt tid till tillträdet. Har du frågor på vägen ringer, mejlar eller chattar du med samma person hela vägen till ditt nya hem.",
       "benefit": ""
     }
   },

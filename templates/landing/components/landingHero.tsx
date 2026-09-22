@@ -17,7 +17,7 @@ const LandingHero = () => {
   )
 
   return (
-    <section className="relative min-h-[100vh] md:min-h-0 flex flex-col bg-gradient-to-br from-[#1a3a52] via-[var(--color-secondary-main)] to-[#2d5a7b]">
+    <section className="relative min-h-[100vh] md:min-h-0 flex flex-col bg-[var(--color-secondary-dark)]">
       <div className="flex-1 flex items-center w-full relative z-10 py-6 md:py-16">
         <div className="max-w-[1200px] mx-auto px-6 md:px-8 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-center">
@@ -69,30 +69,30 @@ const LandingHero = () => {
           <div className="relative flex justify-center lg:justify-end order-2 -mt-2 lg:mt-0">
 
             {/* Telefonen: titankant runt en tunn svart ram, dynamic island med kameraöga,
-                sidoknappar i samma metall. Skärmen är 256/288/320 bred så dashboarden
+                sidoknappar i samma metall. Skärmen är 148/288/320 bred så dashboarden
                 (ritad i 320) skalas exakt. */}
             <div className="relative z-10">
               <div
                 data-hero-phone=""
                 className={clsx(
                   'relative p-[3px]',
-                  'rounded-[46px] md:rounded-[52px] lg:rounded-[58px]',
-                  'w-[240px] md:w-[308px] lg:w-[342px]',
+                  'rounded-[33px] md:rounded-[52px] lg:rounded-[58px]',
+                  'w-[168px] md:w-[308px] lg:w-[342px]',
                   'bg-[linear-gradient(150deg,#f4f4f5_0%,#c2c3c7_26%,#e9e9eb_48%,#a6a7ab_70%,#d7d8da_100%)]',
                   'shadow-[0_30px_70px_-16px_rgba(0,0,0,0.6),inset_0_0_0_1px_rgba(255,255,255,0.5)]'
                 )}
               >
                 {/* Sidoknappar: ljudlös, volym upp, volym ned, strömknapp */}
-                <div className="absolute left-[-3px] top-[92px] w-[3px] h-[24px] rounded-l-[2px] bg-[linear-gradient(to_right,#d2d3d6,#8b8c90)]" />
-                <div className="absolute left-[-3px] top-[136px] w-[3px] h-[52px] rounded-l-[2px] bg-[linear-gradient(to_right,#d2d3d6,#8b8c90)]" />
-                <div className="absolute left-[-3px] top-[198px] w-[3px] h-[52px] rounded-l-[2px] bg-[linear-gradient(to_right,#d2d3d6,#8b8c90)]" />
-                <div className="absolute right-[-3px] top-[160px] w-[3px] h-[84px] rounded-r-[2px] bg-[linear-gradient(to_left,#d2d3d6,#8b8c90)]" />
+                <div className="absolute left-[-3px] top-[64px] w-[3px] h-[18px] md:top-[92px] md:h-[24px] rounded-l-[2px] bg-[linear-gradient(to_right,#d2d3d6,#8b8c90)]" />
+                <div className="absolute left-[-3px] top-[96px] w-[3px] h-[36px] md:top-[136px] md:h-[52px] rounded-l-[2px] bg-[linear-gradient(to_right,#d2d3d6,#8b8c90)]" />
+                <div className="absolute left-[-3px] top-[140px] w-[3px] h-[36px] md:top-[198px] md:h-[52px] rounded-l-[2px] bg-[linear-gradient(to_right,#d2d3d6,#8b8c90)]" />
+                <div className="absolute right-[-3px] top-[112px] w-[3px] h-[58px] md:top-[160px] md:h-[84px] rounded-r-[2px] bg-[linear-gradient(to_left,#d2d3d6,#8b8c90)]" />
 
                 {/* Svart innerram */}
-                <div className="relative bg-[#0b0b0c] p-[7px] lg:p-[8px] rounded-[43px] md:rounded-[49px] lg:rounded-[55px]">
+                <div className="relative bg-[#0b0b0c] p-[7px] lg:p-[8px] rounded-[30px] md:rounded-[49px] lg:rounded-[55px]">
                   {/* Skärm - gränssnittet ritas en gång i 320x694 och skalas till varje ramstorlek */}
-                  <div className="relative overflow-hidden bg-black aspect-[9/19.5] rounded-[36px] md:rounded-[42px] lg:rounded-[47px]">
-                    <div className="absolute top-0 left-0 w-[320px] h-[694px] origin-top-left scale-[0.6875] md:scale-[0.9] lg:scale-100">
+                  <div className="relative overflow-hidden bg-black aspect-[9/19.5] rounded-[24px] md:rounded-[42px] lg:rounded-[47px]">
+                    <div className="absolute top-0 left-0 w-[320px] h-[694px] origin-top-left scale-[0.4625] md:scale-[0.9] lg:scale-100">
                       <AnimatedDashboard />
 
                       {/* Dynamic Island med kameraöga */}
