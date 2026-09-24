@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { clsx } from 'clsx'
 import type { GoogleReview, GoogleReviewCountAndRating } from 'app/_actions/googleReviews.types'
@@ -33,6 +34,27 @@ const StarIcon = ({ className }: { className: string }) => (
   </svg>
 )
 
+// Riktiga Google-recensioner (ägaren 2026-09-24). Emojis borttagna och uppenbara
+// stavfel rättade (Monica: "ned" -> "med"), annars ordagrant.
+// Bara förnamn på sajten, recensenten har skrivit under med hela namnet på Google.
+const GOOGLE_PICKS: Card[] = [
+  { name: 'Kathrine', subtitle: 'Google-recension', rating: 5, text: 'Kan rekommendera flyttsmart till alla som ska flytta. Superproffs som jobbar där! Allt fungerade hur smidigt som helst, precis som man vill ha det. Flyttkillarna var dessutom väldigt trevliga.' },
+  { name: 'Ewa', subtitle: 'Google-recension', rating: 5, text: 'Flytt Smart hjälpte mig på ett mycket professionellt och smidigt sätt med min långväga flytt. Trevlig personal, god kommunikation och allt fungerade perfekt från start till mål. Rekommenderas varmt!' },
+  { name: 'Ulrika', subtitle: 'Google-recension', rating: 5, text: 'Bra kommunikation, perfekt utfört jobb.' },
+  { name: 'Birgitta', subtitle: 'Google-recension', rating: 5, text: 'Flytten gick som på räls. De som flyttade till mig var omsorgsfulla, smidiga och punktliga. Har inget att klaga på.' },
+  { name: 'Monica', subtitle: 'Google-recension', rating: 5, text: 'För mig fungerade det väldigt bra med Flyttsmart. Var skönt att slippa fixa med en del av alla administrativa saker man måste tänka på. Det har varit lätt att kommunicera med Flyttsmart, dom har snabbt återkommit om man sökt dom. Jag kan varmt rekommendera dom.' },
+  { name: 'Emma', subtitle: 'Google-recension', rating: 5, text: 'Vi är supernöjda med Flyttsmart. Beställde både flytt och städ och är jättenöjd. Höll tiden, trevliga, duktiga, bra pris. Lätta att ha att göra med, inget krångel! Fem stjärnor!' },
+  { name: 'Per', subtitle: 'Google-recension', rating: 5, text: 'Verkligen bra hjälp vid flytten.' },
+  { name: 'Cecilia', subtitle: 'Google-recension', rating: 5, text: 'Mäklaren tipsade om Flyttsmart. Jeg fick god och nyttig information från första kontakten. Väldig förnöjd med tjänsten och servicen!' },
+  { name: 'Wael', subtitle: 'Google-recension', rating: 5, text: 'Snabb och hjälpsam service. De fixade mitt elavtal inför flytten utan några problem. Rekommenderas!' },
+]
+
+const Arrow = ({ dir }: { dir: 'left' | 'right' }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden className={dir === 'left' ? 'rotate-180' : ''}>
+    <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
 const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
   const { t } = useTranslation(['common', 'landing'])
 
@@ -50,19 +72,37 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
     ? filteredGoogleReviews.map((r) => ({ text: r.text ?? '', name: r.author_name, subtitle: r.relative_time_description, rating: r.rating }))
     : picks.map((i) => carouselItems[i]).filter(Boolean).map((r) => ({ text: r.words, name: r.name, subtitle: r.bio, rating: parseInt(r.rating || '5') }))
 
-  const visibleCards = cards.slice(0, 3)
+  const visibleCards = [...cards.slice(0, 3), ...GOOGLE_PICKS]
+  const trackRef = useRef<HTMLDivElement>(null)
+  const scrollPage = (dir: 1 | -1) => {
+    const el = trackRef.current
+    if (!el) return
+    // En hel sida (tre kort) per klick.
+    el.scrollBy({ left: dir * (el.clientWidth + 20), behavior: 'smooth' })
+  }
 
   return (
     <div>
-      <h2 className="px-4 md:px-0 text-xl md:text-2xl font-bold text-white mb-8">{t('landing:testamonial_title')}</h2>
+      <div className="flex items-end justify-between gap-4 px-4 md:px-0 mb-8">
+        <h2 className="text-xl md:text-2xl font-bold text-white">{t('landing:testamonial_title')}</h2>
+        {/* Pilar från md, på mobil sveper man. */}
+        <div className="hidden md:flex gap-2">
+          <button type="button" aria-label="Föregående omdöme" onClick={() => scrollPage(-1)} className="w-11 h-11 rounded-full border border-white/20 text-white flex items-center justify-center hover:bg-white/10 transition-colors">
+            <Arrow dir="left" />
+          </button>
+          <button type="button" aria-label="Nästa omdöme" onClick={() => scrollPage(1)} className="w-11 h-11 rounded-full border border-white/20 text-white flex items-center justify-center hover:bg-white/10 transition-colors">
+            <Arrow dir="right" />
+          </button>
+        </div>
+      </div>
 
-      {/* Mobil: korten scrollar i sidled och nästa kort sticker ut i kanten så
-          det syns att man kan svepa (ägaren 2026-09-24). Från md: tre kolumner. */}
-      <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory px-4 scroll-px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0 md:pb-0">
+      {/* Alla omdömen i en rad som scrollar i sidled (ägaren 2026-09-24).
+          Mobil: nästa kort sticker ut i kanten. Från md: tre kort i bild. */}
+      <div ref={trackRef} className="flex gap-3 md:gap-5 overflow-x-auto snap-x snap-mandatory px-4 scroll-px-4 md:px-0 md:scroll-px-0 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {visibleCards.map((card, i) => (
           <div
             key={`${card.name}-${i}`}
-            className="snap-start shrink-0 w-[80%] max-w-[320px] md:w-auto md:max-w-none bg-white/5 rounded-2xl p-6 border border-white/10 flex flex-col"
+            className="snap-start shrink-0 w-[80%] max-w-[320px] md:w-[calc((100%-42px)/3)] md:max-w-none bg-white/5 rounded-2xl p-6 border border-white/10 flex flex-col"
           >
 
             {/* Quote */}
