@@ -76,7 +76,7 @@ const LoggedInTopNav = () => {
         />
       )}
       <div className={headerContentVariants()}>
-        <Flex justifyContent="space-between" alignItems="center" className="w-[1168px] h-full">
+        <Flex justifyContent="space-between" alignItems="center" className="w-full max-w-[1168px] h-full">
           <div className={gridVariants()}>
             <Flex className="pl-4">
               <div className={imagesWrapperVariants()}>

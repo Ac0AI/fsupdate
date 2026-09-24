@@ -22,7 +22,7 @@ const Index = ({ noMenu, onlyLogin = false, isServerMobile }: Props) => {
 
   return (
     <div className="flex h-12 sm:h-[68px] bg-[var(--color-white-main)] px-4 justify-center items-center" id="topnav">
-      <Flex justifyContent="space-between" alignItems="center" className="w-[1168px] h-full">
+      <Flex justifyContent="space-between" alignItems="center" className="w-full max-w-[1168px] h-full">
         <Flex>
           <Link href={isExternal ? '/flytthjalp' : '/'} noUnderline>
             <Logo width={isMobile ? 116 : 177} height={isMobile ? 21 : 32} alt="Flyttsmart" />

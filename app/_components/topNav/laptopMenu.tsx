@@ -82,13 +82,14 @@ const LaptopMenu = ({ onlyLogin }: Props) => {
   }
 
   return (
-    <Flex alignItems="center" className="gap-6 xl:gap-8">
+    // Tätare mellan 768 och 1024, annars får menyn inte plats på surfplatta och sidan går att scrolla i sidled.
+    <Flex alignItems="center" className="gap-4 lg:gap-6 xl:gap-8">
       <NavItem label="Våra tjänster" href="/#how-it-works" currentPath={cleanPath} />
       <NavItem label="Samarbetspartners" href="/samarbetspartners" currentPath={cleanPath} />
       <NavItem label="Om oss" href="/om-oss" currentPath={cleanPath} />
       {/* Språkvalet ska gå att nå både högst upp och längst ner (Sebastian, PDF s.5). */}
       <LanguageSelect />
-      <Button onClick={() => router.push(loginPath)} text="Logga in" className="!px-10 !py-3 whitespace-nowrap" />
+      <Button onClick={() => router.push(loginPath)} text="Logga in" className="!px-6 lg:!px-10 !py-3 whitespace-nowrap" />
     </Flex>
   )
 }

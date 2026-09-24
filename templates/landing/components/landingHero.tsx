@@ -57,8 +57,9 @@ const LandingHero = () => {
                 onClick={() => {
                   document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
                 }}
-                className="text-white/80 hover:text-white text-sm font-medium underline underline-offset-4 transition-colors"
+                className="hidden sm:inline text-white/80 hover:text-white text-sm font-medium underline underline-offset-4 transition-colors"
               >
+                {/* Dold på mobil (ägaren 2026-09-24): där ska heron bara ha en handling. */}
                 Se hur det fungerar →
               </button>
             </div>
