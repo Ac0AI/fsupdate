@@ -57,10 +57,19 @@ const HowItWorks = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-7 sm:gap-6">
           {steps.map(({ number, titleKey, descriptionKey, image, alt }) => (
-            <article key={number} className="flex gap-4 sm:block">
-              {/* Mobil: liten kvadrat bredvid texten så sektionen inte bygger på höjden.
-                  Från 768: fullbredd 16:9 ovanför texten. */}
-              <div className="relative shrink-0 w-[96px] h-[96px] sm:w-auto sm:h-auto sm:aspect-[16/9] sm:mb-6 overflow-hidden rounded-xl sm:rounded-2xl bg-[#EAF2F8]">
+            <article
+              key={number}
+              className="grid grid-cols-[96px_minmax(0,1fr)] gap-x-4 gap-y-3 sm:flex sm:flex-col sm:gap-0"
+            >
+              {/* Mobil (ägaren 2026-09-24): rubriken överst, under den bilden
+                  till vänster och brödtexten till höger. Från 768: bilden
+                  överst i 16:9, sedan rubrik och text. */}
+              <h3 className="col-span-2 sm:order-2 text-lg md:text-xl font-bold text-[var(--color-secondary-main)] sm:mb-3 flex items-baseline gap-2.5">
+                <span className="text-[var(--color-primary-main)] tabular-nums">{Number(number)}.</span>
+                {t(titleKey)}
+              </h3>
+
+              <div className="relative w-[96px] h-[96px] sm:order-1 sm:w-auto sm:h-auto sm:aspect-[16/9] sm:mb-6 overflow-hidden rounded-xl sm:rounded-2xl bg-[#EAF2F8]">
                 <Image
                   src={image}
                   alt={alt}
@@ -70,16 +79,9 @@ const HowItWorks = () => {
                 />
               </div>
 
-              <div className="min-w-0">
-                <h3 className="text-lg md:text-xl font-bold text-[var(--color-secondary-main)] mb-2 sm:mb-3 flex items-baseline gap-2.5">
-                  <span className="text-[var(--color-primary-main)] tabular-nums">{Number(number)}.</span>
-                  {t(titleKey)}
-                </h3>
-
-                <p className="text-[var(--color-secondary-main)]/85 text-[15px] md:text-base leading-relaxed">
-                  {t(descriptionKey)}
-                </p>
-              </div>
+              <p className="sm:order-3 text-[var(--color-secondary-main)]/85 text-[15px] md:text-base leading-relaxed">
+                {t(descriptionKey)}
+              </p>
             </article>
           ))}
         </div>
