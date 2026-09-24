@@ -94,9 +94,8 @@ export const StickyCta = () => {
       )}
     >
       <Button
-        className="!text-[var(--color-secondary-main)]"
         padding="14px 24px"
-        variant="primaryAltInverted"
+        variant="primary"
         iconRight={<Arrow />}
         text="Starta din flytt"
         onClick={() => router.push(LOGIN_URL)}
