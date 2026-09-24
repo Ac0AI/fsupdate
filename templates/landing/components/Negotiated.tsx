@@ -31,8 +31,7 @@ const Negotiated = () => (
           </p>
           <ul className="mt-7 flex flex-col gap-4">
             {SUPPLIER_POINTS.map(({ title, text }) => (
-              <li key={title} className="flex gap-3.5">
-                <span aria-hidden className="mt-[9px] h-2 w-2 shrink-0 rounded-full bg-[var(--color-accent-main)]" />
+              <li key={title}>
                 <p className="text-base leading-relaxed text-[var(--color-secondary-main)]/80">
                   <strong className="font-bold text-[var(--color-secondary-main)]">{title}.</strong> {text}
                 </p>
