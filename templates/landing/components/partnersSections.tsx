@@ -37,7 +37,7 @@ const PartnersIntro = () => (
           Med oss får kunden en personlig kontakt, genom hela flytten.
         </h1>
         <p className="text-white/80 text-lg leading-relaxed">
-          Enklare för dem, och en kundupplevelse som sträcker sig bortom själva bostadstransaktionen. Vi tar ansvar hela vägen till det nya hemmet.
+          Enklare för kunden, och en flyttupplevelse som sträcker sig bortom själva bostadstransaktionen. Vi tar ansvar hela vägen till det nya hemmet.
         </p>
       </div>
 
@@ -63,7 +63,7 @@ const PartnersIntro = () => (
         </div>
         <div className="bg-white/5 rounded-xl p-6 md:p-8 border border-white/10 flex flex-col gap-3 items-start">
           <h2 className="text-lg font-bold text-white">Flyttfirmor, elbolag och andra leverantörer</h2>
-          <p className="text-white/70 text-sm leading-relaxed">Vi skickar kunder som ska flytta inom kort. Du betalar bara för resultat.</p>
+          <p className="text-white/70 text-sm leading-relaxed">Ni som samarbetspartner får kunder som ska flytta och betalar endast för köpande kunder.</p>
           <div className="mt-auto pt-2">
             <a href={`mailto:${CONTACTS.suppliers.email}`} className={outlineButton}>
               Mejla Andreas
@@ -258,7 +258,7 @@ const Suppliers = () => (
     <SectionHeader
       audience="För leverantörer"
       title="Nå kunder i exakt rätt ögonblick."
-      text="Varje månad kommer 5 000 nya flyttar in till Flyttsmart, och de som flyttar letar efter leverantörer just nu. Vi sköter kundkontakt, fakturering och rutavdraget. Vi kopplar ihop er, men bara om du håller måttet."
+      text="Varje månad kommer över 5 000 nya flyttar in till Flyttsmart, och de som flyttar letar efter leverantörer just nu. Vi sköter kundkontakt, fakturering och rutavdraget. Vi kopplar ihop er, men bara om du håller måttet."
     />
 
     <div className="mb-14 md:mb-16">

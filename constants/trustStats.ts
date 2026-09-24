@@ -34,7 +34,7 @@ export const MOVES_IN_SWEDEN_SOURCE_URL = 'https://www.scb.se/hitta-statistik/sv
  */
 export const PROOF_BLOCK = {
   eyebrow: 'Mäklarnas förtroende',
-  claim: 'Fler än hälften av alla Sveriges mäklarkedjor är anslutna',
+  claim: 'Samarbetar med över hälften av alla Sveriges mäklarkedjor.',
   numbers: 'Över 250 000 hjälpta kunder sedan 2020.',
 } as const
 

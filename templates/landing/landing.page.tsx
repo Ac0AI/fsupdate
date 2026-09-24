@@ -35,12 +35,10 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
         {/* Hero Section - component handles its own background */}
         <LandingHero />
 
-        {/* Bevisraden - backar upp "vi har gjort researchen så du slipper" */}
-        <ProofBar />
-
-        {/* Testimonials - white section */}
-        <section className="w-screen flex justify-center bg-white py-16 md:py-24">
-          <div className="w-full px-4 md:px-8 max-w-[1232px]">
+        {/* Ordningen (ägaren 2026-09-24): kunder, hur det funkar, leverantörer,
+            mäklare, koordinatorer. Kunderna ligger i det djupblå direkt under heron. */}
+        <section className="w-screen flex justify-center bg-[var(--color-secondary-dark)] py-16 md:py-24">
+          <div className="w-full md:px-8 max-w-[1232px]">
             <Testimonials googleReviews={googleReviews} googleRating={googleRating} />
           </div>
         </section>
@@ -48,8 +46,11 @@ export const LandingPage = ({ isServerIosOrSafari, googleReviews, googleRating }
         {/* How It Works Section */}
         <HowItWorks />
 
-        {/* Beviset: förhandlat i förväg, Fortum-rabatten */}
+        {/* Handplockade leverantörer, Fortum-rabatten som exempel */}
         <Negotiated />
+
+        {/* Bevisraden: mäklarkedjorna */}
+        <ProofBar />
 
         {/* Människorna bakom tjänsten */}
         <Coordinators />

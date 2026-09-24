@@ -54,27 +54,26 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
 
   return (
     <div>
-      <h2 className="text-xl md:text-2xl font-bold text-[var(--color-secondary-main)] mb-8">{t('landing:testamonial_title')}</h2>
+      <h2 className="px-4 md:px-0 text-xl md:text-2xl font-bold text-white mb-8">{t('landing:testamonial_title')}</h2>
 
-      {/* Cards */}
-      <div
-        className="grid gap-5 grid-cols-1 md:grid-cols-3"
-      >
+      {/* Mobil: korten scrollar i sidled och nästa kort sticker ut i kanten så
+          det syns att man kan svepa (ägaren 2026-09-24). Från md: tre kolumner. */}
+      <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory px-4 scroll-px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0 md:pb-0">
         {visibleCards.map((card, i) => (
           <div
             key={`${card.name}-${i}`}
-            className="bg-white rounded-2xl p-6 border border-gray-100 flex flex-col"
+            className="snap-start shrink-0 w-[80%] max-w-[320px] md:w-auto md:max-w-none bg-white/5 rounded-2xl p-6 border border-white/10 flex flex-col"
           >
 
             {/* Quote */}
-            <p className="text-[var(--color-secondary-main)] text-[15px] leading-relaxed flex-1">
+            <p className="text-white text-[15px] leading-relaxed flex-1">
               &ldquo;{card.text}&rdquo;
             </p>
 
             {/* Author */}
-            <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-50">
-              <span className="text-sm font-semibold text-[var(--color-secondary-main)]">{card.name}</span>
-              {card.subtitle && <span className="text-xs text-[var(--color-secondary-main)]/60">{card.subtitle}</span>}
+            <div className="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-white/10">
+              <span className="text-sm font-semibold text-white">{card.name}</span>
+              {card.subtitle && <span className="text-xs text-white/60 text-right">{card.subtitle}</span>}
             </div>
           </div>
         ))}
@@ -86,7 +85,7 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
       <div className="flex flex-col items-center gap-1.5 mt-8">
         <div className="flex items-center justify-center gap-2.5">
           <GoogleIcon />
-          <span className="text-[var(--color-secondary-main)]/70 text-sm">
+          <span className="text-white/75 text-sm">
             {String(googleRating?.rating ?? '4.7').replace('.', ',')} av 5 på Google
           </span>
           <div className="flex gap-0.5" aria-hidden>
@@ -94,7 +93,7 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
               const fill = Math.max(0, Math.min(1, Number(googleRating?.rating ?? 4.7) - i))
               return (
                 <span key={i} className="relative w-3.5 h-3.5">
-                  <StarIcon className="absolute inset-0 w-3.5 h-3.5 fill-gray-200" />
+                  <StarIcon className="absolute inset-0 w-3.5 h-3.5 fill-white/20" />
                   <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
                     <StarIcon className="w-3.5 h-3.5 fill-amber-400" />
                   </span>
@@ -103,7 +102,7 @@ const Testimonials = ({ googleReviews, googleRating }: TestimonialsProps) => {
             })}
           </div>
         </div>
-        <p className="text-[13px] text-[var(--color-secondary-main)]/60">över {GOOGLE_REVIEW_COUNT} recensioner</p>
+        <p className="text-[13px] text-white/60">över {GOOGLE_REVIEW_COUNT} recensioner</p>
       </div>
     </div>
   )
