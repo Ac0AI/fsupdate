@@ -34,8 +34,9 @@ const steps = [
     number: '04',
     titleKey: 'HOW_WE_HELP.step4.title',
     descriptionKey: 'HOW_WE_HELP.step4.description',
-    image: '/images/brand/sa-gar-det-till/4-luta-dig-tillbaka.jpg',
-    alt: 'En fåtölj med kudde och en kopp kaffe, medan en flyttbil i bakgrunden kör mot ett hus med en grön bock ovanför',
+    // Koordinatorn, inte fåtöljen (ägaren 2026-09-25): steget handlar om att någon gör jobbet åt dig.
+    image: '/images/brand/sa-gar-det-till/4-koordinator.jpg',
+    alt: 'En koordinator med headset vid skrivbordet, med telefon, mejl och chatt i luften och en linje till det nya huset',
   },
 ]
 
