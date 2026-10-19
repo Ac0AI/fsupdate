@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useMemo } from 'react'
-import { createPortal } from 'react-dom'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
 import { useDemoUser } from '@/common/data/useDemoUser'
@@ -71,8 +70,30 @@ const DemoFlyttFlow = () => {
   // Som komponent, inte funktionsanrop: skärmarna har egna hooks och får inte dela DemoFlyttFlows hook-ordning.
   const Screen = [null, KlartScreen, BohagScreen, FranScreen, TillScreen, SistaScreen, FlerScreen, SparatScreen, SmsScreen, SaljareScreen][step]
 
+  const demoBar = (
+    <nav aria-label="Demo" className="flex w-full items-center gap-1 overflow-x-auto bg-[var(--color-secondary-dark)] px-3 py-2 text-white">
+      <span className="shrink-0 pr-1 text-[11px] font-bold uppercase tracking-[0.1em] text-white/60">Demo</span>
+      {STEPS.map((label, i) => (
+        <button key={label} type="button" onClick={() => go(i)} className={clsx('h-8 shrink-0 rounded-full px-3 text-[12px] whitespace-nowrap', i === step ? 'bg-white font-bold text-[var(--color-secondary-main)]' : 'text-white/85 hover:bg-white/10')}>
+          {i} · {label}
+        </button>
+      ))}
+      <button
+        type="button"
+        onClick={() => {
+          reset()
+          go(0)
+        }}
+        className="h-8 shrink-0 rounded-full px-3 text-[12px] text-white/70 hover:bg-white/10"
+      >
+        Börja om{loaded && answeredCount(answers) > 0 ? ` (${answeredCount(answers)} svar)` : ''}
+      </button>
+    </nav>
+  )
+
   return (
     <div className="flex flex-1 flex-col bg-[#E8EDF0]">
+      {demoBar}
       {step === 0 ? (
         <>
           {loaded && answers.requested && (
@@ -83,32 +104,8 @@ const DemoFlyttFlow = () => {
           <MovePage completedBookings={[]} />
         </>
       ) : (
-        <div className="mx-auto w-full max-w-[430px] pb-24 md:my-6 md:overflow-clip md:rounded-[28px] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{Screen && <Screen key={step} {...props} />}</div>
+        <div className="w-full bg-white pb-6 md:mx-auto md:my-6 md:max-w-[430px] md:overflow-clip md:rounded-[28px] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{Screen && <Screen key={step} {...props} />}</div>
       )}
-
-      {/* Portal till body: demokapslingen animeras med transform, och då skulle fixed fastna i innehållet. */}
-      {loaded &&
-        createPortal(
-      <nav aria-label="Demo" className="fixed bottom-3 left-1/2 z-[100000] flex max-w-[calc(100vw-24px)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-full bg-[#011627]/90 px-2 py-1.5 text-white shadow-lg backdrop-blur">
-        <span className="px-2 text-[11px] font-bold uppercase tracking-[0.1em] text-white/60">Demo</span>
-        {STEPS.map((label, i) => (
-          <button key={label} type="button" onClick={() => go(i)} className={clsx('h-8 shrink-0 rounded-full px-3 text-[12px] whitespace-nowrap', i === step ? 'bg-white font-bold text-[#214766]' : 'text-white/85 hover:bg-white/10')}>
-            {i} · {label}
-          </button>
-        ))}
-        <button
-          type="button"
-          onClick={() => {
-            reset()
-            go(0)
-          }}
-          className="h-8 shrink-0 rounded-full px-3 text-[12px] text-white/70 hover:bg-white/10"
-        >
-          Börja om{answeredCount(answers) > 0 ? ` (${answeredCount(answers)} svar)` : ''}
-        </button>
-      </nav>,
-          document.body,
-        )}
     </div>
   )
 }

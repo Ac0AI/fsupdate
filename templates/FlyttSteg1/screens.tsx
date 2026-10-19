@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Check, ChevronRight, Zap } from 'lucide-react'
+import { Check, ChevronRight, Zap } from 'lucide-react'
 import clsx from 'clsx'
 import {
   AVSTAND_LABEL,
@@ -42,9 +42,9 @@ export const KlartScreen = ({ a, update, go, home }: ScreenProps) => (
   <div className="bg-white pb-8">
     <GreenHead title="Tack, vi ringer dig." sub={`Din förfrågan om flytthjälp, ${home.from} till ${home.to} ${home.moveDay}, är mottagen. En säljare ringer med pris, oftast inom två vardagar.`} />
     <div className="px-4 pt-4">
-      <div className="rounded-2xl bg-[#EAF2F8] p-5">
-        <h2 className="text-[18px] font-bold leading-6 text-[#214766]">Vill du ha pris snabbare?</h2>
-        <p className="mt-2 text-[15px] leading-[22px] text-[#214766]">Svara på några frågor om flytten, det tar två minuter. Då ringer vi med priset klart i stället för att fråga.</p>
+      <div className="rounded-2xl bg-[var(--color-secondary-extra-extra-light)] p-5">
+        <h2 className="text-[18px] font-bold leading-6 text-[var(--color-secondary-main)]">Vill du ha pris snabbare?</h2>
+        <p className="mt-2 text-[15px] leading-[22px] text-[var(--color-secondary-main)]">Svara på några frågor om flytten, det tar två minuter. Då ringer vi med priset klart i stället för att fråga.</p>
         <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
           Svara nu · två minuter
         </PrimaryButton>
@@ -78,16 +78,16 @@ export const KlartScreen = ({ a, update, go, home }: ScreenProps) => (
 const ExitSheet = ({ saved, onContinue, onLater, onCall }: { saved: number; onContinue: () => void; onLater: () => void; onCall: (t: string) => void }) => {
   const [times, setTimes] = useState(false)
   return (
-    <div className="absolute inset-0 z-20 flex flex-col justify-end bg-[#214766]/40" role="dialog" aria-modal>
+    <div className="absolute inset-0 z-20 flex flex-col justify-end bg-[var(--color-secondary-main)]/40" role="dialog" aria-modal>
       <button type="button" aria-label="Fortsätt svara" className="flex-1" onClick={onContinue} />
       <div className="rounded-t-[28px] bg-white px-6 pb-8 pt-3">
-        <span className="mx-auto block h-1.5 w-10 rounded-full bg-[#D5DEE6]" />
-        <p className="mt-5 flex items-center gap-2 text-[14px] text-[#1F6156]">
+        <span className="mx-auto block h-1.5 w-10 rounded-full bg-[var(--color-inactive-grey-light)]" />
+        <p className="mt-5 flex items-center gap-2 text-[14px] text-[var(--color-primary-dark)]">
           <Check size={16} strokeWidth={3} />
           {saved === 0 ? 'Inga svar än' : `${['Ett', 'Två', 'Tre', 'Fyra'][saved - 1]} av fyra svar sparade`}
         </p>
-        <h2 className="mt-2 text-[22px] font-bold text-[#214766]">Vill du fortsätta senare?</h2>
-        <p className="mt-1 text-[15px] text-[#5B6873]">Dina svar är sparade. Säljaren ser dem när vi ringer.</p>
+        <h2 className="mt-2 text-[22px] font-bold text-[var(--color-secondary-main)]">Vill du fortsätta senare?</h2>
+        <p className="mt-1 text-[15px] text-[var(--color-inactive-dark)]">Dina svar är sparade. Säljaren ser dem när vi ringer.</p>
         <PrimaryButton tone="navy" className="mt-5" onClick={onLater}>
           Spara och fortsätt senare
         </PrimaryButton>
@@ -96,7 +96,7 @@ const ExitSheet = ({ saved, onContinue, onLater, onCall }: { saved: number; onCo
         </div>
         {times && (
           <div className="mt-4">
-            <p className="text-[13px] text-[#5B6873]">Vill du bli uppringd, när passar det?</p>
+            <p className="text-[13px] text-[var(--color-inactive-dark)]">Vill du bli uppringd, när passar det?</p>
             <div className="mt-2 flex gap-2 overflow-x-auto">
               {['08–10', '10–12', '13–15', '15–17'].map((t) => (
                 <Chip key={t} onClick={() => onCall(t)}>
@@ -106,7 +106,7 @@ const ExitSheet = ({ saved, onContinue, onLater, onCall }: { saved: number; onCo
             </div>
           </div>
         )}
-        <p className="mt-4 text-center text-[12px] text-[#5B6873]">Vi påminner dig en gång, i morgon förmiddag.</p>
+        <p className="mt-4 text-center text-[12px] text-[var(--color-inactive-dark)]">Vi påminner dig en gång, i morgon förmiddag.</p>
       </div>
     </div>
   )
@@ -127,7 +127,7 @@ const QuestionFrame = ({ a, update, go, step, title, sub, savedChip, children, c
         <PrimaryButton tone={ctaTone} className="mt-6" onClick={onNext} disabled={nextDisabled}>
           {cta}
         </PrimaryButton>
-        <p className="mt-3 text-center text-[12px] text-[#5B6873]">{foot}</p>
+        <p className="mt-3 text-center text-[12px] text-[var(--color-inactive-dark)]">{foot}</p>
       </Sheet>
       {exit && (
         <ExitSheet
@@ -152,11 +152,11 @@ const Tile = ({ label, hint, selected, onClick, icon }: { label: string; hint: s
     type="button"
     onClick={onClick}
     aria-pressed={selected}
-    className={clsx('flex flex-col items-center gap-1 rounded-2xl border-[1.5px] px-2 py-4 text-center transition-colors', selected ? 'border-[#214766] bg-[#EAF2F8]' : 'border-[#D5DEE6] bg-white')}
+    className={clsx('flex flex-col items-center gap-1 rounded-2xl border-[1.5px] px-2 py-4 text-center transition-colors', selected ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-grey-light)] bg-white')}
   >
-    <span className="text-[#214766]">{icon}</span>
-    <span className="mt-1 text-[15px] font-bold text-[#214766]">{label}</span>
-    <span className="text-[12px] text-[#5B6873]">{hint}</span>
+    <span className="text-[var(--color-secondary-main)]">{icon}</span>
+    <span className="mt-1 text-[15px] font-bold text-[var(--color-secondary-main)]">{label}</span>
+    <span className="text-[12px] text-[var(--color-inactive-dark)]">{hint}</span>
   </button>
 )
 
@@ -197,19 +197,19 @@ export const BohagScreen = (p: ScreenProps) => {
         </div>
       </div>
       {a.biyta && a.biyta !== 'nej' && (
-        <div className="mt-4 rounded-2xl bg-[#EAF2F8] p-4">
+        <div className="mt-4 rounded-2xl bg-[var(--color-secondary-extra-extra-light)] p-4">
           <div className="flex items-center justify-between gap-3">
-            <span className="text-[15px] text-[#214766]">{BIYTA_LABEL[a.biyta]}et är ungefär</span>
-            <label className="flex h-11 w-24 items-center rounded-xl border-[1.5px] border-[#214766] bg-white px-3">
-              <input type="number" inputMode="numeric" value={a.biytaKvm} onChange={(e) => set({ biytaKvm: Number(e.target.value) })} className="w-10 bg-transparent text-[16px] font-bold text-[#214766] outline-none" aria-label="Kvadratmeter" />
-              <span className="text-[13px] text-[#5B6873]">kvm</span>
+            <span className="text-[15px] text-[var(--color-secondary-main)]">{BIYTA_LABEL[a.biyta]}et är ungefär</span>
+            <label className="flex h-11 w-24 items-center rounded-xl border-[1.5px] border-[var(--color-secondary-main)] bg-white px-3">
+              <input type="number" inputMode="numeric" value={a.biytaKvm} onChange={(e) => set({ biytaKvm: Number(e.target.value) })} className="w-10 bg-transparent text-[16px] font-bold text-[var(--color-secondary-main)] outline-none" aria-label="Kvadratmeter" />
+              <span className="text-[13px] text-[var(--color-inactive-dark)]">kvm</span>
             </label>
           </div>
           <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="text-[15px] text-[#214766]">Ska det städas också?</span>
+            <span className="text-[15px] text-[var(--color-secondary-main)]">Ska det städas också?</span>
             <div className="flex gap-2">
-              {(['ja', 'nej'] as const).map((v) => (
-                <Chip key={v} selected={a.biytaStad === v} onClick={() => set({ biytaStad: v })} className="h-10 px-4">
+              {(['nej', 'ja'] as const).map((v) => (
+                <Chip key={v} small selected={a.biytaStad === v} onClick={() => set({ biytaStad: v })}>
                   {v === 'ja' ? 'Ja' : 'Nej'}
                 </Chip>
               ))}
@@ -221,7 +221,7 @@ export const BohagScreen = (p: ScreenProps) => {
   )
 }
 
-const FLOORS = ['BV', '1', '2', '3', '4', '5', '6', '7+']
+const FLOORS = ['BV', '1', '2', '3', '4', '5', '6+']
 
 /* 3 · Där hon bor i dag */
 export const FranScreen = (p: ScreenProps) => {
@@ -233,16 +233,16 @@ export const FranScreen = (p: ScreenProps) => {
     <QuestionFrame {...p} step={2} title={`Hur ser det ut på ${home.from}?`} savedChip={a.biyta && a.biyta !== 'nej' ? `Sparat. ${BIYTA_LABEL[a.biyta]}et är med i underlaget.` : a.bohag ? 'Sparat. Bohaget är med i underlaget.' : undefined} cta="Fortsätt" foot="Hissen och bärsträckan avgör hur många som behövs." onNext={() => go(4)} nextDisabled={!ok}>
       <div className="mt-5">
         <FieldLabel>Vilken våning bor du på?</FieldLabel>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-1.5">
           {FLOORS.map((f) => (
-            <button key={f} type="button" aria-pressed={a.vaning === f} onClick={() => update({ vaning: f, hiss: Number(f.replace('+', '')) >= 3 ? a.hiss : undefined })} className={clsx('h-11 min-w-11 rounded-full px-3 text-[14px] transition-colors', a.vaning === f ? 'bg-[#214766] font-bold text-white' : 'border-[1.5px] border-[#D5DEE6] bg-white text-[#214766]')}>
+            <button key={f} type="button" aria-pressed={a.vaning === f} onClick={() => update({ vaning: f, hiss: Number(f.replace('+', '')) >= 3 ? a.hiss : undefined })} className={clsx('flex h-11 min-w-0 flex-1 items-center justify-center rounded-full text-[14px] transition-colors', a.vaning === f ? 'bg-[var(--color-secondary-main)] font-bold text-white' : 'border-[1.5px] border-[var(--color-inactive-grey-light)] bg-white text-[var(--color-secondary-main)]')}>
               {f}
             </button>
           ))}
         </div>
       </div>
       {askHiss && (
-        <div className="mt-4 rounded-2xl bg-[#EAF2F8] p-4">
+        <div className="mt-4 rounded-2xl bg-[var(--color-secondary-extra-extra-light)] p-4">
           <FieldLabel>Finns det hiss? Antalet står på skylten i hissen.</FieldLabel>
           <div className="flex flex-wrap gap-2">
             {(
@@ -291,7 +291,7 @@ export const TillScreen = (p: ScreenProps) => {
       </div>
       <div className="mt-5">
         {note ? (
-          <textarea value={a.tillNotering} onChange={(e) => update({ tillNotering: e.target.value })} placeholder="Till exempel: brant backe, bommen är låst, smal grusväg" className="min-h-24 w-full rounded-xl border-[1.5px] border-[#D5DEE6] p-3 text-[15px] text-[#214766] outline-none focus:border-[#214766]" />
+          <textarea value={a.tillNotering} onChange={(e) => update({ tillNotering: e.target.value })} placeholder="Till exempel: brant backe, bommen är låst, smal grusväg" className="min-h-24 w-full rounded-xl border-[1.5px] border-[var(--color-inactive-grey-light)] p-3 text-[15px] text-[var(--color-secondary-main)] outline-none focus:border-[var(--color-secondary-main)]" />
         ) : (
           <TextLink onClick={() => setNote(true)}>Trappor, backe eller trång gata? Skriv en rad</TextLink>
         )}
@@ -317,21 +317,23 @@ export const SistaScreen = (p: ScreenProps) => {
         {(['tungt', 'omtaligt', 'balkong', 'fonster'] as Extra[]).map((v) => {
           const [label, hint] = EXTRA_LABEL[v].split(' (')
           return (
-            <button key={v} type="button" aria-pressed={has(v)} onClick={() => toggle(v)} className={clsx('flex min-h-[88px] flex-col justify-between rounded-2xl border-[1.5px] p-3 text-left transition-colors', has(v) ? 'border-[#214766] bg-[#EAF2F8]' : 'border-[#D5DEE6] bg-white')}>
-              <span className={clsx('flex h-6 w-6 items-center justify-center rounded-md border-[1.5px]', has(v) ? 'border-[#214766] bg-[#214766] text-white' : 'border-[#D5DEE6]')}>{has(v) && <Check size={14} strokeWidth={3} />}</span>
+            <button key={v} type="button" aria-pressed={has(v)} onClick={() => toggle(v)} className={clsx('flex min-h-[88px] flex-col justify-between rounded-2xl border-[1.5px] p-3 text-left transition-colors', has(v) ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-grey-light)] bg-white')}>
+              <span className={clsx('flex h-6 w-6 items-center justify-center rounded-md border-[1.5px]', has(v) ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] text-white' : 'border-[var(--color-inactive-grey-light)]')}>{has(v) && <Check size={14} strokeWidth={3} />}</span>
               <span>
-                <span className="block text-[15px] font-bold text-[#214766]">{label}</span>
-                {hint && <span className="block text-[12px] text-[#5B6873]">{hint.replace(')', '')}</span>}
+                <span className="block text-[15px] font-bold text-[var(--color-secondary-main)]">{label}</span>
+                {hint && <span className="block text-[12px] text-[var(--color-inactive-dark)]">{hint.replace(')', '')}</span>}
               </span>
             </button>
           )
         })}
       </div>
-      <button type="button" aria-pressed={has('inget')} onClick={() => toggle('inget')} className={clsx('mt-3 flex h-12 w-full items-center justify-center rounded-2xl border-[1.5px] text-[15px] font-bold transition-colors', has('inget') ? 'border-[#214766] bg-[#EAF2F8] text-[#214766]' : 'border-[#D5DEE6] bg-white text-[#214766]')}>
-        Inget av det här
-      </button>
+      <div className="pt-3">
+        <button type="button" aria-pressed={has('inget')} onClick={() => toggle('inget')} className={clsx('flex h-12 w-full items-center justify-center rounded-2xl border-[1.5px] text-[15px] font-bold transition-colors', has('inget') ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)] text-[var(--color-secondary-main)]' : 'border-[var(--color-inactive-grey-light)] bg-white text-[var(--color-secondary-main)]')}>
+          Inget av det här
+        </button>
+      </div>
       {has('balkong') && (
-        <div className="mt-4 rounded-2xl bg-[#EAF2F8] p-4">
+        <div className="mt-4 rounded-2xl bg-[var(--color-secondary-extra-extra-light)] p-4">
           <FieldLabel>Hur stor är balkongen?</FieldLabel>
           <div className="flex gap-2">
             {(['liten', 'mellan', 'stor'] as const).map((v) => (
@@ -365,22 +367,22 @@ export const FlerScreen = ({ a, update, go }: ScreenProps) => {
     <div className="bg-white pb-8">
       <GreenHead title="Fyra av fyra sparade." sub="Vill du berätta mer? Allt här är frivilligt. Varje svar sparas direkt, och säljaren slipper fråga." />
       <div className="px-4 pt-4">
-        <div className="rounded-2xl border border-[#E3E8EC] px-4 pt-4 pb-1">
-          <h2 className="text-[16px] font-bold text-[#214766]">Mer om flytten</h2>
-          <p className="mb-2 text-[13px] text-[#5B6873]">Svara på det du vet. Resten tar vi i samtalet.</p>
+        <div className="rounded-2xl border border-[var(--color-inactive-main)] px-4 pt-4 pb-1">
+          <h2 className="text-[16px] font-bold text-[var(--color-secondary-main)]">Mer om flytten</h2>
+          <p className="mb-2 text-[13px] text-[var(--color-inactive-dark)]">Svara på det du vet. Resten tar vi i samtalet.</p>
           {rows.map(([k, label]) => (
             <JaNejRow key={k} label={label} value={a.fler[k]} onChange={(v) => setFler(k, v)} />
           ))}
-          <div className="flex items-center justify-between gap-4 border-t border-[#EEF1F4] py-3">
-            <span className="text-[15px] text-[#214766]">Jag är på plats vid flytten</span>
+          <div className="flex items-center justify-between gap-4 border-t border-[var(--color-inactive-main)] py-3">
+            <span className="text-[15px] text-[var(--color-secondary-main)]">Jag är på plats vid flytten</span>
             <Toggle on={a.paPlats} onChange={(v) => update({ paPlats: v })} />
           </div>
-          <div className="flex items-center justify-between gap-4 border-t border-[#EEF1F4] py-3">
-            <span className="text-[15px] text-[#214766]">Portkod och nycklar</span>
+          <div className="flex items-center justify-between gap-4 border-t border-[var(--color-inactive-main)] py-3">
+            <span className="text-[15px] text-[var(--color-secondary-main)]">Portkod och nycklar</span>
             <Chip>Lägg till</Chip>
           </div>
-          <div className="flex items-center justify-between gap-4 border-t border-[#EEF1F4] py-3">
-            <span className="text-[15px] text-[#214766]">Något mer vi bör veta?</span>
+          <div className="flex items-center justify-between gap-4 border-t border-[var(--color-inactive-main)] py-3">
+            <span className="text-[15px] text-[var(--color-secondary-main)]">Något mer vi bör veta?</span>
             <Chip>Skriv</Chip>
           </div>
         </div>
@@ -404,7 +406,7 @@ export const FlerScreen = ({ a, update, go }: ScreenProps) => {
         >
           Klar
         </PrimaryButton>
-        <p className="mt-3 text-center text-[12px] text-[#5B6873]">Allt sparas direkt. Du kan ändra tills vi ringer.</p>
+        <p className="mt-3 text-center text-[12px] text-[var(--color-inactive-dark)]">Allt sparas direkt. Du kan ändra tills vi ringer.</p>
       </div>
     </div>
   )
@@ -437,12 +439,12 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => (
         ]}
       />
     </div>
-    <div className="mx-4 mt-5 rounded-xl bg-[#EAF2F8] p-4">
+    <div className="mx-4 mt-5 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4">
       <div className="flex items-center justify-between">
-        <span className="text-[15px] font-bold text-[#214766]">Dina svar</span>
+        <span className="text-[15px] font-bold text-[var(--color-secondary-main)]">Dina svar</span>
         <TextLink onClick={() => go(2)}>Ändra</TextLink>
       </div>
-      <ul className="mt-2 space-y-1 text-[14px] leading-[21px] text-[#5B6873]">
+      <ul className="mt-2 space-y-1 text-[14px] leading-[21px] text-[var(--color-inactive-dark)]">
         {answerLines(a, home).map((l) => (
           <li key={l}>{l}</li>
         ))}
@@ -452,14 +454,14 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => (
     <div className="mt-4">
       <ContactBox />
     </div>
-    <div className="mx-4 mt-4 flex items-center gap-3 rounded-2xl border border-[#E3E8EC] p-4">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FFF1E5] text-[#FFA65F]">
+    <div className="mx-4 mt-4 flex items-center gap-3 rounded-2xl border border-[var(--color-inactive-main)] p-4">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent-lighter)] text-[var(--color-accent-main)]">
         <Zap size={20} />
       </span>
       <span className="flex-1">
         <Eyebrow>Näst på tur · 5 av 7</Eyebrow>
-        <span className="block text-[15px] font-bold text-[#214766]">El till {home.to}</span>
-        <span className="block text-[13px] text-[#5B6873]">1 035 kr rabatt hos Fortum, bara via Flyttsmart.</span>
+        <span className="block text-[15px] font-bold text-[var(--color-secondary-main)]">El till {home.to}</span>
+        <span className="block text-[13px] text-[var(--color-inactive-dark)]">1 035 kr rabatt hos Fortum, bara via Flyttsmart.</span>
       </span>
       <Chip onClick={() => go(0)}>Välj</Chip>
     </div>
@@ -471,8 +473,8 @@ export const SmsScreen = ({ home }: ScreenProps) => (
   <div className="flex min-h-[640px] flex-col items-center bg-gradient-to-b from-[#2B4A68] to-[#0E2236] px-4 pb-10 pt-14 text-white">
     <p className="text-[15px] text-white/80">i morgon förmiddag</p>
     <p className="text-[72px] font-bold leading-none">09:05</p>
-    <div className="mt-10 w-full rounded-2xl bg-white/95 p-4 text-[#1A1A1A] shadow-xl">
-      <div className="flex items-center justify-between text-[12px] text-[#5B6873]">
+    <div className="mt-10 w-full rounded-2xl bg-white/95 p-4 text-[var(--color-inactive-super-dark)] shadow-xl">
+      <div className="flex items-center justify-between text-[12px] text-[var(--color-inactive-dark)]">
         <span className="flex items-center gap-2">
           <span className="block h-5 w-5 rounded-md bg-[#34C759]" /> MEDDELANDEN
         </span>
@@ -491,23 +493,23 @@ export const SaljareScreen = ({ a, home }: ScreenProps) => {
   const events = [`lör 19:32 · begärde pris${n ? ` och svarade på ${['en', 'två', 'tre', 'fyra'][n - 1]} frågor` : ''}`, 'mån 09:05 · fick sms:et med länken', n < 4 ? 'mån 10:02 · öppnade frågorna igen, svarade inte' : 'mån 10:02 · svarade på alla fyra, från mobilen']
   const ordering = ['Har valt en tid för samtal', 'Svarade på alla fyra frågorna', 'Svarade på några', 'Begärde pris utan att svara', 'Tryckte på kortet utan att begära']
   return (
-    <div className="bg-[#F2F5F7] px-4 py-6">
+    <div className="bg-[var(--color-inactive-quite-light)] px-4 py-6">
       <div className="rounded-2xl bg-white p-5 shadow-sm">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[18px] font-bold text-[#214766]">{home.firstName} Andersson</p>
-            <p className="text-[13px] text-[#5B6873]">Demomäklaren · flytt {home.moveDay}</p>
+            <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">{home.firstName} Andersson</p>
+            <p className="text-[13px] text-[var(--color-inactive-dark)]">Demomäklaren · flytt {home.moveDay}</p>
           </div>
-          <span className="rounded-full bg-[#FFF1E5] px-3 py-1 text-[12px] font-bold text-[#B9651F]">Svarade {n} av 4</span>
+          <span className="rounded-full bg-[var(--color-accent-lighter)] px-3 py-1 text-[12px] font-bold text-[var(--color-accent-dark-main)]">Svarade {n} av 4</span>
         </div>
-        <div className="mt-4 rounded-xl bg-[#EAF2F8] p-4">
-          <p className="text-[18px] font-bold text-[#214766]">Pris begärt, inget pris ännu</p>
-          <p className="text-[13px] text-[#5B6873]">
+        <div className="mt-4 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4">
+          <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">Pris begärt, inget pris ännu</p>
+          <p className="text-[13px] text-[var(--color-inactive-dark)]">
             Flytthjälp. {n} av 4 prisfrågor svarade, {flerCount(a)} av 9 övriga. Guiden hoppar över dem.
           </p>
         </div>
         <Eyebrow className="mt-5">Det här har hon gjort</Eyebrow>
-        <ul className="mt-2 space-y-1 text-[14px] text-[#214766]">
+        <ul className="mt-2 space-y-1 text-[14px] text-[var(--color-secondary-main)]">
           {events.map((e, i) => (
             <li key={e} className={clsx(i === events.length - 1 && 'font-bold')}>
               {e}
@@ -515,14 +517,14 @@ export const SaljareScreen = ({ a, home }: ScreenProps) => {
           ))}
         </ul>
         <Eyebrow className="mt-5">Öppna så här</Eyebrow>
-        <p className="mt-2 rounded-xl bg-[#EAF2F8] p-4 text-[15px] leading-[22px] text-[#214766]">
+        <p className="mt-2 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4 text-[15px] leading-[22px] text-[var(--color-secondary-main)]">
           Hej {home.firstName}, det är Nina på Flyttsmart. Jag ser att du begärt pris på flytten till {home.to.split(' ')[0]}
           {n > 0 ? ' och svarat på några frågor' : ''}. Jag har {n === 4 ? 'inga' : ['fyra', 'tre', 'två', 'en'][n]} frågor till, sedan har jag ett pris till dig.
         </p>
         <Eyebrow className="mt-5">Sortering i kön · ett ärende i taget, alltid kö</Eyebrow>
         <ol className="mt-2 space-y-1">
           {ordering.map((o, i) => (
-            <li key={o} className={clsx('flex gap-3 text-[14px]', i + 1 === rank ? 'font-bold text-[#214766]' : 'text-[#5B6873]')}>
+            <li key={o} className={clsx('flex gap-3 text-[14px]', i + 1 === rank ? 'font-bold text-[var(--color-secondary-main)]' : 'text-[var(--color-inactive-dark)]')}>
               <span className="w-4">{i + 1}</span>
               {o}
             </li>
@@ -538,7 +540,7 @@ export const RequestedCard = ({ a, go, home }: ScreenProps) => {
   const n = answeredCount(a)
   const done = n === 4 && a.extraDone
   return (
-    <div className="rounded-2xl bg-[#214766] p-5 text-white">
+    <div className="rounded-2xl bg-[var(--color-secondary-main)] p-5 text-white">
       <Eyebrow className="text-white/70">Pris begärt i dag</Eyebrow>
       <p className="mt-1 text-[28px] font-bold leading-8">{done ? 'Allt sparat' : 'Vi ringer dig'}</p>
       <p className="mt-2 text-[15px] text-white/90">
@@ -555,7 +557,6 @@ export const RequestedCard = ({ a, go, home }: ScreenProps) => {
       ) : (
         <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
           Fortsätt svara · två minuter
-          <ArrowRight size={18} />
         </PrimaryButton>
       )}
       <p className="mt-3 text-center text-[13px] text-white/80">Inget bokas förrän du säger ja.</p>
@@ -572,7 +573,7 @@ export const RequestedCard = ({ a, go, home }: ScreenProps) => {
 }
 
 export const NextLink = ({ label, onClick }: { label: string; onClick: () => void }) => (
-  <button type="button" onClick={onClick} className="flex items-center gap-1 text-[14px] font-bold text-[#214766]">
+  <button type="button" onClick={onClick} className="flex items-center gap-1 text-[14px] font-bold text-[var(--color-secondary-main)]">
     {label}
     <ChevronRight size={16} />
   </button>
