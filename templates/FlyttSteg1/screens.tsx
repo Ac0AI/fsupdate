@@ -336,7 +336,7 @@ export const BohagScreen = (p: ScreenProps) => {
           {a.saker.map((s, i) => (
             <ItemCard key={s.id} title={s.vad || `Föremål ${i + 1}`} onRemove={() => update((prev) => ({ saker: prev.saker.filter((x) => x.id !== s.id) }))}>
               <Field label="Vad är det?">
-                <TextInput value={s.vad} onChange={(v) => setSak(s.id, { vad: v })} placeholder="T.ex. piano, vapenskåp eller marmorbord" label="Vad är det?" />
+                <TextInput value={s.vad} onChange={(v) => setSak(s.id, { vad: v })} placeholder="T.ex. piano eller marmorbord" label="Vad är det?" />
               </Field>
               <Field label="Ungefärlig vikt">
                 <ChipRow>
