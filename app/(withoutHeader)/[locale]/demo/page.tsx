@@ -206,6 +206,20 @@ export default function DemoStartPage() {
           </Card>
         </Section>
 
+        <Section title="Prototyp: flyttflödet steg 1, utan pris" intro="Dagens flyttsida är ingången. Begär pris skapar en affär, sedan frågor som alla är frivilliga och sparas direkt. Säljaren ringer med priset. Ritad i Paper 19 oktober.">
+          <Card>
+            <Steps
+              steps={[
+                { do: `Öppna ${BASE.replace('https://', '')}/demo/flytt.`, see: 'Checklistan precis som i dag. Tryck Få min offert på flytt och städ i välkomstkortet.' },
+                { do: 'Klart-skärmen.', see: 'Tack, vi ringer dig. Sedan erbjudandet: Vill du ha pris snabbare? Svara nu, eller Jag väntar på samtalet.' },
+                { do: 'Fyra frågor.', see: 'Bohaget, var du bor, dit du flyttar, sista frågan. Krysset uppe till höger sparar och går tillbaka till flyttsidan, som då minns läget.' },
+                { do: 'Fler frågor och kvittot.', see: 'Ja eller Nej på det säljaren annars frågar, ringtid, Klar. Kvittot visar dina svar. Steg 8 är sms:et, steg 9 är säljarens vy i Harry.' },
+              ]}
+            />
+            <p className="text-[13px] leading-[19px] text-[#767678] mt-3">Raden längst ned hoppar mellan skärmarna och nollställer. Inget pris visas någonstans, det är poängen med steg 1.</p>
+          </Card>
+        </Section>
+
         <Section title="Bra att veta">
           <div className="flex flex-col gap-2">
             <Note title="Omladdning nollställer det mesta">Laddar du om sidan mitt i ett tjänsteflöde börjar flödet om. Bokat städ och tillagda egna punkter kan också nollas. Det är demon, inte appen.</Note>
