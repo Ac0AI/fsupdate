@@ -207,7 +207,7 @@ export const AdresserScreen = (p: ScreenProps) => {
       </div>
       <Section title="Flyttar du ut och in samma dag?" sub="Om inte ordnar vi tillfällig förvaring däremellan.">
         <ChoiceRow options={JA_NEJ} value={a.sammaDag} onChange={(v) => update({ sammaDag: v })} />
-        {a.sammaDag === 'nej' && <InfoNote>Vi magasinerar sakerna tills du kan flytta in. Säljaren räknar in förvaringen i priset.</InfoNote>}
+        {a.sammaDag === 'nej' && <InfoNote>Vi förvarar sakerna tills du kan flytta in. Säljaren räknar in förvaringen i priset.</InfoNote>}
       </Section>
     </Q>
   )
@@ -218,7 +218,7 @@ const HISS: [string, string, Partial<AdressSvar>][] = [
   ['stor', 'Stor hiss', { hiss: 'ja', hissStorlek: 'stor' }],
   ['liten', 'Liten hiss', { hiss: 'ja', hissStorlek: 'liten' }],
   ['nej', 'Ingen hiss', { hiss: 'nej', hissStorlek: undefined }],
-  ['vet-ej', 'Vet ej', { hiss: 'vet-ej', hissStorlek: undefined }],
+  ['vet-ej', 'Vet inte', { hiss: 'vet-ej', hissStorlek: undefined }],
 ]
 
 const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => {
@@ -244,7 +244,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
           ))}
         </div>
       </Section>
-      <Section title="Finns det hiss?" sub="Stor hiss: en säng på 120 cm får plats.">
+      <Section title="Finns det hiss?" sub="Stor hiss rymmer sex personer eller fler.">
         <ChipRow>
           {HISS.map(([key, label, patch]) => (
             <Chip key={key} selected={(s.hiss === 'ja' ? s.hissStorlek : s.hiss) === key} onClick={() => set(patch)}>
@@ -568,15 +568,15 @@ export const SistaScreen = (p: ScreenProps) => {
 }
 
 const adressLine = (label: string, s: AdressSvar) => {
-  const hiss = s.hiss === 'ja' ? `${s.hissStorlek === 'stor' ? 'stor ' : s.hissStorlek === 'liten' ? 'liten ' : ''}hiss` : s.hiss === 'nej' ? 'ingen hiss' : s.hiss === 'vet-ej' ? 'hiss: vet ej' : null
-  const parts = [s.vaning ? `våning ${s.vaning}` : null, hiss, s.avstand ? `${AVSTAND_LABEL[s.avstand].toLowerCase()} att bära` : null, s.notering || null].filter(Boolean)
+  const hiss = s.hiss === 'ja' ? `${s.hissStorlek === 'stor' ? 'stor ' : s.hissStorlek === 'liten' ? 'liten ' : ''}hiss` : s.hiss === 'nej' ? 'ingen hiss' : s.hiss === 'vet-ej' ? 'hiss: vet inte' : null
+  const parts = [s.vaning ? `våning ${s.vaning}` : null, hiss, s.avstand ? (s.avstand === 'vet-ej' ? 'bärsträcka: vet inte' : `${AVSTAND_LABEL[s.avstand].toLowerCase()} att bära`) : null, s.notering || null].filter(Boolean)
   return parts.length ? `${label}: ${parts.join(', ')}` : null
 }
 
 export const answerLines = (a: Answers, home: Home): string[] => {
   const L: (string | null)[] = []
   if (a.stopp) L.push(`Stopp på vägen: ${a.stopp}`)
-  if (a.sammaDag) L.push(a.sammaDag === 'ja' ? 'Flyttar in samma dag' : 'Flyttar inte in samma dag, behöver magasinering')
+  if (a.sammaDag) L.push(a.sammaDag === 'ja' ? 'Flyttar in samma dag' : 'Flyttar inte in samma dag, behöver förvaring')
   L.push(adressLine(home.from, a.fran), adressLine(home.to, a.till))
   if (a.bohag) L.push(`${BOHAG_LABEL[a.bohag]}, ${home.fromKvm} m²`)
   a.biytor.forEach((b) => L.push(`${b.typ ? BIYTA_LABEL[b.typ] : 'Utrymme'}${b.kvm ? ` ${b.kvm} m²` : ''}${b.fullt ? `, ${b.fullt.toLowerCase()}` : ''}`))

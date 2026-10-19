@@ -155,7 +155,7 @@ export const AVSTAND_LABEL: Record<Avstand, string> = {
   '50-75': '51–75 m',
   '75-100': '76–100 m',
   o100: 'Över 100 m',
-  'vet-ej': 'Vet ej',
+  'vet-ej': 'Vet inte',
 }
 
 export const BOHAG_LABEL: Record<Bohag, string> = { lite: 'Lite bohag', normalt: 'Normalt bohag', mycket: 'Mycket bohag' }
@@ -171,11 +171,11 @@ export const FONSTER_LABEL: Record<FonsterTyp, [string, string]> = {
   panorama: ['Panoramafönster', 'Stora glaspartier'],
   svaratkomliga: ['Svåråtkomliga', 'Högt upp eller svåra att nå'],
 }
-export const STARTTIDER = ['08:00–09:00', '13:00–14:00', 'Vet ej']
+export const STARTTIDER = ['08:00–09:00', '13:00–14:00', 'Vet inte']
 export const TILLVAL_LABEL: Record<Tillval, [string, string]> = {
   packhjalp: ['Packhjälp', 'Vi packar, lån av flyttlådor ingår'],
   lador: ['Lån av flyttlådor', 'Levereras hem före flytten'],
   bortforsling: ['Bortforsling', 'Återvinning av det som inte ska med'],
-  forvaring: ['Magasinering', 'Förvaring mellan ut- och inflytt'],
+  forvaring: ['Förvaring', 'Mellan ut- och inflytt'],
 }
 export const RINGTIDER = ['Mån 13–15', 'Mån 15–17', 'Tis 08–10', 'Tis 10–12']
