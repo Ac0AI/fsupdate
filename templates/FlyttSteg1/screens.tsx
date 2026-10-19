@@ -47,6 +47,8 @@ const DONE = 8
 const SALJARE = 10
 const ORD = ['en', 'två', 'tre', 'fyra', 'fem', 'sex']
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+/* Fast mellanslag före sista ordet, så att husnumret inte hamnar ensamt på en rad. */
+const nb = (s: string) => s.replace(/ (\S+)$/, '\u00a0$1')
 
 const nextUnanswered = (a: Answers) => {
   const i = answeredQuestions(a).findIndex((x) => !x)
@@ -226,7 +228,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
   const [note, setNote] = useState(!!s.notering)
   const ut = side === 'fran'
   return (
-    <Q p={p} idx={ut ? 3 : 4} title={ut ? `Utflytt från ${home.from}` : `Inflytt till ${home.to}`} sub={ut ? 'Våning, hiss och bärsträcka avgör hur många flyttare vi skickar.' : 'Samma frågor för den nya bostaden.'}>
+    <Q p={p} idx={ut ? 3 : 4} title={ut ? `Utflytt från ${nb(home.from)}` : `Inflytt till ${nb(home.to)}`} sub={ut ? 'Våning, hiss och bärsträcka avgör hur många flyttare vi skickar.' : 'Samma frågor för den nya bostaden.'}>
       <Section title="Vilket våningsplan ligger bostaden på?" className="mt-5">
         <div className="flex gap-1.5">
           {FLOORS.map((f) => (
