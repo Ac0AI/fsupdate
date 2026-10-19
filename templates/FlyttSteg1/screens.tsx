@@ -21,7 +21,7 @@ import {
   type FlerKey,
   type Hiss,
 } from './state'
-import { Chip, CloseButton, ContactBox, Eyebrow, FieldLabel, GreenHead, JaNejRow, MapBackdrop, PrimaryButton, SavedChip, SavedPill, Sheet, TextLink, Timeline, Toggle } from './ui'
+import { Chip, CloseButton, ContactBox, Eyebrow, FieldLabel, GreenHead, JaNejRow, PrimaryButton, SavedStatus, Sheet, TextLink, Timeline, Toggle } from './ui'
 
 export type Home = { from: string; to: string; fromKvm: number; moveDay: string; moveDayLong: string; firstName: string }
 
@@ -117,11 +117,10 @@ const QuestionFrame = ({ a, update, go, step, title, sub, savedChip, children, c
   const saved = answeredCount(a)
   return (
     <div className="relative bg-white">
-      <MapBackdrop>
-        <SavedPill small="Dina svar" big="Sparas direkt" />
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--color-inactive-main)] px-5 py-3">
+        <SavedStatus>{savedChip}</SavedStatus>
         <CloseButton onClick={() => setExit(true)} />
-        {savedChip && <SavedChip>{savedChip}</SavedChip>}
-      </MapBackdrop>
+      </div>
       <Sheet step={step} total={4} title={title} sub={sub}>
         {children}
         <PrimaryButton tone={ctaTone} className="mt-6" onClick={onNext} disabled={nextDisabled}>
