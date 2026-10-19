@@ -11,6 +11,29 @@ const ROUTE_ALIASES: Record<string, string> = {
 
 const LOCALES = ['sv', 'en']
 
+// Prototypen av flyttflödet steg 1 (utan pris) ligger under /demo/flytt. När den
+// är påslagen leder flytthjälpen på demoflyttsidan dit i stället för till
+// /demo/movehelp, så att vägen in är exakt dagens flyttsida.
+export const FLYTT_VARIANT_KEY = 'flyttsmart-demo-flytt-variant'
+
+export const isFlyttSteg1On = (): boolean => {
+  if (typeof window === 'undefined') return false
+  try {
+    return window.sessionStorage.getItem(FLYTT_VARIANT_KEY) === 'steg1'
+  } catch {
+    return false
+  }
+}
+
+export const setFlyttSteg1 = (on: boolean) => {
+  try {
+    if (on) window.sessionStorage.setItem(FLYTT_VARIANT_KEY, 'steg1')
+    else window.sessionStorage.removeItem(FLYTT_VARIANT_KEY)
+  } catch {
+    // sessionStorage kan saknas, då gäller dagens demoflöde
+  }
+}
+
 /**
  * Byter /app mot /demo när vi står inne i demon, och lämnar vägen orörd
  * annars. Query och locale-prefix följer med. Skarpa appen påverkas inte:
@@ -30,5 +53,6 @@ export const toDemoPath = (path: string): string => {
   const target = DEMO_ROUTES.includes(service) ? service : 'movepage'
 
   const prefix = locale ? `/${locale}` : ''
+  if (target === 'movehelp' && isFlyttSteg1On()) return `${prefix}/demo/flytt?s=1`
   return `${prefix}/demo/${target}${query ? `?${query}` : ''}`
 }
