@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from 'react'
 
 /*
- * Svaren i steg 1 utan pris. Frågorna följer Nils prototyp (movepage-demo) och
- * Harrys guide ett till ett, så att varje svar kan gå rakt in i Opportunityn.
+ * Svaren i steg 1 utan pris. Frågorna följer Harrys guide ett till ett, så att
+ * varje svar kan gå rakt in i Opportunityn. Orden är sajtens egna, inte Nils.
  * Allt är frivilligt: ett tomt fält betyder att säljaren frågar i samtalet.
  */
 
@@ -13,7 +13,7 @@ export type Hiss = 'ja' | 'nej' | 'vet-ej'
 export type HissStorlek = 'liten' | 'stor'
 export type Avstand = 'u25' | '25-50' | '50-75' | '75-100' | 'o100' | 'vet-ej'
 export type Bohag = 'lite' | 'normalt' | 'mycket'
-export type BiytaTyp = 'forrad' | 'vind' | 'garage' | 'uterum' | 'annat'
+export type BiytaTyp = 'kallare' | 'vind' | 'forrad' | 'garage' | 'uterum' | 'annat'
 export type FonsterTyp = 'fyrsidiga' | 'sprojsade' | 'panorama' | 'svaratkomliga'
 export type Tillval = 'packhjalp' | 'lador' | 'bortforsling' | 'forvaring'
 
@@ -150,32 +150,32 @@ export const newId = () => Math.random().toString(36).slice(2, 8)
 export const FLOORS = ['BV', '1', '2', '3', '4', '5+']
 
 export const AVSTAND_LABEL: Record<Avstand, string> = {
-  u25: 'Under 25 m',
-  '25-50': '25–50 m',
-  '50-75': '50–75 m',
-  '75-100': '75–100 m',
+  u25: '0–25 m',
+  '25-50': '26–50 m',
+  '50-75': '51–75 m',
+  '75-100': '76–100 m',
   o100: 'Över 100 m',
   'vet-ej': 'Vet ej',
 }
 
 export const BOHAG_LABEL: Record<Bohag, string> = { lite: 'Lite bohag', normalt: 'Normalt bohag', mycket: 'Mycket bohag' }
-export const BIYTA_LABEL: Record<BiytaTyp, string> = { forrad: 'Förråd', vind: 'Vind', garage: 'Garage', uterum: 'Uterum', annat: 'Annat' }
+export const BIYTA_LABEL: Record<BiytaTyp, string> = { kallare: 'Källare', vind: 'Vind', forrad: 'Förråd', garage: 'Garage', uterum: 'Uterum', annat: 'Annat' }
 export const BIYTA_KVM = ['5', '10', '20', '30', '50+']
 export const FULLT = ['25 %', '50 %', '75 %', 'Fullt']
 export const VIKT = ['0–80 kg', '80–150 kg', '150–200 kg', '200+ kg']
 export const VARDE = ['0–30 000 kr', '30 000–50 000 kr', '50 000–100 000 kr', '100 000+ kr']
 export const STAD_MER = ['Källare', 'Balkong', 'Förråd', 'Garage']
 export const FONSTER_LABEL: Record<FonsterTyp, [string, string]> = {
-  fyrsidiga: ['Fyrsidiga', 'fyra sidor att putsa'],
-  sprojsade: ['Spröjsade', 'många små rutor'],
-  panorama: ['Panorama', 'stora glaspartier'],
-  svaratkomliga: ['Svåråtkomliga', 'högt upp eller bakom något'],
+  fyrsidiga: ['Fyrsidiga', 'Två bågar, fyra sidor att putsa'],
+  sprojsade: ['Spröjsade', 'Många små rutor'],
+  panorama: ['Panoramafönster', 'Stora glaspartier'],
+  svaratkomliga: ['Svåråtkomliga', 'Högt upp eller svåra att nå'],
 }
 export const STARTTIDER = ['08:00–09:00', '13:00–14:00', 'Vet ej']
 export const TILLVAL_LABEL: Record<Tillval, [string, string]> = {
-  packhjalp: ['Packhjälp', 'vi packar dagen innan'],
-  lador: ['Flyttlådor', 'låna av oss, levereras före flytten'],
-  bortforsling: ['Bortforsling', 'till återvinning eller second hand'],
-  forvaring: ['Förvaring', 'tills det nya är klart'],
+  packhjalp: ['Packhjälp', 'Vi packar, lån av flyttlådor ingår'],
+  lador: ['Lån av flyttlådor', 'Levereras hem före flytten'],
+  bortforsling: ['Bortforsling', 'Återvinning av det som inte ska med'],
+  forvaring: ['Magasinering', 'Förvaring mellan ut- och inflytt'],
 }
 export const RINGTIDER = ['Mån 13–15', 'Mån 15–17', 'Tis 08–10', 'Tis 10–12']

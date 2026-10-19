@@ -32,7 +32,7 @@ const longDay = (iso: string) => {
 /**
  * Prototyp av flyttflödet steg 1, utan pris: dagens flyttsida är ingången,
  * Begär pris skapar en Opportunity, sedan sex frivilliga steg med samma
- * frågor som Nils prototyp och Harrys guide. Allt sparas direkt, säljaren
+ * frågor som Harrys guide, i sajtens egna ord. Allt sparas direkt, säljaren
  * ringer med priset. Ren frontend, inget lämnar webbläsarens session.
  */
 const DemoFlyttFlow = () => {
