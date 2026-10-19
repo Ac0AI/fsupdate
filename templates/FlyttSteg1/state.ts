@@ -2,61 +2,106 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-export type Bohag = 'lite' | 'normalt' | 'mycket'
-export type Biyta = 'forrad' | 'vind' | 'garage' | 'uterum' | 'nej'
-export type Hiss = 'stor' | 'liten' | 'ingen'
-export type Avstand = 'u25' | '25-50' | '50-75' | '75-100' | 'o100' | 'vet-inte'
-export type Extra = 'tungt' | 'omtaligt' | 'balkong' | 'fonster' | 'inget'
-export type JaNej = 'ja' | 'nej'
+/*
+ * Svaren i steg 1 utan pris. Frågorna följer Nils prototyp (movepage-demo) och
+ * Harrys guide ett till ett, så att varje svar kan gå rakt in i Opportunityn.
+ * Allt är frivilligt: ett tomt fält betyder att säljaren frågar i samtalet.
+ */
 
-export type FlerKey = 'stadning' | 'packhjalp' | 'lador' | 'forvaring' | 'bortforsling' | 'vardesaker' | 'montering' | 'utemobler'
+export type JaNej = 'ja' | 'nej'
+export type Hiss = 'ja' | 'nej' | 'vet-ej'
+export type HissStorlek = 'liten' | 'stor'
+export type Avstand = 'u25' | '25-50' | '50-75' | '75-100' | 'o100' | 'vet-ej'
+export type Bohag = 'lite' | 'normalt' | 'mycket'
+export type BiytaTyp = 'forrad' | 'vind' | 'garage' | 'uterum' | 'annat'
+export type FonsterTyp = 'fyrsidiga' | 'sprojsade' | 'panorama' | 'svaratkomliga'
+export type Tillval = 'packhjalp' | 'lador' | 'bortforsling' | 'forvaring'
+
+export type AdressSvar = {
+  vaning?: string
+  hiss?: Hiss
+  hissStorlek?: HissStorlek
+  avstand?: Avstand
+  notering: string
+}
+
+export type Biyta = { id: string; typ?: BiytaTyp; kvm?: string; fullt?: string }
+export type Sak = { id: string; vad: string; vikt?: string; varde?: string }
 
 export type Answers = {
   requested: boolean
+  sent: boolean
+  /* 1 Adresser */
+  stopp: string
+  sammaDag?: JaNej
+  /* 2–3 Bära ut, bära in */
+  fran: AdressSvar
+  till: AdressSvar
+  /* 4 Vad ska med */
   bohag?: Bohag
-  biyta?: Biyta
-  biytaKvm: number
-  biytaStad?: JaNej
-  vaning?: string
-  hiss?: Hiss
-  avstandFran?: Avstand
-  avstandTill?: Avstand
-  tillNotering: string
-  extra: Extra[]
-  extraTouched: boolean
+  biytor: Biyta[]
+  saker: Sak[]
+  utemobler?: JaNej
+  /* 5 Städning */
+  stad?: JaNej
+  stadYta?: 'boyta' | 'mer'
+  stadMer: string[]
+  stadMerKvm?: string
+  balkong?: JaNej
   balkongStorlek?: 'liten' | 'mellan' | 'stor'
-  fler: Partial<Record<FlerKey, JaNej>>
-  paPlats: boolean
+  balkongGlas?: 'halv' | 'hel'
+  fonster: Partial<Record<FonsterTyp, number>>
+  fonsterInga: boolean
+  kansliga?: JaNej
+  kansligaText: string
+  /* 6 Sista detaljerna */
+  starttid?: string
+  paPlatsFlytt: boolean
+  paPlatsStad: boolean
+  tillval: Tillval[]
+  portkod: string
+  ovrigt: string
   ringtid?: string
-  extraDone: boolean
 }
+
+const EMPTY_ADRESS: AdressSvar = { notering: '' }
 
 export const EMPTY: Answers = {
   requested: false,
-  biytaKvm: 8,
-  tillNotering: '',
-  extra: [],
-  extraTouched: false,
-  fler: {},
-  paPlats: false,
-  extraDone: false,
+  sent: false,
+  stopp: '',
+  fran: EMPTY_ADRESS,
+  till: EMPTY_ADRESS,
+  biytor: [],
+  saker: [],
+  stadMer: [],
+  fonster: {},
+  fonsterInga: false,
+  kansligaText: '',
+  paPlatsFlytt: false,
+  paPlatsStad: false,
+  tillval: [],
+  portkod: '',
+  ovrigt: '',
 }
 
 const KEY = 'flyttsmart-demo-flytt-steg1'
 
-export const answeredQuestions = (a: Answers) => {
-  const q1 = !!a.bohag
-  const floor = Number(a.vaning?.replace('+', '') ?? NaN)
-  const needsHiss = !Number.isNaN(floor) && floor >= 3
-  const q2 = !!a.vaning && (!needsHiss || !!a.hiss) && !!a.avstandFran
-  const q3 = !!a.avstandTill
-  const q4 = a.extraTouched
-  return [q1, q2, q3, q4]
-}
+const adressTouched = (s: AdressSvar) => !!(s.vaning || s.hiss || s.avstand || s.notering)
+
+/** En flagga per frågeskärm, i ordningen Adresser, Bära ut, Bära in, Vad ska med, Städning, Sista detaljerna. */
+export const answeredQuestions = (a: Answers) => [
+  a.sammaDag !== undefined || !!a.stopp,
+  adressTouched(a.fran),
+  adressTouched(a.till),
+  !!a.bohag || a.biytor.length > 0 || a.saker.length > 0 || a.utemobler !== undefined,
+  a.stad !== undefined,
+  !!a.starttid || a.paPlatsFlytt || a.paPlatsStad || a.tillval.length > 0 || !!a.ringtid || a.sent,
+]
+
+export const TOTAL = 6
 
 export const answeredCount = (a: Answers) => answeredQuestions(a).filter(Boolean).length
-
-export const flerCount = (a: Answers) => Object.keys(a.fler).length + (a.ringtid ? 1 : 0)
 
 export const useDemoState = () => {
   const [answers, setAnswers] = useState<Answers>(EMPTY)
@@ -65,7 +110,11 @@ export const useDemoState = () => {
   useEffect(() => {
     try {
       const raw = window.sessionStorage.getItem(KEY)
-      if (raw) setAnswers({ ...EMPTY, ...(JSON.parse(raw) as Partial<Answers>) })
+      if (raw) {
+        const saved = JSON.parse(raw) as Partial<Answers>
+        // Gammalt format utan fran/till kastas, annars kraschar skärmarna
+        if (saved.fran && saved.till) setAnswers({ ...EMPTY, ...saved })
+      }
     } catch {
       // sessionStorage kan saknas, då börjar demon om varje gång
     }
@@ -96,32 +145,37 @@ export const useDemoState = () => {
   return { answers, update, reset, loaded }
 }
 
+export const newId = () => Math.random().toString(36).slice(2, 8)
+
+export const FLOORS = ['BV', '1', '2', '3', '4', '5+']
+
 export const AVSTAND_LABEL: Record<Avstand, string> = {
   u25: 'Under 25 m',
   '25-50': '25–50 m',
   '50-75': '50–75 m',
   '75-100': '75–100 m',
   o100: 'Över 100 m',
-  'vet-inte': 'Vet inte',
+  'vet-ej': 'Vet ej',
 }
 
 export const BOHAG_LABEL: Record<Bohag, string> = { lite: 'Lite bohag', normalt: 'Normalt bohag', mycket: 'Mycket bohag' }
-export const BIYTA_LABEL: Record<Biyta, string> = { forrad: 'Förråd', vind: 'Vind', garage: 'Garage', uterum: 'Uterum', nej: 'Ingen biyta' }
-export const HISS_LABEL: Record<Hiss, string> = { stor: 'stor hiss', liten: 'liten hiss', ingen: 'ingen hiss' }
-export const EXTRA_LABEL: Record<Extra, string> = {
-  tungt: 'Tungt (piano, kassaskåp)',
-  omtaligt: 'Ömtåligt (konst, glas)',
-  balkong: 'Inglasad balkong',
-  fonster: 'Spröjsade eller stora fönster',
-  inget: 'Inget av det här',
+export const BIYTA_LABEL: Record<BiytaTyp, string> = { forrad: 'Förråd', vind: 'Vind', garage: 'Garage', uterum: 'Uterum', annat: 'Annat' }
+export const BIYTA_KVM = ['5', '10', '20', '30', '50+']
+export const FULLT = ['25 %', '50 %', '75 %', 'Fullt']
+export const VIKT = ['0–80 kg', '80–150 kg', '150–200 kg', '200+ kg']
+export const VARDE = ['0–30 000 kr', '30 000–50 000 kr', '50 000–100 000 kr', '100 000+ kr']
+export const STAD_MER = ['Källare', 'Balkong', 'Förråd', 'Garage']
+export const FONSTER_LABEL: Record<FonsterTyp, [string, string]> = {
+  fyrsidiga: ['Fyrsidiga', 'fyra sidor att putsa'],
+  sprojsade: ['Spröjsade', 'många små rutor'],
+  panorama: ['Panorama', 'stora glaspartier'],
+  svaratkomliga: ['Svåråtkomliga', 'högt upp eller bakom något'],
 }
-export const FLER_LABEL: Record<FlerKey, string> = {
-  stadning: 'Flyttstädning',
-  packhjalp: 'Packhjälp',
-  lador: 'Lådor',
-  forvaring: 'Förvaring',
-  bortforsling: 'Bortforsling',
-  vardesaker: 'Värdesaker',
-  montering: 'Montering',
-  utemobler: 'Utemöbler',
+export const STARTTIDER = ['08:00–09:00', '13:00–14:00', 'Vet ej']
+export const TILLVAL_LABEL: Record<Tillval, [string, string]> = {
+  packhjalp: ['Packhjälp', 'vi packar dagen innan'],
+  lador: ['Flyttlådor', 'låna av oss, levereras före flytten'],
+  bortforsling: ['Bortforsling', 'till återvinning eller second hand'],
+  forvaring: ['Förvaring', 'tills det nya är klart'],
 }
+export const RINGTIDER = ['Mån 13–15', 'Mån 15–17', 'Tis 08–10', 'Tis 10–12']

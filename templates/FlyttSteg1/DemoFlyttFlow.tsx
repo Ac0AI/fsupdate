@@ -7,26 +7,33 @@ import { useDemoUser } from '@/common/data/useDemoUser'
 import { setFlyttSteg1 } from '@/common/utils/demoNavigation'
 import MovePage from '@/templates/MovePage'
 import { answeredCount, useDemoState } from './state'
-import { BohagScreen, FlerScreen, FranScreen, KlartScreen, RequestedCard, SaljareScreen, SistaScreen, SmsScreen, SparatScreen, TillScreen, type Home, type ScreenProps } from './screens'
+import { AdresserScreen, BaraInScreen, BaraUtScreen, BohagScreen, KlartScreen, RequestedCard, SaljareScreen, SistaScreen, SmsScreen, SparatScreen, StadScreen, type Home, type ScreenProps } from './screens'
 
-const STEPS = ['Flyttsidan', 'Klart', 'Bohaget', 'Där du bor', 'Dit du flyttar', 'Sista frågan', 'Fler frågor', 'Allt sparat', 'Sms:et', 'Säljaren']
+const STEPS = ['Flyttsidan', 'Klart', 'Adresser', 'Bära ut', 'Bära in', 'Vad ska med', 'Städning', 'Sista detaljerna', 'Allt sparat', 'Sms:et', 'Säljaren']
+const LAST = STEPS.length - 1
 
-const shortDay = (iso: string) => {
+const parse = (iso: string, plusDays = 0) => {
   const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return 'fre 30 okt'
+  if (Number.isNaN(d.getTime())) return null
+  d.setDate(d.getDate() + plusDays)
+  return d
+}
+const shortDay = (iso: string, plusDays = 0) => {
+  const d = parse(iso, plusDays)
+  if (!d) return plusDays ? 'lör 31 okt' : 'fre 30 okt'
   return new Intl.DateTimeFormat('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' }).format(d).replace('.', '')
 }
 const longDay = (iso: string) => {
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return 'fredag 30 oktober'
+  const d = parse(iso)
+  if (!d) return 'fredag 30 oktober'
   return new Intl.DateTimeFormat('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
 }
 
 /**
  * Prototyp av flyttflödet steg 1, utan pris: dagens flyttsida är ingången,
- * Begär pris skapar en Opportunity, frågorna är frivilliga och sparas direkt.
- * Ritad i Paper på sidan "Flytt · steg 1 utan pris". Ren frontend, inget sparas
- * utanför webbläsarens session.
+ * Begär pris skapar en Opportunity, sedan sex frivilliga steg med samma
+ * frågor som Nils prototyp och Harrys guide. Allt sparas direkt, säljaren
+ * ringer med priset. Ren frontend, inget lämnar webbläsarens session.
  */
 const DemoFlyttFlow = () => {
   const router = useRouter()
@@ -35,7 +42,7 @@ const DemoFlyttFlow = () => {
   const demoUser = useDemoUser()
   const { answers, update, reset, loaded } = useDemoState()
 
-  const step = Math.min(9, Math.max(0, Number(search.get('s') ?? 0) || 0))
+  const step = Math.min(LAST, Math.max(0, Number(search.get('s') ?? 0) || 0))
 
   useEffect(() => {
     setFlyttSteg1(true)
@@ -61,6 +68,7 @@ const DemoFlyttFlow = () => {
       fromKvm: move.fromResidenceSize || 62,
       moveDay: shortDay(move.movingDate),
       moveDayLong: longDay(move.movingDate),
+      cleanDay: shortDay(move.movingDate, 1),
       firstName: demoUser.profile?.firstName || 'Anna',
     }
   }, [demoUser])
@@ -68,7 +76,7 @@ const DemoFlyttFlow = () => {
   const props: ScreenProps = { a: answers, update, go, home }
 
   // Som komponent, inte funktionsanrop: skärmarna har egna hooks och får inte dela DemoFlyttFlows hook-ordning.
-  const Screen = [null, KlartScreen, BohagScreen, FranScreen, TillScreen, SistaScreen, FlerScreen, SparatScreen, SmsScreen, SaljareScreen][step]
+  const Screen = [null, KlartScreen, AdresserScreen, BaraUtScreen, BaraInScreen, BohagScreen, StadScreen, SistaScreen, SparatScreen, SmsScreen, SaljareScreen][step]
 
   const demoBar = (
     <nav aria-label="Demo" className="flex w-full items-center gap-1 overflow-x-auto bg-[var(--color-secondary-dark)] px-3 py-2 text-white">
@@ -86,13 +94,13 @@ const DemoFlyttFlow = () => {
         }}
         className="h-8 shrink-0 rounded-full px-3 text-[12px] text-white/70 hover:bg-white/10"
       >
-        Börja om{loaded && answeredCount(answers) > 0 ? ` (${answeredCount(answers)} svar)` : ''}
+        Börja om{loaded && answeredCount(answers) > 0 ? ` (${answeredCount(answers)} steg)` : ''}
       </button>
     </nav>
   )
 
   return (
-    <div className="flex flex-1 flex-col bg-[#E8EDF0]">
+    <div className="flex min-h-[calc(100dvh-52px)] flex-1 flex-col bg-[#E8EDF0]">
       {demoBar}
       {step === 0 ? (
         <>
@@ -104,7 +112,7 @@ const DemoFlyttFlow = () => {
           <MovePage completedBookings={[]} />
         </>
       ) : (
-        <div className="w-full bg-white pb-6 md:mx-auto md:my-6 md:max-w-[430px] md:overflow-clip md:rounded-[28px] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{Screen && <Screen key={step} {...props} />}</div>
+        <div className="flex w-full flex-1 flex-col bg-white md:mx-auto md:my-6 md:max-w-[430px] md:flex-none md:overflow-clip md:rounded-[28px] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{Screen && <Screen key={step} {...props} />}</div>
       )}
     </div>
   )

@@ -211,9 +211,9 @@ export default function DemoStartPage() {
             <Steps
               steps={[
                 { do: `Öppna ${BASE.replace('https://', '')}/demo/flytt.`, see: 'Checklistan precis som i dag. Tryck Få min offert på flytt och städ i välkomstkortet.' },
-                { do: 'Klart-skärmen.', see: 'Tack, vi ringer dig. Sedan erbjudandet: Vill du ha pris snabbare? Svara nu, eller Jag väntar på samtalet.' },
-                { do: 'Fyra frågor.', see: 'Bohaget, var du bor, dit du flyttar, sista frågan. Krysset uppe till höger sparar och går tillbaka till flyttsidan, som då minns läget.' },
-                { do: 'Fler frågor och kvittot.', see: 'Ja eller Nej på det säljaren annars frågar, ringtid, Klar. Kvittot visar dina svar. Steg 8 är sms:et, steg 9 är säljarens vy i Harry.' },
+                { do: 'Klart-skärmen.', see: 'Tack, vi ringer dig. Sedan erbjudandet: Vill du ha pris snabbare? Berätta om flytten, eller Jag väntar på samtalet.' },
+                { do: 'Sex steg, samma frågor som Nils prototyp och Harrys guide.', see: 'Adresser och stopp, bära ut, bära in, vad ska med (bi-ytor, tungt och ömtåligt), städning (fönstertyper med antal, balkong, känsliga ytor), sista detaljerna. Allt frivilligt, Fortsätt är aldrig låst. Krysset sparar och går tillbaka till flyttsidan, som minns läget.' },
+                { do: 'Skicka svaren och kvittot.', see: 'Kvittot listar dina svar som de hamnar i Opportunityn. Steg 9 är sms:et, steg 10 är säljarens vy i Harry.' },
               ]}
             />
             <p className="text-[13px] leading-[19px] text-[#767678] mt-3">Raden längst ned hoppar mellan skärmarna och nollställer. Inget pris visas någonstans, det är poängen med steg 1.</p>

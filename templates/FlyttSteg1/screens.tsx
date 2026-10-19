@@ -1,29 +1,38 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, ChevronRight, Zap } from 'lucide-react'
+import { createPortal } from 'react-dom'
+import { Boxes, Check, ChevronRight, Package, Trash2, Warehouse, Zap } from 'lucide-react'
 import clsx from 'clsx'
 import {
   AVSTAND_LABEL,
+  BIYTA_KVM,
   BIYTA_LABEL,
   BOHAG_LABEL,
-  EXTRA_LABEL,
-  FLER_LABEL,
-  HISS_LABEL,
+  FLOORS,
+  FONSTER_LABEL,
+  FULLT,
+  RINGTIDER,
+  STAD_MER,
+  STARTTIDER,
+  TILLVAL_LABEL,
+  TOTAL,
+  VARDE,
+  VIKT,
   answeredCount,
   answeredQuestions,
-  flerCount,
+  newId,
+  type AdressSvar,
   type Answers,
   type Avstand,
-  type Biyta,
+  type BiytaTyp,
   type Bohag,
-  type Extra,
-  type FlerKey,
-  type Hiss,
+  type FonsterTyp,
+  type Tillval,
 } from './state'
-import { Chip, CloseButton, ContactBox, Eyebrow, FieldLabel, GreenHead, JaNejRow, PrimaryButton, SavedStatus, Sheet, TextLink, Timeline, Toggle } from './ui'
+import { AddCard, CheckTile, Chip, ChipRow, ChoiceRow, ContactBox, Eyebrow, Field, Frame, GreenHead, InfoNote, ItemCard, MoreLink, PrimaryButton, Section, Stepper, SubCard, SwitchRow, TextField, TextInput, TextLink, Tile, Timeline } from './ui'
 
-export type Home = { from: string; to: string; fromKvm: number; moveDay: string; moveDayLong: string; firstName: string }
+export type Home = { from: string; to: string; fromKvm: number; moveDay: string; moveDayLong: string; cleanDay: string; firstName: string }
 
 export type ScreenProps = {
   a: Answers
@@ -32,9 +41,16 @@ export type ScreenProps = {
   home: Home
 }
 
+/* Stegen i demoraden: 0 flyttsidan, 1 klart, 2–7 frågorna, 8 allt sparat, 9 sms, 10 säljaren */
+const FIRST = 2
+const DONE = 8
+const SALJARE = 10
+const ORD = ['en', 'två', 'tre', 'fyra', 'fem', 'sex']
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
 const nextUnanswered = (a: Answers) => {
-  const idx = answeredQuestions(a).findIndex((x) => !x)
-  return idx === -1 ? 6 : idx + 2
+  const i = answeredQuestions(a).findIndex((x) => !x)
+  return i === -1 ? DONE : FIRST + i
 }
 
 /* 1 · Klart, och belöningen */
@@ -44,9 +60,9 @@ export const KlartScreen = ({ a, update, go, home }: ScreenProps) => (
     <div className="px-4 pt-4">
       <div className="rounded-2xl bg-[var(--color-secondary-extra-extra-light)] p-5">
         <h2 className="text-[18px] font-bold leading-6 text-[var(--color-secondary-main)]">Vill du ha pris snabbare?</h2>
-        <p className="mt-2 text-[15px] leading-[22px] text-[var(--color-secondary-main)]">Svara på några frågor om flytten, det tar två minuter. Då ringer vi med priset klart i stället för att fråga.</p>
+        <p className="mt-2 text-[15px] leading-[22px] text-[var(--color-secondary-main)]">Berätta om flytten i sex korta steg, det tar några minuter. Då ringer vi med priset klart i stället för att fråga.</p>
         <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
-          Svara nu · två minuter
+          Berätta om flytten
         </PrimaryButton>
         <div className="mt-3 flex justify-center">
           <TextLink
@@ -75,16 +91,18 @@ export const KlartScreen = ({ a, update, go, home }: ScreenProps) => (
   </div>
 )
 
+/* Arket när hon trycker på krysset. Portal, annars fastnar fixed i demons animerade ram. */
 const ExitSheet = ({ saved, onContinue, onLater, onCall }: { saved: number; onContinue: () => void; onLater: () => void; onCall: (t: string) => void }) => {
   const [times, setTimes] = useState(false)
-  return (
-    <div className="absolute inset-0 z-20 flex flex-col justify-end bg-[var(--color-secondary-main)]/40" role="dialog" aria-modal>
+  if (typeof document === 'undefined') return null
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex flex-col justify-end bg-[var(--color-secondary-main)]/40" role="dialog" aria-modal>
       <button type="button" aria-label="Fortsätt svara" className="flex-1" onClick={onContinue} />
-      <div className="rounded-t-[28px] bg-white px-6 pb-8 pt-3">
+      <div className="mx-auto w-full max-w-[430px] rounded-t-[28px] bg-white px-6 pb-8 pt-3">
         <span className="mx-auto block h-1.5 w-10 rounded-full bg-[var(--color-inactive-grey-light)]" />
         <p className="mt-5 flex items-center gap-2 text-[14px] text-[var(--color-primary-dark)]">
           <Check size={16} strokeWidth={3} />
-          {saved === 0 ? 'Inga svar än' : `${['Ett', 'Två', 'Tre', 'Fyra'][saved - 1]} av fyra svar sparade`}
+          {saved === 0 ? 'Inga svar än' : `${cap(ORD[saved - 1])} av sex steg sparade`}
         </p>
         <h2 className="mt-2 text-[22px] font-bold text-[var(--color-secondary-main)]">Vill du fortsätta senare?</h2>
         <p className="mt-1 text-[15px] text-[var(--color-inactive-dark)]">Dina svar är sparade. Säljaren ser dem när vi ringer.</p>
@@ -108,29 +126,22 @@ const ExitSheet = ({ saved, onContinue, onLater, onCall }: { saved: number; onCo
         )}
         <p className="mt-4 text-center text-[12px] text-[var(--color-inactive-dark)]">Vi påminner dig en gång, i morgon förmiddag.</p>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
-const QuestionFrame = ({ a, update, go, step, title, sub, savedChip, children, cta, foot, ctaTone = 'navy', onNext, nextDisabled }: ScreenProps & { step: number; title: string; sub?: string; savedChip?: string; children: React.ReactNode; cta: string; foot: string; ctaTone?: 'navy' | 'orange'; onNext: () => void; nextDisabled?: boolean }) => {
+const Q = ({ p, idx, title, sub, children, cta, ctaTone, foot, onNext }: { p: ScreenProps; idx: number; title: string; sub?: string; children: React.ReactNode; cta?: string; ctaTone?: 'navy' | 'orange'; foot?: string; onNext?: () => void }) => {
+  const { a, update, go } = p
   const [exit, setExit] = useState(false)
-  const saved = answeredCount(a)
   return (
-    <div className="relative bg-white">
-      <div className="flex items-center justify-between gap-3 border-b border-[var(--color-inactive-main)] px-5 py-3">
-        <SavedStatus>{savedChip}</SavedStatus>
-        <CloseButton onClick={() => setExit(true)} />
-      </div>
-      <Sheet step={step} total={4} title={title} sub={sub}>
+    <>
+      <Frame step={idx - FIRST} title={title} sub={sub} cta={cta} ctaTone={ctaTone} foot={foot} onNext={onNext ?? (() => go(idx + 1))} onBack={() => go(idx - 1)} onClose={() => setExit(true)}>
         {children}
-        <PrimaryButton tone={ctaTone} className="mt-6" onClick={onNext} disabled={nextDisabled}>
-          {cta}
-        </PrimaryButton>
-        <p className="mt-3 text-center text-[12px] text-[var(--color-inactive-dark)]">{foot}</p>
-      </Sheet>
+      </Frame>
       {exit && (
         <ExitSheet
-          saved={saved}
+          saved={answeredCount(a)}
           onContinue={() => setExit(false)}
           onLater={() => {
             update({ requested: true })
@@ -142,22 +153,129 @@ const QuestionFrame = ({ a, update, go, step, title, sub, savedChip, children, c
           }}
         />
       )}
-    </div>
+    </>
   )
 }
 
-const Tile = ({ label, hint, selected, onClick, icon }: { label: string; hint: string; selected: boolean; onClick: () => void; icon: React.ReactNode }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    aria-pressed={selected}
-    className={clsx('flex flex-col items-center gap-1 rounded-2xl border-[1.5px] px-2 py-4 text-center transition-colors', selected ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-grey-light)] bg-white')}
-  >
-    <span className="text-[var(--color-secondary-main)]">{icon}</span>
-    <span className="mt-1 text-[15px] font-bold text-[var(--color-secondary-main)]">{label}</span>
-    <span className="text-[12px] text-[var(--color-inactive-dark)]">{hint}</span>
-  </button>
+const JA_NEJ: ['ja' | 'nej', string][] = [
+  ['ja', 'Ja'],
+  ['nej', 'Nej'],
+]
+
+/* 2 · Adresser */
+const AdressRad = ({ eyebrow, street, sub, filled }: { eyebrow: string; street: string; sub: string; filled?: boolean }) => (
+  <div className="flex items-start gap-3">
+    <span className={clsx('mt-1.5 h-4 w-4 shrink-0 rounded-full border-2 border-[var(--color-secondary-main)]', filled && 'bg-[var(--color-secondary-main)]')} />
+    <span className="min-w-0 flex-1">
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <span className="block text-[17px] font-bold leading-6 text-[var(--color-text-main)]">{street}</span>
+      <span className="block text-[13px] text-[var(--color-inactive-dark)]">{sub}</span>
+    </span>
+    <TextLink>Ändra</TextLink>
+  </div>
 )
+
+export const AdresserScreen = (p: ScreenProps) => {
+  const { a, update, home } = p
+  const [stopp, setStopp] = useState(!!a.stopp)
+  return (
+    <Q p={p} idx={2} title="Vart ska flytten gå?" sub="Adresserna har vi från din flytt.">
+      <div className="mt-5 rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-inactive-main)] p-4">
+        <AdressRad eyebrow="Från" street={home.from} sub={`${home.fromKvm} m² enligt dina uppgifter`} />
+        <div className="ml-[7px] border-l-2 border-dotted border-[var(--color-inactive-grey-light)] py-2 pl-5">
+          {stopp ? (
+            <div>
+              <TextInput value={a.stopp} onChange={(v) => update({ stopp: v })} placeholder="Adress för stoppet, t.ex. förrådet" label="Stopp på vägen" />
+              <div className="mt-1">
+                <TextLink
+                  onClick={() => {
+                    setStopp(false)
+                    update({ stopp: '' })
+                  }}
+                >
+                  Ta bort stoppet
+                </TextLink>
+              </div>
+            </div>
+          ) : (
+            <MoreLink onClick={() => setStopp(true)}>Lägg till stopp på vägen</MoreLink>
+          )}
+        </div>
+        <AdressRad eyebrow="Till" street={home.to} sub={`Flytt ${home.moveDay}`} filled />
+      </div>
+      <Section title="Kan du flytta in samma dag som utflytt?" sub="Om ditt nya boende inte är klart än kan vi förvara sakerna så länge.">
+        <ChoiceRow options={JA_NEJ} value={a.sammaDag} onChange={(v) => update({ sammaDag: v })} />
+        {a.sammaDag === 'nej' && <InfoNote>Vi förvarar sakerna tills du kan flytta in. Säljaren räknar med förvaringen i priset.</InfoNote>}
+      </Section>
+    </Q>
+  )
+}
+
+/* 3 och 4 · Bära ut, bära in */
+const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => {
+  const { a, update, home } = p
+  const s = a[side]
+  const set = (patch: Partial<AdressSvar>) => update((prev) => ({ [side]: { ...prev[side], ...patch } }))
+  const [note, setNote] = useState(!!s.notering)
+  const ut = side === 'fran'
+  return (
+    <Q p={p} idx={ut ? 3 : 4} title={ut ? `Hur ser det ut på ${home.from}?` : `Och på ${home.to}?`} sub={ut ? 'Hissen och bärsträckan avgör hur många flyttare som behövs.' : 'Samma frågor om adressen du flyttar till.'}>
+      <Section title={ut ? 'Vilken våning flyttar du från?' : 'Vilken våning flyttar du till?'} className="mt-5">
+        <div className="flex gap-1.5">
+          {FLOORS.map((f) => (
+            <button
+              key={f}
+              type="button"
+              aria-pressed={s.vaning === f}
+              onClick={() => set({ vaning: f })}
+              className={clsx('flex h-11 min-w-0 flex-1 items-center justify-center rounded-full border-[1.5px] text-[15px] transition-colors', s.vaning === f ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] font-bold text-white' : 'border-[var(--color-inactive-main)] bg-white text-[var(--color-text-main)]')}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+      </Section>
+      <Section title="Finns det hiss?">
+        <ChoiceRow
+          options={[
+            ['ja', 'Ja'],
+            ['nej', 'Nej'],
+            ['vet-ej', 'Vet ej'],
+          ]}
+          value={s.hiss}
+          onChange={(v) => set({ hiss: v, hissStorlek: v === 'ja' ? s.hissStorlek : undefined })}
+        />
+        {s.hiss === 'ja' && (
+          <SubCard className="mt-3">
+            <Field label="Hur stor är hissen?">
+              <ChoiceRow
+                options={[
+                  ['liten', 'Liten'],
+                  ['stor', 'Stor, soffan får plats'],
+                ]}
+                value={s.hissStorlek}
+                onChange={(v) => set({ hissStorlek: v })}
+              />
+            </Field>
+          </SubCard>
+        )}
+      </Section>
+      <Section title={ut ? 'Hur långt är det att bära till bilen?' : 'Hur långt är det att bära från bilen?'} sub={ut ? 'Räkna från dörren till där flyttbilen kan stå. En uppskattning räcker.' : 'Räkna från där flyttbilen kan stå till dörren. En uppskattning räcker.'}>
+        <ChipRow>
+          {(Object.keys(AVSTAND_LABEL) as Avstand[]).map((v) => (
+            <Chip key={v} selected={s.avstand === v} onClick={() => set({ avstand: v })}>
+              {AVSTAND_LABEL[v]}
+            </Chip>
+          ))}
+        </ChipRow>
+      </Section>
+      <div className="mt-6">{note ? <TextField value={s.notering} onChange={(v) => set({ notering: v })} placeholder="T.ex. tre trappor utan hiss, eller att bilen får stå 50 m bort" label="Hinder på vägen" /> : <MoreLink onClick={() => setNote(true)}>Trappor, bom eller trång gata? Skriv en rad</MoreLink>}</div>
+    </Q>
+  )
+}
+
+export const BaraUtScreen = (p: ScreenProps) => <BaraScreen side="fran" {...p} />
+export const BaraInScreen = (p: ScreenProps) => <BaraScreen side="till" {...p} />
 
 const BoxIcon = ({ count }: { count: 1 | 2 | 3 }) => (
   <svg width="36" height="28" viewBox="0 0 36 28" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
@@ -168,13 +286,14 @@ const BoxIcon = ({ count }: { count: 1 | 2 | 3 }) => (
   </svg>
 )
 
-/* 2 · Hur mycket ska med */
+/* 5 · Vad ska med */
 export const BohagScreen = (p: ScreenProps) => {
-  const { a, update, go, home } = p
-  const set = (patch: Partial<Answers>) => update(patch)
+  const { a, update, home } = p
+  const setBiyta = (id: string, patch: Partial<Answers['biytor'][number]>) => update((prev) => ({ biytor: prev.biytor.map((b) => (b.id === id ? { ...b, ...patch } : b)) }))
+  const setSak = (id: string, patch: Partial<Answers['saker'][number]>) => update((prev) => ({ saker: prev.saker.map((s) => (s.id === id ? { ...s, ...patch } : s)) }))
   return (
-    <QuestionFrame {...p} step={1} title="Hur mycket ska med?" sub={`Jämfört med andra hem på ${home.fromKvm} kvadrat.`} cta="Fortsätt" foot="Osäker? Välj Normalt. Säljaren stämmer av i samtalet." onNext={() => go(3)} nextDisabled={!a.bohag}>
-      <div className="mt-5 grid grid-cols-3 gap-3">
+    <Q p={p} idx={5} title="Vad ska med?" sub={`Jämfört med andra hem på ${home.fromKvm} m².`}>
+      <div className="mt-5 grid grid-cols-3 gap-2">
         {(
           [
             ['lite', 'Lite', 'Glest möblerat', 1],
@@ -182,292 +301,359 @@ export const BohagScreen = (p: ScreenProps) => {
             ['mycket', 'Mycket', 'Fulla skåp', 3],
           ] as [Bohag, string, string, 1 | 2 | 3][]
         ).map(([v, label, hint, n]) => (
-          <Tile key={v} label={label} hint={hint} selected={a.bohag === v} onClick={() => set({ bohag: v })} icon={<BoxIcon count={n} />} />
+          <Tile key={v} label={label} hint={hint} selected={a.bohag === v} onClick={() => update({ bohag: v })} icon={<BoxIcon count={n} />} />
         ))}
       </div>
-      <div className="mt-6">
-        <FieldLabel>Förråd, vind eller garage också?</FieldLabel>
-        <div className="flex flex-wrap gap-2">
-          {(['forrad', 'vind', 'garage', 'uterum', 'nej'] as Biyta[]).map((v) => (
-            <Chip key={v} selected={a.biyta === v} onClick={() => set({ biyta: v })}>
-              {v === 'nej' ? 'Nej' : BIYTA_LABEL[v]}
-            </Chip>
+      <Section title="Har du bohag i förråd eller annan bi-yta?">
+        <div className="flex flex-col gap-3">
+          {a.biytor.map((b, i) => (
+            <ItemCard key={b.id} title={b.typ ? BIYTA_LABEL[b.typ] : `Bi-yta ${i + 1}`} onRemove={() => update((prev) => ({ biytor: prev.biytor.filter((x) => x.id !== b.id) }))}>
+              <Field label="Vilken bi-yta?">
+                <ChipRow>
+                  {(Object.keys(BIYTA_LABEL) as BiytaTyp[]).map((t) => (
+                    <Chip key={t} small selected={b.typ === t} onClick={() => setBiyta(b.id, { typ: t })}>
+                      {BIYTA_LABEL[t]}
+                    </Chip>
+                  ))}
+                </ChipRow>
+              </Field>
+              <Field label="Hur stort är det?">
+                <ChipRow>
+                  {BIYTA_KVM.map((k) => (
+                    <Chip key={k} small selected={b.kvm === k} onClick={() => setBiyta(b.id, { kvm: k })}>
+                      {k} m²
+                    </Chip>
+                  ))}
+                </ChipRow>
+              </Field>
+              <Field label="Hur fullt är det?">
+                <ChipRow>
+                  {FULLT.map((f) => (
+                    <Chip key={f} small selected={b.fullt === f} onClick={() => setBiyta(b.id, { fullt: f })}>
+                      {f}
+                    </Chip>
+                  ))}
+                </ChipRow>
+              </Field>
+            </ItemCard>
           ))}
+          <AddCard label={a.biytor.length ? 'Lägg till en bi-yta till' : 'Lägg till förråd eller annan bi-yta'} hint="Garage, uterum, källarförråd" onClick={() => update((prev) => ({ biytor: [...prev.biytor, { id: newId() }] }))} />
         </div>
-      </div>
-      {a.biyta && a.biyta !== 'nej' && (
-        <div className="mt-4 rounded-2xl bg-[var(--color-secondary-extra-extra-light)] p-4">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-[15px] text-[var(--color-secondary-main)]">{BIYTA_LABEL[a.biyta]}et är ungefär</span>
-            <label className="flex h-11 w-24 items-center rounded-xl border-[1.5px] border-[var(--color-secondary-main)] bg-white px-3">
-              <input type="number" inputMode="numeric" value={a.biytaKvm} onChange={(e) => set({ biytaKvm: Number(e.target.value) })} className="w-10 bg-transparent text-[16px] font-bold text-[var(--color-secondary-main)] outline-none" aria-label="Kvadratmeter" />
-              <span className="text-[13px] text-[var(--color-inactive-dark)]">kvm</span>
-            </label>
-          </div>
-          <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="text-[15px] text-[var(--color-secondary-main)]">Ska det städas också?</span>
-            <div className="flex gap-2">
-              {(['nej', 'ja'] as const).map((v) => (
-                <Chip key={v} small selected={a.biytaStad === v} onClick={() => set({ biytaStad: v })}>
-                  {v === 'ja' ? 'Ja' : 'Nej'}
-                </Chip>
+      </Section>
+      <Section title="Har du något extra tungt eller ömtåligt?">
+        <div className="flex flex-col gap-3">
+          {a.saker.map((s, i) => (
+            <ItemCard key={s.id} title={s.vad || `Sak ${i + 1}`} onRemove={() => update((prev) => ({ saker: prev.saker.filter((x) => x.id !== s.id) }))}>
+              <Field label="Vad är det?">
+                <TextInput value={s.vad} onChange={(v) => setSak(s.id, { vad: v })} placeholder="T.ex. flygel eller marmorbord" label="Vad är det?" />
+              </Field>
+              <Field label="Ungefärlig vikt">
+                <ChipRow>
+                  {VIKT.map((v) => (
+                    <Chip key={v} small selected={s.vikt === v} onClick={() => setSak(s.id, { vikt: v })}>
+                      {v}
+                    </Chip>
+                  ))}
+                </ChipRow>
+              </Field>
+              <Field label="Ungefärligt värde" sub="Avgör om det behöver extra försäkring under flytten.">
+                <ChipRow>
+                  {VARDE.map((v) => (
+                    <Chip key={v} small selected={s.varde === v} onClick={() => setSak(s.id, { varde: v })}>
+                      {v}
+                    </Chip>
+                  ))}
+                </ChipRow>
+              </Field>
+            </ItemCard>
+          ))}
+          <AddCard label={a.saker.length ? 'Lägg till en sak till' : 'Lägg till tunga eller ömtåliga saker'} hint="Piano, kassaskåp, konst" onClick={() => update((prev) => ({ saker: [...prev.saker, { id: newId(), vad: '' }] }))} />
+        </div>
+      </Section>
+      <Section title="Utemöbler från balkong, altan eller trädgård som ska med?">
+        <ChoiceRow options={JA_NEJ} value={a.utemobler} onChange={(v) => update({ utemobler: v })} />
+      </Section>
+    </Q>
+  )
+}
+
+/* 6 · Städning */
+const FONSTER_FRAGA: Record<FonsterTyp, string> = {
+  fyrsidiga: 'fyrsidiga fönster',
+  sprojsade: 'spröjsade fönster',
+  panorama: 'panoramafönster',
+  svaratkomliga: 'svåråtkomliga fönster',
+}
+
+export const StadScreen = (p: ScreenProps) => {
+  const { a, update, home } = p
+  const valda = Object.keys(a.fonster) as FonsterTyp[]
+  const toggleFonster = (t: FonsterTyp) =>
+    update((prev) => {
+      const fonster = { ...prev.fonster }
+      if (fonster[t]) delete fonster[t]
+      else fonster[t] = 1
+      return { fonster, fonsterInga: false }
+    })
+  const toggleStadMer = (m: string) => update((prev) => ({ stadMer: prev.stadMer.includes(m) ? prev.stadMer.filter((x) => x !== m) : [...prev.stadMer, m] }))
+  return (
+    <Q p={p} idx={6} title="Vad ska städas?" sub={`${home.from} · ${home.fromKvm} m²`}>
+      <Section title="Vill du ha flyttstädning när det är tomt?" sub="Städgaranti: vi städar om utan kostnad om besiktningen inte godkänns." className="mt-5">
+        <ChoiceRow options={JA_NEJ} value={a.stad} onChange={(v) => update({ stad: v })} />
+        {a.stad === 'nej' && <InfoNote>Okej, bara flytthjälp. Du kan lägga till städning när säljaren ringer, eller när som helst före flytten.</InfoNote>}
+      </Section>
+      {a.stad === 'ja' && (
+        <>
+          <Section title="Hur mycket ska städas?">
+            <div className="grid grid-cols-2 gap-2">
+              <Tile label="Bo-ytan" hint={`${home.fromKvm} m²`} selected={a.stadYta === 'boyta'} onClick={() => update({ stadYta: 'boyta', stadMer: [], stadMerKvm: undefined })} />
+              <Tile label="Mer än bo-ytan" hint="Källare eller balkong" selected={a.stadYta === 'mer'} onClick={() => update({ stadYta: 'mer' })} />
+            </div>
+            {a.stadYta === 'mer' && (
+              <SubCard className="mt-3">
+                <Field label="Vad mer ska städas?">
+                  <ChipRow>
+                    {STAD_MER.map((m) => (
+                      <Chip key={m} small selected={a.stadMer.includes(m)} onClick={() => toggleStadMer(m)}>
+                        {m}
+                      </Chip>
+                    ))}
+                  </ChipRow>
+                </Field>
+                <Field label="Ungefär hur många m² extra?">
+                  <ChipRow>
+                    {BIYTA_KVM.map((k) => (
+                      <Chip key={k} small selected={a.stadMerKvm === k} onClick={() => update({ stadMerKvm: k })}>
+                        {k} m²
+                      </Chip>
+                    ))}
+                  </ChipRow>
+                </Field>
+              </SubCard>
+            )}
+          </Section>
+          <Section title="Finns det inglasad balkong?">
+            <ChoiceRow options={JA_NEJ} value={a.balkong} onChange={(v) => update({ balkong: v })} />
+            {a.balkong === 'ja' && (
+              <SubCard className="mt-3">
+                <Field label="Hur stor är den?">
+                  <ChoiceRow
+                    options={[
+                      ['liten', 'Liten'],
+                      ['mellan', 'Mellan'],
+                      ['stor', 'Stor'],
+                    ]}
+                    value={a.balkongStorlek}
+                    onChange={(v) => update({ balkongStorlek: v })}
+                  />
+                </Field>
+                <Field label="Hur mycket glas?">
+                  <ChoiceRow
+                    options={[
+                      ['halv', 'Halvinglasad'],
+                      ['hel', 'Helinglasad'],
+                    ]}
+                    value={a.balkongGlas}
+                    onChange={(v) => update({ balkongGlas: v })}
+                  />
+                </Field>
+              </SubCard>
+            )}
+          </Section>
+          <Section title="Ska någon av dessa fönstertyper städas?" sub="Välj alla som stämmer.">
+            <div className="grid grid-cols-2 gap-2">
+              {(Object.keys(FONSTER_LABEL) as FonsterTyp[]).map((t) => (
+                <CheckTile key={t} label={FONSTER_LABEL[t][0]} hint={FONSTER_LABEL[t][1]} selected={!!a.fonster[t]} onClick={() => toggleFonster(t)} />
               ))}
             </div>
-          </div>
-        </div>
+            <div className="mt-2">
+              <CheckTile label="Inga av dessa" selected={a.fonsterInga} onClick={() => update({ fonsterInga: !a.fonsterInga, fonster: {} })} className="min-h-[52px] w-full" />
+            </div>
+            {valda.length > 0 && (
+              <SubCard className="mt-3">
+                {valda.map((t) => (
+                  <div key={t} className="flex items-center justify-between gap-3 py-1.5">
+                    <span className="text-[14px] text-[var(--color-text-main)]">Hur många {FONSTER_FRAGA[t]}?</span>
+                    <Stepper value={a.fonster[t] ?? 1} onChange={(n) => update((prev) => ({ fonster: { ...prev.fonster, [t]: n } }))} />
+                  </div>
+                ))}
+              </SubCard>
+            )}
+          </Section>
+          <Section title="Finns det känsliga ytor?" sub="T.ex. natursten, oljade golv eller högglans.">
+            <ChoiceRow options={JA_NEJ} value={a.kansliga} onChange={(v) => update({ kansliga: v })} />
+            {a.kansliga === 'ja' && (
+              <div className="mt-3">
+                <TextField value={a.kansligaText} onChange={(v) => update({ kansligaText: v })} placeholder="Vilka ytor och var? T.ex. marmorgolv i badrummet" label="Känsliga ytor" />
+              </div>
+            )}
+          </Section>
+        </>
       )}
-    </QuestionFrame>
+    </Q>
   )
 }
 
-const FLOORS = ['BV', '1', '2', '3', '4', '5', '6+']
-
-/* 3 · Där hon bor i dag */
-export const FranScreen = (p: ScreenProps) => {
-  const { a, update, go, home } = p
-  const floor = Number(a.vaning?.replace('+', '') ?? NaN)
-  const askHiss = !Number.isNaN(floor) && floor >= 3
-  const ok = !!a.vaning && (!askHiss || !!a.hiss) && !!a.avstandFran
-  return (
-    <QuestionFrame {...p} step={2} title={`Hur ser det ut på ${home.from}?`} savedChip={a.biyta && a.biyta !== 'nej' ? `Sparat. ${BIYTA_LABEL[a.biyta]}et är med i underlaget.` : a.bohag ? 'Sparat. Bohaget är med i underlaget.' : undefined} cta="Fortsätt" foot="Hissen och bärsträckan avgör hur många som behövs." onNext={() => go(4)} nextDisabled={!ok}>
-      <div className="mt-5">
-        <FieldLabel>Vilken våning bor du på?</FieldLabel>
-        <div className="flex gap-1.5">
-          {FLOORS.map((f) => (
-            <button key={f} type="button" aria-pressed={a.vaning === f} onClick={() => update({ vaning: f, hiss: Number(f.replace('+', '')) >= 3 ? a.hiss : undefined })} className={clsx('flex h-11 min-w-0 flex-1 items-center justify-center rounded-full text-[14px] transition-colors', a.vaning === f ? 'bg-[var(--color-secondary-main)] font-bold text-white' : 'border-[1.5px] border-[var(--color-inactive-grey-light)] bg-white text-[var(--color-secondary-main)]')}>
-              {f}
-            </button>
-          ))}
-        </div>
-      </div>
-      {askHiss && (
-        <div className="mt-4 rounded-2xl bg-[var(--color-secondary-extra-extra-light)] p-4">
-          <FieldLabel>Finns det hiss? Antalet står på skylten i hissen.</FieldLabel>
-          <div className="flex flex-wrap gap-2">
-            {(
-              [
-                ['stor', 'Stor, minst 4 personer'],
-                ['liten', 'Liten, 2–3 personer'],
-                ['ingen', 'Ingen hiss'],
-              ] as [Hiss, string][]
-            ).map(([v, label]) => (
-              <Chip key={v} selected={a.hiss === v} onClick={() => update({ hiss: v })}>
-                {label}
-              </Chip>
-            ))}
-          </div>
-        </div>
-      )}
-      <div className="mt-5">
-        <FieldLabel sub="Från porten till där en lastbil kan stanna. En gissning räcker.">Hur nära kan flyttbilen stå?</FieldLabel>
-        <div className="flex flex-wrap gap-2">
-          {(Object.keys(AVSTAND_LABEL) as Avstand[]).map((v) => (
-            <Chip key={v} selected={a.avstandFran === v} onClick={() => update({ avstandFran: v })}>
-              {AVSTAND_LABEL[v]}
-            </Chip>
-          ))}
-        </div>
-      </div>
-    </QuestionFrame>
-  )
+/* 7 · Sista detaljerna */
+const TILLVAL_IKON: Record<Tillval, React.ReactNode> = {
+  packhjalp: <Package size={24} />,
+  lador: <Boxes size={24} />,
+  bortforsling: <Trash2 size={24} />,
+  forvaring: <Warehouse size={24} />,
 }
 
-/* 4 · Dit hon flyttar */
-export const TillScreen = (p: ScreenProps) => {
-  const { a, update, go, home } = p
-  const [note, setNote] = useState(false)
-  return (
-    <QuestionFrame {...p} step={3} title={`Och på ${home.to}?`} sub="Villa enligt onboardingen, så vi hoppar över våning och hiss." savedChip={a.hiss ? `Sparat. ${HISS_LABEL[a.hiss].charAt(0).toUpperCase() + HISS_LABEL[a.hiss].slice(1)} är med i underlaget.` : undefined} cta="Fortsätt" foot="Kortaste frågan. Bara det som ändrar priset." onNext={() => go(5)} nextDisabled={!a.avstandTill}>
-      <div className="mt-5">
-        <FieldLabel sub="Från där lastbilen kan stå till dörren. En gissning räcker.">Hur nära kan flyttbilen stå?</FieldLabel>
-        <div className="flex flex-wrap gap-2">
-          {(Object.keys(AVSTAND_LABEL) as Avstand[]).map((v) => (
-            <Chip key={v} selected={a.avstandTill === v} onClick={() => update({ avstandTill: v })}>
-              {AVSTAND_LABEL[v]}
-            </Chip>
-          ))}
-        </div>
-      </div>
-      <div className="mt-5">
-        {note ? (
-          <textarea value={a.tillNotering} onChange={(e) => update({ tillNotering: e.target.value })} placeholder="Till exempel: brant backe, bommen är låst, smal grusväg" className="min-h-24 w-full rounded-xl border-[1.5px] border-[var(--color-inactive-grey-light)] p-3 text-[15px] text-[var(--color-secondary-main)] outline-none focus:border-[var(--color-secondary-main)]" />
-        ) : (
-          <TextLink onClick={() => setNote(true)}>Trappor, backe eller trång gata? Skriv en rad</TextLink>
-        )}
-      </div>
-    </QuestionFrame>
-  )
-}
-
-/* 5 · Sista frågan */
 export const SistaScreen = (p: ScreenProps) => {
-  const { a, update, go } = p
-  const toggle = (v: Extra) =>
-    update((prev) => {
-      let extra: Extra[]
-      if (v === 'inget') extra = prev.extra.includes('inget') ? [] : ['inget']
-      else extra = prev.extra.includes(v) ? prev.extra.filter((x) => x !== v) : [...prev.extra.filter((x) => x !== 'inget'), v]
-      return { extra, extraTouched: extra.length > 0 }
-    })
-  const has = (v: Extra) => a.extra.includes(v)
+  const { a, update, go, home } = p
+  const [portkod, setPortkod] = useState(!!a.portkod)
+  const [ovrigt, setOvrigt] = useState(!!a.ovrigt)
+  const toggleTillval = (t: Tillval) => update((prev) => ({ tillval: prev.tillval.includes(t) ? prev.tillval.filter((x) => x !== t) : [...prev.tillval, t] }))
+  const stad = a.stad === 'ja'
   return (
-    <QuestionFrame {...p} step={4} title="Finns något av det här?" sub="Välj det som stämmer, eller inget." savedChip={a.avstandTill ? 'Sparat. Bärsträckan är med i underlaget.' : undefined} cta="Spara och gå vidare" ctaTone="orange" foot="Inget bokas. Svaren sparas, säljaren ringer." onNext={() => go(6)} nextDisabled={!a.extraTouched}>
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        {(['tungt', 'omtaligt', 'balkong', 'fonster'] as Extra[]).map((v) => {
-          const [label, hint] = EXTRA_LABEL[v].split(' (')
-          return (
-            <button key={v} type="button" aria-pressed={has(v)} onClick={() => toggle(v)} className={clsx('flex min-h-[88px] flex-col justify-between rounded-2xl border-[1.5px] p-3 text-left transition-colors', has(v) ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-grey-light)] bg-white')}>
-              <span className={clsx('flex h-6 w-6 items-center justify-center rounded-md border-[1.5px]', has(v) ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] text-white' : 'border-[var(--color-inactive-grey-light)]')}>{has(v) && <Check size={14} strokeWidth={3} />}</span>
-              <span>
-                <span className="block text-[15px] font-bold text-[var(--color-secondary-main)]">{label}</span>
-                {hint && <span className="block text-[12px] text-[var(--color-inactive-dark)]">{hint.replace(')', '')}</span>}
-              </span>
-            </button>
-          )
-        })}
-      </div>
-      <div className="pt-3">
-        <button type="button" aria-pressed={has('inget')} onClick={() => toggle('inget')} className={clsx('flex h-12 w-full items-center justify-center rounded-2xl border-[1.5px] text-[15px] font-bold transition-colors', has('inget') ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)] text-[var(--color-secondary-main)]' : 'border-[var(--color-inactive-grey-light)] bg-white text-[var(--color-secondary-main)]')}>
-          Inget av det här
-        </button>
-      </div>
-      {has('balkong') && (
-        <div className="mt-4 rounded-2xl bg-[var(--color-secondary-extra-extra-light)] p-4">
-          <FieldLabel>Hur stor är balkongen?</FieldLabel>
-          <div className="flex gap-2">
-            {(['liten', 'mellan', 'stor'] as const).map((v) => (
-              <Chip key={v} selected={a.balkongStorlek === v} onClick={() => update({ balkongStorlek: v })}>
-                {v === 'liten' ? 'Liten' : v === 'mellan' ? 'Mellan' : 'Stor'}
-              </Chip>
-            ))}
+    <Q
+      p={p}
+      idx={7}
+      title="Sista detaljerna"
+      cta="Skicka svaren"
+      ctaTone="orange"
+      foot="Inget bokas nu. Säljaren ringer med priset."
+      onNext={() => {
+        update({ requested: true, sent: true })
+        go(DONE)
+      }}
+    >
+      <Section title="När passar det att vi kommer?" className="mt-5">
+        <div className="rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-inactive-main)] p-4">
+          <p className="text-[15px] font-bold text-[var(--color-text-main)]">Flytt {home.moveDay}</p>
+          <p className="text-[13px] text-[var(--color-inactive-dark)]">Dagen från din flytt. Vill du ha en annan dag, säg det i samtalet.</p>
+          <div className="mt-3">
+            <ChipRow>
+              {STARTTIDER.map((t) => (
+                <Chip key={t} selected={a.starttid === t} onClick={() => update({ starttid: t })}>
+                  {t}
+                </Chip>
+              ))}
+            </ChipRow>
           </div>
+          {stad && (
+            <p className="mt-3 border-t border-[var(--color-inactive-main)] pt-3 text-[15px] font-bold text-[var(--color-text-main)]">
+              Städning {home.cleanDay}
+              <span className="block text-[13px] font-normal text-[var(--color-inactive-dark)]">Dagen efter flytten, när det är tomt.</span>
+            </p>
+          )}
         </div>
-      )}
-    </QuestionFrame>
+      </Section>
+      <Section title="Kan du vara på plats?">
+        <div className="rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-inactive-main)] px-4">
+          <SwitchRow label="Vid flytten" on={a.paPlatsFlytt} onChange={(v) => update({ paPlatsFlytt: v })} />
+          {stad && <SwitchRow label="Vid städningen" on={a.paPlatsStad} onChange={(v) => update({ paPlatsStad: v })} />}
+        </div>
+      </Section>
+      <Section title="Vill du även ha pris på?" sub="Valfritt. Säljaren tar med det i priset.">
+        <div className="grid grid-cols-2 gap-2">
+          {(Object.keys(TILLVAL_LABEL) as Tillval[]).map((t) => (
+            <CheckTile key={t} label={TILLVAL_LABEL[t][0]} hint={TILLVAL_LABEL[t][1]} selected={a.tillval.includes(t)} onClick={() => toggleTillval(t)} icon={TILLVAL_IKON[t]} />
+          ))}
+        </div>
+      </Section>
+      <Section title="Bra för flyttarna att veta">
+        <div className="flex flex-col gap-3">
+          {portkod ? <TextInput value={a.portkod} onChange={(v) => update({ portkod: v })} placeholder="Portkod, nyckelskåp eller vem som öppnar" label="Portkod och nycklar" /> : <MoreLink onClick={() => setPortkod(true)}>Portkod och nycklar</MoreLink>}
+          {ovrigt ? <TextField value={a.ovrigt} onChange={(v) => update({ ovrigt: v })} placeholder="Något mer vi bör veta?" label="Något mer" /> : <MoreLink onClick={() => setOvrigt(true)}>Något mer vi bör veta?</MoreLink>}
+        </div>
+      </Section>
+      <Section title="När passar det att vi ringer?">
+        <ChipRow>
+          {RINGTIDER.map((t) => (
+            <Chip key={t} selected={a.ringtid === t} onClick={() => update({ ringtid: t })}>
+              {t}
+            </Chip>
+          ))}
+        </ChipRow>
+      </Section>
+    </Q>
   )
 }
 
-const RINGTIDER = ['Mån 13–15', 'Mån 15–17', 'Tis 08–10', 'Tis 10–12']
-
-/* 6 · Fler frågor, frivilligt */
-export const FlerScreen = ({ a, update, go }: ScreenProps) => {
-  const setFler = (k: FlerKey, v: 'ja' | 'nej') => update((prev) => ({ fler: { ...prev.fler, [k]: v } }))
-  const rows: [FlerKey, string][] = [
-    ['stadning', 'Vill du ha flyttstädning när det är tomt?'],
-    ['packhjalp', 'Vill du ha packhjälp?'],
-    ['lador', 'Vill du låna flyttlådor?'],
-    ['forvaring', 'Behöver du förvaring en tid?'],
-    ['bortforsling', 'Något som ska bort, till återvinning?'],
-    ['vardesaker', 'Har du något som är värt över 30 000 kr?'],
-    ['montering', 'Vill du ha hjälp att skruva isär och ihop möbler?'],
-    ['utemobler', 'Utemöbler som ska med?'],
-  ]
-  return (
-    <div className="bg-white pb-8">
-      <GreenHead title="Fyra av fyra sparade." sub="Vill du berätta mer? Allt här är frivilligt. Varje svar sparas direkt, och säljaren slipper fråga." />
-      <div className="px-4 pt-4">
-        <div className="rounded-2xl border border-[var(--color-inactive-main)] px-4 pt-4 pb-1">
-          <h2 className="text-[16px] font-bold text-[var(--color-secondary-main)]">Mer om flytten</h2>
-          <p className="mb-2 text-[13px] text-[var(--color-inactive-dark)]">Svara på det du vet. Resten tar vi i samtalet.</p>
-          {rows.map(([k, label]) => (
-            <JaNejRow key={k} label={label} value={a.fler[k]} onChange={(v) => setFler(k, v)} />
-          ))}
-          <div className="flex items-center justify-between gap-4 border-t border-[var(--color-inactive-main)] py-3">
-            <span className="text-[15px] text-[var(--color-secondary-main)]">Jag är på plats vid flytten</span>
-            <Toggle on={a.paPlats} onChange={(v) => update({ paPlats: v })} />
-          </div>
-          <div className="flex items-center justify-between gap-4 border-t border-[var(--color-inactive-main)] py-3">
-            <span className="text-[15px] text-[var(--color-secondary-main)]">Portkod och nycklar</span>
-            <Chip>Lägg till</Chip>
-          </div>
-          <div className="flex items-center justify-between gap-4 border-t border-[var(--color-inactive-main)] py-3">
-            <span className="text-[15px] text-[var(--color-secondary-main)]">Något mer vi bör veta?</span>
-            <Chip>Skriv</Chip>
-          </div>
-        </div>
-        <div className="mt-6">
-          <FieldLabel>När passar det att vi ringer?</FieldLabel>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {RINGTIDER.map((t) => (
-              <Chip key={t} selected={a.ringtid === t} onClick={() => update({ ringtid: t })}>
-                {t}
-              </Chip>
-            ))}
-          </div>
-        </div>
-        <PrimaryButton
-          tone="navy"
-          className="mt-6"
-          onClick={() => {
-            update({ requested: true, extraDone: true })
-            go(7)
-          }}
-        >
-          Klar
-        </PrimaryButton>
-        <p className="mt-3 text-center text-[12px] text-[var(--color-inactive-dark)]">Allt sparas direkt. Du kan ändra tills vi ringer.</p>
-      </div>
-    </div>
-  )
+const adressLine = (label: string, s: AdressSvar) => {
+  const hiss = s.hiss === 'ja' ? `${s.hissStorlek === 'stor' ? 'stor ' : s.hissStorlek === 'liten' ? 'liten ' : ''}hiss` : s.hiss === 'nej' ? 'ingen hiss' : s.hiss === 'vet-ej' ? 'hiss: vet ej' : null
+  const parts = [s.vaning ? `våning ${s.vaning}` : null, hiss, s.avstand ? `${AVSTAND_LABEL[s.avstand].toLowerCase()} att bära` : null, s.notering || null].filter(Boolean)
+  return parts.length ? `${label}: ${parts.join(', ')}` : null
 }
 
 export const answerLines = (a: Answers, home: Home): string[] => {
-  const lines: string[] = []
-  const l1 = [a.bohag ? `${BOHAG_LABEL[a.bohag]}, ${home.fromKvm} kvm` : null, a.biyta && a.biyta !== 'nej' ? `${BIYTA_LABEL[a.biyta]} ${a.biytaKvm} kvm` : null].filter(Boolean)
-  if (l1.length) lines.push(l1.join(' · '))
-  const l2 = [a.vaning ? `Våning ${a.vaning}${a.hiss ? `, ${HISS_LABEL[a.hiss]}` : ''}` : null, a.avstandFran ? `${AVSTAND_LABEL[a.avstandFran]} till bilen` : null].filter(Boolean)
-  if (l2.length) lines.push(l2.join(' · '))
-  if (a.avstandTill) lines.push(`${home.to}: ${AVSTAND_LABEL[a.avstandTill].toLowerCase()} från bilen`)
-  if (a.extra.length) lines.push(a.extra.map((e) => EXTRA_LABEL[e].split(' (')[0]).join(', '))
-  const fler = (Object.keys(a.fler) as FlerKey[]).map((k) => `${FLER_LABEL[k]}: ${a.fler[k]}`)
-  if (fler.length) lines.push(fler.join(' · '))
-  if (a.ringtid) lines.push(`Ring gärna ${a.ringtid.toLowerCase()}`)
-  return lines
+  const L: (string | null)[] = []
+  if (a.stopp) L.push(`Stopp på vägen: ${a.stopp}`)
+  if (a.sammaDag) L.push(a.sammaDag === 'ja' ? 'Flyttar in samma dag' : 'Kan inte flytta in samma dag, behöver förvaring')
+  L.push(adressLine(home.from, a.fran), adressLine(home.to, a.till))
+  if (a.bohag) L.push(`${BOHAG_LABEL[a.bohag]}, ${home.fromKvm} m²`)
+  a.biytor.forEach((b) => L.push(`${b.typ ? BIYTA_LABEL[b.typ] : 'Bi-yta'}${b.kvm ? ` ${b.kvm} m²` : ''}${b.fullt ? `, ${b.fullt.toLowerCase()}` : ''}`))
+  a.saker.forEach((s) => L.push(`${s.vad || 'Tungt eller ömtåligt'}${s.vikt ? `, ${s.vikt}` : ''}${s.varde ? `, värde ${s.varde}` : ''}`))
+  if (a.utemobler === 'ja') L.push('Utemöbler ska med')
+  if (a.stad === 'nej') L.push('Ingen flyttstädning')
+  if (a.stad === 'ja') {
+    const mer = a.stadYta === 'mer' ? ` + ${a.stadMer.map((m) => m.toLowerCase()).join(', ') || 'mer'}${a.stadMerKvm ? ` ${a.stadMerKvm} m²` : ''}` : ''
+    L.push(`Flyttstäd: bo-ytan ${home.fromKvm} m²${mer}`)
+    if (a.balkong === 'ja') L.push(`Inglasad balkong${a.balkongStorlek ? `, ${a.balkongStorlek}` : ''}${a.balkongGlas ? `, ${a.balkongGlas === 'hel' ? 'helinglasad' : 'halvinglasad'}` : ''}`)
+    const f = (Object.keys(a.fonster) as FonsterTyp[]).map((t) => `${FONSTER_LABEL[t][0].toLowerCase()} ×${a.fonster[t]}`)
+    if (f.length) L.push(`Fönster: ${f.join(', ')}`)
+    else if (a.fonsterInga) L.push('Inga specialfönster')
+    if (a.kansliga === 'ja') L.push(`Känsliga ytor: ${a.kansligaText || 'ja'}`)
+  }
+  if (a.starttid) L.push(`Start ${a.starttid}`)
+  if (a.paPlatsFlytt || a.paPlatsStad) L.push(`På plats ${[a.paPlatsFlytt && 'vid flytten', a.paPlatsStad && 'vid städningen'].filter(Boolean).join(' och ')}`)
+  if (a.tillval.length) L.push(`Vill ha pris på ${a.tillval.map((t) => TILLVAL_LABEL[t][0].toLowerCase()).join(', ')}`)
+  if (a.portkod) L.push(`Portkod och nycklar: ${a.portkod}`)
+  if (a.ovrigt) L.push(a.ovrigt)
+  if (a.ringtid) L.push(`Ring gärna ${a.ringtid.toLowerCase()}`)
+  return L.filter((x): x is string => !!x)
 }
 
-/* 7 · Allt sparat */
-export const SparatScreen = ({ a, go, home }: ScreenProps) => (
-  <div className="bg-white pb-8">
-    <GreenHead title="Allt sparat. Tack!" sub="En säljare ringer med ett pris som bygger på dina svar, oftast inom två vardagar." />
-    <div className="pt-5">
-      <Timeline
-        rows={[
-          { when: 'I dag', what: 'Dina svar är sparade.' },
-          { when: 'Inom två vardagar', what: 'Vi ringer med priset. Samtalet blir kort, vi har dina svar.' },
-          { when: 'Efter samtalet', what: 'Du bokar om priset känns rätt. Inget betalas nu.' },
-        ]}
-      />
-    </div>
-    <div className="mx-4 mt-5 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4">
-      <div className="flex items-center justify-between">
-        <span className="text-[15px] font-bold text-[var(--color-secondary-main)]">Dina svar</span>
-        <TextLink onClick={() => go(2)}>Ändra</TextLink>
+/* 8 · Allt sparat */
+export const SparatScreen = ({ a, go, home }: ScreenProps) => {
+  const lines = answerLines(a, home)
+  return (
+    <div className="bg-white pb-8">
+      <GreenHead title="Allt sparat. Tack!" sub="En säljare ringer med ett pris som bygger på dina svar, oftast inom två vardagar." />
+      <div className="pt-5">
+        <Timeline
+          rows={[
+            { when: 'I dag', what: 'Dina svar är sparade.' },
+            { when: 'Inom två vardagar', what: 'Vi ringer med priset. Samtalet blir kort, vi har dina svar.' },
+            { when: 'Efter samtalet', what: 'Du bokar om priset känns rätt. Inget betalas nu.' },
+          ]}
+        />
       </div>
-      <ul className="mt-2 space-y-1 text-[14px] leading-[21px] text-[var(--color-inactive-dark)]">
-        {answerLines(a, home).map((l) => (
-          <li key={l}>{l}</li>
-        ))}
-        {answerLines(a, home).length === 0 && <li>Inga svar än. Säljaren frågar i samtalet.</li>}
-      </ul>
+      <div className="mx-4 mt-5 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4">
+        <div className="flex items-center justify-between">
+          <span className="text-[15px] font-bold text-[var(--color-secondary-main)]">Dina svar</span>
+          <TextLink onClick={() => go(FIRST)}>Ändra</TextLink>
+        </div>
+        <ul className="mt-2 space-y-1 text-[14px] leading-[21px] text-[var(--color-inactive-dark)]">
+          {lines.map((l) => (
+            <li key={l}>{l}</li>
+          ))}
+          {lines.length === 0 && <li>Inga svar än. Säljaren frågar i samtalet.</li>}
+        </ul>
+      </div>
+      <div className="mt-4">
+        <ContactBox />
+      </div>
+      <div className="mx-4 mt-4 flex items-center gap-3 rounded-2xl border border-[var(--color-inactive-main)] p-4">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent-lighter)] text-[var(--color-accent-main)]">
+          <Zap size={20} />
+        </span>
+        <span className="flex-1">
+          <Eyebrow>Näst på tur · 5 av 7</Eyebrow>
+          <span className="block text-[15px] font-bold text-[var(--color-secondary-main)]">El till {home.to}</span>
+          <span className="block text-[13px] text-[var(--color-inactive-dark)]">1 035 kr rabatt hos Fortum, bara via Flyttsmart.</span>
+        </span>
+        <Chip onClick={() => go(0)}>Välj</Chip>
+      </div>
     </div>
-    <div className="mt-4">
-      <ContactBox />
-    </div>
-    <div className="mx-4 mt-4 flex items-center gap-3 rounded-2xl border border-[var(--color-inactive-main)] p-4">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent-lighter)] text-[var(--color-accent-main)]">
-        <Zap size={20} />
-      </span>
-      <span className="flex-1">
-        <Eyebrow>Näst på tur · 5 av 7</Eyebrow>
-        <span className="block text-[15px] font-bold text-[var(--color-secondary-main)]">El till {home.to}</span>
-        <span className="block text-[13px] text-[var(--color-inactive-dark)]">1 035 kr rabatt hos Fortum, bara via Flyttsmart.</span>
-      </span>
-      <Chip onClick={() => go(0)}>Välj</Chip>
-    </div>
-  </div>
-)
+  )
+}
 
-/* 8 · Sms:et nästa förmiddag */
+/* 9 · Sms:et nästa förmiddag */
 export const SmsScreen = ({ home }: ScreenProps) => (
   <div className="flex min-h-[640px] flex-col items-center bg-gradient-to-b from-[#2B4A68] to-[#0E2236] px-4 pb-10 pt-14 text-white">
     <p className="text-[15px] text-white/80">i morgon förmiddag</p>
@@ -480,17 +666,18 @@ export const SmsScreen = ({ home }: ScreenProps) => (
         <span>nu</span>
       </div>
       <p className="mt-1 text-[15px] font-bold">Flyttsmart</p>
-      <p className="whitespace-pre-wrap text-[15px] leading-[21px]">{`Hej ${home.firstName}! Tack för din förfrågan om flytthjälp till ${home.to}. Vi ringer dig inom två vardagar. Vill du ha pris snabbare? Svara på några frågor här, det tar två minuter: flyttsmart.se/p/K7Q2M9XA\nUndrar du något? Svara här så ringer vi.\n/Flyttsmart`}</p>
+      <p className="whitespace-pre-wrap text-[15px] leading-[21px]">{`Hej ${home.firstName}! Tack för din förfrågan om flytthjälp till ${home.to}. Vi ringer dig inom två vardagar. Vill du ha pris snabbare? Berätta om flytten här, det tar några minuter: flyttsmart.se/p/K7Q2M9XA\nUndrar du något? Svara här så ringer vi.\n/Flyttsmart`}</p>
     </div>
   </div>
 )
 
-/* 9 · Säljaren ringer med svaren framför sig */
+/* 10 · Säljaren ringer med svaren framför sig */
 export const SaljareScreen = ({ a, home }: ScreenProps) => {
   const n = answeredCount(a)
-  const rank = a.ringtid ? 1 : n === 4 ? 2 : n > 0 ? 3 : a.requested ? 4 : 5
-  const events = [`lör 19:32 · begärde pris${n ? ` och svarade på ${['en', 'två', 'tre', 'fyra'][n - 1]} frågor` : ''}`, 'mån 09:05 · fick sms:et med länken', n < 4 ? 'mån 10:02 · öppnade frågorna igen, svarade inte' : 'mån 10:02 · svarade på alla fyra, från mobilen']
-  const ordering = ['Har valt en tid för samtal', 'Svarade på alla fyra frågorna', 'Svarade på några', 'Begärde pris utan att svara', 'Tryckte på kortet utan att begära']
+  const rank = a.ringtid ? 1 : n === TOTAL ? 2 : n > 0 ? 3 : a.requested ? 4 : 5
+  const events = [`lör 19:32 · begärde pris${n ? ` och fyllde i ${ORD[n - 1]} av sex steg` : ''}`, 'mån 09:05 · fick sms:et med länken', n < TOTAL ? 'mån 10:02 · öppnade frågorna igen, svarade inte' : 'mån 10:02 · skickade alla svar, från mobilen']
+  const ordering = ['Har valt en tid för samtal', 'Fyllde i alla sex stegen', 'Fyllde i några', 'Begärde pris utan att svara', 'Tryckte på kortet utan att begära']
+  const lines = answerLines(a, home)
   return (
     <div className="bg-[var(--color-inactive-quite-light)] px-4 py-6">
       <div className="rounded-2xl bg-white p-5 shadow-sm">
@@ -499,14 +686,21 @@ export const SaljareScreen = ({ a, home }: ScreenProps) => {
             <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">{home.firstName} Andersson</p>
             <p className="text-[13px] text-[var(--color-inactive-dark)]">Demomäklaren · flytt {home.moveDay}</p>
           </div>
-          <span className="rounded-full bg-[var(--color-accent-lighter)] px-3 py-1 text-[12px] font-bold text-[var(--color-accent-dark-main)]">Svarade {n} av 4</span>
+          <span className="shrink-0 rounded-full bg-[var(--color-accent-lighter)] px-3 py-1 text-[12px] font-bold text-[var(--color-accent-dark-main)]">
+            {n} av {TOTAL} steg
+          </span>
         </div>
         <div className="mt-4 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4">
           <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">Pris begärt, inget pris ännu</p>
-          <p className="text-[13px] text-[var(--color-inactive-dark)]">
-            Flytthjälp. {n} av 4 prisfrågor svarade, {flerCount(a)} av 9 övriga. Guiden hoppar över dem.
-          </p>
+          <p className="text-[13px] text-[var(--color-inactive-dark)]">Flytthjälp{a.stad === 'ja' ? ' och flyttstäd' : ''}. Svaren ligger i Opportunityn, guiden hoppar över det som redan är svarat.</p>
         </div>
+        <Eyebrow className="mt-5">Kundens svar</Eyebrow>
+        <ul className="mt-2 space-y-1 text-[14px] leading-[20px] text-[var(--color-secondary-main)]">
+          {lines.map((l) => (
+            <li key={l}>{l}</li>
+          ))}
+          {lines.length === 0 && <li className="text-[var(--color-inactive-dark)]">Inga svar. Guiden ställer alla frågor.</li>}
+        </ul>
         <Eyebrow className="mt-5">Det här har hon gjort</Eyebrow>
         <ul className="mt-2 space-y-1 text-[14px] text-[var(--color-secondary-main)]">
           {events.map((e, i) => (
@@ -518,7 +712,7 @@ export const SaljareScreen = ({ a, home }: ScreenProps) => {
         <Eyebrow className="mt-5">Öppna så här</Eyebrow>
         <p className="mt-2 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4 text-[15px] leading-[22px] text-[var(--color-secondary-main)]">
           Hej {home.firstName}, det är Nina på Flyttsmart. Jag ser att du begärt pris på flytten till {home.to.split(' ')[0]}
-          {n > 0 ? ' och svarat på några frågor' : ''}. Jag har {n === 4 ? 'inga' : ['fyra', 'tre', 'två', 'en'][n]} frågor till, sedan har jag ett pris till dig.
+          {n > 0 ? ' och berättat om flytten' : ''}. Jag har {n === TOTAL ? 'bara ett par saker att stämma av' : 'några frågor till'}, sedan har jag ett pris till dig.
         </p>
         <Eyebrow className="mt-5">Sortering i kön · ett ärende i taget, alltid kö</Eyebrow>
         <ol className="mt-2 space-y-1">
@@ -537,33 +731,33 @@ export const SaljareScreen = ({ a, home }: ScreenProps) => {
 /* Kortet på flyttsidan när hon begärt pris: läget, inte priset. */
 export const RequestedCard = ({ a, go, home }: ScreenProps) => {
   const n = answeredCount(a)
-  const done = n === 4 && a.extraDone
+  const done = a.sent
   return (
     <div className="rounded-2xl bg-[var(--color-secondary-main)] p-5 text-white">
       <Eyebrow className="text-white/70">Pris begärt i dag</Eyebrow>
       <p className="mt-1 text-[28px] font-bold leading-8">{done ? 'Allt sparat' : 'Vi ringer dig'}</p>
       <p className="mt-2 text-[15px] text-white/90">
-        Flytt {home.moveDay}. {done ? 'Vi ringer med priset inom två vardagar.' : n === 0 ? 'Inga svar sparade än.' : `${['Ett', 'Två', 'Tre', 'Fyra'][n - 1]} av fyra svar sparade.`}
+        Flytt {home.moveDay}. {done ? 'Vi ringer med priset inom två vardagar.' : n === 0 ? 'Inga svar sparade än.' : `${cap(ORD[n - 1])} av sex steg sparade.`}
       </p>
       <div className="mt-3 flex flex-wrap gap-2 text-[12px] font-bold">
         <span className="rounded-full bg-white/15 px-3 py-1">Fredagar fylls först</span>
         <span className="rounded-full bg-white/15 px-3 py-1">4,7 av 5 på Google</span>
       </div>
       {done ? (
-        <PrimaryButton tone="ghost" className="mt-4" onClick={() => go(7)}>
+        <PrimaryButton tone="ghost" className="mt-4" onClick={() => go(DONE)}>
           Mina svar
         </PrimaryButton>
       ) : (
         <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
-          Fortsätt svara · två minuter
+          {n === 0 ? 'Berätta om flytten' : 'Fortsätt berätta'}
         </PrimaryButton>
       )}
       <p className="mt-3 text-center text-[13px] text-white/80">Inget bokas förrän du säger ja.</p>
       <div className="mt-2 flex justify-center gap-5 text-[14px] underline underline-offset-4">
-        <button type="button" onClick={() => go(7)}>
+        <button type="button" onClick={() => go(DONE)}>
           Mina svar
         </button>
-        <button type="button" onClick={() => go(9)}>
+        <button type="button" onClick={() => go(SALJARE)}>
           Prata med oss
         </button>
       </div>
