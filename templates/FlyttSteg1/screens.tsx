@@ -264,7 +264,7 @@ export const BokatScreen = ({ a, go }: ScreenProps) => (
       </InfoCard>
       <div className="mt-4 rounded-xl border border-[var(--color-inactive-main)] bg-[var(--color-secondary-extra-extra-light)] px-4 pb-4 pt-6 text-center">
         <h2 className="text-[18px] font-bold leading-6 text-[var(--color-text-main)]">Berätta mer om din flytt</h2>
-        <p className="mx-auto mt-2 max-w-[300px] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Då vet vi hur det ser ut hos dig och ringer med priset klart. Det tar ett par minuter, allt sparas direkt och du kan sluta när du vill.</p>
+        <p className="mx-auto mt-2 max-w-[300px] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Då vet vi hur det ser ut hos dig och ringer med priset klart. Det tar ett par minuter och allt sparas direkt, så du kan fortsätta senare om du vill.</p>
         <PrimaryButton className="mt-5" rounded onClick={() => go(nextUnanswered(a))}>
           Berätta om flytten
         </PrimaryButton>
