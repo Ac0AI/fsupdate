@@ -291,15 +291,15 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
             <span className="mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D] md:mt-1">
               <Check size={18} strokeWidth={3} />
             </span>
-            <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:mt-1 md:text-[22px]! md:leading-[28px]! md:hidden">Tack! Vi kontaktar dig {samtalText(a.samtal)} för att gå igenom din offert.</h1>
-            <h1 className="hidden text-[22px]! font-bold leading-[28px]! text-[var(--color-text-main)] md:block">Tack! Vi kontaktar dig {samtalText(a.samtal)} för att gå igenom din offert.</h1>
+            <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:mt-1 md:text-[22px]! md:leading-[28px]! md:hidden">Tack! Vi kontaktar dig {samtalText(a.samtal)}.</h1>
+            <h1 className="hidden text-[22px]! font-bold leading-[28px]! text-[var(--color-text-main)] md:block">Tack! Vi kontaktar dig {samtalText(a.samtal)}.</h1>
           </div>
           <button type="button" aria-label="Stäng" onClick={() => go(0)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[var(--color-inactive-dark)]">
             <X size={20} />
           </button>
         </div>
         <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:mt-1 md:pl-12">
-          Passar en annan tid bättre?{' '}
+          Då går vi igenom din offert. Passar inte tiden?{' '}
           <TextLink className="text-[14px]" onClick={() => setAndraTid((v) => !v)}>
             {andraTid ? 'Stäng' : 'Ändra tid'}
           </TextLink>
@@ -347,8 +347,8 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
             {andraNr ? 'Spara' : 'Ändra'}
           </TextLink>
         </div>
-        <h2 className="mt-5 text-[16px] font-bold leading-[22px] text-[var(--color-text-main)] md:ml-12">Vill du ha priset klart när vi hör av oss?</h2>
-        <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:ml-12">Det tar ett par minuter och allt sparas direkt, så du kan fortsätta senare om du vill.</p>
+        <h2 className="mt-5 text-[16px] font-bold leading-[22px] text-[var(--color-text-main)] md:ml-12">Få din offert snabbare</h2>
+        <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:ml-12">Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och allt sparas direkt.</p>
         <div className="md:ml-12 md:w-[300px]">
           <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
             Berätta om flytten
