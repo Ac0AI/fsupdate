@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, Car, Check, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench, X } from 'lucide-react'
 import clsx from 'clsx'
 import GoogleColor from '@/public/images/GoogleColor.svg'
@@ -270,6 +270,12 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
   const [tel, setTel] = useState(a.telefon)
   const [avbryt, setAvbryt] = useState(false)
   const [date, setDate] = useState<Date>(() => (a.samtal?.iso ? fromIso(a.samtal.iso) : nextSelectable()))
+  // Öppnas skärmen direkt från demoraden finns ingen bokning: boka den förvalda tiden så att texten stämmer.
+  useEffect(() => {
+    if (a.samtal) return
+    const d = defaultSlot()
+    update({ samtal: { dag: fmtLong(d.dag), pass: d.pass, iso: toIso(d.dag) } })
+  }, [a.samtal, update])
   const nu = canCallNow(date)
   const slots = PASS.filter(([pass]) => !(hideMorning(date) && (pass === '08-10' || pass === '10-12')))
   const valj = (pass: string) => {
@@ -278,24 +284,28 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
   }
   return (
     <Sheet>
-      <div className="px-4 pb-6 pt-1">
-        <div className="flex items-start justify-between">
-          <span className="mt-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D]">
-            <Check size={18} strokeWidth={3} />
-          </span>
-          <button type="button" aria-label="Stäng" onClick={() => go(0)} className="flex h-11 w-11 items-center justify-center rounded-full text-[var(--color-inactive-dark)]">
+      <div className="px-4 pb-6 pt-1 md:px-2 md:pb-2">
+        {/* Desktop: bocken i rad med rubriken och allt vänsterställt i en smal spalt, annars spretar det i kortet (David 20 okt). */}
+        <div className="flex items-start justify-between md:gap-4">
+          <div className="md:flex md:items-start md:gap-3">
+            <span className="mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D] md:mt-1">
+              <Check size={18} strokeWidth={3} />
+            </span>
+            <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:mt-1 md:text-[22px]! md:leading-[28px]! md:hidden">Tack! Vi kontaktar dig {samtalText(a.samtal)} för att gå igenom din offert.</h1>
+            <h1 className="hidden text-[22px]! font-bold leading-[28px]! text-[var(--color-text-main)] md:block">Tack! Vi kontaktar dig {samtalText(a.samtal)} för att gå igenom din offert.</h1>
+          </div>
+          <button type="button" aria-label="Stäng" onClick={() => go(0)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[var(--color-inactive-dark)]">
             <X size={20} />
           </button>
         </div>
-        <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)]">Tack! Vi kontaktar dig {samtalText(a.samtal)} för att gå igenom din offert.</h1>
-        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
+        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:mt-1 md:pl-12">
           Passar en annan tid bättre?{' '}
           <TextLink className="text-[14px]" onClick={() => setAndraTid((v) => !v)}>
             {andraTid ? 'Stäng' : 'Ändra tid'}
           </TextLink>
         </p>
         {andraTid && (
-          <InfoCard className="mt-3 px-3 pb-4 pt-3">
+          <InfoCard className="mt-3 px-3 pb-4 pt-3 md:ml-12 md:max-w-[400px]">
             <button type="button" onClick={() => valj(nu ? 'nu' : 'flexibel')} className="flex w-full items-center justify-between rounded-lg border border-[var(--color-inactive-main)] bg-white px-4 py-3 text-left">
               <span className="text-[16px] font-bold text-[var(--color-text-main)]">{nu ? 'Ring mig nu' : 'Jag är flexibel'}</span>
               <span className="text-[20px] text-[var(--color-inactive-grey-light)]">›</span>
@@ -316,7 +326,7 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
             </div>
           </InfoCard>
         )}
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-[var(--color-inactive-main)] bg-[#F8FAFC] px-4 py-3">
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-[var(--color-inactive-main)] bg-[#F8FAFC] px-4 py-3 md:ml-12 md:max-w-[400px]">
           <div className="min-w-0 flex-1">
             <p className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Vi kontaktar dig på</p>
             {andraNr ? (
@@ -337,12 +347,14 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
             {andraNr ? 'Spara' : 'Ändra'}
           </TextLink>
         </div>
-        <h2 className="mt-5 text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">Vill du ha priset klart när vi hör av oss?</h2>
-        <p className="mt-1 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Det tar ett par minuter och allt sparas direkt, så du kan fortsätta senare om du vill.</p>
-        <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
-          Berätta om flytten
-        </PrimaryButton>
-        <div className="mt-4 text-center text-[13px] text-[var(--color-inactive-grey-light)]">
+        <h2 className="mt-5 text-[16px] font-bold leading-[22px] text-[var(--color-text-main)] md:ml-12">Vill du ha priset klart när vi hör av oss?</h2>
+        <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:ml-12">Det tar ett par minuter och allt sparas direkt, så du kan fortsätta senare om du vill.</p>
+        <div className="md:ml-12 md:w-[300px]">
+          <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
+            Berätta om flytten
+          </PrimaryButton>
+        </div>
+        <div className="mt-4 text-center text-[13px] text-[var(--color-inactive-grey-light)] md:ml-12 md:text-left">
           {avbryt ? (
             <div className="rounded-lg bg-[var(--color-inactive-quite-light)] p-3 text-left">
               <p className="text-[14px] font-bold text-[var(--color-text-main)]">Varför vill du inte ha offert?</p>
