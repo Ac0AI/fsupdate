@@ -135,6 +135,12 @@ export const offerById = (id: OfferId) => OFFERS.find((o) => o.id === id) ?? OFF
 /* Bostaden i Paper. Förbrukningen 2 900 kWh/år hör till lägenheten på 96 kvm. */
 export const HOME = { street: 'Ekvägen 8', zip: '123 45', city: 'Stockholm', kvm: 96 }
 export const BASE_KWH = 2900
+/*
+ * Elnätsbolaget (nätägaren) på den nya adressen. Hämtas per adress via flyttsmart-api
+ * (apis/el-omraden). EXEMPEL: Ellevio för demoadressen Ekvägen 8, Stockholm.
+ * Saknas nätägaren står bara "elnätet".
+ */
+export const GRID_OWNER: string | null = 'Ellevio'
 
 const round100 = (n: number) => Math.max(1000, Math.round(n / 100) * 100)
 /** Lägenhet utgår från Paper (2 900 kWh vid 96 kvm). Hus använder schablonen i demo/electricity/offers.ts. */

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 import {
   HOME,
+  GRID_OWNER,
   OFFERS,
   RECOMMENDED,
   compareLevel,
@@ -1166,7 +1167,7 @@ export const KlartScreen = ({ s }: ScreenProps) => {
           <ol className="flex flex-col">
             {[
               'Du får en bekräftelse på mejl inom kort.',
-              `Vi ordnar elnätet till din nya adress med fullmakten${s.terminate ? ' och säger upp ditt nuvarande elavtal' : ''}.`,
+              `Vi ordnar elnätet${GRID_OWNER ? ` hos ${GRID_OWNER}` : ''} till din nya adress med fullmakten${s.terminate ? ' och säger upp ditt nuvarande elavtal' : ''}.`,
               `Elen är på från ${longDate(s.startDate)}. Vi skickar ett sms när allt är klart.`,
             ].map((text, i, all) => (
               <li key={i} className="flex gap-[12px]">
