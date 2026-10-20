@@ -735,15 +735,15 @@ const ChevronDownSmall = () => (
 export const Reveal = ({ show, children }: { show: boolean; children: ReactNode }) => {
   const [visible, setVisible] = useState(show)
   const ref = useRef<HTMLDivElement>(null)
-  const first = useRef(true)
+  // Scrollar bara när frågan just dykt upp (dold -> visad), inte vid öppning. Tål Reacts dubbla effekter i dev.
+  const forra = useRef<boolean | null>(null)
   useEffect(() => {
+    const nyss = forra.current === false && show
+    forra.current = show
     if (!show) {
       setVisible(false)
-      first.current = false
       return
     }
-    const nyss = !first.current
-    first.current = false
     const t = requestAnimationFrame(() => {
       setVisible(true)
       if (nyss) ref.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
