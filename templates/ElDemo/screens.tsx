@@ -9,6 +9,9 @@ import {
   OFFERS,
   RECOMMENDED,
   compareLevel,
+  previousMonthName,
+  type CompareLevel,
+  type Offer,
   compareNote,
   comparePrice,
   formatOre,
@@ -94,6 +97,63 @@ const Price = ({ value, size, tone }: { value: number; size: 'card' | 'row' | 'f
   )
 }
 
+const LEVELS: CompareLevel[] = [2000, 5000, 20000]
+
+/**
+ * Jämförpris vid alla tre nivåer, som live ProviderDetails (lagkrav). Kundens
+ * nivå är fetstilad. Siffrorna är exempel, se comparePrice i data.ts.
+ */
+const ComparisonTable = ({ o, kwh }: { o: Offer; kwh: number }) => {
+  const mine = compareLevel(kwh)
+  const month = previousMonthName()
+  return (
+    <div className={clsx('mt-[8px] flex flex-col rounded-[8px] bg-[#F8FAF9] p-[15px]', navy)}>
+      <p className="pb-[4px] text-[15px] leading-[20px] font-bold">Jämförpris – första året</p>
+      <p className="pb-[12px] text-[14px] leading-[18px]">{o.hasDiscount ? 'Inklusive moms och kampanjrabatt.' : 'Inklusive moms.'}</p>
+      {LEVELS.map((l) => (
+        <div
+          key={l}
+          className={clsx(
+            'flex items-center justify-between gap-[12px] border-b border-[#3879AD33] py-[8px] text-[14px] leading-[18px] last-of-type:border-b-0',
+            l === mine && 'font-bold',
+          )}
+        >
+          <span>{new Intl.NumberFormat('sv-SE').format(l)} kWh/år</span>
+          <span className="whitespace-nowrap">{formatOre(comparePrice(o, l))} öre/kWh</span>
+        </div>
+      ))}
+      <p className="pt-[8px] text-[12px] leading-[16px] text-[#767678] italic">
+        {month}, SE3. Månadsavgiften är {o.firstYearFee} kr första året. Elnätskostnad tillkommer.
+      </p>
+      <p className="pt-[4px] text-[12px] leading-[16px] text-[#767678] italic">Baseras på {month.toLowerCase()} månads elpris. Elnätsavgifter ingår ej.</p>
+    </div>
+  )
+}
+
+const About = ({ o, kwh, className }: { o: Offer; kwh: number; className?: string }) => (
+  <div className={clsx('flex flex-col gap-[8px] motion-safe:animate-[rise_.3s_ease-out_both]', className)}>
+    <p className={clsx('text-[16px] leading-[20px] font-bold', navy)}>{o.about.header}</p>
+    <p className={clsx('text-[14px] leading-[20px]', navy)}>{o.about.description}</p>
+    <p className={clsx('pt-[8px] text-[14px] leading-[20px] font-bold', navy)}>Fördelar</p>
+    <ul className="flex flex-col gap-[8px]">
+      {o.about.benefits.map((b) => (
+        <li key={b} className={clsx('flex items-center gap-[10px] text-[14px] leading-[18px]', navy)}>
+          <CheckCircle size={18} stroke={1.8} />
+          {b}
+        </li>
+      ))}
+    </ul>
+    <ComparisonTable o={o} kwh={kwh} />
+  </div>
+)
+
+const ReadMoreButton = ({ open, onClick }: { open: boolean; onClick: () => void }) => (
+  <button type="button" aria-expanded={open} onClick={onClick} className={clsx('flex h-11 shrink-0 items-center justify-center px-[20px] pb-[10px]', press)}>
+    <span className="text-[15px] leading-[18px] font-bold tracking-[0.32px] text-[#112E46]">Läs mer</span>
+    <ChevronDown up={open} />
+  </button>
+)
+
 const RecommendedCard = ({ s, set }: ScreenProps) => {
   const o = offerById(RECOMMENDED)
   const on = s.selected === RECOMMENDED
@@ -148,35 +208,45 @@ const RecommendedCard = ({ s, set }: ScreenProps) => {
           <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">{compareNote(o)}</span>
         </div>
       </div>
-      {s.readMore && (
-        <div className="flex flex-col gap-[8px] px-[20px] pb-[15px] motion-safe:animate-[rise_.3s_ease-out_both]">
-          <p className={clsx('text-[16px] leading-[20px] font-bold', navy)}>{o.about.header}</p>
-          <p className={clsx('text-[14px] leading-[20px]', navy)}>{o.about.description}</p>
-          <p className={clsx('pt-[8px] text-[14px] leading-[20px] font-bold', navy)}>Fördelar</p>
-          <ul className="flex flex-col gap-[8px]">
-            {o.about.benefits.map((b) => (
-              <li key={b} className={clsx('flex items-center gap-[10px] text-[14px] leading-[18px]', navy)}>
-                <CheckCircle size={18} stroke={1.8} />
-                {b}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <button
-        type="button"
-        aria-expanded={s.readMore}
-        onClick={() => set({ readMore: !s.readMore })}
-        className={clsx('flex h-11 shrink-0 items-center justify-center px-[20px] pb-[10px]', press)}
-      >
-        <span className="text-[15px] leading-[18px] font-bold tracking-[0.32px] text-[#112E46]">Läs mer</span>
-        <ChevronDown up={s.readMore} />
-      </button>
+      {s.readMore && <About o={o} kwh={s.kwh} className="px-[20px] pb-[15px]" />}
+      <ReadMoreButton open={s.readMore} onClick={() => set({ readMore: !s.readMore })} />
     </div>
   )
 }
 
 const others = OFFERS.filter((o) => o.id !== RECOMMENDED)
+
+const CompareRow = ({ o, i, s, set }: { o: Offer; i: number; s: ElState; set: ScreenProps['set'] }) => {
+  const [open, setOpen] = useState(false)
+  const on = s.selected === o.id
+  return (
+    <div
+      style={{ animationDelay: `${i * 40}ms` }}
+      className={clsx(
+        'flex flex-col rounded-[10px] border-2 bg-white shadow-[0_4px_8px_#00000014] motion-safe:animate-[rise_.3s_ease-out_both]',
+        on ? 'border-[#51C8B4]' : 'border-white',
+      )}
+    >
+      <button
+        type="button"
+        role="radio"
+        aria-checked={on}
+        onClick={() => set({ selected: o.id })}
+        className={clsx('flex items-center gap-[12px] rounded-[8px] py-[13px] pr-[13px] pl-[18px] text-left', press)}
+      >
+        <span className="flex min-w-0 flex-1 flex-col gap-[6px]">
+          <Logo src={o.logo} alt={o.name} className="h-6 w-[100px]" />
+          <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">{o.compareSub}</span>
+          <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">Jämförpris {`${formatOre(comparePrice(o, compareLevel(s.kwh)))}\u00a0öre/kWh`}</span>
+        </span>
+        <Price value={priceFor(o, s.kwh)} size="row" tone={o.hasDiscount ? 'mint' : 'navy'} />
+        <Radio on={on} />
+      </button>
+      {open && <About o={o} kwh={s.kwh} className="px-[18px] pb-[12px]" />}
+      <ReadMoreButton open={open} onClick={() => setOpen(!open)} />
+    </div>
+  )
+}
 
 const Compare = ({ s, set }: ScreenProps) => {
   if (!s.compareOpen)
@@ -208,32 +278,9 @@ const Compare = ({ s, set }: ScreenProps) => {
           <ChevronDown up />
         </span>
       </button>
-      {others.map((o, i) => {
-        const on = s.selected === o.id
-        return (
-          <button
-            key={o.id}
-            type="button"
-            role="radio"
-            aria-checked={on}
-            onClick={() => set({ selected: o.id })}
-            style={{ animationDelay: `${i * 40}ms` }}
-            className={clsx(
-              'flex items-center gap-[12px] rounded-[10px] border-2 bg-white py-[13px] pr-[13px] pl-[18px] text-left shadow-[0_4px_8px_#00000014] motion-safe:animate-[rise_.3s_ease-out_both]',
-              on ? 'border-[#51C8B4]' : 'border-white',
-              press,
-            )}
-          >
-            <span className="flex min-w-0 flex-1 flex-col gap-[6px]">
-              <Logo src={o.logo} alt={o.name} className="h-6 w-[100px]" />
-              <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">{o.compareSub}</span>
-              <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">Jämförpris {`${formatOre(comparePrice(o, compareLevel(s.kwh)))}\u00a0öre/kWh`}</span>
-            </span>
-            <Price value={priceFor(o, s.kwh)} size="row" tone={o.hasDiscount ? 'mint' : 'navy'} />
-            <Radio on={on} />
-          </button>
-        )
-      })}
+      {others.map((o, i) => (
+        <CompareRow key={o.id} o={o} i={i} s={s} set={set} />
+      ))}
     </div>
   )
 }
