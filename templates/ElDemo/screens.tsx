@@ -10,6 +10,10 @@ import {
   RECOMMENDED,
   compareLevel,
   previousMonthName,
+  PRICE_SPEC,
+  SPOT_ORE,
+  CERT_ORE,
+  priceSpecTotals,
   type CompareLevel,
   type Offer,
   compareNote,
@@ -836,6 +840,50 @@ const Row = ({ label, value }: { label: string; value: string }) => (
   </div>
 )
 
+const SpecRow = ({ label, value, tone = 'normal', note }: { label: string; value: string; tone?: 'normal' | 'bold' | 'mint'; note?: string }) => (
+  <div className="flex flex-col border-b border-[#EEEEF0] py-[8px]">
+    <div className={clsx('flex items-start justify-between gap-[12px] text-[14px] leading-[18px]', tone === 'mint' ? 'text-[#1F6156]' : navy, tone === 'bold' && 'font-bold')}>
+      <span>{label}</span>
+      <span className="text-right whitespace-nowrap">{value}</span>
+    </div>
+    {note && <span className="pt-[2px] text-[12px] leading-[16px] text-[#767678] italic">{note}</span>}
+  </div>
+)
+
+/** Prisspecifikationen som live: elpriset i öre/kWh, momsen, rabatten och månadsavgiften. Exempelsiffror, se PRICE_SPEC i data.ts. */
+const PriceSpecTable = ({ id }: { id: OfferId }) => {
+  const sp = PRICE_SPEC[id]
+  const t = priceSpecTotals(id)
+  const ore = (n: number) => `${formatOre(n)} öre/kWh`
+  return (
+    <div className="flex flex-col pt-[12px]">
+      <p className={clsx('pb-[4px] text-[15px] leading-[20px] font-bold', navy)}>Elpris</p>
+      <SpecRow label={`Rörligt elpris (spotpris), ${previousMonthName()} SE3`} value={ore(SPOT_ORE)} note="Priset varierar varje månad." />
+      <SpecRow label="Rörligt påslag" value={ore(sp.markup)} />
+      <SpecRow label="Elcertifikat" value={ore(CERT_ORE)} />
+      <SpecRow label="Moms (25 %)" value={ore(t.vat)} />
+      <SpecRow label="Elpris inkl. moms" value={ore(t.total)} tone="bold" />
+      {sp.kwhDiscount && <SpecRow label={`Elprisrabatt, ${sp.kwhDiscount.months} mån`} value={`−${ore(sp.kwhDiscount.ore)}`} tone="mint" />}
+      <p className={clsx('pt-[16px] pb-[4px] text-[15px] leading-[20px] font-bold', navy)}>Månadsavgift</p>
+      <div className="flex flex-col border-b border-[#EEEEF0] py-[8px]">
+        <div className={clsx('flex items-start justify-between gap-[12px] text-[14px] leading-[18px]', navy)}>
+          <span>Månadsavgift</span>
+          <span className="font-bold whitespace-nowrap">{sp.fee} kr/mån</span>
+        </div>
+        {sp.feeDiscount && (
+          <>
+            <span className="pt-[4px] text-[14px] leading-[18px] text-[#1F6156]">
+              Rabatt {sp.feeDiscount.kr} kr/mån i {sp.feeDiscount.months} månader.
+            </span>
+            <span className="text-[14px] leading-[18px] text-[#767678]">Därefter {sp.fee} kr/mån inkl. moms.</span>
+          </>
+        )}
+      </div>
+      <p className="pt-[10px] text-[12px] leading-[16px] text-[#767678]">Alla belopp inklusive moms.</p>
+    </div>
+  )
+}
+
 const shortDate = (iso: string) => {
   const [y, m, d] = iso.split('-').map(Number)
   return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short' }).format(new Date(y, (m || 1) - 1, d || 1)).replace('.', '')
@@ -1003,7 +1051,7 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
                 {s.specOpen && (
                   <div className="flex flex-col pb-[10px] motion-safe:animate-[rise_.25s_ease-out_both]">
                     <Row label="Uppskattad kostnad" value={`ca ${new Intl.NumberFormat('sv-SE').format(priceFor(o, s.kwh))} kr/mån`} />
-                    {o.discountRow && <Row label={o.discountRow.label} value={o.discountRow.value} />}
+                    <PriceSpecTable id={o.id} />
                     <div className={clsx('mt-[15px] flex flex-col gap-[10px] rounded-[8px] bg-[#E8F0F8] p-[20px]', navy)}>
                       <p className="text-[14px] leading-[18px] font-bold tracking-[0.32px]">Din elkostnad varierar</p>
                       <p className="text-[14px] leading-[18px] tracking-[0.32px]">Kostnaden beror på elpris, inköpskostnader och din förbrukning. Elnätskostnad tillkommer.</p>
@@ -1102,7 +1150,7 @@ export const KlartScreen = ({ s }: ScreenProps) => {
     <div className="flex flex-1 flex-col px-[16px] pt-6 pb-10 min-[1024px]:mx-auto min-[1024px]:w-full min-[1024px]:max-w-[560px]">
       <div className="flex flex-col items-center rounded-[16px] bg-white p-[20px] shadow-[0_4px_8px_#00000014] motion-safe:animate-[rise_.4s_ease-out_both]">
         <div role="heading" aria-level={1} className={clsx('pb-6 text-center text-[24px] leading-[28px] font-black', navy)}>
-          Grattis till ett aktivt val av<span className="text-[#51C8B4]"> elavtal!</span>
+          Grattis till ett riktigt smart val av<span className="text-[#51C8B4]"> elavtal!</span>
         </div>
         <div className="h-px w-full bg-[#E1E1E3]" />
         <p className={clsx('py-6 text-center text-[15px] font-bold', navy)}>Vi har tagit emot din beställning av elavtal från {o.name}.</p>

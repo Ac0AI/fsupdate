@@ -200,3 +200,29 @@ export const previousMonthName = () => {
 /** Raden under jämförpriset, byggd av live-texterna comparisonPriceDescription(NoDiscount) och priceComparisonFooter. */
 export const compareNote = (o: Offer) =>
   `${o.discountMonths > 0 ? `Första ${o.discountMonths} månaderna, inkl. rabatt och moms.` : 'Inkl. moms.'} ${previousMonthName()}, SE3. Månadsavgiften är ${o.firstYearFee} kr första året. Elnätskostnad tillkommer.`
+
+/*
+ * Prisspecifikationen på Sammanfattningen, uppställd som live (PROVIDERDETAILS).
+ * EXEMPELSIFFROR. Spotpriset (62,40 öre/kWh exkl. moms) och elcertifikatet är exempel.
+ * Påslagen för Skellefteå, Fortum och Tibber kommer från elsidans prisspecifikation 17/10,
+ * Vattenfalls påslag och öresrabatt är exempel. Månadsavgifterna följer jämförpriset
+ * (firstYearFee) och rabattraden på steg 1 (Skellefteå ord. 39 kr). Siffrorna går inte att
+ * stämma av exakt mot jämförpriset, som är satt från Paper.
+ */
+export const SPOT_ORE = 62.4
+export const CERT_ORE = 0.6
+export type PriceSpec = { markup: number; kwhDiscount?: { ore: number; months: number }; fee: number; feeDiscount?: { kr: number; months: number } }
+export const PRICE_SPEC: Record<OfferId, PriceSpec> = {
+  skekraft: { markup: 8.3, kwhDiscount: { ore: 8.75, months: 12 }, fee: 39, feeDiscount: { kr: 39, months: 12 } },
+  fortum: { markup: 13.3, fee: 69, feeDiscount: { kr: 69, months: 15 } },
+  vattenfall: { markup: 11, kwhDiscount: { ore: 5, months: 12 }, fee: 55 },
+  tibber: { markup: 11.9, fee: 49 },
+}
+const round2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100
+/** Raderna exkl. moms, momsen och summan inkl. moms. Momsen är summan minus raderna, så att allt går jämnt ut. */
+export const priceSpecTotals = (id: OfferId) => {
+  const sp = PRICE_SPEC[id]
+  const ex = round2(SPOT_ORE + sp.markup + CERT_ORE)
+  const total = round2(ex * 1.25)
+  return { ex, vat: round2(total - ex), total }
+}
