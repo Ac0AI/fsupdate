@@ -476,52 +476,30 @@ const DittVal = ({ o, kwh, children }: { o: Offer; kwh: number; children: React.
   </div>
 )
 
-/** Frågor och svar från live (MOVESUMMARY), under elavtalen. Bara på desktop: mobilen är som förut. */
-const FAQ = [
-  {
-    q: 'Ingår elen i min hyra/månadsavgift?',
-    a: [
-      'El ingår oftast inte i hyran/månadsavgiften. Det börjar dock bli vanligare att bostadsrättsföreningar och ägare av flerfamiljshus tecknar ett gemensamt elavtal. Det brukar bli lite billigare för dig som användare.',
-      'Vi vet tyvärr inte vad som gäller i just din bostad. Fråga din fastighetsägare eller bostadsrättsförening för ett säkert svar på den här frågan.',
-    ],
-  },
-  {
-    q: 'Hur säger jag upp mitt nuvarande elavtal?',
-    a: [
-      "När du tecknar ett nytt elavtal på Flyttsmart kan du passa på att avsluta ditt nuvarande. Kryssa bara i boxen 'Säg upp nuvarande elavtal' och ange vilket datum elen ska stängas av, så sköter vi resten.",
-      'Observera att vi bara kan säga upp avtal som tecknats av dig personligen.',
-    ],
-  },
-  {
-    q: 'Vilka elavtal behöver jag teckna till min nya bostad?',
-    a: [
-      'För att få tillgång till el i ditt nya hem behöver du teckna två olika avtal:',
-      '• Elnätsavtal, så att elen når fram till bostaden',
-      '• Elhandelsavtal, för din löpande elförbrukning',
-      'När du fixar elen på Flyttsmart får du välja mellan flera förslag på elhandelsavtal. Vi har tagit fram de bästa alternativen på din nya adress och pressat priserna.',
-      'Du tecknar samtidigt ett elnätsavtal med den leverantör som äger elnätet i ditt nya bostadsområde. Här kan du med andra ord inte välja mellan olika leverantörer. Du behöver inte kontakta leverantören – vi löser det åt dig.',
-    ],
-  },
-]
-
-const Faq = () => (
-  <div className="hidden flex-col gap-[10px] min-[1024px]:flex">
-    {FAQ.map((f) => (
-      <details key={f.q} className="group rounded-[10px] bg-white shadow-[0_4px_8px_#00000014]">
-        <summary className={clsx('flex min-h-14 cursor-pointer list-none items-center justify-between gap-[12px] px-[20px] py-[12px] [&::-webkit-details-marker]:hidden', navy)}>
-          <span className="text-[15px] leading-[20px] font-bold tracking-[0.32px]">{f.q}</span>
-          <span className="shrink-0 transition-transform duration-200 group-open:rotate-180">
-            <ChevronDown />
-          </span>
-        </summary>
-        <div className={clsx('flex flex-col gap-[8px] px-[20px] pb-[16px] text-[14px] leading-[20px]', navy)}>
-          {f.a.map((t) => (
-            <p key={t}>{t}</p>
-          ))}
-        </div>
-      </details>
-    ))}
-  </div>
+/** En enda fråga från live (MOVESUMMARY question3): två avtal vid flytt. Övriga frågor finns i Intercom-chatten. */
+const TwoContracts = () => (
+  <details className="group rounded-[10px] bg-white shadow-[0_4px_8px_#00000014]">
+    <summary
+      className={clsx('flex! min-h-14 cursor-pointer list-none items-center justify-between gap-[12px] py-[12px] pr-[15px] pl-[20px] [&::-webkit-details-marker]:hidden', navy)}
+    >
+      <span className="text-[15px] leading-[20px] font-bold tracking-[0.32px]">Vilka elavtal behöver jag teckna till min nya bostad?</span>
+      <span className="flex size-11 shrink-0 items-center justify-center transition-transform duration-200 group-open:rotate-180">
+        <ChevronDown />
+      </span>
+    </summary>
+    <div className={clsx('flex flex-col gap-[8px] px-[20px] pb-[16px] text-[14px] leading-[20px]', navy)}>
+      <p>För att få tillgång till el i ditt nya hem behöver du teckna två olika avtal:</p>
+      <ul className="flex list-disc flex-col gap-[4px] pl-[20px]">
+        <li>Elnätsavtal, så att elen når fram till bostaden</li>
+        <li>Elhandelsavtal, för din löpande elförbrukning</li>
+      </ul>
+      <p>När du fixar elen på Flyttsmart får du välja mellan flera förslag på elhandelsavtal. Vi har tagit fram de bästa alternativen på din nya adress och pressat priserna.</p>
+      <p>
+        Du tecknar samtidigt ett elnätsavtal med den leverantör som äger elnätet i ditt nya bostadsområde. Här kan du med andra ord inte välja mellan olika leverantörer. Du behöver
+        inte kontakta leverantören – vi löser det åt dig.
+      </p>
+    </div>
+  </details>
 )
 
 export const PriserScreen = (p: ScreenProps) => {
@@ -570,7 +548,7 @@ export const PriserScreen = (p: ScreenProps) => {
           <HomeRow {...p} />
           <RecommendedCard {...p} />
           <Compare {...p} />
-          <Faq />
+          <TwoContracts />
         </div>
       </Shell>
       {s.editHome && <HomeSheet {...p} />}
@@ -1181,7 +1159,25 @@ export const KlartScreen = ({ s }: ScreenProps) => {
             </div>
           ))}
         </div>
-        <p className={clsx('w-full pt-[20px] text-left text-[15px]', navy)}>Du får en bekräftelse per mejl inom kort, med information om vad som händer nu.</p>
+        <div className="flex w-full flex-col pt-[24px] text-left">
+          <p className={clsx('pb-[14px] text-[16px] leading-[20px] font-bold', navy)}>Det här händer nu</p>
+          <ol className="flex flex-col">
+            {[
+              'Du får en bekräftelse på mejl inom kort.',
+              `Vi ordnar elnätet till din nya adress med fullmakten${s.terminate ? ' och säger upp ditt nuvarande elavtal' : ''}.`,
+              `Elen är på från ${longDate(s.startDate)}. Vi skickar ett sms när allt är klart.`,
+            ].map((text, i, all) => (
+              <li key={i} className="flex gap-[12px]">
+                <span className="flex flex-col items-center">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#ECF9F7] text-[12px] leading-none font-bold text-[#1F6156]">{i + 1}</span>
+                  {i < all.length - 1 && <span aria-hidden className="w-px flex-1 bg-[#9EE0D5]" />}
+                </span>
+                <span className={clsx('pt-[2px] text-[15px] leading-[20px]', navy, i < all.length - 1 && 'pb-[16px]')}>{text}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="pt-[14px] text-[14px] leading-[18px] text-[#2B567C]">Du behöver inte göra något mer.</p>
+        </div>
         <Link href="/demo/movepage" className={clsx('mt-6 flex h-12 items-center justify-center rounded-full border-2 border-[#214766] bg-white px-10 no-underline!', press)}>
           <span className={clsx('text-[16px] font-bold', navy)}>Till flyttsidan</span>
         </Link>
