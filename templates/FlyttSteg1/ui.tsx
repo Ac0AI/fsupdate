@@ -640,7 +640,7 @@ export const RangeSlider = ({ value, min, max, step, onChange, text, ticks, labe
  * kunden valt, kalendern öppnar på flyttdagens månad med flyttdagen markerad
  * (David 20 okt: "lämna ej ifylld men poppa på movingdate när datepickern öppnas").
  */
-export const DayPicker = ({ value, start, min, label, placeholder, onChange }: { value?: string; start: string; min?: string; label: string; placeholder: string; onChange: (iso: string) => void }) => {
+export const DayPicker = ({ value, start, min, label, placeholder, onChange, ringText = 'flyttdagen' }: { value?: string; start: string; min?: string; label: string; placeholder: string; onChange: (iso: string) => void; ringText?: string }) => {
   const [open, setOpen] = useState(false)
   const [visible, setVisible] = useState(() => fromIso(value ?? start))
   const root = useRef<HTMLDivElement>(null)
@@ -707,7 +707,7 @@ export const DayPicker = ({ value, start, min, label, placeholder, onChange }: {
                   key={day.toISOString()}
                   type="button"
                   disabled={disabled}
-                  aria-label={fmtLongDate(day) + (arFlytt ? ', flyttdagen' : '')}
+                  aria-label={fmtLongDate(day) + (arFlytt ? `, ${ringText}` : '')}
                   onClick={() => {
                     onChange(toIso(day))
                     setOpen(false)
@@ -724,7 +724,7 @@ export const DayPicker = ({ value, start, min, label, placeholder, onChange }: {
               )
             })}
           </div>
-          <p className="mt-3 text-[12px] text-[var(--color-inactive-dark)]">Ringen är flyttdagen, {fmtLongDate(flytt)}.</p>
+          <p className="mt-3 text-[12px] text-[var(--color-inactive-dark)]">Ringen är {ringText}, {fmtLongDate(flytt)}.</p>
         </div>
       )}
     </div>

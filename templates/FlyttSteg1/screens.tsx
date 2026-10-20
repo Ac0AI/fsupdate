@@ -734,16 +734,12 @@ export const SistaScreen = (p: ScreenProps) => {
         go(DONE)
       }}
     >
-      <InfoCard className="mt-5">
-        <div className="px-3.5 py-3">
-          <span className="block text-[12px] leading-4 text-[var(--color-inactive-dark)]">Flyttdag</span>
-          <span className="block text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{cap(home.moveDayLong)}</span>
-          <span className="block text-[12px] leading-4 text-[var(--color-inactive-dark)]">Datumet från din flytt. Vill du byta dag säger du det i samtalet.</span>
-        </div>
-      </InfoCard>
+      <Section title="Vilken dag vill du flytta?" sub={`Tillträdet är ${home.moveDayLong}. Flyttar du en annan dag, välj den.`}>
+        <DayPicker value={a.flyttDag} start={home.moveDateIso} label="Flyttdag" placeholder="Välj dag" onChange={(iso) => update({ flyttDag: iso })} ringText="tillträdesdagen" />
+      </Section>
       {a.stad === 'ja' && (
         <Section title="Vilken dag vill du ha flyttstädningen?" sub="Oftast dagen efter flytten, när bostaden är tömd.">
-          <DayPicker value={a.stadDag} start={home.moveDateIso} min={home.moveDateIso} label="Städdag" placeholder="Välj dag" onChange={(iso) => update({ stadDag: iso })} />
+          <DayPicker value={a.stadDag} start={a.flyttDag ?? home.moveDateIso} min={a.flyttDag ?? home.moveDateIso} label="Städdag" placeholder="Välj dag" onChange={(iso) => update({ stadDag: iso })} ringText={a.flyttDag ? 'flyttdagen' : 'tillträdesdagen'} />
         </Section>
       )}
       <Section title="Vill du ha något av det här?">
@@ -774,6 +770,7 @@ export const answerLines = (a: Answers, home: Home): string[] => {
   if (a.sammaDag) L.push(a.sammaDag === 'ja' ? 'Flyttar in samma dag' : a.sammaDag === 'nej' ? 'Flyttar inte in samma dag, behöver förvaring' : 'Samma dag: vet inte')
   L.push(adressLine(home.from, a.fran), adressLine(home.to, a.till))
   if (a.bohag) L.push(`${BOHAG_LABEL[a.bohag]}, ${home.fromKvm} m²`)
+  if (a.flyttDag) L.push(`Flytt ${fmtLongDate(fromIso(a.flyttDag))}`)
   if (a.biytaSvar === 'nej') L.push('Inga utrymmen utöver boarean')
   a.biytor.forEach((b) => L.push(`${b.typ ? BIYTA_LABEL[b.typ] : 'Utrymme'}${typeof b.kvm === 'number' ? ` ${biytaKvmText(b.kvm)}` : ''}${typeof b.fullt === 'number' ? `, ${fulltText(b.fullt).toLowerCase()}` : ''}`))
   if (a.sakerSvar === 'nej') L.push('Inga tunga eller ömtåliga föremål')

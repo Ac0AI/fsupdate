@@ -69,6 +69,8 @@ export type Answers = {
   kansliga?: JaNej
   kansligaText: string
   /* 6 Sista detaljerna */
+  /** Flyttdag som YYYY-MM-DD. Tom tills kunden valt, kalendern öppnar på tillträdesdagen. */
+  flyttDag?: string
   /** Städdag som YYYY-MM-DD, väljs av kunden när städ är med. */
   stadDag?: string
   tillval: Tillval[]
@@ -113,7 +115,7 @@ export const questionsLeft = (a: Answers): number[] => [
   adressLeft(a.till),
   [!a.bohag, !a.biytaSvar, !a.sakerSvar, !a.utemobler].filter(Boolean).length,
   !a.stad ? 1 : a.stad === 'nej' ? 0 : [!a.stadYta, !a.balkong, Object.keys(a.fonster).length === 0 && !a.fonsterInga, !a.kansliga].filter(Boolean).length,
-  a.stad === 'ja' && !a.stadDag ? 1 : 0,
+  (!a.flyttDag ? 1 : 0) + (a.stad === 'ja' && !a.stadDag ? 1 : 0),
 ]
 
 const adressTouched = (s: AdressSvar) => !!(s.hiss || harAvstand(s.avstand) || s.framkomlighet || !s.vaningFranFlytten)
@@ -125,7 +127,7 @@ export const answeredQuestions = (a: Answers) => [
   adressTouched(a.till),
   !!a.bohag || !!a.biytaSvar || !!a.sakerSvar || a.utemobler !== undefined,
   a.stad !== undefined,
-  a.tillval.length > 0 || !!a.ovrigt || !!a.stadDag || a.sent,
+  a.tillval.length > 0 || !!a.ovrigt || !!a.flyttDag || !!a.stadDag || a.sent,
 ]
 
 export const answeredCount = (a: Answers) => answeredQuestions(a).filter(Boolean).length
