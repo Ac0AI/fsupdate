@@ -62,3 +62,20 @@ export const fmtWeekTitle = (d: Date) => {
   return `${dm(from)} - ${dm(to)} ${to.getFullYear()}`
 }
 export const fmtWeekday = (d: Date) => strip(new Intl.DateTimeFormat(sv, { weekday: 'short' }).format(d))
+
+export const toIso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+export const fromIso = (s: string) => {
+  const [y = 1970, m = 1, d = 1] = s.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+/** "onsdag 11 november" */
+export const fmtLongDate = (d: Date) => new Intl.DateTimeFormat(sv, { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
+/** "november 2026" */
+export const fmtMonth = (d: Date) => new Intl.DateTimeFormat(sv, { month: 'long', year: 'numeric' }).format(d)
+/** Dagarna i månadens rutnät, måndag först, med tomma rutor före den första. */
+export const monthGrid = (d: Date): Array<Date | null> => {
+  const first = new Date(d.getFullYear(), d.getMonth(), 1)
+  const offset = (first.getDay() + 6) % 7
+  const days = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()
+  return [...Array<null>(offset).fill(null), ...Array.from({ length: days }, (_, i) => new Date(d.getFullYear(), d.getMonth(), i + 1))]
+}

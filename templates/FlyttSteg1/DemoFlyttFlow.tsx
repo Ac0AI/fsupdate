@@ -49,6 +49,12 @@ const longDay = (iso: string, plusDays = 0) => {
   if (!d) return plusDays ? 'lördag 31 oktober' : 'fredag 30 oktober'
   return new Intl.DateTimeFormat('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
 }
+/** YYYY-MM-DD lokalt, för städdagens kalender. */
+const isoDate = (iso: string) => {
+  const d = parse(iso) ?? new Date(2026, 9, 30)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 /* Som flyttsidans blå ruta skriver datumet: "10 november 2026". */
 const fullDate = (iso: string) => {
   const d = parse(iso)
@@ -79,6 +85,8 @@ const DemoFlyttFlow = () => {
   /* Desktop: dagens skärmar och Samtal bokat ligger i Flytthjälp-kortet som live. Frågestegen får en egen ruta ovanpå sidan. */
   const dialog = desktop && step >= FIRST_QUESTION && step < SALJARE
   const inline = inSheet && desktop && !dialog
+  /* Mobil: de sex frågestegen tar hela skärmen (David 20 okt i Paper: "Låt denna ta hela skärmen?"). Arket behålls för dagens skärmar, Samtal bokat och Allt sparat. */
+  const helskarm = !desktop && step >= FIRST_QUESTION && step < FIRST_QUESTION + 6
 
   useEffect(() => {
     setFlyttSteg1(true)
@@ -120,6 +128,7 @@ const DemoFlyttFlow = () => {
       moveDay: shortDay(move.movingDate),
       moveDayLong: longDay(move.movingDate),
       moveDateFull: fullDate(move.movingDate),
+      moveDateIso: isoDate(move.movingDate),
       cleanDayLong: longDay(move.movingDate, 1),
       firstName: demoUser.profile?.firstName || 'Anna',
     }
@@ -166,9 +175,9 @@ const DemoFlyttFlow = () => {
             mounted &&
             (!desktop || dialog) &&
             createPortal(
-              <div className={clsx('fixed inset-0 z-50 flex flex-col', dialog ? 'items-center justify-center p-6' : 'justify-end')} role="dialog" aria-modal>
-                <button type="button" aria-label="Stäng" className={clsx('absolute inset-0', dialog ? 'bg-black/40' : 'bg-black/30')} onClick={() => go(0)} />
-                <div className={clsx('relative flex w-full flex-col overflow-clip bg-white', dialog ? 'max-h-[88dvh] max-w-[840px] rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.25)]' : 'mx-auto max-h-[90dvh] max-w-[430px] rounded-t-[20px] shadow-[0_-4px_24px_rgba(0,0,0,0.15)]')}>{screen}</div>
+              <div className={clsx('fixed inset-x-0 bottom-0 z-50 flex flex-col', helskarm ? 'top-[52px]' : 'top-0', dialog ? 'items-center justify-center p-6' : 'justify-end')} role="dialog" aria-modal>
+                {!helskarm && <button type="button" aria-label="Stäng" className={clsx('absolute inset-0', dialog ? 'bg-black/40' : 'bg-black/30')} onClick={() => go(0)} />}
+                <div className={clsx('relative flex w-full flex-col overflow-clip bg-white', dialog ? 'max-h-[88dvh] max-w-[840px] rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.25)]' : helskarm ? 'h-full' : 'mx-auto max-h-[90dvh] max-w-[430px] rounded-t-[20px] shadow-[0_-4px_24px_rgba(0,0,0,0.15)]')}>{screen}</div>
               </div>,
               document.body,
             )}

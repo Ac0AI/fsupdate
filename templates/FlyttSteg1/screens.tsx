@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Boxes, Package, Trash2, Warehouse, Wrench } from 'lucide-react'
+import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, Car, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench } from 'lucide-react'
 import clsx from 'clsx'
 import GoogleColor from '@/public/images/GoogleColor.svg'
 import GoogleStar from '@/public/images/GoogleStar.svg'
@@ -39,11 +39,11 @@ import {
   type JaNejVet,
   type Tillval,
 } from './state'
-import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, MeterSlider, RangeSlider, WeekPicker, WindowIcon } from './ui'
+import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, DayPicker, MeterSlider, RangeSlider, WeekPicker, WindowIcon } from './ui'
 import { ChevronDown } from './LiveMovePage'
-import { canCallNow, fmtLong, hideMorning, isSlotPassed, nextSelectable } from './datum'
+import { canCallNow, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable } from './datum'
 
-export type Home = { from: string; to: string; fromKvm: number; toKvm: number; moveDay: string; moveDayLong: string; moveDateFull: string; cleanDayLong: string; firstName: string }
+export type Home = { from: string; to: string; fromKvm: number; toKvm: number; moveDay: string; moveDayLong: string; moveDateFull: string; moveDateIso: string; cleanDayLong: string; firstName: string }
 
 export type ScreenProps = {
   a: Answers
@@ -298,6 +298,16 @@ const JA_NEJ_VET: [JaNejVet, string][] = [
   ['nej', 'Nej'],
   ['vet-ej', 'Vet inte'],
 ]
+/* Små ikoner på steg 4 (David 20 okt i Paper: "Lägg in små ikoner"). */
+const BOHAG_IKON: Record<Bohag, React.ReactNode> = { lite: <Package size={22} />, normalt: <Boxes size={22} />, mycket: <Truck size={22} /> }
+const BIYTA_IKON: Record<BiytaTyp, React.ReactNode> = {
+  kallare: <ArrowDownToLine size={14} />,
+  vind: <ArrowUpToLine size={14} />,
+  forrad: <Archive size={14} />,
+  garage: <Car size={14} />,
+  uterum: <Sun size={14} />,
+  annat: <MoreHorizontal size={14} />,
+}
 
 /* 5 · Adresser */
 export const AdresserScreen = (p: ScreenProps) => {
@@ -434,6 +444,19 @@ export const BohagScreen = (p: ScreenProps) => {
   const { a, update, home } = p
   const setBiyta = (id: string, patch: Partial<Answers['biytor'][number]>) => update((prev) => ({ biytor: prev.biytor.map((b) => (b.id === id ? { ...b, ...patch } : b)) }))
   const setSak = (id: string, patch: Partial<Answers['saker'][number]>) => update((prev) => ({ saker: prev.saker.map((s) => (s.id === id ? { ...s, ...patch } : s)) }))
+  // Ett kort är öppet tills kunden trycker Klar, sedan en rad med Ändra. Klar finns först när allt är ifyllt.
+  const [klara, setKlara] = useState<Set<string>>(() => new Set())
+  const markera = (id: string, klar: boolean) =>
+    setKlara((prev) => {
+      const n = new Set(prev)
+      if (klar) n.add(id)
+      else n.delete(id)
+      return n
+    })
+  const biytaKlar = (b: Answers['biytor'][number]) => !!b.typ && typeof b.kvm === 'number' && typeof b.fullt === 'number'
+  const sakKlar = (s: Answers['saker'][number]) => !!s.vad.trim() && !!s.vikt && !!s.varde
+  const nyBiyta = () => update((prev) => ({ biytor: [...prev.biytor, { id: newId() }] }))
+  const nySak = () => update((prev) => ({ saker: [...prev.saker, { id: newId(), vad: '' }] }))
   return (
     <Q p={p} idx={FIRST + 3} title="Hur mycket ska med?" sub={`Jämfört med ett vanligt hem på ${home.fromKvm} m².`}>
       <div className="mt-5 grid grid-cols-3 gap-2">
@@ -444,19 +467,35 @@ export const BohagScreen = (p: ScreenProps) => {
             ['mycket', 'Mycket', 'Fullt i alla rum'],
           ] as [Bohag, string, string][]
         ).map(([v, label, hint]) => (
-          <Tile key={v} label={label} hint={hint} selected={a.bohag === v} onClick={() => update({ bohag: v })} />
+          <Tile key={v} label={label} hint={hint} selected={a.bohag === v} onClick={() => update({ bohag: v })} icon={BOHAG_IKON[v]} />
         ))}
       </div>
       <Section title="Har du saker i förråd eller annat utrymme utöver boarean?">
-        <ChoiceRow options={JA_NEJ} value={a.biytaSvar} onChange={(v) => update((prev) => ({ biytaSvar: v, biytor: v === 'ja' ? (prev.biytor.length ? prev.biytor : [{ id: newId() }]) : [] }))} />
+        <ChoiceRow
+          options={JA_NEJ}
+          value={a.biytaSvar}
+          onChange={(v) => {
+            if (v === 'ja' && a.biytor.length === 0) nyBiyta()
+            else update({ biytaSvar: v, biytor: v === 'ja' ? a.biytor : [] })
+            if (v === 'ja') update({ biytaSvar: v })
+          }}
+        />
         {a.biytaSvar === 'ja' && (
           <div className="mt-3 flex flex-col gap-3">
             {a.biytor.map((b, i) => (
-              <ItemCard key={b.id} title={b.typ ? BIYTA_LABEL[b.typ] : `Utrymme ${i + 1}`} onRemove={() => update((prev) => ({ biytor: prev.biytor.filter((x) => x.id !== b.id) }))}>
+              <ItemCard
+                key={b.id}
+                title={b.typ ? BIYTA_LABEL[b.typ] : `Utrymme ${i + 1}`}
+                onRemove={() => update((prev) => ({ biytor: prev.biytor.filter((x) => x.id !== b.id) }))}
+                collapsed={klara.has(b.id) && biytaKlar(b)}
+                summary={[typeof b.kvm === 'number' ? biytaKvmText(b.kvm) : null, typeof b.fullt === 'number' ? fulltText(b.fullt).toLowerCase() : null].filter(Boolean).join(' · ')}
+                onDone={biytaKlar(b) ? () => markera(b.id, true) : undefined}
+                onEdit={() => markera(b.id, false)}
+              >
                 <Field label="Vilket utrymme?">
                   <ChipRow>
                     {(Object.keys(BIYTA_LABEL) as BiytaTyp[]).map((t) => (
-                      <Chip key={t} small selected={b.typ === t} onClick={() => setBiyta(b.id, { typ: t })}>
+                      <Chip key={t} small selected={b.typ === t} onClick={() => setBiyta(b.id, { typ: t })} icon={BIYTA_IKON[t]}>
                         {BIYTA_LABEL[t]}
                       </Chip>
                     ))}
@@ -470,16 +509,32 @@ export const BohagScreen = (p: ScreenProps) => {
                 </Field>
               </ItemCard>
             ))}
-            <AddCard label="Lägg till ett utrymme till" hint="Vind, källare, garage eller förråd" onClick={() => update((prev) => ({ biytor: [...prev.biytor, { id: newId() }] }))} />
+            <AddCard label="Lägg till ett utrymme till" hint="Vind, källare, garage eller förråd" onClick={nyBiyta} />
           </div>
         )}
       </Section>
       <Section title="Har du föremål som kräver tunga lyft eller är extra ömtåliga?">
-        <ChoiceRow options={JA_NEJ} value={a.sakerSvar} onChange={(v) => update((prev) => ({ sakerSvar: v, saker: v === 'ja' ? (prev.saker.length ? prev.saker : [{ id: newId(), vad: '' }]) : [] }))} />
+        <ChoiceRow
+          options={JA_NEJ}
+          value={a.sakerSvar}
+          onChange={(v) => {
+            if (v === 'ja' && a.saker.length === 0) nySak()
+            else update({ sakerSvar: v, saker: v === 'ja' ? a.saker : [] })
+            if (v === 'ja') update({ sakerSvar: v })
+          }}
+        />
         {a.sakerSvar === 'ja' && (
           <div className="mt-3 flex flex-col gap-3">
             {a.saker.map((s, i) => (
-              <ItemCard key={s.id} title={s.vad || `Föremål ${i + 1}`} onRemove={() => update((prev) => ({ saker: prev.saker.filter((x) => x.id !== s.id) }))}>
+              <ItemCard
+                key={s.id}
+                title={s.vad || `Föremål ${i + 1}`}
+                onRemove={() => update((prev) => ({ saker: prev.saker.filter((x) => x.id !== s.id) }))}
+                collapsed={klara.has(s.id) && sakKlar(s)}
+                summary={[s.vikt, s.varde].filter(Boolean).join(' · ')}
+                onDone={sakKlar(s) ? () => markera(s.id, true) : undefined}
+                onEdit={() => markera(s.id, false)}
+              >
                 <Field label="Vad är det?">
                   <TextInput value={s.vad} onChange={(v) => setSak(s.id, { vad: v })} placeholder="T.ex. piano eller marmorbord" label="Vad är det?" />
                 </Field>
@@ -503,7 +558,7 @@ export const BohagScreen = (p: ScreenProps) => {
                 </Field>
               </ItemCard>
             ))}
-            <AddCard label="Lägg till ett föremål till" hint="Så tar flyttfirman med rätt utrustning" onClick={() => update((prev) => ({ saker: [...prev.saker, { id: newId(), vad: '' }] }))} />
+            <AddCard label="Lägg till ett föremål till" hint="Så tar flyttfirman med rätt utrustning" onClick={nySak} />
           </div>
         )}
       </Section>
@@ -666,14 +721,12 @@ export const SistaScreen = (p: ScreenProps) => {
           <span className="block text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{cap(home.moveDayLong)}</span>
           <span className="block text-[12px] leading-4 text-[var(--color-inactive-dark)]">Datumet från din flytt. Vill du byta dag säger du det i samtalet.</span>
         </div>
-        {a.stad === 'ja' && (
-          <div className="border-t border-[var(--color-inactive-main)] px-3.5 py-3">
-            <span className="block text-[12px] leading-4 text-[var(--color-inactive-dark)]">Städdag</span>
-            <span className="block text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{cap(home.cleanDayLong)}</span>
-            <span className="block text-[12px] leading-4 text-[var(--color-inactive-dark)]">Dagen efter flytten, när bostaden är tömd.</span>
-          </div>
-        )}
       </InfoCard>
+      {a.stad === 'ja' && (
+        <Section title="Vilken dag vill du ha flyttstädningen?" sub="Oftast dagen efter flytten, när bostaden är tömd.">
+          <DayPicker value={a.stadDag} start={home.moveDateIso} min={home.moveDateIso} label="Städdag" placeholder="Välj dag" onChange={(iso) => update({ stadDag: iso })} />
+        </Section>
+      )}
       <Section title="Vill du ha något av det här?">
         <div className="flex flex-col gap-2">
           {(Object.keys(TILLVAL_LABEL) as Tillval[]).map((t) => (
@@ -710,7 +763,7 @@ export const answerLines = (a: Answers, home: Home): string[] => {
   if (a.stad === 'nej') L.push('Ingen flyttstädning')
   if (a.stad === 'ja') {
     const mer = a.stadYta === 'mer' ? ` + ${a.stadMer.map((m) => m.toLowerCase()).join(', ') || 'mer'}${a.stadMerKvm ? ` ${a.stadMerKvm} m²` : ''}` : ''
-    L.push(`Flyttstäd: boarean ${home.fromKvm} m²${mer}`)
+    L.push(`Flyttstäd${a.stadDag ? ` ${fmtLongDate(fromIso(a.stadDag))}` : ''}: boarean ${home.fromKvm} m²${mer}`)
     if (a.balkong === 'ja') L.push(`Inglasad balkong${a.balkongStorlek ? `, ${a.balkongStorlek}` : ''}${a.balkongGlas ? `, ${a.balkongGlas === 'hel' ? 'helinglasad' : 'halvinglasad'}` : ''}`)
     const f = (Object.keys(a.fonster) as FonsterTyp[]).map((t) => `${FONSTER_LABEL[t][0].toLowerCase()} ×${a.fonster[t]}`)
     if (f.length) L.push(`Fönster: ${f.join(', ')}`)

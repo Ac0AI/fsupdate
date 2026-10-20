@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import Button from '@/components/atoms/Button'
 import SiteChip from '@/components/atoms/Chip'
 import { AVSTAND_MAX, AVSTAND_STEG, FLOORS, TOTAL, avstandText, harAvstand, type Avstand, type FonsterTyp } from './state'
-import { addDays, fmtShort, fmtWeekTitle, fmtWeekday, isSelectable, maxDay, sameDay, startOfWeek, weekDays } from './datum'
+import { addDays, fmtLongDate, fmtMonth, fmtShort, fmtWeekTitle, fmtWeekday, fromIso, isSelectable, maxDay, monthGrid, sameDay, startOfWeek, toIso, weekDays } from './datum'
 
 /*
  * Byggstenar för arket och frågestegen, i sajtens tokens och atomer. Frågan
@@ -59,9 +59,18 @@ export const TextLink = ({ children, onClick, className, muted }: { children: Re
   </button>
 )
 
-export const Chip = ({ children, selected, onClick, small }: { children: ReactNode; selected?: boolean; onClick?: () => void; small?: boolean }) => (
+export const Chip = ({ children, selected, onClick, small, icon }: { children: ReactNode; selected?: boolean; onClick?: () => void; small?: boolean; icon?: ReactNode }) => (
   <SiteChip active={!!selected} onClick={onClick ?? noop} size={small ? 'sm' : 'md'}>
-    {children}
+    {icon ? (
+      <span className="inline-flex items-center gap-1.5">
+        <span aria-hidden className="shrink-0">
+          {icon}
+        </span>
+        {children}
+      </span>
+    ) : (
+      children
+    )}
   </SiteChip>
 )
 
@@ -152,15 +161,42 @@ export const AddCard = ({ label, hint, onClick }: { label: string; hint: string;
   </button>
 )
 
-export const ItemCard = ({ title, onRemove, children }: { title: string; onRemove: () => void; children: ReactNode }) => (
-  <div className="rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-secondary-main)] bg-white p-4">
+/**
+ * Ett tillagt utrymme eller föremål. Öppet medan kunden fyller i, Klar fäller
+ * ihop det till en rad med Ändra (David 20 okt: "fäll ihop den när det är klar").
+ */
+export const ItemCard = ({ title, onRemove, children, collapsed, summary, onDone, onEdit }: { title: string; onRemove: () => void; children: ReactNode; collapsed?: boolean; summary?: string; onDone?: () => void; onEdit?: () => void }) => (
+  <div className={clsx('rounded-[var(--radius-main)] border-[1.5px] bg-white', collapsed ? 'border-[var(--color-inactive-main)] px-4 py-3' : 'border-[var(--color-secondary-main)] p-4')}>
     <div className="flex items-center justify-between gap-3">
-      <span className="truncate text-[15px] font-bold text-[var(--color-secondary-main)]">{title}</span>
-      <TextLink onClick={onRemove} muted>
-        Ta bort
-      </TextLink>
+      <span className="flex min-w-0 items-center gap-2 text-[15px] font-bold text-[var(--color-secondary-main)]">
+        {collapsed && (
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D]">
+            <Check size={12} strokeWidth={3} />
+          </span>
+        )}
+        <span className="truncate">{title}</span>
+      </span>
+      <span className="flex shrink-0 items-center gap-4">
+        {collapsed && onEdit && <TextLink onClick={onEdit}>Ändra</TextLink>}
+        <TextLink onClick={onRemove} muted>
+          Ta bort
+        </TextLink>
+      </span>
     </div>
-    <div className="mt-3">{children}</div>
+    {collapsed ? (
+      summary && <p className="mt-1 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">{summary}</p>
+    ) : (
+      <>
+        <div className="mt-3">{children}</div>
+        {onDone && (
+          <div className="mt-4">
+            <PrimaryButton tone="outline" onClick={onDone}>
+              Klar
+            </PrimaryButton>
+          </div>
+        )}
+      </>
+    )}
   </div>
 )
 
@@ -572,3 +608,105 @@ export const RangeSlider = ({ value, min, max, step, onChange, text, ticks, labe
     </div>
   )
 }
+
+/**
+ * Datumväljare för en dag längre fram, t.ex. städdagen: fältet är tomt tills
+ * kunden valt, kalendern öppnar på flyttdagens månad med flyttdagen markerad
+ * (David 20 okt: "lämna ej ifylld men poppa på movingdate när datepickern öppnas").
+ */
+export const DayPicker = ({ value, start, min, label, placeholder, onChange }: { value?: string; start: string; min?: string; label: string; placeholder: string; onChange: (iso: string) => void }) => {
+  const [open, setOpen] = useState(false)
+  const [visible, setVisible] = useState(() => fromIso(value ?? start))
+  const root = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: PointerEvent) => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    document.addEventListener('pointerdown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+  const flytt = fromIso(start)
+  const minDag = min ? fromIso(min) : undefined
+  const vald = value ? fromIso(value) : undefined
+  const idag = new Date()
+  return (
+    <div ref={root} className="relative w-full">
+      <button
+        type="button"
+        data-day-trigger
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => {
+          setVisible(fromIso(value ?? start))
+          setOpen((o) => !o)
+        }}
+        className={clsx('relative flex h-12 w-full items-center rounded-[var(--radius-main)] border-[1.5px] bg-white px-3 text-left', open ? 'border-[var(--color-secondary-main)]' : 'border-[var(--color-inactive-main)]')}
+      >
+        {vald && <span className="pointer-events-none absolute -top-2.5 left-3 bg-white px-1 text-[12px] text-[var(--color-text-main)]">{label}</span>}
+        <span className={clsx('block min-w-0 flex-1 truncate text-[16px]', vald ? 'font-bold text-[var(--color-text-main)]' : 'text-[var(--color-inactive-grey-light)]')}>{vald ? fmtLongDate(vald) : placeholder}</span>
+        <ChevronDownSmall />
+      </button>
+      {open && (
+        <div role="dialog" aria-label={label} className="absolute left-0 right-0 top-full z-50 mt-2 rounded-lg bg-white p-4 shadow-xl">
+          <div className="mb-3 flex items-center justify-between text-[var(--color-secondary-main)]">
+            <button type="button" aria-label="Förra månaden" onClick={() => setVisible((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))} className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white">
+              <ChevronLeft size={16} />
+            </button>
+            <span className="text-[16px] font-bold capitalize" aria-live="polite">
+              {fmtMonth(visible)}
+            </span>
+            <button type="button" aria-label="Nästa månad" onClick={() => setVisible((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))} className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white">
+              <ChevronRight size={16} />
+            </button>
+          </div>
+          <div className="grid grid-cols-7 gap-1 text-center">
+            {['Mån', 'Tis', 'Ons', 'Tors', 'Fre', 'Lör', 'Sön'].map((v) => (
+              <span key={v} className="text-[12px] font-medium text-[var(--color-inactive-dark)]">
+                {v}
+              </span>
+            ))}
+            {monthGrid(visible).map((day, i) => {
+              if (!day) return <span key={`tom-${i}`} />
+              const disabled = (minDag && day < minDag) || day < new Date(idag.getFullYear(), idag.getMonth(), idag.getDate())
+              const selected = !!vald && sameDay(day, vald)
+              const arFlytt = sameDay(day, flytt)
+              return (
+                <button
+                  key={day.toISOString()}
+                  type="button"
+                  disabled={disabled}
+                  aria-label={fmtLongDate(day) + (arFlytt ? ', flyttdagen' : '')}
+                  onClick={() => {
+                    onChange(toIso(day))
+                    setOpen(false)
+                  }}
+                  className={clsx(
+                    'mx-auto inline-flex h-9 w-9 items-center justify-center rounded-full text-[14px]',
+                    selected ? 'bg-[var(--color-primary-main)] font-bold text-white' : 'text-[var(--color-secondary-main)] hover:bg-[var(--color-primary-main)] hover:text-white',
+                    arFlytt && !selected && 'ring-2 ring-[var(--color-secondary-main)] font-bold',
+                    disabled && 'pointer-events-none text-[#94A3B8] opacity-50',
+                  )}
+                >
+                  {day.getDate()}
+                </button>
+              )
+            })}
+          </div>
+          <p className="mt-3 text-[12px] text-[var(--color-inactive-dark)]">Ringen är flyttdagen, {fmtLongDate(flytt)}.</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+const ChevronDownSmall = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0 text-[var(--color-inactive-dark)]">
+    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
