@@ -134,6 +134,56 @@ export const GreenBadge = ({ children }: { children: ReactNode }) => (
   </span>
 )
 
+/** Adresserna som en resa: ring för Från, prick för stopp, grön punkt för Till och en streckad linje mellan dem. */
+export const RouteCard = ({ children, className }: { children: ReactNode; className?: string }) => (
+  <div className={clsx('rounded-[var(--radius-main)] border border-[var(--color-inactive-main)] bg-white px-[16px] py-[4px]', className)}>{children}</div>
+)
+
+/*
+ * Sajtens Tailwind-skala är inte 4 px per steg, så allt som ska linjera med
+ * markören har px-värden. Markören står mitt på adressraden: 16 px etikett
+ * plus halva 20 px-raden. Linjerna går ut i radens 12 px-padding så att de
+ * möts mellan raderna.
+ */
+const ROUTE_MID = 26
+const ROUTE_PAD = 12
+const ROUTE_GAP = 3
+
+export const RoutePoint = ({ kind, label, value, action, children }: { kind: 'fran' | 'stopp' | 'till'; label: string; value?: string; action?: ReactNode; children?: ReactNode }) => {
+  const size = kind === 'stopp' ? 8 : 12
+  // Ett stopp har bara etikett ovanför fältet, då står pricken mitt på etiketten.
+  const markTop = (value ? ROUTE_MID : 8) - size / 2
+  const line = 'absolute left-[5px] border-l-2 border-dashed border-[var(--color-inactive-grey-light)]'
+  return (
+    <div className="flex gap-[12px] py-[12px]">
+      <span aria-hidden className="relative w-[12px] shrink-0">
+        {kind !== 'fran' && <span className={line} style={{ top: -ROUTE_PAD, height: markTop - ROUTE_GAP + ROUTE_PAD }} />}
+        {kind !== 'till' && <span className={line} style={{ top: markTop + size + ROUTE_GAP, bottom: -ROUTE_PAD }} />}
+        <span
+          className={clsx(
+            'absolute rounded-full',
+            kind === 'fran' && 'left-0 border-[3px] border-[var(--color-secondary-main)] bg-white',
+            kind === 'stopp' && 'left-[2px] bg-[var(--color-secondary-main)]',
+            kind === 'till' && 'left-0 bg-[var(--color-primary-main)] ring-[3px] ring-[var(--color-primary-border)]',
+          )}
+          style={{ top: markTop, width: size, height: size }}
+        />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-end justify-between gap-[12px]">
+          <span className="min-w-0">
+            <span className="block text-[12px] leading-[16px] text-[var(--color-inactive-dark)]">{label}</span>
+            {value && <span className="block truncate text-[16px] font-bold leading-[20px] text-[var(--color-text-main)]">{value}</span>}
+          </span>
+          {/* 44 px träffyta som inte puttar raden: negativ marginal på spannet, knappar nollställs av sajtens reset. */}
+          {action && <span className="-my-[12px] flex h-[44px] shrink-0 items-center">{action}</span>}
+        </div>
+        {children}
+      </div>
+    </div>
+  )
+}
+
 /** Rad med hämtad uppgift och Ändra, som adresserna och bostadstypen. */
 export const InfoRow = ({ label, value, action, onAction, first }: { label: string; value: string; action?: string; onAction?: () => void; first?: boolean }) => (
   <div className={clsx('flex items-center justify-between gap-3 px-3.5 py-3', !first && 'border-t border-[var(--color-inactive-main)]')}>

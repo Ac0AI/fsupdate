@@ -54,6 +54,8 @@ import {
   InfoCard,
   InfoNote,
   InfoRow as Row,
+  RouteCard,
+  RoutePoint,
   ItemCard,
   MoreLink,
   PrimaryButton,
@@ -545,45 +547,50 @@ export const AdresserScreen = (p: ScreenProps) => {
   const setStopp = (i: number, v: string) => update((prev) => ({ stopp: prev.stopp.map((s, j) => (j === i ? v : s)) }))
   return (
     <Q p={p} idx={FIRST} title="Stämmer adresserna?" sub="Hämtade från din flytt. Ändra om något inte stämmer.">
-      <InfoCard className="mt-5">
-        <Row label="Från" value={`${home.from}, ${move.fromAddress.city}`} action={andra === 'fran' ? undefined : 'Ändra'} onAction={() => setAndra('fran')} first />
-        {andra === 'fran' && (
-          <div className="border-t border-[var(--color-inactive-main)] px-3.5 py-3">
-            <AddressForm
-              address={move.fromAddress}
-              onSave={(adr) => {
-                writeDemoSession({ fromAddress: adr })
-                setAndra(null)
-              }}
-            />
-          </div>
-        )}
+      <RouteCard className="mt-5">
+        <RoutePoint kind="fran" label="Från" value={`${home.from}, ${move.fromAddress.city}`} action={andra === 'fran' ? undefined : <TextLink className="h-[44px]" onClick={() => setAndra('fran')}>Ändra</TextLink>}>
+          {andra === 'fran' && (
+            <div className="mt-2">
+              <AddressForm
+                address={move.fromAddress}
+                onSave={(adr) => {
+                  writeDemoSession({ fromAddress: adr })
+                  setAndra(null)
+                }}
+              />
+            </div>
+          )}
+        </RoutePoint>
         {a.stopp.map((s, i) => (
-          <div key={i} className="border-t border-[var(--color-inactive-main)] px-3.5 py-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Stopp {i + 1}</span>
-              <TextLink muted className="text-[13px]" onClick={() => update((prev) => ({ stopp: prev.stopp.filter((_, j) => j !== i) }))}>
+          <RoutePoint
+            key={i}
+            kind="stopp"
+            label={`Stopp ${i + 1}`}
+            action={
+              <TextLink muted className="h-[44px] text-[13px]" onClick={() => update((prev) => ({ stopp: prev.stopp.filter((_, j) => j !== i) }))}>
                 Ta bort
               </TextLink>
-            </div>
+            }
+          >
             <div className="mt-1">
               <TextInput value={s} onChange={(v) => setStopp(i, v)} placeholder="Adress, t.ex. ett förråd eller magasin" label={`Stopp ${i + 1}`} />
             </div>
-          </div>
+          </RoutePoint>
         ))}
-        <Row label="Till" value={`${home.to}, ${move.toAddress.city}`} action={andra === 'till' ? undefined : 'Ändra'} onAction={() => setAndra('till')} />
-        {andra === 'till' && (
-          <div className="border-t border-[var(--color-inactive-main)] px-3.5 py-3">
-            <AddressForm
-              address={move.toAddress}
-              onSave={(adr) => {
-                writeDemoSession({ toAddress: adr })
-                setAndra(null)
-              }}
-            />
-          </div>
-        )}
-      </InfoCard>
+        <RoutePoint kind="till" label="Till" value={`${home.to}, ${move.toAddress.city}`} action={andra === 'till' ? undefined : <TextLink className="h-[44px]" onClick={() => setAndra('till')}>Ändra</TextLink>}>
+          {andra === 'till' && (
+            <div className="mt-2">
+              <AddressForm
+                address={move.toAddress}
+                onSave={(adr) => {
+                  writeDemoSession({ toAddress: adr })
+                  setAndra(null)
+                }}
+              />
+            </div>
+          )}
+        </RoutePoint>
+      </RouteCard>
       <div className="mt-3">
         <MoreLink onClick={() => update((prev) => ({ stopp: [...prev.stopp, ''] }))}>{a.stopp.length ? 'Lägg till ett stopp till' : 'Lägg till ett stopp på vägen'}</MoreLink>
       </div>
