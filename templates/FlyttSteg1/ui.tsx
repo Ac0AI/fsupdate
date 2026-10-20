@@ -2,7 +2,7 @@
 
 import { Check, ChevronUp, Minus, Plus, X } from 'lucide-react'
 import clsx from 'clsx'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import Button from '@/components/atoms/Button'
 import SiteChip from '@/components/atoms/Chip'
 import { FLOORS, TOTAL, type FonsterTyp } from './state'
@@ -14,6 +14,8 @@ import { FLOORS, TOTAL, type FonsterTyp } from './state'
  */
 
 const noop = () => undefined
+
+const DISABLED_VARS = { '--color-disabled-button-bg': '#E2E8F0', '--color-disabled-button-border': '#E2E8F0', '--color-disabled-button-color': '#475569' } as CSSProperties
 
 export const STEG = ['Adresser', 'Bära ut', 'Bära in', 'Vad ska med', 'Städning', 'Sista detaljerna'] as const
 
@@ -36,7 +38,8 @@ export const PrimaryButton = ({
   className?: string
   rounded?: boolean
 }) => (
-  <div className={clsx('w-full', className)}>
+  // Grå knapp med läsbar text: sajtens disabled-variant läser färgerna från CSS-variabler, så de byts här.
+  <div className={clsx('w-full', className)} style={disabled ? DISABLED_VARS : undefined}>
     <Button
       variant={tone === 'orange' ? 'orange' : tone === 'navy' ? 'primary' : tone === 'outline' ? 'outline' : 'ghostInverted'}
       withFullWidth
@@ -44,7 +47,7 @@ export const PrimaryButton = ({
       disabled={disabled}
       onClick={onClick ?? noop}
       text={children}
-      className={clsx('min-h-[48px]', rounded && '!rounded-xl', disabled && '!border-[var(--color-inactive-main)] !bg-[var(--color-inactive-main)] !text-[var(--color-inactive-grey-light)] !opacity-100')}
+      className={clsx('min-h-[48px]', rounded && '!rounded-xl', disabled && '!opacity-100')}
     />
   </div>
 )
@@ -329,15 +332,15 @@ export const StatusHead = ({ title, onClose }: { title: string; onClose: () => v
 
 export const SheetHandle = () => <span className="mx-auto mb-2 mt-3 block h-1 w-10 shrink-0 rounded-full bg-[var(--color-inactive-grey-light)]/60 md:hidden" />
 
-/* Fortsätt, "N frågor kvar" och foten. Mobil: fast i botten. Desktop: i innehållskolumnen, knappen till vänster. */
-const FrameFooter = ({ cta, left, foot, onNext, desktop }: { cta: string; left: number; foot: string; onNext: () => void; desktop?: boolean }) => (
-  <div className={clsx(desktop && 'flex items-center gap-5')}>
-    <PrimaryButton className={desktop ? 'md:w-[240px]' : undefined} onClick={onNext} disabled={left > 0}>
+/* Fortsätt, "N frågor kvar" och foten. Mobil: fast i botten, centrerat. Desktop: knappen till vänster, texten bredvid. */
+const FrameFooter = ({ cta, left, foot, onNext }: { cta: string; left: number; foot: string; onNext: () => void }) => (
+  <div className="md:flex md:items-center md:gap-5">
+    <PrimaryButton className="md:w-[240px]" onClick={onNext} disabled={left > 0}>
       {cta}
     </PrimaryButton>
-    <div className={desktop ? 'text-left' : 'text-center'}>
-      {left > 0 && <p className={clsx('text-[12px] font-bold text-[var(--color-secondary-main)]', desktop ? 'text-[13px]' : 'mt-2')}>{left} {left === 1 ? 'fråga' : 'frågor'} kvar</p>}
-      <p className={clsx('text-[12px] text-[var(--color-inactive-dark)]', desktop ? 'mt-0.5 text-[13px]' : left > 0 ? 'mt-0.5' : 'mt-2')}>{foot}</p>
+    <div className="text-center md:text-left">
+      {left > 0 && <p className="mt-2 text-[12px] font-bold text-[var(--color-secondary-main)] md:mt-0 md:text-[13px]">{left} {left === 1 ? 'fråga' : 'frågor'} kvar</p>}
+      <p className={clsx('text-[12px] text-[var(--color-inactive-dark)] md:mt-0.5 md:text-[13px]', left > 0 ? 'mt-0.5' : 'mt-2')}>{foot}</p>
     </div>
   </div>
 )
@@ -345,8 +348,9 @@ const FrameFooter = ({ cta, left, foot, onNext, desktop }: { cta: string; left: 
 /**
  * Ramen runt varje frågesteg: steg x av 6, Sparat-bocken, krysset, frågan,
  * och Fortsätt fast i botten. Fortsätt tänds när stegets knappfrågor har svar.
- * Desktop (inuti Flytthjälp-kortet): steglista till vänster, frågan till höger,
- * Fortsätt under frågan. Klara steg går att hoppa tillbaka till.
+ * Mobil: arket. Desktop: en egen ruta ovanpå sidan, steglista till vänster,
+ * frågan till höger, kroppen scrollar och Fortsätt står still. Klara steg går
+ * att hoppa tillbaka till.
  */
 export const Frame = ({
   step,
@@ -376,8 +380,8 @@ export const Frame = ({
   onNext: () => void
   onClose: () => void
 }) => (
-  <div className="flex h-full min-h-0 flex-1 flex-col bg-white md:h-auto md:flex-none">
-    <div className="flex items-center justify-between pl-4 pr-1 md:pl-0 md:pr-0">
+  <div className="flex h-full min-h-0 flex-1 flex-col bg-white">
+    <div className="flex items-center justify-between pl-4 pr-1 md:px-6 md:pt-3">
       <span className="text-[13px] font-bold text-[var(--color-text-main)] md:text-[14px]">
         Steg {step + 1} av {TOTAL} · {STEG[step]}
       </span>
@@ -393,8 +397,8 @@ export const Frame = ({
         <li key={s} className={clsx('h-1 flex-1 rounded-full', i < step ? 'bg-[var(--color-primary-main)]' : i === step ? 'bg-[var(--color-secondary-main)]' : 'bg-[var(--color-inactive-main)]')} />
       ))}
     </ol>
-    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-5 md:grid md:grid-cols-[200px_minmax(0,560px)] md:gap-10 md:overflow-visible md:px-0 md:pb-2 md:pt-5">
-      <nav className="hidden md:block" aria-label="Steg">
+    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-5 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4">
+      <nav className="hidden md:sticky md:top-0 md:block" aria-label="Steg">
         <ol className="flex flex-col gap-1">
           {STEG.map((s, i) => {
             const state = i === step ? 'current' : done?.[i] ? 'done' : 'todo'
@@ -419,16 +423,13 @@ export const Frame = ({
           })}
         </ol>
       </nav>
-      <div className="min-w-0">
+      <div className="min-w-0 md:max-w-[560px]">
         <h1 className="text-[22px] font-bold leading-[28px] text-[var(--color-text-main)] md:text-[26px] md:leading-[32px]">{title}</h1>
         {sub && <p className="mt-1 text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:text-[15px] md:leading-[22px]">{sub}</p>}
         {children}
-        <div className="mt-8 hidden md:block">
-          <FrameFooter cta={cta} left={left} foot={foot} onNext={onNext} desktop />
-        </div>
       </div>
     </div>
-    <div className="shrink-0 border-t border-[var(--color-inactive-main)] bg-white px-4 pb-4 pt-3 md:hidden">
+    <div className="shrink-0 border-t border-[var(--color-inactive-main)] bg-white px-4 pb-4 pt-3 md:py-4 md:pl-[264px] md:pr-6">
       <FrameFooter cta={cta} left={left} foot={foot} onNext={onNext} />
     </div>
   </div>

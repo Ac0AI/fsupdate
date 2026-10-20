@@ -76,7 +76,9 @@ const DemoFlyttFlow = () => {
 
   const step = Math.min(LAST, Math.max(0, Number(search.get('s') ?? 0) || 0))
   const inSheet = step > 0 && step < SALJARE
-  const inline = inSheet && desktop
+  /* Desktop: dagens skärmar och Samtal bokat ligger i Flytthjälp-kortet som live. Frågestegen får en egen ruta ovanpå sidan. */
+  const dialog = desktop && step >= FIRST_QUESTION && step < SALJARE
+  const inline = inSheet && desktop && !dialog
 
   useEffect(() => {
     setFlyttSteg1(true)
@@ -159,14 +161,14 @@ const DemoFlyttFlow = () => {
       ) : (
         <>
           <LiveMovePage home={home} inline={inline ? screen : null} card={card} onOffer={() => go(answers.samtal ? nextUnanswered(answers) : 1)} />
-          {/* Mobil: arket via portal, annars fastnar fixed i demons animerade ram. */}
+          {/* Mobil: arket. Desktop: frågestegen i en egen ruta. Via portal, annars fastnar fixed i demons animerade ram. */}
           {inSheet &&
             mounted &&
-            !desktop &&
+            (!desktop || dialog) &&
             createPortal(
-              <div className="fixed inset-0 z-50 flex flex-col justify-end" role="dialog" aria-modal>
-                <button type="button" aria-label="Stäng" className="absolute inset-0 bg-black/30" onClick={() => go(0)} />
-                <div className="relative mx-auto flex max-h-[90dvh] w-full max-w-[430px] flex-col overflow-clip rounded-t-[20px] bg-white shadow-[0_-4px_24px_rgba(0,0,0,0.15)]">{screen}</div>
+              <div className={clsx('fixed inset-0 z-50 flex flex-col', dialog ? 'items-center justify-center p-6' : 'justify-end')} role="dialog" aria-modal>
+                <button type="button" aria-label="Stäng" className={clsx('absolute inset-0', dialog ? 'bg-black/40' : 'bg-black/30')} onClick={() => go(0)} />
+                <div className={clsx('relative flex w-full flex-col overflow-clip bg-white', dialog ? 'max-h-[88dvh] max-w-[840px] rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.25)]' : 'mx-auto max-h-[90dvh] max-w-[430px] rounded-t-[20px] shadow-[0_-4px_24px_rgba(0,0,0,0.15)]')}>{screen}</div>
               </div>,
               document.body,
             )}
