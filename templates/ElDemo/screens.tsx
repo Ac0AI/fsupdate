@@ -4,7 +4,23 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { clsx } from 'clsx'
-import { HOME, OFFERS, RECOMMENDED, dateStatus, firstPossible, kwhFor, longDate, offerById, priceFor, type HomeType, type OfferId } from './data'
+import {
+  HOME,
+  OFFERS,
+  RECOMMENDED,
+  compareLevel,
+  compareNote,
+  comparePrice,
+  formatOre,
+  dateStatus,
+  firstPossible,
+  kwhFor,
+  longDate,
+  offerById,
+  priceFor,
+  type HomeType,
+  type OfferId,
+} from './data'
 import { ArrowRight, CheckCircle, ChevronDown, FramedField, Foot, Help, Lock, Logo, PenLarge, Pin, Shield, Steps, Title, fieldInput, press } from './ui'
 
 export type ElState = {
@@ -125,6 +141,12 @@ const RecommendedCard = ({ s, set }: ScreenProps) => {
             <span className="text-[12px] leading-[18px] tracking-[0.32px] text-[#767678]">−8,75 öre/kWh + 0 kr i månadsavgift (ord. 39 kr)</span>
           </div>
         </div>
+        <div className="flex flex-col gap-[4px] px-[20px] pb-[8px]">
+          <span className={clsx('text-[14px] leading-[18px] font-bold tracking-[0.32px]', navy)}>
+            Jämförpris {formatOre(comparePrice(o, compareLevel(s.kwh)))} öre/kWh ({new Intl.NumberFormat('sv-SE').format(compareLevel(s.kwh))} kWh/år)
+          </span>
+          <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">{compareNote(o)}</span>
+        </div>
       </div>
       {s.readMore && (
         <div className="flex flex-col gap-[8px] px-[20px] pb-[15px] motion-safe:animate-[rise_.3s_ease-out_both]">
@@ -205,6 +227,7 @@ const Compare = ({ s, set }: ScreenProps) => {
             <span className="flex min-w-0 flex-1 flex-col gap-[6px]">
               <Logo src={o.logo} alt={o.name} className="h-6 w-[100px]" />
               <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">{o.compareSub}</span>
+              <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">Jämförpris {formatOre(comparePrice(o, compareLevel(s.kwh)))} öre/kWh</span>
             </span>
             <Price value={priceFor(o, s.kwh)} size="row" tone={o.hasDiscount ? 'mint' : 'navy'} />
             <Radio on={on} />

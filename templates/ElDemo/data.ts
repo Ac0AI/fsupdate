@@ -21,6 +21,11 @@ export type Offer = {
   /** ca kr/mån vid 2 900 kWh/år enligt Paper. */
   basePrice: number
   hasDiscount: boolean
+  /** Jämförpris vid 2 000 kWh/år enligt Paper, öre/kWh inkl. moms och rabatt första året. */
+  compare2000: number
+  /** Månadsavgift första året (kr), som live priceComparisonFooter. Rabattmånader som live discountPeriod. */
+  firstYearFee: number
+  discountMonths: number
   /** Rabattraden i sammanfattningen. Saknas siffran i Paper står bara rabattens form. */
   discountRow: { label: string; value: string } | null
   /** Live: STEP4SUMMARY.PROVIDERS.<id>Choice */
@@ -39,6 +44,9 @@ export const OFFERS: Offer[] = [
     kind: 'Rörligt elpris',
     compareSub: 'Rörligt elpris · Rabatt i 12 mån',
     basePrice: 298,
+    compare2000: 118.4,
+    firstYearFee: 0,
+    discountMonths: 12,
     hasDiscount: true,
     discountRow: { label: 'Elprisrabatt', value: '8,75 öre/kWh i 12 månader' },
     choice: 'Skellefteå Kraft Rörligt pris',
@@ -57,6 +65,9 @@ export const OFFERS: Offer[] = [
     kind: 'Rörligt månadspris',
     compareSub: 'Rörligt månadspris · Rabatt i 15 mån',
     basePrice: 341,
+    compare2000: 135.1,
+    firstYearFee: 0,
+    discountMonths: 15,
     hasDiscount: true,
     discountRow: { label: 'Månadsavgift', value: 'Fri i 15 månader' },
     choice: 'Fortum Rörligt pris',
@@ -75,6 +86,9 @@ export const OFFERS: Offer[] = [
     kind: 'Rörligt elpris',
     compareSub: 'Rörligt elpris · Rabatt i 12 mån',
     basePrice: 352,
+    compare2000: 139.6,
+    firstYearFee: 55,
+    discountMonths: 12,
     hasDiscount: true,
     discountRow: { label: 'Elprisrabatt', value: 'Rabatt på elpriset i 12 månader' },
     choice: 'Vattenfall Rörligt pris',
@@ -93,6 +107,9 @@ export const OFFERS: Offer[] = [
     kind: 'Kvartspris',
     compareSub: 'Kvartspris · Ingen rabatt',
     basePrice: 379,
+    compare2000: 150.2,
+    firstYearFee: 49,
+    discountMonths: 0,
     hasDiscount: false,
     discountRow: null,
     choice: 'Tibber Timpris',
@@ -158,3 +175,28 @@ export const dateStatus = (iso: string): 'empty' | 'early' | 'facility' | 'ok' =
 
 export const longDate = (iso: string) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' }).format(fromIso(iso))
 export const formatKwh = (n: number) => new Intl.NumberFormat('sv-SE').format(n).replace(/\s/g, '')
+
+/*
+ * Jämförpris (lagkrav, KOVFS 2018:1 9 §). Nivån följer live (ElectricityProviderCard):
+ * förbrukning från 12 500 kWh ger 20 000, under 3 500 ger 2 000, annars 5 000.
+ * EXEMPELSIFFROR: 2 000-värdet kommer från Paper. 5 000 och 20 000 räknas fram som
+ * rörlig del + månadsavgift första året utslagen på nivån (fee * 12 * 100 / nivå öre/kWh).
+ * Rörlig del = Paper-värdet minus avgiftsdelen vid 2 000 kWh. Månadsavgifterna för
+ * Vattenfall (55 kr) och Tibber (49 kr) kommer från demo/electricity/offers.ts.
+ */
+export type CompareLevel = 2000 | 5000 | 20000
+export const compareLevel = (kwh: number): CompareLevel => (kwh >= 12500 ? 20000 : kwh > 0 && kwh < 3500 ? 2000 : 5000)
+const feeOre = (fee: number, level: number) => (fee * 12 * 100) / level
+export const comparePrice = (o: Offer, level: CompareLevel) => o.compare2000 - feeOre(o.firstYearFee, 2000) + feeOre(o.firstYearFee, level)
+export const formatOre = (n: number) => new Intl.NumberFormat('sv-SE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
+/** Förra månaden, som live (previousMonth), skriven som i Paper: "September". */
+export const previousMonthName = () => {
+  const d = new Date()
+  d.setDate(1)
+  d.setMonth(d.getMonth() - 1)
+  const m = new Intl.DateTimeFormat('sv-SE', { month: 'long' }).format(d)
+  return m.charAt(0).toUpperCase() + m.slice(1)
+}
+/** Raden under jämförpriset, byggd av live-texterna comparisonPriceDescription(NoDiscount) och priceComparisonFooter. */
+export const compareNote = (o: Offer) =>
+  `${o.discountMonths > 0 ? `Första ${o.discountMonths} månaderna, inkl. rabatt och moms.` : 'Inkl. moms.'} ${previousMonthName()}, SE3. Månadsavgiften är ${o.firstYearFee} kr första året. Elnätskostnad tillkommer.`
