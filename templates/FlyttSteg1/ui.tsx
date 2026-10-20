@@ -461,7 +461,7 @@ export const Frame = ({
         </ol>
       </nav>
       <div className="min-w-0 md:max-w-[560px]">
-        <h1 className="text-[19px] font-bold leading-[24px] text-[var(--color-text-main)] md:text-[24px] md:leading-[30px]">{title}</h1>
+        <h1 className="text-[19px]! font-bold leading-[24px]! text-[var(--color-text-main)] md:text-[24px]! md:leading-[30px]!">{title}</h1>
         {sub && <p className="mt-1 text-[13px] leading-[18px] text-[var(--color-inactive-dark)] md:text-[15px] md:leading-[22px]">{sub}</p>}
         {children}
       </div>
