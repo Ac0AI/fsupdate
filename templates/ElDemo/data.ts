@@ -226,3 +226,18 @@ export const priceSpecTotals = (id: OfferId) => {
   const total = round2(ex * 1.25)
   return { ex, vat: round2(total - ex), total }
 }
+
+/*
+ * Besparingen i Ett bra val, som rabattrutan på steg 1 och live-texterna discountBanner*.
+ * EXEMPEL: Skellefteå 890 kr är rutan på steg 1 (Paper). Fortum är fri månadsavgift
+ * 69 kr i 15 månader (live: värde 1 035 kr). Vattenfall är öresrabatten i PRICE_SPEC
+ * gånger förbrukningen. Tibber har ingen rabatt och får ingen rad.
+ */
+export const savings = (id: OfferId, kwh: number): { kr: number; period: string } | null => {
+  const sp = PRICE_SPEC[id]
+  if (id === 'skekraft') return { kr: 890, period: 'första året' }
+  if (sp.feeDiscount && !sp.kwhDiscount) return { kr: sp.feeDiscount.kr * sp.feeDiscount.months, period: `de första ${sp.feeDiscount.months} månaderna` }
+  if (sp.kwhDiscount)
+    return { kr: Math.round((sp.kwhDiscount.ore * kwh) / 100), period: sp.kwhDiscount.months === 12 ? 'första året' : `de första ${sp.kwhDiscount.months} månaderna` }
+  return null
+}

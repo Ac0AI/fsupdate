@@ -14,6 +14,7 @@ import {
   SPOT_ORE,
   CERT_ORE,
   priceSpecTotals,
+  savings,
   type CompareLevel,
   type Offer,
   compareNote,
@@ -959,6 +960,7 @@ const PoaSheet = ({ name, onClose }: { name: string; onClose: () => void }) => {
 export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
   const o = offerById(s.selected)
   const [poaOpen, setPoaOpen] = useState(false)
+  const saved = savings(o.id, s.kwh)
   const sign = (
     <>
       {/* Samtycket i foten i stället för en kryssruta: att signera är att godkänna (David 20/10). */}
@@ -1013,10 +1015,20 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
                   Ingen bindningstid
                 </p>
                 {/* Bara påståenden som stämmer: avtal utan rabatt (Tibber) får ingen rabattrad. */}
-                {(s.selected === RECOMMENDED || o.discountRow) && (
-                  <p className={clsx('flex items-center gap-[12px] text-[15px] leading-[20px]', navy)}>
+                {saved && (
+                  <p className={clsx('flex items-start gap-[12px] text-[15px] leading-[20px]', navy)}>
                     <CheckCircle stroke={1.8} />
-                    {s.selected === RECOMMENDED ? 'Vårt bästa pris, förhandlad rabatt' : 'Förhandlad rabatt'}
+                    <span className="min-w-0">
+                      {s.selected === RECOMMENDED ? (
+                        <>
+                          Vårt bästa pris, <b className="whitespace-nowrap">ca {new Intl.NumberFormat('sv-SE').format(saved.kr)} kr</b> rabatt {saved.period}
+                        </>
+                      ) : (
+                        <>
+                          <b className="whitespace-nowrap">Ca {new Intl.NumberFormat('sv-SE').format(saved.kr)} kr</b> rabatt {saved.period}
+                        </>
+                      )}
+                    </span>
                   </p>
                 )}
               </div>
