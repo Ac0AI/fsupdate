@@ -370,17 +370,28 @@ export const StatusHead = ({ title, onClose }: { title: string; onClose: () => v
 export const SheetHandle = () => <span className="mx-auto mb-2 mt-3 block h-1 w-10 shrink-0 rounded-full bg-[var(--color-inactive-grey-light)]/60 md:hidden" />
 
 /* Fortsätt, "N frågor kvar" och foten. Mobil: fast i botten, centrerat. Desktop: knappen till vänster, texten bredvid. */
-const FrameFooter = ({ cta, left, foot, onNext }: { cta: string; left: number; foot: string; onNext: () => void }) => (
-  <div className="md:flex md:items-center md:gap-5">
-    <PrimaryButton className="md:w-[240px]" onClick={onNext} disabled={left > 0}>
-      {cta}
-    </PrimaryButton>
-    <div className="text-center md:text-left">
-      {left > 0 && <p className="mt-2 text-[12px] font-bold text-[var(--color-secondary-main)] md:mt-0 md:text-[13px]">{left} {left === 1 ? 'fråga' : 'frågor'} kvar</p>}
-      <p className={clsx('text-[12px] text-[var(--color-inactive-dark)] md:mt-0.5 md:text-[13px]', left > 0 ? 'mt-0.5' : 'mt-2')}>{foot}</p>
+/* Mobil: bara knappen, och "2 frågor kvar" står i den tills steget är klart (David 20 okt: raderna under tog för mycket plats). Desktop: texten bredvid. */
+const FrameFooter = ({ cta, left, foot, onNext }: { cta: string; left: number; foot: string; onNext: () => void }) => {
+  const kvar = `${left} ${left === 1 ? 'fråga' : 'frågor'} kvar`
+  return (
+    <div className="md:flex md:items-center md:gap-5">
+      <div className="md:hidden">
+        <PrimaryButton onClick={onNext} disabled={left > 0}>
+          {left > 0 ? kvar : cta}
+        </PrimaryButton>
+      </div>
+      <div className="hidden md:block md:w-[240px]">
+        <PrimaryButton onClick={onNext} disabled={left > 0}>
+          {cta}
+        </PrimaryButton>
+      </div>
+      <div className="hidden md:block md:text-left">
+        {left > 0 && <p className="text-[13px] font-bold text-[var(--color-secondary-main)]">{kvar}</p>}
+        <p className="mt-0.5 text-[13px] text-[var(--color-inactive-dark)]">{foot}</p>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 /**
  * Ramen runt varje frågesteg: steg x av 6, Sparat-bocken, krysset, frågan,
@@ -466,7 +477,7 @@ export const Frame = ({
         {children}
       </div>
     </div>
-    <div className="shrink-0 border-t border-[var(--color-inactive-main)] bg-white px-4 pb-4 pt-3 md:py-4 md:pl-[264px] md:pr-6">
+    <div className="shrink-0 border-t border-[var(--color-inactive-main)] bg-white px-4 py-3 md:py-4 md:pl-[264px] md:pr-6">
       <FrameFooter cta={cta} left={left} foot={foot} onNext={onNext} />
     </div>
   </div>
