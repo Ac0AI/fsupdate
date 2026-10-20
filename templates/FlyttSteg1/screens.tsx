@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { Boxes, Package, Trash2, Warehouse, Wrench } from 'lucide-react'
 import clsx from 'clsx'
+import GoogleColor from '@/public/images/GoogleColor.svg'
+import GoogleStar from '@/public/images/GoogleStar.svg'
 import {
   AVSTAND_LABEL,
   BIYTA_KVM,
@@ -35,8 +37,9 @@ import {
   type JaNejVet,
   type Tillval,
 } from './state'
-import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, WindowIcon } from './ui'
+import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, WeekPicker, WindowIcon } from './ui'
 import { ChevronDown } from './LiveMovePage'
+import { canCallNow, fmtLong, hideMorning, isSlotPassed, nextSelectable } from './datum'
 
 export type Home = { from: string; to: string; fromKvm: number; toKvm: number; moveDay: string; moveDayLong: string; moveDateFull: string; cleanDayLong: string; firstName: string }
 
@@ -71,11 +74,6 @@ const nextDay = () => {
   const weekday = new Intl.DateTimeFormat('sv-SE', { weekday: 'long' }).format(d)
   return `${weekday} ${d.getDate()}/${d.getMonth() + 1}`
 }
-const nextDayShort = () => {
-  const d = new Date()
-  d.setDate(d.getDate() + (d.getDay() === 5 ? 3 : d.getDay() === 6 ? 2 : 1))
-  return new Intl.DateTimeFormat('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' }).format(d).replace('.', '')
-}
 
 /* Arket på mobil. På desktop (inuti Flytthjälp-kortet) en centrerad kolumn, som live. */
 const Sheet = ({ children }: { children: React.ReactNode }) => (
@@ -92,12 +90,16 @@ export const OffertScreen = ({ go }: ScreenProps) => (
       <h1 className="mx-auto max-w-[30ch] text-[18px] font-bold leading-[26px] text-[var(--color-text-main)]">Professionell flytthjälp – enkelt och prisvärt</h1>
       <div className="mx-auto mt-6 max-w-[320px]">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-inactive-main)] bg-white px-3 py-1.5 shadow-sm">
-          <span className="text-[16px] font-bold text-[#4285F4]">G</span>
+          <GoogleColor width={22} height={22} aria-hidden />
           <span className="text-[18px] font-bold tracking-tight text-[var(--color-inactive-super-dark)]">4,7</span>
-          <span className="text-[14px] tracking-[0.05em] text-[#FBBC04]">★★★★★</span>
+          <span className="flex items-center gap-0.5" aria-label="5 av 5">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <GoogleStar key={i} width={16} height={16} aria-hidden />
+            ))}
+          </span>
           <span className="text-[14px] text-[var(--color-inactive-dark)]">(1 900)</span>
         </span>
-        <p className="mt-1 text-[14px] text-[var(--color-inactive-dark)]">Över 200 000 nöjda flyttare</p>
+        <p className="mt-1 text-[14px] text-[var(--color-inactive-dark)]">Över 250 000 nöjda flyttare</p>
         <ul className="mt-4 flex flex-col gap-3 text-left">
           {['En flyttkoordinator går igenom din flytt', 'Du får offert med fast förmånligt pris, inga dolda avgifter', 'En kontaktperson, erfarna flyttproffs & nöjd-kundgaranti'].map((t, i) => (
             <li key={t} className="flex items-start gap-2">
@@ -128,10 +130,13 @@ const VadHanderNu = () => (
 
 /* 2 · Arket i dag: välj när vi ska ringa */
 export const TidScreen = ({ a, update, go }: ScreenProps) => {
+  const [date, setDate] = useState<Date>(() => nextSelectable())
   const pick = (pass: string) => {
-    update({ samtal: { dag: nextDay(), pass } })
+    update({ samtal: { dag: fmtLong(date), pass } })
     go(3)
   }
+  const nu = canCallNow(date)
+  const slots = PASS.filter(([pass]) => !(hideMorning(date) && (pass === '08-10' || pass === '10-12')))
   return (
     <Sheet>
       <div className="px-4 pb-6">
@@ -140,21 +145,24 @@ export const TidScreen = ({ a, update, go }: ScreenProps) => {
         <InfoCard className="mt-4 px-3 pb-4 pt-3">
           <p className="text-[14px] leading-[19px] text-[var(--color-text-main)]">Vi ringer dig {a.samtal ? samtalText(a.samtal) : 'snart'}.</p>
           <p className="mt-1 text-[12px] text-[var(--color-inactive-dark)]">Finns det någon tid du önskar bli uppringd?</p>
-          <button type="button" onClick={() => pick('nu')} className="mt-5 flex w-full items-center justify-between rounded-lg border border-[var(--color-inactive-main)] bg-white px-4 py-3 text-left">
-            <span className="text-[16px] font-bold text-[var(--color-text-main)]">Ring mig nu</span>
+          {/* Som live: Ring mig nu under kontorstid i dag, annars Jag är flexibel. */}
+          <button type="button" onClick={() => pick(nu ? 'nu' : 'flexibel')} className="mt-5 flex w-full items-center justify-between rounded-lg border border-[var(--color-inactive-main)] bg-white px-4 py-3 text-left">
+            <span className="text-[16px] font-bold text-[var(--color-text-main)]">{nu ? 'Ring mig nu' : 'Jag är flexibel'}</span>
             <span className="text-[20px] text-[var(--color-inactive-grey-light)]">›</span>
           </button>
-          <div className="relative mt-9 flex h-11 items-center rounded-lg border border-[var(--color-inactive-grey-light)] bg-white px-3">
-            <span className="absolute -top-2.5 left-3 bg-white px-1 text-[12px] text-[var(--color-text-main)]">Välj datum</span>
-            <span className="text-[15px] text-[var(--color-text-main)]">{nextDayShort()}</span>
+          <div className="mt-9">
+            <WeekPicker value={date} onChange={setDate} />
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2">
-            {PASS.map(([pass, sub]) => (
-              <button key={pass} type="button" onClick={() => pick(pass)} className="rounded-lg border border-[var(--color-inactive-main)] bg-white px-2 py-3 text-center">
-                <span className="block text-[16px] font-bold text-[var(--color-text-main)]">{pass}</span>
-                <span className="block text-[12px] text-[var(--color-inactive-super-dark)]">{sub}</span>
-              </button>
-            ))}
+            {slots.map(([pass, sub]) => {
+              const passed = isSlotPassed(pass, date)
+              return (
+                <button key={pass} type="button" disabled={passed} onClick={() => pick(pass)} className={clsx('rounded-lg border border-[var(--color-inactive-main)] bg-white px-2 py-3 text-center', passed && 'opacity-40')}>
+                  <span className="block text-[16px] font-bold text-[var(--color-text-main)]">{pass}</span>
+                  <span className="block text-[12px] text-[var(--color-inactive-super-dark)]">{sub}</span>
+                </button>
+              )
+            })}
           </div>
         </InfoCard>
         <div className="mt-2 flex justify-center">

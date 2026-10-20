@@ -1,11 +1,12 @@
 'use client'
 
-import { Check, ChevronUp, Minus, Plus, X } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, ChevronUp, Minus, Plus, X } from 'lucide-react'
 import clsx from 'clsx'
-import type { CSSProperties, ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import Button from '@/components/atoms/Button'
 import SiteChip from '@/components/atoms/Chip'
 import { FLOORS, TOTAL, type FonsterTyp } from './state'
+import { addDays, fmtShort, fmtWeekTitle, fmtWeekday, isSelectable, maxDay, sameDay, startOfWeek, weekDays } from './datum'
 
 /*
  * Byggstenar för arket och frågestegen, i sajtens tokens och atomer. Frågan
@@ -434,3 +435,88 @@ export const Frame = ({
     </div>
   </div>
 )
+
+/**
+ * Veckoväljaren som i dag (WeeklyDatePicker i live): fält med flytande etikett,
+ * en vecka i taget, helger och passerade dagar grå, max nästa vecka. Öppnas uppåt.
+ */
+export const WeekPicker = ({ value, onChange }: { value: Date; onChange: (d: Date) => void }) => {
+  const [open, setOpen] = useState(false)
+  const [visible, setVisible] = useState(value)
+  const root = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: PointerEvent) => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    document.addEventListener('pointerdown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+  const prevDisabled = startOfWeek(visible) <= startOfWeek(new Date())
+  const nextDisabled = addDays(startOfWeek(visible), 7) > maxDay()
+  const today = new Date()
+  return (
+    <div ref={root} className="relative w-full">
+      <button
+        type="button"
+        data-picker-trigger
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className={clsx('relative flex h-11 w-full items-center rounded-lg border bg-white px-3 text-left', open ? 'border-[var(--color-primary-main)] ring-1 ring-[var(--color-primary-main)]' : 'border-[#CBD5E1]')}
+      >
+        <span className="pointer-events-none absolute -top-2.5 left-3 bg-white px-1 text-[12px] text-[var(--color-text-main)]">Välj datum</span>
+        <span className="block min-w-0 flex-1 truncate text-[15px] font-medium text-[var(--color-text-main)]">{fmtShort(value)}</span>
+      </button>
+      {open && (
+        <div role="dialog" aria-label="Välj datum" className="absolute bottom-full left-1/2 z-50 mb-2 w-[320px] -translate-x-1/2 rounded-lg bg-white p-4 shadow-xl">
+          <div className="mb-4 flex items-center justify-between text-[var(--color-secondary-main)]">
+            <button type="button" disabled={prevDisabled} aria-label="Förra veckan" onClick={() => setVisible((d) => addDays(d, -7))} className="inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white disabled:pointer-events-none disabled:opacity-30">
+              <ChevronLeft size={16} />
+            </button>
+            <span className="text-[16px] font-bold" aria-live="polite">
+              {fmtWeekTitle(visible)}
+            </span>
+            <button type="button" disabled={nextDisabled} aria-label="Nästa vecka" onClick={() => setVisible((d) => addDays(d, 7))} className="inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white disabled:pointer-events-none disabled:opacity-30">
+              <ChevronRight size={16} />
+            </button>
+          </div>
+          <div className="grid grid-cols-7 gap-1">
+            {weekDays(visible).map((day) => {
+              const selected = sameDay(day, value)
+              const disabled = !isSelectable(day)
+              const isToday = sameDay(day, today)
+              return (
+                <div key={day.toISOString()} className="flex flex-col items-center gap-2">
+                  <span className="text-[14px] font-medium capitalize text-[var(--color-secondary-main)]">{fmtWeekday(day)}</span>
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    aria-current={isToday ? 'date' : undefined}
+                    onClick={() => {
+                      onChange(day)
+                      setOpen(false)
+                    }}
+                    className={clsx(
+                      'inline-flex h-9 w-9 items-center justify-center rounded-full text-[14px]',
+                      selected ? 'bg-[var(--color-primary-main)] font-bold text-white' : 'text-[var(--color-secondary-main)] hover:bg-[var(--color-primary-main)] hover:text-white',
+                      isToday && !selected && 'ring-1 ring-[var(--color-secondary-main)]',
+                      disabled && 'pointer-events-none text-[#94A3B8] opacity-50',
+                    )}
+                  >
+                    {day.getDate()}
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
