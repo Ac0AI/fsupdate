@@ -187,7 +187,16 @@ export const formatKwh = (n: number) => new Intl.NumberFormat('sv-SE').format(n)
 export type CompareLevel = 2000 | 5000 | 20000
 export const compareLevel = (kwh: number): CompareLevel => (kwh >= 12500 ? 20000 : kwh > 0 && kwh < 3500 ? 2000 : 5000)
 const feeOre = (fee: number, level: number) => (fee * 12 * 100) / level
-export const comparePrice = (o: Offer, level: CompareLevel) => o.compare2000 - feeOre(o.firstYearFee, 2000) + feeOre(o.firstYearFee, level)
+/*
+ * Vattenfalls rabatt ligger på påslaget och kommer från Vattenfalls API per förbrukning
+ * (flyttsmart-api vattenfall.service.ts, TK-681). EXEMPEL: ingen rabatt vid 2 000 kWh,
+ * −5,25 vid 5 000 och −7,00 öre/kWh vid 20 000. Under 2 500 kWh/år ingen rabatt alls
+ * (gränsen är också ett exempel). Paper-värdet vid 2 000 kWh är därför utan rabatt.
+ */
+export const VATTENFALL_LEVEL_DISCOUNT: Record<CompareLevel, number> = { 2000: 0, 5000: 5.25, 20000: 7 }
+export const VATTENFALL_MIN_KWH = 2500
+const levelDiscount = (o: Offer, level: CompareLevel) => (o.id === 'vattenfall' ? VATTENFALL_LEVEL_DISCOUNT[level] : 0)
+export const comparePrice = (o: Offer, level: CompareLevel) => o.compare2000 - feeOre(o.firstYearFee, 2000) + feeOre(o.firstYearFee, level) - levelDiscount(o, level)
 export const formatOre = (n: number) => new Intl.NumberFormat('sv-SE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
 /** Förra månaden, som live (previousMonth), skriven som i Paper: "September". */
 export const previousMonthName = () => {
@@ -211,11 +220,12 @@ export const compareNote = (o: Offer) =>
  */
 export const SPOT_ORE = 62.4
 export const CERT_ORE = 0.6
-export type PriceSpec = { markup: number; kwhDiscount?: { ore: number; months: number }; fee: number; feeDiscount?: { kr: number; months: number } }
+export type PriceSpec = { markup: number; kwhDiscount?: { ore: number; months: number; byUsage?: boolean }; fee: number; feeDiscount?: { kr: number; months: number } }
 export const PRICE_SPEC: Record<OfferId, PriceSpec> = {
   skekraft: { markup: 8.3, kwhDiscount: { ore: 8.75, months: 12 }, fee: 39, feeDiscount: { kr: 39, months: 12 } },
   fortum: { markup: 13.3, fee: 69, feeDiscount: { kr: 69, months: 15 } },
-  vattenfall: { markup: 11, kwhDiscount: { ore: 5, months: 12 }, fee: 55 },
+  /* Vattenfalls öresrabatt trappas efter förbrukningen. Stegen är okända: 5,25 är ett EXEMPEL ur skissen 23/9. */
+  vattenfall: { markup: 11, kwhDiscount: { ore: 5.25, months: 12, byUsage: true }, fee: 55 },
   tibber: { markup: 11.9, fee: 49 },
 }
 const round2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100
@@ -236,8 +246,16 @@ export const priceSpecTotals = (id: OfferId) => {
 export const savings = (id: OfferId, kwh: number): { kr: number; period: string } | null => {
   const sp = PRICE_SPEC[id]
   if (id === 'skekraft') return { kr: 890, period: 'första året' }
+  const kd = kwhDiscountFor(id, kwh)
   if (sp.feeDiscount && !sp.kwhDiscount) return { kr: sp.feeDiscount.kr * sp.feeDiscount.months, period: `de första ${sp.feeDiscount.months} månaderna` }
-  if (sp.kwhDiscount)
-    return { kr: Math.round((sp.kwhDiscount.ore * kwh) / 100), period: sp.kwhDiscount.months === 12 ? 'första året' : `de första ${sp.kwhDiscount.months} månaderna` }
+  if (kd) return { kr: Math.round((kd.ore * kwh) / 100 / 5) * 5, period: kd.months === 12 ? 'första året' : `de första ${kd.months} månaderna` }
   return null
+}
+
+/** Öresrabatten vid kundens förbrukning. Vattenfall har ingen rabatt under VATTENFALL_MIN_KWH. */
+export const kwhDiscountFor = (id: OfferId, kwh: number) => {
+  const d = PRICE_SPEC[id].kwhDiscount
+  if (!d) return null
+  if (id === 'vattenfall' && kwh < VATTENFALL_MIN_KWH) return null
+  return d
 }

@@ -15,6 +15,7 @@ import {
   CERT_ORE,
   priceSpecTotals,
   savings,
+  kwhDiscountFor,
   type CompareLevel,
   type Offer,
   compareNote,
@@ -852,8 +853,9 @@ const SpecRow = ({ label, value, tone = 'normal', note }: { label: string; value
 )
 
 /** Prisspecifikationen som live: elpriset i öre/kWh, momsen, rabatten och månadsavgiften. Exempelsiffror, se PRICE_SPEC i data.ts. */
-const PriceSpecTable = ({ id }: { id: OfferId }) => {
+const PriceSpecTable = ({ id, kwh }: { id: OfferId; kwh: number }) => {
   const sp = PRICE_SPEC[id]
+  const kd = kwhDiscountFor(id, kwh)
   const t = priceSpecTotals(id)
   const ore = (n: number) => `${formatOre(n)} öre/kWh`
   return (
@@ -864,18 +866,23 @@ const PriceSpecTable = ({ id }: { id: OfferId }) => {
       <SpecRow label="Elcertifikat" value={ore(CERT_ORE)} />
       <SpecRow label="Moms (25 %)" value={ore(t.vat)} />
       <SpecRow label="Elpris inkl. moms" value={ore(t.total)} tone="bold" />
-      {sp.kwhDiscount && <SpecRow label={`Elprisrabatt, ${sp.kwhDiscount.months} mån`} value={`−${ore(sp.kwhDiscount.ore)}`} tone="mint" />}
+      {kd && (
+        <SpecRow
+          label={`Elprisrabatt, ${kd.months} mån`}
+          value={`−${ore(kd.ore)}`}
+          tone="mint"
+          note={kd.byUsage ? `Rabatten beror på din förbrukning, ${new Intl.NumberFormat('sv-SE').format(kwh)} kWh/år.` : undefined}
+        />
+      )}
       <p className={clsx('pt-[16px] pb-[4px] text-[15px] leading-[20px] font-bold', navy)}>Månadsavgift</p>
       <div className="flex flex-col border-b border-[#EEEEF0] py-[8px]">
         <div className={clsx('flex items-start justify-between gap-[12px] text-[14px] leading-[18px]', navy)}>
           <span>Månadsavgift</span>
-          <span className="font-bold whitespace-nowrap">{sp.fee} kr/mån</span>
+          <span className="font-bold whitespace-nowrap">{sp.feeDiscount ? Math.max(0, sp.fee - sp.feeDiscount.kr) : sp.fee} kr/mån</span>
         </div>
         {sp.feeDiscount && (
           <>
-            <span className="pt-[4px] text-[14px] leading-[18px] text-[#1F6156]">
-              Rabatt {sp.feeDiscount.kr} kr/mån i {sp.feeDiscount.months} månader.
-            </span>
+            <span className="pt-[4px] text-[14px] leading-[18px] text-[#1F6156]">Första {sp.feeDiscount.months} månaderna.</span>
             <span className="text-[14px] leading-[18px] text-[#767678]">Därefter {sp.fee} kr/mån inkl. moms.</span>
           </>
         )}
@@ -1063,7 +1070,7 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
                 {s.specOpen && (
                   <div className="flex flex-col pb-[10px] motion-safe:animate-[rise_.25s_ease-out_both]">
                     <Row label="Uppskattad kostnad" value={`ca ${new Intl.NumberFormat('sv-SE').format(priceFor(o, s.kwh))} kr/mån`} />
-                    <PriceSpecTable id={o.id} />
+                    <PriceSpecTable id={o.id} kwh={s.kwh} />
                     <div className={clsx('mt-[15px] flex flex-col gap-[10px] rounded-[8px] bg-[#E8F0F8] p-[20px]', navy)}>
                       <p className="text-[14px] leading-[18px] font-bold tracking-[0.32px]">Din elkostnad varierar</p>
                       <p className="text-[14px] leading-[18px] tracking-[0.32px]">Kostnaden beror på elpris, inköpskostnader och din förbrukning. Elnätskostnad tillkommer.</p>
