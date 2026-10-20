@@ -738,10 +738,13 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
             <CheckCircle stroke={1.8} />
             Obunden. Ingen bindningstid, byt när du vill
           </p>
-          <p className={clsx('flex items-center gap-[12px] text-[15px] leading-[20px]', navy)}>
-            <CheckCircle stroke={1.8} />
-            {s.selected === RECOMMENDED ? 'Vårt bästa pris, med förhandlad rabatt' : 'Med förhandlad rabatt'}
-          </p>
+          {/* Bara påståenden som stämmer: avtal utan rabatt (Tibber) får ingen rabattrad. */}
+          {(s.selected === RECOMMENDED || o.discountRow) && (
+            <p className={clsx('flex items-center gap-[12px] text-[15px] leading-[20px]', navy)}>
+              <CheckCircle stroke={1.8} />
+              {s.selected === RECOMMENDED ? 'Vårt bästa pris, med förhandlad rabatt' : 'Med förhandlad rabatt'}
+            </p>
+          )}
         </div>
       </div>
       <Foot>
