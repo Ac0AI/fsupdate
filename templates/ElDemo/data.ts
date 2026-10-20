@@ -50,7 +50,7 @@ export const OFFERS: Offer[] = [
     hasDiscount: true,
     discountRow: { label: 'Elprisrabatt', value: '8,75 öre/kWh i 12 månader' },
     choice: 'Skellefteå Kraft Rörligt pris',
-    terms: [{ t: 'Jag godkänner' }, { t: 'Skellefteå Krafts allmänna avtalsvillkor', b: true }, ...fullmakt],
+    terms: [{ t: 'Genom att signera godkänner du' }, { t: 'Skellefteå Krafts allmänna avtalsvillkor', b: true }, ...fullmakt],
     about: {
       header: 'Om Skellefteå Kraft',
       description:
@@ -71,7 +71,7 @@ export const OFFERS: Offer[] = [
     hasDiscount: true,
     discountRow: { label: 'Månadsavgift', value: 'Fri i 15 månader' },
     choice: 'Fortum Rörligt pris',
-    terms: [{ t: 'Jag godkänner' }, { t: 'Fortums avtalsvillkor', b: true }, ...fullmakt],
+    terms: [{ t: 'Genom att signera godkänner du' }, { t: 'Fortums avtalsvillkor', b: true }, ...fullmakt],
     about: {
       header: 'Om Fortum',
       description:
@@ -92,7 +92,7 @@ export const OFFERS: Offer[] = [
     hasDiscount: true,
     discountRow: { label: 'Elprisrabatt', value: 'Rabatt på elpriset i 12 månader' },
     choice: 'Vattenfall Rörligt pris',
-    terms: [{ t: 'Jag godkänner' }, { t: 'Vattenfalls avtalsvillkor', b: true }, { t: 'och' }, { t: 'Vattenfalls särskilda avtalsvillkor', b: true }, ...fullmakt],
+    terms: [{ t: 'Genom att signera godkänner du' }, { t: 'Vattenfalls avtalsvillkor', b: true }, { t: 'och' }, { t: 'Vattenfalls särskilda avtalsvillkor', b: true }, ...fullmakt],
     about: {
       header: 'Om Vattenfall',
       description:
@@ -114,7 +114,7 @@ export const OFFERS: Offer[] = [
     discountRow: null,
     choice: 'Tibber Timpris',
     terms: [
-      { t: 'Jag godkänner' },
+      { t: 'Genom att signera godkänner du' },
       { t: 'Tibbers allmänna avtalsvillkor', b: true },
       { t: 'och att en sedvanlig kreditprövning kommer att ske, samt ger Flyttsmart' },
       { t: 'fullmakt', b: true },

@@ -8,10 +8,10 @@ import { BASE_KWH, HOME, RECOMMENDED, dateStatus, defaultStart, tooEarlyExample 
 import { BankIdScreen, DetaljerScreen, KlartScreen, PriserScreen, SammanfattningScreen, type ElState, type ScreenProps } from './screens'
 import { ArrowLeft, press } from './ui'
 
-const STEPS = ['Priser', 'Bostadstyp saknas', 'Jämför öppet', 'Detaljer', 'För tidigt datum', 'Sammanfattning', 'Rutan ej ikryssad', 'BankID', 'Klart']
+const STEPS = ['Priser', 'Bostadstyp saknas', 'Jämför öppet', 'Detaljer', 'För tidigt datum', 'Sammanfattning', 'BankID', 'Klart']
 const LAST = STEPS.length - 1
 /** Vilken skärm varje demosteg visar. Steg med samma skärm är olika lägen av den. */
-const SCREEN = [0, 0, 0, 1, 1, 2, 2, 3, 4]
+const SCREEN = [0, 0, 0, 1, 1, 2, 3, 4]
 
 const initial = (oldAddress: string): ElState => ({
   homeType: 'Lägenhet',
@@ -28,8 +28,6 @@ const initial = (oldAddress: string): ElState => ({
   endDate: '',
   oldAddress,
   touched: false,
-  accepted: false,
-  showMissing: false,
   specOpen: false,
   dateHelp: false,
   aptHelp: false,
@@ -49,12 +47,8 @@ const preset = (step: number, s: ElState): Partial<ElState> => {
       return { startDate: ok, touched: false }
     case 4:
       return { startDate: tooEarlyExample() }
-    case 5:
-      return { startDate: ok, accepted: true, showMissing: false }
-    case 6:
-      return { startDate: ok, accepted: false, showMissing: true }
     default:
-      return { startDate: ok, accepted: true, showMissing: false }
+      return { startDate: ok }
   }
 }
 
@@ -62,8 +56,7 @@ const preset = (step: number, s: ElState): Partial<ElState> => {
 const variantOf = (screen: number, s: ElState) => {
   if (screen === 0) return !s.homeType ? 1 : s.compareOpen ? 2 : 0
   if (screen === 1) return dateStatus(s.startDate) === 'early' ? 4 : 3
-  if (screen === 2) return s.showMissing && !s.accepted ? 6 : 5
-  return screen === 3 ? 7 : 8
+  return screen + 3
 }
 
 /**
@@ -86,7 +79,7 @@ const DemoElFlow = () => {
     return { ...base, ...preset(step, base) }
   })
   const set = useCallback((patch: Partial<ElState>) => setState((prev) => ({ ...prev, ...patch })), [])
-  const scrollTarget = useRef<string | null>(step === 2 ? 'el-compare' : step === 6 ? 'el-terms' : null)
+  const scrollTarget = useRef<string | null>(step === 2 ? 'el-compare' : null)
   const lastScreen = useRef<number | null>(null)
 
   const url = useCallback(
@@ -100,7 +93,7 @@ const DemoElFlow = () => {
 
   const jump = (n: number) => {
     setState((prev) => ({ ...prev, ...preset(n, prev) }))
-    scrollTarget.current = n === 2 ? 'el-compare' : n === 6 ? 'el-terms' : null
+    scrollTarget.current = n === 2 ? 'el-compare' : null
     go(n)
   }
 
@@ -124,7 +117,7 @@ const DemoElFlow = () => {
     const target = scrollTarget.current
     if (!target) return
     const id = requestAnimationFrame(() => {
-      document.getElementById(target)?.scrollIntoView({ block: target === 'el-terms' ? 'center' : 'start', behavior: 'smooth' })
+      document.getElementById(target)?.scrollIntoView({ block: 'start', behavior: 'smooth' })
       scrollTarget.current = null
     })
     return () => cancelAnimationFrame(id)
@@ -137,16 +130,7 @@ const DemoElFlow = () => {
     if (v !== step) router.replace(url(v), { scroll: false })
   }, [s, screen, step, router, url])
 
-  /* Teckna utan kryss: raden vid knappen och sidan scrollar till rutan. */
-  const setWithScroll = useCallback(
-    (patch: Partial<ElState>) => {
-      if (patch.showMissing) scrollTarget.current = 'el-terms'
-      set(patch)
-    },
-    [set],
-  )
-
-  const props: ScreenProps = { s, set: setWithScroll, go }
+  const props: ScreenProps = { s, set, go }
   const Screen = [PriserScreen, DetaljerScreen, SammanfattningScreen, BankIdScreen, KlartScreen][screen]
 
   return (

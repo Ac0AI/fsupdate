@@ -24,7 +24,7 @@ import {
   type HomeType,
   type OfferId,
 } from './data'
-import { ArrowRight, CheckCircle, ChevronDown, FramedField, Foot, Help, Lock, Logo, Pin, Shield, Steps, Title, fieldInput, press } from './ui'
+import { ArrowRight, CheckCircle, ChevronDown, FramedField, Foot, Help, Logo, Pin, Shield, Steps, Title, fieldInput, press } from './ui'
 
 export type ElState = {
   homeType: HomeType | null
@@ -41,8 +41,6 @@ export type ElState = {
   endDate: string
   oldAddress: string
   touched: boolean
-  accepted: boolean
-  showMissing: boolean
   specOpen: boolean
   dateHelp: boolean
   aptHelp: boolean
@@ -752,9 +750,59 @@ const BankIdIcon = ({ color = '#FFFFFF' }: { color?: string }) => (
   />
 )
 
+/** Fullmakten, med texten från live (STEP4SUMMARY.poaPopup*). Via portal som arket Din bostad. */
+const PoaSheet = ({ name, onClose }: { name: string; onClose: () => void }) => {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+  if (!mounted) return null
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex flex-col justify-end" role="dialog" aria-modal aria-labelledby="el-poa-title">
+      <button type="button" aria-label="Stäng" className="absolute inset-0 bg-black/30" onClick={onClose} />
+      <div
+        className={clsx(
+          'relative mx-auto flex max-h-[90dvh] w-full max-w-[430px] flex-col overflow-y-auto rounded-t-[20px] bg-white pb-[max(25px,env(safe-area-inset-bottom))] shadow-[0_-4px_24px_rgba(0,0,0,0.15)] motion-safe:animate-[rise_.3s_ease-out_both]',
+          navy,
+        )}
+      >
+        <div className="flex items-center justify-between py-[8px] pr-[8px] pl-[20px]">
+          <p id="el-poa-title" className="text-[18px] leading-[22px] font-bold tracking-[0.32px]">
+            Fullmakt
+          </p>
+          <button type="button" aria-label="Stäng" onClick={onClose} className={clsx('flex size-11 items-center justify-center rounded-full', press)}>
+            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden>
+              <path d="M4 4l10 10M14 4L4 14" stroke="#214766" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+        <div className="flex flex-col gap-[10px] px-[20px] text-[14px] leading-[20px]">
+          <p className="font-bold">Härmed befullmäktigar jag “Fullmaktsgivaren”, {name} och Flyttsmart Sverige AB “Fullmaktstagarna” att för min räkning:</p>
+          <ul className="flex list-disc flex-col gap-[8px] pl-[20px]">
+            <li>
+              Inhämta anläggningsuppgifter som är registrerade på mitt personnummer, avsluta eventuellt nuvarande elnätsavtal samt teckna elnätsavtal för den adress jag uppgivit
+              att jag ska flytta till.
+            </li>
+            <li>Emotta uppgifter om anläggnings-id för den nya adressen.</li>
+            <li>
+              Inhämta information från mitt nuvarande elhandelsbolag om första möjliga startdatum för ett nytt elavtal samt säga upp mitt befintliga avtal och teckna nytt
+              elhandelsavtal.
+            </li>
+            <li>Fullmakten är gällande från att jag trycker på knappen “Gå vidare” och gäller i 12 månader därefer.</li>
+          </ul>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
 export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
   const o = offerById(s.selected)
-  const missing = s.showMissing && !s.accepted
+  const [poaOpen, setPoaOpen] = useState(false)
   return (
     <>
       <div className="flex flex-col px-[20px] pt-[15px] pb-6">
@@ -769,18 +817,21 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
           <div className="flex flex-col px-[20px] pt-[20px]">
             <div className="flex items-center justify-between gap-[12px]">
               <Logo src={o.logo} alt={o.name} className="h-9 w-[120px]" />
-              <Price value={priceFor(o, s.kwh)} size="card" tone={o.hasDiscount ? 'mint' : 'navy'} />
+              <div className="flex flex-col items-end">
+                <span className={clsx('pb-[2px] text-[12px] leading-[18px] tracking-[0.32px]', navy)}>Beräknad månadskostnad</span>
+                <Price value={priceFor(o, s.kwh)} size="card" tone={o.hasDiscount ? 'mint' : 'navy'} />
+              </div>
             </div>
-            <div className="flex flex-col gap-[12px] pt-[20px] pb-[20px]">
+            <div className="flex flex-col gap-[10px] pt-[16px] pb-[16px]">
               <p className={clsx('flex items-center gap-[12px] text-[15px] leading-[20px]', navy)}>
                 <CheckCircle stroke={1.8} />
-                Obunden. Ingen bindningstid, byt när du vill
+                Ingen bindningstid
               </p>
               {/* Bara påståenden som stämmer: avtal utan rabatt (Tibber) får ingen rabattrad. */}
               {(s.selected === RECOMMENDED || o.discountRow) && (
                 <p className={clsx('flex items-center gap-[12px] text-[15px] leading-[20px]', navy)}>
                   <CheckCircle stroke={1.8} />
-                  {s.selected === RECOMMENDED ? 'Vårt bästa pris, med förhandlad rabatt' : 'Med förhandlad rabatt'}
+                  {s.selected === RECOMMENDED ? 'Vårt bästa pris, förhandlad rabatt' : 'Förhandlad rabatt'}
                 </p>
               )}
             </div>
@@ -821,53 +872,34 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
             </div>
           </div>
         </div>
-        <label id="el-terms" className="flex scroll-mt-24 cursor-pointer items-start gap-[10px] pt-[30px] pb-[6px]">
-          <input type="checkbox" className="peer sr-only" checked={s.accepted} onChange={(e) => set({ accepted: e.target.checked })} />
-          <span
-            className={clsx(
-              'mt-[1px] flex size-[18.4px] shrink-0 items-center justify-center rounded-[4px] transition-colors duration-150 peer-focus-visible:ring-2 peer-focus-visible:ring-[#3879AD]',
-              s.accepted ? 'bg-[#51C8B4]' : clsx('border-[2.4px] bg-white', missing ? 'border-[#F25A43]' : 'border-[#9F9FA1]'),
-            )}
-          >
-            {s.accepted && (
-              <svg width="12" height="9" viewBox="0 0 14 10" aria-hidden>
-                <path d="M1.5 5.2l3.6 3.3L12.5 1.5" fill="none" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
-          </span>
-          <span className={clsx('flex-1 text-[14px] leading-[18px]', navy)}>
-            {o.terms.map((seg, i) => (
-              <span key={i} className={seg.b ? 'font-bold text-[#51C8B4]' : undefined}>
-                {i > 0 ? ' ' : ''}
-                {seg.t}
-              </span>
-            ))}
-          </span>
-        </label>
-        <p className="pb-[24px] pl-[28px] text-[13px] leading-[18px] text-[#2B567C]">Fullmakten låter oss ordna elnätet, säga upp ditt gamla avtal och teckna det nya åt dig.</p>
-        <div className={clsx('rounded-[8px] bg-[#ECF9F7] py-[15px] pr-[15px] pl-[25px] text-[15px] leading-[18px]', navy)}>
-          Avtalet tecknas direkt med {o.name} och gäller tillsvidare. Du har alltid <span className="font-bold text-[#51C8B4]">14 dagars ångerrätt.</span>
-        </div>
       </div>
       <Foot>
-        {missing && (
-          <p role="alert" className="text-center text-[12px] leading-[16px] tracking-[0.32px] text-[#F25A43]">
-            Kryssa i rutan för villkoren för att fortsätta
-          </p>
-        )}
+        {/* Samtycket i foten i stället för en kryssruta: att signera är att godkänna (David 20/10). */}
+        <p className={clsx('text-center text-[12px] leading-[16px] tracking-[0.32px] text-[#2B567C]')}>
+          {o.terms.map((seg, i) => (
+            <span key={i}>
+              {i > 0 ? ' ' : ''}
+              {seg.t === 'fullmakt' ? (
+                <button type="button" onClick={() => setPoaOpen(true)} className="font-bold text-[#51C8B4] underline-offset-2 hover:underline">
+                  fullmakt
+                </button>
+              ) : (
+                <span className={seg.b ? 'font-bold text-[#51C8B4]' : undefined}>{seg.t}</span>
+              )}
+            </span>
+          ))}{' '}
+          14 dagars ångerrätt.
+        </p>
         <button
           type="button"
-          onClick={() => (s.accepted ? go(7) : set({ showMissing: true }))}
+          onClick={() => go(6)}
           className={clsx('flex h-12 shrink-0 items-center justify-center gap-[10px] rounded-full border-2 border-[#214766] bg-[#214766] hover:bg-[#112E46]', press)}
         >
           <BankIdIcon />
           <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px] text-white">Teckna elavtal</span>
         </button>
-        <p className="flex items-center justify-center gap-[6px]">
-          <Lock />
-          <span className="text-[13px] leading-[16px] text-[#4A6378]">Du signerar säkert med BankID</span>
-        </p>
       </Foot>
+      {poaOpen && <PoaSheet name={o.name} onClose={() => setPoaOpen(false)} />}
     </>
   )
 }
@@ -878,7 +910,7 @@ export const BankIdScreen = ({ go }: ScreenProps) => {
   const [signing, setSigning] = useState(false)
   useEffect(() => {
     if (!signing) return
-    const t = setTimeout(() => go(8), 1800)
+    const t = setTimeout(() => go(7), 1800)
     return () => clearTimeout(t)
   }, [signing, go])
   return (
