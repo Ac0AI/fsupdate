@@ -1,8 +1,9 @@
 'use client'
 
-import { Check, ChevronLeft, ChevronRight, ChevronUp, Minus, Plus, X } from 'lucide-react'
+import { CalendarDays, Check, ChevronLeft, ChevronRight, ChevronUp, Minus, Plus, X } from 'lucide-react'
 import clsx from 'clsx'
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import Button from '@/components/atoms/Button'
 import SiteChip from '@/components/atoms/Chip'
 import { AVSTAND_MAX, AVSTAND_STEG, FLOORS, TOTAL, avstandText, harAvstand, type Avstand, type FonsterTyp } from './state'
@@ -643,26 +644,19 @@ export const RangeSlider = ({ value, min, max, step, onChange, text, ticks, labe
 export const DayPicker = ({ value, start, min, label, placeholder, onChange, ringText = 'flyttdagen' }: { value?: string; start: string; min?: string; label: string; placeholder: string; onChange: (iso: string) => void; ringText?: string }) => {
   const [open, setOpen] = useState(false)
   const [visible, setVisible] = useState(() => fromIso(value ?? start))
-  const root = useRef<HTMLDivElement>(null)
+  // Kalendern öppnas som en centrerad ruta över sidan, inte nedfälld under fältet (Nils 20 okt).
   useEffect(() => {
     if (!open) return
-    const onDown = (e: PointerEvent) => {
-      if (!root.current?.contains(e.target as Node)) setOpen(false)
-    }
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
-    document.addEventListener('pointerdown', onDown)
     document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('pointerdown', onDown)
-      document.removeEventListener('keydown', onKey)
-    }
+    return () => document.removeEventListener('keydown', onKey)
   }, [open])
   const flytt = fromIso(start)
   const minDag = min ? fromIso(min) : undefined
   const vald = value ? fromIso(value) : undefined
   const idag = new Date()
   return (
-    <div ref={root} className="relative w-full">
+    <div className="relative w-full">
       <button
         type="button"
         data-day-trigger
@@ -676,10 +670,12 @@ export const DayPicker = ({ value, start, min, label, placeholder, onChange, rin
       >
         {vald && <span className="pointer-events-none absolute -top-2.5 left-3 bg-white px-1 text-[12px] text-[var(--color-text-main)]">{label}</span>}
         <span className={clsx('block min-w-0 flex-1 truncate text-[16px]', vald ? 'font-bold text-[var(--color-text-main)]' : 'text-[var(--color-inactive-grey-light)]')}>{vald ? fmtLongDate(vald) : placeholder}</span>
-        <ChevronDownSmall />
+        <CalendarDays size={20} className="shrink-0 text-[var(--color-secondary-main)]" aria-hidden />
       </button>
-      {open && (
-        <div role="dialog" aria-label={label} className="absolute left-0 right-0 top-full z-50 mt-2 rounded-lg bg-white p-4 shadow-xl">
+      {open &&
+        createPortal(
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4" onClick={() => setOpen(false)}>
+        <div role="dialog" aria-label={label} onClick={(e) => e.stopPropagation()} className="w-full max-w-[360px] rounded-2xl bg-white p-4 shadow-xl">
           <div className="mb-3 flex items-center justify-between text-[var(--color-secondary-main)]">
             <button type="button" aria-label="Förra månaden" onClick={() => setVisible((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))} className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white">
               <ChevronLeft size={16} />
@@ -726,16 +722,13 @@ export const DayPicker = ({ value, start, min, label, placeholder, onChange, rin
           </div>
           <p className="mt-3 text-[12px] text-[var(--color-inactive-dark)]">Ringen är {ringText}, {fmtLongDate(flytt)}.</p>
         </div>
-      )}
+        </div>,
+          document.body,
+        )}
     </div>
   )
 }
 
-const ChevronDownSmall = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0 text-[var(--color-inactive-dark)]">
-    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
 
 /**
  * Reveal: nästa fråga visas först när den förra är svarad (Nils 20 okt:

@@ -28,7 +28,11 @@ export type AdressSvar = {
   vaningFranFlytten: boolean
   hiss?: Hiss
   avstand?: Avstand
+  /** God eller Annat (Nils 20 okt). Annat öppnar fritexten. */
+  framkomlighetVal?: 'god' | 'annat'
   framkomlighet: string
+  /** Radhus och villa: antal våningar 1, 1,5, 2, 3 eller 4+ (Nils 20 okt). */
+  vaningar?: string
   /** Boarea i m² om kunden ändrat den, annars hämtas den från flytten. */
   kvm?: string
 }
@@ -64,8 +68,8 @@ export type Answers = {
   /* 5 Städning */
   stad?: JaNej
   stadYta?: 'boyta' | 'mer'
-  stadMer: string[]
-  stadMerKvm?: string
+  /** Utrymmen utöver boarean som ska städas, ett kort per utrymme med Klar, som biytorna (Nils 20 okt). */
+  stadYtor: Biyta[]
   balkong?: JaNej
   balkongStorlek?: 'liten' | 'mellan' | 'stor'
   balkongGlas?: 'halv' | 'hel'
@@ -93,7 +97,7 @@ export const EMPTY: Answers = {
   till: TILL,
   biytor: [],
   saker: [],
-  stadMer: [],
+  stadYtor: [],
   fonster: {},
   fonsterInga: false,
   kansligaText: '',
@@ -110,8 +114,11 @@ export const harAvstand = (v: unknown): v is Avstand => typeof v === 'number' ||
 
 const adressLeft = (s: AdressSvar) => {
   const lagenhet = s.bostadstyp === 'lagenhet'
-  return [lagenhet && !s.vaning, lagenhet && !s.hiss, !harAvstand(s.avstand)].filter(Boolean).length
+  return [lagenhet && !s.vaning, lagenhet && !s.hiss, !lagenhet && !s.vaningar, !harAvstand(s.avstand), !s.framkomlighetVal].filter(Boolean).length
 }
+
+/** Öppnade städytor som inte klarmarkerats. */
+const oppnaStadYtor = (a: Answers) => (a.stadYta === 'mer' ? Math.max(0, Math.max(1, a.stadYtor.length) - a.stadYtor.filter((y) => y.klar).length) : 0)
 
 /** Öppnade kort som inte klarmarkerats: ett halvfärdigt utrymme eller föremål stoppar Fortsätt tills det är Klar eller borttaget. */
 const oppnaKort = (a: Answers) => {
@@ -126,11 +133,11 @@ export const questionsLeft = (a: Answers): number[] => [
   adressLeft(a.fran),
   adressLeft(a.till),
   [!a.bohag, !a.biytaSvar, !a.sakerSvar, !a.utemobler].filter(Boolean).length + oppnaKort(a),
-  !a.stad ? 1 : a.stad === 'nej' ? 0 : [!a.stadYta, !a.balkong, Object.keys(a.fonster).length === 0 && !a.fonsterInga, !a.kansliga].filter(Boolean).length,
+  !a.stad ? 1 : a.stad === 'nej' ? 0 : [!a.stadYta, !a.balkong, Object.keys(a.fonster).length === 0 && !a.fonsterInga, !a.kansliga].filter(Boolean).length + oppnaStadYtor(a),
   (!a.flyttDag ? 1 : 0) + (a.stad === 'ja' && !a.stadDag ? 1 : 0),
 ]
 
-const adressTouched = (s: AdressSvar) => !!(s.hiss || harAvstand(s.avstand) || s.framkomlighet || !s.vaningFranFlytten)
+const adressTouched = (s: AdressSvar) => !!(s.hiss || harAvstand(s.avstand) || s.framkomlighetVal || s.vaningar || !s.vaningFranFlytten)
 
 /** En flagga per steg: har kunden svarat på något där. */
 export const answeredQuestions = (a: Answers) => [
@@ -209,7 +216,8 @@ export const FULLT_LABEL: Record<number, string> = { 25: 'En fjärdedel', 50: 'H
 export const fulltText = (n: number) => FULLT_LABEL[n] ?? `${n} %`
 export const VIKT = ['0–80 kg', '80–150 kg', '150–200 kg', '200+ kg']
 export const VARDE = ['0–30 000 kr', '30 000–50 000 kr', '50 000–100 000 kr', '100 000+ kr']
-export const STAD_MER = ['Källare', 'Balkong', 'Förråd', 'Garage']
+export const VANINGAR = ['1', '1,5', '2', '3', '4+']
+export const FRAMKOMLIGHET_LABEL: Record<'god' | 'annat', string> = { god: 'God', annat: 'Annat' }
 export const FONSTER_LABEL: Record<FonsterTyp, [string, string]> = {
   fyrsidiga: ['Fyrsidiga', 'Två bågar, fyra sidor att putsa'],
   sprojsade: ['Spröjsade', 'Många små rutor'],

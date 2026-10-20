@@ -8,7 +8,6 @@ import GoogleStar from '@/public/images/GoogleStar.svg'
 import {
   avstandText,
   harAvstand,
-  BIYTA_KVM,
   BIYTA_LABEL,
   BOHAG_LABEL,
   BOSTADSTYP_LABEL,
@@ -19,7 +18,8 @@ import {
   fulltText,
   HISS_LABEL,
   PASS,
-  STAD_MER,
+  FRAMKOMLIGHET_LABEL,
+  VANINGAR,
   TILLVAL_LABEL,
   TOTAL,
   VARDE,
@@ -493,8 +493,9 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
   const hissKlar = !lagenhet || !!s.hiss
   // Det som redan är svarat stannar kvar även om en tidigare fråga ändras.
   const visaHiss = lagenhet && (vaningKlar || !!s.hiss)
-  const visaAvstand = (vaningKlar && hissKlar) || harAvstand(s.avstand)
-  const visaFramkomlighet = (visaAvstand && harAvstand(s.avstand)) || !!s.framkomlighet
+  const vaningarKlar = lagenhet || !!s.vaningar
+  const visaAvstand = (vaningKlar && hissKlar && vaningarKlar) || harAvstand(s.avstand)
+  const visaFramkomlighet = (visaAvstand && harAvstand(s.avstand)) || !!s.framkomlighetVal
   return (
     <Q p={p} idx={ut ? FIRST + 1 : FIRST + 2} title={ut ? `Utflytt från ${nb(home.from)}` : `Inflytt till ${nb(home.to)}`} sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Ändra om något inte stämmer.' : 'Bostadstypen är hämtad från din flytt. Samma frågor för den nya bostaden.'}>
       {edit ? (
@@ -561,14 +562,36 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
           </Reveal>
         </>
       )}
+      {!lagenhet && (
+        <Section title="Hur många våningar har huset?" sub="Räkna med källare och inredd vind om vi ska bära där.">
+          <ChipRow>
+            {VANINGAR.map((v) => (
+              <Chip key={v} selected={s.vaningar === v} onClick={() => set({ vaningar: v })}>
+                {v}
+              </Chip>
+            ))}
+          </ChipRow>
+        </Section>
+      )}
       <Reveal show={visaAvstand}>
         <Section title={ut ? 'Hur långt bär vi till flyttbilen?' : 'Hur långt bär vi från flyttbilen?'} sub={ut ? 'Från dörren till närmaste plats bilen kan stå. Ungefärligt räcker.' : 'Från närmaste plats bilen kan stå till dörren. Ungefärligt räcker.'}>
           <MeterSlider value={s.avstand} onChange={(v) => set({ avstand: v })} />
         </Section>
       </Reveal>
       <Reveal show={visaFramkomlighet}>
-        <Section title="Hur är framkomligheten?" sub={lagenhet ? 'Innergård, smal trapp, bom eller trång gata. Hoppa över om det är fritt fram.' : 'Grusväg, smal infart, trappor i trädgården. Hoppa över om det är fritt fram.'}>
-          <TextInput value={s.framkomlighet} onChange={(v) => set({ framkomlighet: v })} placeholder={lagenhet ? 'T.ex. innergård, smal trapp' : 'T.ex. grusväg eller smal infart'} label="Framkomlighet" />
+        <Section title="Hur är framkomligheten?" sub={lagenhet ? 'God betyder att bilen kommer nära och trappan är vanlig. Annat: innergård, smal trapp, bom eller trång gata.' : 'God betyder att bilen kommer fram till huset. Annat: grusväg, smal infart eller trappor i trädgården.'}>
+          <ChipRow>
+            {(Object.keys(FRAMKOMLIGHET_LABEL) as Array<'god' | 'annat'>).map((v) => (
+              <Chip key={v} selected={s.framkomlighetVal === v} onClick={() => set({ framkomlighetVal: v, framkomlighet: v === 'god' ? '' : s.framkomlighet })}>
+                {FRAMKOMLIGHET_LABEL[v]}
+              </Chip>
+            ))}
+          </ChipRow>
+          {s.framkomlighetVal === 'annat' && (
+            <div className="mt-3">
+              <TextInput value={s.framkomlighet} onChange={(v) => set({ framkomlighet: v })} placeholder={lagenhet ? 'T.ex. innergård, smal trapp' : 'T.ex. grusväg eller smal infart'} label="Framkomlighet" />
+            </div>
+          )}
         </Section>
       </Reveal>
     </Q>
@@ -602,130 +625,131 @@ export const BohagScreen = (p: ScreenProps) => {
           <Tile key={v} label={label} hint={hint} selected={a.bohag === v} onClick={() => update({ bohag: v })} icon={BOHAG_IKON[v]} />
         ))}
       </div>
-      <Section title="Har du saker i förråd eller annat utrymme utöver boarean?">
-        <ChoiceRow
-          options={JA_NEJ}
-          value={a.biytaSvar}
-          onChange={(v) => {
-            if (v === 'ja' && a.biytor.length === 0) nyBiyta()
-            else update({ biytaSvar: v, biytor: v === 'ja' ? a.biytor : [] })
-            if (v === 'ja') update({ biytaSvar: v })
-          }}
-        />
-        {a.biytaSvar === 'ja' && (
-          <div className="mt-3 flex flex-col gap-3">
-            {a.biytor.map((b, i) => (
-              <ItemCard
-                key={b.id}
-                title={b.typ ? BIYTA_LABEL[b.typ] : `Utrymme ${i + 1}`}
-                onRemove={() => update((prev) => ({ biytor: prev.biytor.filter((x) => x.id !== b.id) }))}
-                collapsed={!!b.klar && biytaKlar(b)}
-                summary={[typeof b.kvm === 'number' ? biytaKvmText(b.kvm) : null, typeof b.fullt === 'number' ? fulltText(b.fullt).toLowerCase() : null].filter(Boolean).join(' · ')}
-                onDone={biytaKlar(b) ? () => setBiyta(b.id, { klar: true }) : undefined}
-                onEdit={() => setBiyta(b.id, { klar: false })}
-              >
-                <Field label="Vilket utrymme?">
-                  <ChipRow>
-                    {(Object.keys(BIYTA_LABEL) as BiytaTyp[]).map((t) => (
-                      <Chip key={t} small selected={b.typ === t} onClick={() => setBiyta(b.id, { typ: t })} icon={BIYTA_IKON[t]}>
-                        {BIYTA_LABEL[t]}
-                      </Chip>
-                    ))}
-                  </ChipRow>
-                </Field>
-                <Field label="Ungefär hur stort?">
-                  <RangeSlider value={b.kvm} min={5} max={BIYTA_KVM_MAX} step={5} onChange={(v) => setBiyta(b.id, { kvm: v })} text={biytaKvmText} ticks={['5 m²', '25 m²', '50 m² eller mer']} label="Storlek i kvadratmeter" />
-                </Field>
-                <Field label="Hur fullt är det?">
-                  <ChipRow>
-                    {[25, 50, 75, 100].map((f) => (
-                      <Chip key={f} small selected={b.fullt === f} onClick={() => setBiyta(b.id, { fullt: f })}>
-                        {fulltText(f)}
-                      </Chip>
-                    ))}
-                  </ChipRow>
-                </Field>
-              </ItemCard>
-            ))}
-            <AddCard label="Lägg till ett utrymme till" hint="Vind, källare, garage eller förråd" onClick={nyBiyta} />
-          </div>
-        )}
-      </Section>
-      <Section title="Har du föremål som kräver tunga lyft eller är extra ömtåliga?">
-        <ChoiceRow
-          options={JA_NEJ}
-          value={a.sakerSvar}
-          onChange={(v) => {
-            if (v === 'ja' && a.saker.length === 0) nySak()
-            else update({ sakerSvar: v, saker: v === 'ja' ? a.saker : [] })
-            if (v === 'ja') update({ sakerSvar: v })
-          }}
-        />
-        {a.sakerSvar === 'ja' && (
-          <div className="mt-3 flex flex-col gap-3">
-            {a.saker.map((s, i) => (
-              <ItemCard
-                key={s.id}
-                title={s.vad || `Föremål ${i + 1}`}
-                onRemove={() => update((prev) => ({ saker: prev.saker.filter((x) => x.id !== s.id) }))}
-                collapsed={!!s.klar && sakKlar(s)}
-                summary={[s.vikt, s.varde].filter(Boolean).join(' · ')}
-                onDone={sakKlar(s) ? () => setSak(s.id, { klar: true }) : undefined}
-                onEdit={() => setSak(s.id, { klar: false })}
-              >
-                <Field label="Vad är det?">
-                  <TextInput value={s.vad} onChange={(v) => setSak(s.id, { vad: v })} placeholder="T.ex. piano eller marmorbord" label="Vad är det?" />
-                </Field>
-                <Field label="Ungefärlig vikt">
-                  <ChipRow>
-                    {VIKT.map((v) => (
-                      <Chip key={v} small selected={s.vikt === v} onClick={() => setSak(s.id, { vikt: v })}>
-                        {v}
-                      </Chip>
-                    ))}
-                  </ChipRow>
-                </Field>
-                <Field label="Ungefärligt värde" sub="Värdefulla föremål kan behöva extra försäkring under flytten.">
-                  <ChipRow>
-                    {VARDE.map((v) => (
-                      <Chip key={v} small selected={s.varde === v} onClick={() => setSak(s.id, { varde: v })}>
-                        {v}
-                      </Chip>
-                    ))}
-                  </ChipRow>
-                </Field>
-              </ItemCard>
-            ))}
-            <AddCard label="Lägg till ett föremål till" hint="Så tar flyttfirman med rätt utrustning" onClick={nySak} />
-          </div>
-        )}
-      </Section>
-      <Section title="Har du utemöbler som ska med?" sub="Från balkong, altan eller trädgård.">
-        <ChoiceRow options={JA_NEJ} value={a.utemobler} onChange={(v) => update({ utemobler: v })} />
-      </Section>
+      <Reveal show={!!a.bohag || !!a.biytaSvar}>
+        <Section title="Har du saker i förråd eller annat utrymme utöver boarean?">
+          <ChoiceRow
+            options={JA_NEJ}
+            value={a.biytaSvar}
+            onChange={(v) => {
+              if (v === 'ja' && a.biytor.length === 0) nyBiyta()
+              else update({ biytaSvar: v, biytor: v === 'ja' ? a.biytor : [] })
+              if (v === 'ja') update({ biytaSvar: v })
+            }}
+          />
+          {a.biytaSvar === 'ja' && (
+            <div className="mt-3 flex flex-col gap-3">
+              {a.biytor.map((b, i) => (
+                <ItemCard
+                  key={b.id}
+                  title={b.typ ? BIYTA_LABEL[b.typ] : `Utrymme ${i + 1}`}
+                  onRemove={() => update((prev) => ({ biytor: prev.biytor.filter((x) => x.id !== b.id) }))}
+                  collapsed={!!b.klar && biytaKlar(b)}
+                  summary={[typeof b.kvm === 'number' ? biytaKvmText(b.kvm) : null, typeof b.fullt === 'number' ? fulltText(b.fullt).toLowerCase() : null].filter(Boolean).join(' · ')}
+                  onDone={biytaKlar(b) ? () => setBiyta(b.id, { klar: true }) : undefined}
+                  onEdit={() => setBiyta(b.id, { klar: false })}
+                >
+                  <Field label="Vilket utrymme?">
+                    <ChipRow>
+                      {(Object.keys(BIYTA_LABEL) as BiytaTyp[]).map((t) => (
+                        <Chip key={t} small selected={b.typ === t} onClick={() => setBiyta(b.id, { typ: t })} icon={BIYTA_IKON[t]}>
+                          {BIYTA_LABEL[t]}
+                        </Chip>
+                      ))}
+                    </ChipRow>
+                  </Field>
+                  <Field label="Ungefär hur stort?">
+                    <RangeSlider value={b.kvm} min={5} max={BIYTA_KVM_MAX} step={5} onChange={(v) => setBiyta(b.id, { kvm: v })} text={biytaKvmText} ticks={['5 m²', '25 m²', '50 m² eller mer']} label="Storlek i kvadratmeter" />
+                  </Field>
+                  <Field label="Hur fullt är det?">
+                    <ChipRow>
+                      {[25, 50, 75, 100].map((f) => (
+                        <Chip key={f} small selected={b.fullt === f} onClick={() => setBiyta(b.id, { fullt: f })}>
+                          {fulltText(f)}
+                        </Chip>
+                      ))}
+                    </ChipRow>
+                  </Field>
+                </ItemCard>
+              ))}
+              <AddCard label="Lägg till ett utrymme till" hint="Vind, källare, garage eller förråd" onClick={nyBiyta} />
+            </div>
+          )}
+        </Section>
+      </Reveal>
+      <Reveal show={a.biytaSvar === 'nej' || (a.biytaSvar === 'ja' && a.biytor.length > 0 && a.biytor.every((b) => b.klar)) || !!a.sakerSvar}>
+        <Section title="Har du föremål som kräver tunga lyft eller är extra ömtåliga?">
+          <ChoiceRow
+            options={JA_NEJ}
+            value={a.sakerSvar}
+            onChange={(v) => {
+              if (v === 'ja' && a.saker.length === 0) nySak()
+              else update({ sakerSvar: v, saker: v === 'ja' ? a.saker : [] })
+              if (v === 'ja') update({ sakerSvar: v })
+            }}
+          />
+          {a.sakerSvar === 'ja' && (
+            <div className="mt-3 flex flex-col gap-3">
+              {a.saker.map((s, i) => (
+                <ItemCard
+                  key={s.id}
+                  title={s.vad || `Föremål ${i + 1}`}
+                  onRemove={() => update((prev) => ({ saker: prev.saker.filter((x) => x.id !== s.id) }))}
+                  collapsed={!!s.klar && sakKlar(s)}
+                  summary={[s.vikt, s.varde].filter(Boolean).join(' · ')}
+                  onDone={sakKlar(s) ? () => setSak(s.id, { klar: true }) : undefined}
+                  onEdit={() => setSak(s.id, { klar: false })}
+                >
+                  <Field label="Vad är det?">
+                    <TextInput value={s.vad} onChange={(v) => setSak(s.id, { vad: v })} placeholder="T.ex. piano eller marmorbord" label="Vad är det?" />
+                  </Field>
+                  <Field label="Ungefärlig vikt">
+                    <ChipRow>
+                      {VIKT.map((v) => (
+                        <Chip key={v} small selected={s.vikt === v} onClick={() => setSak(s.id, { vikt: v })}>
+                          {v}
+                        </Chip>
+                      ))}
+                    </ChipRow>
+                  </Field>
+                  <Field label="Ungefärligt värde" sub="Värdefulla föremål kan behöva extra försäkring under flytten.">
+                    <ChipRow>
+                      {VARDE.map((v) => (
+                        <Chip key={v} small selected={s.varde === v} onClick={() => setSak(s.id, { varde: v })}>
+                          {v}
+                        </Chip>
+                      ))}
+                    </ChipRow>
+                  </Field>
+                </ItemCard>
+              ))}
+              <AddCard label="Lägg till ett föremål till" hint="Så tar flyttfirman med rätt utrustning" onClick={nySak} />
+            </div>
+          )}
+        </Section>
+      </Reveal>
+      <Reveal show={a.sakerSvar === 'nej' || (a.sakerSvar === 'ja' && a.saker.length > 0 && a.saker.every((x) => x.klar)) || a.utemobler !== undefined}>
+        <Section title="Har du utemöbler som ska med?" sub="Från balkong, altan eller trädgård.">
+          <ChoiceRow options={JA_NEJ} value={a.utemobler} onChange={(v) => update({ utemobler: v })} />
+        </Section>
+      </Reveal>
     </Q>
   )
 }
 
 /* 9 · Städning */
-const FONSTER_FRAGA: Record<FonsterTyp, string> = {
-  fyrsidiga: 'fyrsidiga',
-  sprojsade: 'spröjsade',
-  panorama: 'panoramafönster',
-  svaratkomliga: 'svåråtkomliga',
-}
 
 export const StadScreen = (p: ScreenProps) => {
   const { a, update, home } = p
-  const valda = Object.keys(a.fonster) as FonsterTyp[]
-  const toggleFonster = (t: FonsterTyp) =>
+  const setYta = (id: string, patch: Partial<Answers['stadYtor'][number]>) => update((prev) => ({ stadYtor: prev.stadYtor.map((y) => (y.id === id ? { ...y, ...('klar' in patch ? {} : { klar: false }), ...patch } : y)) }))
+  const ytaKlar = (y: Answers['stadYtor'][number]) => !!y.typ && typeof y.kvm === 'number'
+  const nyYta = () => update((prev) => ({ stadYtor: [...prev.stadYtor, { id: newId() }] }))
+  const setAntal = (t: FonsterTyp, n: number) =>
     update((prev) => {
       const fonster = { ...prev.fonster }
-      if (fonster[t]) delete fonster[t]
-      else fonster[t] = 1
+      if (n <= 0) delete fonster[t]
+      else fonster[t] = n
       return { fonster, fonsterInga: false }
     })
-  const toggleStadMer = (m: string) => update((prev) => ({ stadMer: prev.stadMer.includes(m) ? prev.stadMer.filter((x) => x !== m) : [...prev.stadMer, m] }))
   return (
     <Q p={p} idx={FIRST + 4} title="Flyttstädning">
       <Section title="Vill du ha pris på flyttstädning också?" sub="Nöjd-kund-garanti: anmärkningar vid besiktningen åtgärdas kostnadsfritt." className="mt-4">
@@ -736,30 +760,45 @@ export const StadScreen = (p: ScreenProps) => {
         <>
           <Section title="Vad ska städas?">
             <div className="grid grid-cols-2 gap-2">
-              <Tile label="Boarean" hint={`${home.fromKvm} m²`} selected={a.stadYta === 'boyta'} onClick={() => update({ stadYta: 'boyta', stadMer: [], stadMerKvm: undefined })} />
-              <Tile label="Mer än boarean" hint="Källare, förråd, garage" selected={a.stadYta === 'mer'} onClick={() => update({ stadYta: 'mer' })} />
+              <Tile label="Boarean" hint={`${home.fromKvm} m²`} selected={a.stadYta === 'boyta'} onClick={() => update({ stadYta: 'boyta', stadYtor: [] })} />
+              <Tile
+                label="Mer än boarean"
+                hint="Källare, förråd, garage"
+                selected={a.stadYta === 'mer'}
+                onClick={() => {
+                  if (a.stadYta !== 'mer' && a.stadYtor.length === 0) nyYta()
+                  update({ stadYta: 'mer' })
+                }}
+              />
             </div>
             {a.stadYta === 'mer' && (
-              <SubCard className="mt-3">
-                <Field label="Vad mer ska städas?">
-                  <ChipRow>
-                    {STAD_MER.map((m) => (
-                      <Chip key={m} small selected={a.stadMer.includes(m)} onClick={() => toggleStadMer(m)}>
-                        {m}
-                      </Chip>
-                    ))}
-                  </ChipRow>
-                </Field>
-                <Field label="Ungefär hur många m² extra?">
-                  <ChipRow>
-                    {BIYTA_KVM.map((k) => (
-                      <Chip key={k} small selected={a.stadMerKvm === k} onClick={() => update({ stadMerKvm: k })}>
-                        {k} m²
-                      </Chip>
-                    ))}
-                  </ChipRow>
-                </Field>
-              </SubCard>
+              <div className="mt-3 flex flex-col gap-3">
+                {a.stadYtor.map((y, i) => (
+                  <ItemCard
+                    key={y.id}
+                    title={y.typ ? BIYTA_LABEL[y.typ] : `Utrymme ${i + 1}`}
+                    onRemove={() => update((prev) => ({ stadYtor: prev.stadYtor.filter((x) => x.id !== y.id) }))}
+                    collapsed={!!y.klar && ytaKlar(y)}
+                    summary={typeof y.kvm === 'number' ? biytaKvmText(y.kvm) : undefined}
+                    onDone={ytaKlar(y) ? () => setYta(y.id, { klar: true }) : undefined}
+                    onEdit={() => setYta(y.id, { klar: false })}
+                  >
+                    <Field label="Vilket utrymme?">
+                      <ChipRow>
+                        {(Object.keys(BIYTA_LABEL) as BiytaTyp[]).map((t) => (
+                          <Chip key={t} small selected={y.typ === t} onClick={() => setYta(y.id, { typ: t })} icon={BIYTA_IKON[t]}>
+                            {BIYTA_LABEL[t]}
+                          </Chip>
+                        ))}
+                      </ChipRow>
+                    </Field>
+                    <Field label="Ungefär hur stort?">
+                      <RangeSlider value={y.kvm} min={5} max={BIYTA_KVM_MAX} step={5} onChange={(v) => setYta(y.id, { kvm: v })} text={biytaKvmText} ticks={['5 m²', '25 m²', '50 m² eller mer']} label="Storlek" />
+                    </Field>
+                  </ItemCard>
+                ))}
+                <AddCard label="Lägg till ett utrymme till" hint="Källare, förråd eller garage som ska städas" onClick={nyYta} />
+              </div>
             )}
           </Section>
           <Section title="Har du inglasad balkong?">
@@ -790,11 +829,23 @@ export const StadScreen = (p: ScreenProps) => {
               </SubCard>
             )}
           </Section>
-          <Section title="Har du fönster som tar extra tid att putsa?" sub="Välj de typer som finns, sedan hur många.">
+          <Section title="Har du fönster som tar extra tid att putsa?" sub="Ange antal per typ, eller välj att det inte finns några.">
             <div className="flex flex-col gap-2">
-              {(Object.keys(FONSTER_LABEL) as FonsterTyp[]).map((t) => (
-                <CheckTile key={t} label={FONSTER_LABEL[t][0]} hint={FONSTER_LABEL[t][1]} selected={!!a.fonster[t]} onClick={() => toggleFonster(t)} icon={<WindowIcon type={t} />} />
-              ))}
+              {(Object.keys(FONSTER_LABEL) as FonsterTyp[]).map((t) => {
+                const n = a.fonster[t] ?? 0
+                return (
+                  <div key={t} className={clsx('flex items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] bg-white py-2 pl-3 pr-2', n > 0 ? 'border-[var(--color-secondary-main)]' : 'border-[var(--color-inactive-main)]')}>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center text-[var(--color-secondary-main)]">
+                      <WindowIcon type={t} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{FONSTER_LABEL[t][0]}</span>
+                      <span className="block text-[12px] leading-4 text-[var(--color-inactive-dark)]">{FONSTER_LABEL[t][1]}</span>
+                    </span>
+                    <Stepper value={n} min={0} onChange={(v) => setAntal(t, v)} />
+                  </div>
+                )
+              })}
               <button
                 type="button"
                 aria-pressed={a.fonsterInga}
@@ -804,16 +855,6 @@ export const StadScreen = (p: ScreenProps) => {
                 Inga sådana fönster
               </button>
             </div>
-            {valda.length > 0 && (
-              <SubCard className="mt-3">
-                {valda.map((t) => (
-                  <div key={t} className="flex items-center justify-between gap-3 py-1.5">
-                    <span className="text-[14px] font-bold text-[var(--color-text-main)]">Antal {FONSTER_FRAGA[t]}</span>
-                    <Stepper value={a.fonster[t] ?? 1} onChange={(n) => update((prev) => ({ fonster: { ...prev.fonster, [t]: n } }))} />
-                  </div>
-                ))}
-              </SubCard>
-            )}
           </Section>
           <Section title="Finns det känsliga ytor?" sub="Natursten, oljade golv eller högglansluckor.">
             <ChoiceRow options={JA_NEJ} value={a.kansliga} onChange={(v) => update({ kansliga: v })} />
@@ -897,7 +938,7 @@ export const answerLines = (a: Answers, home: Home): string[] => {
   if (a.utemobler) L.push(a.utemobler === 'ja' ? 'Utemöbler ska med' : 'Inga utemöbler')
   if (a.stad === 'nej') L.push('Ingen flyttstädning')
   if (a.stad === 'ja') {
-    const mer = a.stadYta === 'mer' ? ` + ${a.stadMer.map((m) => m.toLowerCase()).join(', ') || 'mer'}${a.stadMerKvm ? ` ${a.stadMerKvm} m²` : ''}` : ''
+    const mer = a.stadYta === 'mer' ? ` + ${a.stadYtor.filter((y) => y.typ).map((y) => `${(y.typ ? BIYTA_LABEL[y.typ] : '').toLowerCase()}${typeof y.kvm === 'number' ? ` ${y.kvm} m²` : ''}`).join(', ') || 'mer'}` : ''
     L.push(`Flyttstäd${a.stadDag ? ` ${fmtLongDate(fromIso(a.stadDag))}` : ''}: boarean ${home.fromKvm} m²${mer}`)
     if (a.balkong === 'ja') L.push(`Inglasad balkong${a.balkongStorlek ? `, ${a.balkongStorlek}` : ''}${a.balkongGlas ? `, ${a.balkongGlas === 'hel' ? 'helinglasad' : 'halvinglasad'}` : ''}`)
     const f = (Object.keys(a.fonster) as FonsterTyp[]).map((t) => `${FONSTER_LABEL[t][0].toLowerCase()} ×${a.fonster[t]}`)

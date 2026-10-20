@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
@@ -77,11 +77,9 @@ const DemoFlyttFlow = () => {
   const demoUser = useDemoUser()
   const { answers, update, reset, loaded } = useDemoState()
   const { isTabletPortraitOrGreater: desktop } = useResponsive()
-  const [savedBadge, setSavedBadge] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   /* Mobil helskärm: panelen följer den synliga vyn så att iOS-tangentbordet inte skjuter upp sidan bakom (Nils 20 okt). */
   const [vy, setVy] = useState<{ top: number; height: number } | null>(null)
-  const badgeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const step = Math.min(LAST, Math.max(0, Number(search.get('s') ?? 0) || 0))
   const inSheet = step > 0 && step < SALJARE
@@ -132,16 +130,8 @@ const DemoFlyttFlow = () => {
     [params?.locale, router],
   )
 
-  /* Fortsätt: visa "Steg n sparat" på nästa steg i ett par sekunder. */
-  const next = useCallback(
-    (from: number) => {
-      setSavedBadge(`Steg ${from - FIRST_QUESTION + 1} sparat`)
-      if (badgeTimer.current) clearTimeout(badgeTimer.current)
-      badgeTimer.current = setTimeout(() => setSavedBadge(null), 2500)
-      go(from + 1)
-    },
-    [go],
-  )
+  /* Fortsätt: nästa steg. Ingen "Steg n sparat"-bock längre, allt sparas per fält (Nils 20 okt). */
+  const next = useCallback((from: number) => go(from + 1), [go])
 
   const home: Home = useMemo(() => {
     const move = demoUser.currentMove
@@ -159,7 +149,7 @@ const DemoFlyttFlow = () => {
     }
   }, [demoUser])
 
-  const props: ScreenProps = { a: answers, update, go, next, home, savedBadge }
+  const props: ScreenProps = { a: answers, update, go, next, home }
 
   // Som komponent, inte funktionsanrop: skärmarna har egna hooks och får inte dela DemoFlyttFlows hook-ordning.
   const Screen = [null, OffertScreen, TidScreen, NummerScreen, BokatScreen, AdresserScreen, BaraUtScreen, BaraInScreen, BohagScreen, StadScreen, SistaScreen, SparatScreen, SaljareScreen, OffertenScreen][step]
