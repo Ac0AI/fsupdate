@@ -338,21 +338,49 @@ export const AdresserScreen = (p: ScreenProps) => {
 }
 
 /* 6 och 7 · Bära ut, bära in. Våning och hiss frågas bara för lägenhet. */
-const NEXT_TYPE: Record<Bostadstyp, Bostadstyp> = { lagenhet: 'radhus', radhus: 'villa', villa: 'lagenhet' }
 
 const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => {
   const { a, update, home } = p
   const s = a[side]
   const set = (patch: Partial<AdressSvar>) => update((prev) => ({ [side]: { ...prev[side], ...patch } }))
   const [more, setMore] = useState(!!s.vaning && !FLOORS.includes(s.vaning) && s.vaning !== 'vet-ej')
+  const [edit, setEdit] = useState(false)
   const ut = side === 'fran'
   const lagenhet = s.bostadstyp === 'lagenhet'
-  const kvm = ut ? home.fromKvm : home.toKvm
+  const kvm = s.kvm ?? String(ut ? home.fromKvm : home.toKvm)
+  // Byte av bostadstyp nollar det som bara gäller lägenhet. Samma typ igen rör inget.
+  const valjTyp = (t: Bostadstyp) => set(t === s.bostadstyp ? {} : { bostadstyp: t, vaning: undefined, vaningFranFlytten: false, hiss: undefined })
   return (
     <Q p={p} idx={ut ? FIRST + 1 : FIRST + 2} title={ut ? `Utflytt från ${nb(home.from)}` : `Inflytt till ${nb(home.to)}`} sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Ändra om något inte stämmer.' : 'Bostadstypen är hämtad från din flytt. Samma frågor för den nya bostaden.'}>
-      <InfoCard className="mt-5">
-        <Row label="Bostadstyp" value={`${BOSTADSTYP_LABEL[s.bostadstyp]} · ${kvm} m²`} action="Ändra" onAction={() => set({ bostadstyp: NEXT_TYPE[s.bostadstyp], vaning: undefined, vaningFranFlytten: false, hiss: undefined })} first />
-      </InfoCard>
+      {edit ? (
+        <InfoCard className="mt-5 p-3.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Bostadstyp</span>
+            <TextLink className="text-[13px]" onClick={() => setEdit(false)}>
+              Klar
+            </TextLink>
+          </div>
+          <div className="mt-2">
+            <ChipRow>
+              {(Object.keys(BOSTADSTYP_LABEL) as Bostadstyp[]).map((t) => (
+                <Chip key={t} selected={s.bostadstyp === t} onClick={() => valjTyp(t)}>
+                  {BOSTADSTYP_LABEL[t]}
+                </Chip>
+              ))}
+            </ChipRow>
+          </div>
+          <div className="mt-3">
+            <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Boarea i m²</span>
+            <div className="mt-1 w-40">
+              <TextInput type="number" value={kvm} onChange={(v) => set({ kvm: v })} placeholder="62" label="Boarea i m²" />
+            </div>
+          </div>
+        </InfoCard>
+      ) : (
+        <InfoCard className="mt-5">
+          <Row label="Bostadstyp" value={`${BOSTADSTYP_LABEL[s.bostadstyp]} · ${kvm || '?'} m²`} action="Ändra" onAction={() => setEdit(true)} first />
+        </InfoCard>
+      )}
       {lagenhet && (
         <>
           <Section title="Vilket våningsplan ligger lägenheten på?" badge={s.vaningFranFlytten && s.vaning ? <GreenBadge>Från din flytt</GreenBadge> : undefined}>

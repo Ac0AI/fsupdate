@@ -28,6 +28,8 @@ export type AdressSvar = {
   hiss?: Hiss
   avstand?: Avstand
   framkomlighet: string
+  /** Boarea i m² om kunden ändrat den, annars hämtas den från flytten. */
+  kvm?: string
 }
 
 export type Biyta = { id: string; typ?: BiytaTyp; kvm?: string; fullt?: string }

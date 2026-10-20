@@ -191,7 +191,7 @@ export const TextInput = ({ value, onChange, placeholder, label, type = 'text' }
     onChange={(e) => onChange(e.target.value)}
     placeholder={placeholder}
     aria-label={label}
-    className="h-12 w-full rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-inactive-main)] px-3 text-[16px] text-[var(--color-text-main)] outline-none placeholder:text-[var(--color-inactive-grey-light)] focus:border-[var(--color-secondary-main)]"
+    className="h-12 w-full rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-inactive-main)] bg-white px-3 text-[16px] text-[var(--color-text-main)] outline-none placeholder:text-[var(--color-inactive-grey-light)] focus:border-[var(--color-secondary-main)]"
   />
 )
 
