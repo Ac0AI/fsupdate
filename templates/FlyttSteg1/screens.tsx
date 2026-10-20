@@ -365,9 +365,10 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
   // Reveal: en fråga i taget inom steget. Nästa visas när den förra är svarad, det förifyllda räknas som svarat.
   const vaningKlar = !lagenhet || !!s.vaning
   const hissKlar = !lagenhet || !!s.hiss
-  const visaHiss = lagenhet && vaningKlar
-  const visaAvstand = vaningKlar && hissKlar
-  const visaFramkomlighet = visaAvstand && harAvstand(s.avstand)
+  // Det som redan är svarat stannar kvar även om en tidigare fråga ändras.
+  const visaHiss = lagenhet && (vaningKlar || !!s.hiss)
+  const visaAvstand = (vaningKlar && hissKlar) || harAvstand(s.avstand)
+  const visaFramkomlighet = (visaAvstand && harAvstand(s.avstand)) || !!s.framkomlighet
   return (
     <Q p={p} idx={ut ? FIRST + 1 : FIRST + 2} title={ut ? `Utflytt från ${nb(home.from)}` : `Inflytt till ${nb(home.to)}`} sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Ändra om något inte stämmer.' : 'Bostadstypen är hämtad från din flytt. Samma frågor för den nya bostaden.'}>
       {edit ? (

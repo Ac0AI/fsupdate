@@ -434,7 +434,7 @@ export const Frame = ({
         <li key={s} className={clsx('h-1 flex-1 rounded-full', i < step ? 'bg-[var(--color-primary-main)]' : i === step ? 'bg-[var(--color-secondary-main)]' : 'bg-[var(--color-inactive-main)]')} />
       ))}
     </ol>
-    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-5 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4">
+    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-4 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4">
       <nav className="hidden md:sticky md:top-0 md:block" aria-label="Steg">
         <ol className="flex flex-col gap-1">
           {STEG.map((s, i) => {
@@ -461,8 +461,8 @@ export const Frame = ({
         </ol>
       </nav>
       <div className="min-w-0 md:max-w-[560px]">
-        <h1 className="text-[22px] font-bold leading-[28px] text-[var(--color-text-main)] md:text-[26px] md:leading-[32px]">{title}</h1>
-        {sub && <p className="mt-1 text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:text-[15px] md:leading-[22px]">{sub}</p>}
+        <h1 className="text-[19px] font-bold leading-[24px] text-[var(--color-text-main)] md:text-[24px] md:leading-[30px]">{title}</h1>
+        {sub && <p className="mt-1 text-[13px] leading-[18px] text-[var(--color-inactive-dark)] md:text-[15px] md:leading-[22px]">{sub}</p>}
         {children}
       </div>
     </div>
@@ -573,17 +573,21 @@ export const MeterSlider = ({ value, onChange }: { value: unknown; onChange: (v:
           Vet inte
         </Chip>
       </div>
-      <input
-        type="range"
-        min={0}
-        max={AVSTAND_MAX}
-        step={AVSTAND_STEG}
-        value={tal}
-        aria-label="Bärsträcka i meter"
-        aria-valuetext={svar === undefined ? 'inget valt' : avstandText(svar)}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className={clsx('mt-3 h-11 w-full cursor-pointer accent-[var(--color-secondary-main)]', vetEj && 'opacity-40')}
-      />
+      <div className={clsx(vetEj && 'opacity-40')}>
+        <input
+          type="range"
+          min={0}
+          max={AVSTAND_MAX}
+          step={AVSTAND_STEG}
+          value={tal}
+          aria-label="Bärsträcka i meter"
+          aria-valuetext={svar === undefined ? 'inget valt' : avstandText(svar)}
+          onChange={(e) => onChange(Number(e.target.value))}
+          // Ett tryck på reglaget utan att dra ger inget change-event. Då gäller läget det står i.
+          onPointerUp={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          className="mt-3 h-11 w-full cursor-pointer accent-[var(--color-secondary-main)]"
+        />
+      </div>
       <div className="flex justify-between text-[12px] text-[var(--color-inactive-dark)]" aria-hidden>
         <span>0 m</span>
         <span>50 m</span>
@@ -599,7 +603,18 @@ export const RangeSlider = ({ value, min, max, step, onChange, text, ticks, labe
   return (
     <div>
       <span className={clsx('block text-[18px] font-bold leading-6', svar === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>{svar === undefined ? 'Dra för att välja' : text(svar)}</span>
-      <input type="range" min={min} max={max} step={step} value={svar ?? min} aria-label={label} aria-valuetext={svar === undefined ? 'inget valt' : text(svar)} onChange={(e) => onChange(Number(e.target.value))} className="mt-2 h-11 w-full cursor-pointer accent-[var(--color-secondary-main)]" />
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={svar ?? min}
+        aria-label={label}
+        aria-valuetext={svar === undefined ? 'inget valt' : text(svar)}
+        onChange={(e) => onChange(Number(e.target.value))}
+        onPointerUp={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+        className="mt-2 h-11 w-full cursor-pointer accent-[var(--color-secondary-main)]"
+      />
       <div className="flex justify-between text-[12px] text-[var(--color-inactive-dark)]" aria-hidden>
         {ticks.map((t) => (
           <span key={t}>{t}</span>

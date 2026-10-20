@@ -94,7 +94,7 @@ export const EMPTY: Answers = {
   ovrigt: '',
 }
 
-const KEY = 'flyttsmart-demo-flytt-steg1-v2'
+const KEY = 'flyttsmart-demo-flytt-steg1-v3'
 
 export const TOTAL = 6
 
