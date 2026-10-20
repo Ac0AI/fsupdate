@@ -13,7 +13,8 @@ export type JaNej = 'ja' | 'nej'
 export type JaNejVet = 'ja' | 'nej' | 'vet-ej'
 export type Bostadstyp = 'lagenhet' | 'radhus' | 'villa'
 export type Hiss = 'stor' | 'liten' | 'nej' | 'vet-ej'
-export type Avstand = 'u25' | '25-50' | '50-75' | '75-100' | 'o100' | 'vet-ej'
+/** Bärsträcka i meter i steg om 5, 100 = 100 m eller mer, eller Vet inte. */
+export type Avstand = number | 'vet-ej'
 export type Bohag = 'lite' | 'normalt' | 'mycket'
 export type BiytaTyp = 'kallare' | 'vind' | 'forrad' | 'garage' | 'uterum' | 'annat'
 export type FonsterTyp = 'fyrsidiga' | 'sprojsade' | 'panorama' | 'svaratkomliga'
@@ -94,9 +95,12 @@ const KEY = 'flyttsmart-demo-flytt-steg1-v2'
 
 export const TOTAL = 6
 
+/** Giltigt svar på bärsträckan: ett tal (även 0) eller Vet inte. Gamla sparade värden ("u25") räknas inte. */
+export const harAvstand = (v: unknown): v is Avstand => typeof v === 'number' || v === 'vet-ej'
+
 const adressLeft = (s: AdressSvar) => {
   const lagenhet = s.bostadstyp === 'lagenhet'
-  return [lagenhet && !s.vaning, lagenhet && !s.hiss, !s.avstand].filter(Boolean).length
+  return [lagenhet && !s.vaning, lagenhet && !s.hiss, !harAvstand(s.avstand)].filter(Boolean).length
 }
 
 /** Obesvarade knappfrågor per steg, i ordningen Adresser, Bära ut, Bära in, Vad ska med, Städning, Sista detaljerna. */
@@ -109,7 +113,7 @@ export const questionsLeft = (a: Answers): number[] => [
   0,
 ]
 
-const adressTouched = (s: AdressSvar) => !!(s.hiss || s.avstand || s.framkomlighet || !s.vaningFranFlytten)
+const adressTouched = (s: AdressSvar) => !!(s.hiss || harAvstand(s.avstand) || s.framkomlighet || !s.vaningFranFlytten)
 
 /** En flagga per steg: har kunden svarat på något där. */
 export const answeredQuestions = (a: Answers) => [
@@ -176,14 +180,9 @@ export const PASS: [string, string][] = [
 
 export const BOSTADSTYP_LABEL: Record<Bostadstyp, string> = { lagenhet: 'Lägenhet', radhus: 'Radhus', villa: 'Villa' }
 export const HISS_LABEL: Record<Hiss, string> = { stor: 'Stor hiss', liten: 'Liten hiss', nej: 'Ingen hiss', 'vet-ej': 'Vet inte' }
-export const AVSTAND_LABEL: Record<Avstand, string> = {
-  u25: '0–25 m',
-  '25-50': '26–50 m',
-  '50-75': '51–75 m',
-  '75-100': '76–100 m',
-  o100: 'Över 100 m',
-  'vet-ej': 'Vet inte',
-}
+export const AVSTAND_STEG = 5
+export const AVSTAND_MAX = 100
+export const avstandText = (v: Avstand) => (v === 'vet-ej' ? 'Vet inte' : v >= AVSTAND_MAX ? `${AVSTAND_MAX} m eller mer` : `${v} m`)
 export const BOHAG_LABEL: Record<Bohag, string> = { lite: 'Lite bohag', normalt: 'Normalt bohag', mycket: 'Mycket bohag' }
 export const BIYTA_LABEL: Record<BiytaTyp, string> = { kallare: 'Källare', vind: 'Vind', forrad: 'Förråd', garage: 'Garage', uterum: 'Uterum', annat: 'Annat' }
 export const BIYTA_KVM = ['5', '10', '20', '30', '50+']

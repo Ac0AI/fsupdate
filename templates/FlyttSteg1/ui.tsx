@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import Button from '@/components/atoms/Button'
 import SiteChip from '@/components/atoms/Chip'
-import { FLOORS, TOTAL, type FonsterTyp } from './state'
+import { AVSTAND_MAX, AVSTAND_STEG, FLOORS, TOTAL, avstandText, harAvstand, type Avstand, type FonsterTyp } from './state'
 import { addDays, fmtShort, fmtWeekTitle, fmtWeekday, isSelectable, maxDay, sameDay, startOfWeek, weekDays } from './datum'
 
 /*
@@ -517,6 +517,42 @@ export const WeekPicker = ({ value, onChange }: { value: Date; onChange: (d: Dat
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/**
+ * Bärsträckan som reglage i steg om fem meter (David 20 okt), med Vet inte
+ * bredvid. Värdet står stort ovanför, reglaget är obesvarat tills det rörts.
+ */
+export const MeterSlider = ({ value, onChange }: { value: unknown; onChange: (v: Avstand) => void }) => {
+  const svar = harAvstand(value) ? value : undefined
+  const vetEj = svar === 'vet-ej'
+  const tal = typeof svar === 'number' ? svar : 25
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-3">
+        <span className={clsx('text-[22px] font-bold leading-7', svar === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>{svar === undefined ? 'Dra för att välja' : avstandText(svar)}</span>
+        <Chip small selected={vetEj} onClick={() => onChange('vet-ej')}>
+          Vet inte
+        </Chip>
+      </div>
+      <input
+        type="range"
+        min={0}
+        max={AVSTAND_MAX}
+        step={AVSTAND_STEG}
+        value={tal}
+        aria-label="Bärsträcka i meter"
+        aria-valuetext={svar === undefined ? 'inget valt' : avstandText(svar)}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className={clsx('mt-3 h-11 w-full cursor-pointer accent-[var(--color-secondary-main)]', vetEj && 'opacity-40')}
+      />
+      <div className="flex justify-between text-[12px] text-[var(--color-inactive-dark)]" aria-hidden>
+        <span>0 m</span>
+        <span>50 m</span>
+        <span>{AVSTAND_MAX} m eller mer</span>
+      </div>
     </div>
   )
 }

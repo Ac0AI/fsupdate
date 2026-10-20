@@ -6,7 +6,8 @@ import clsx from 'clsx'
 import GoogleColor from '@/public/images/GoogleColor.svg'
 import GoogleStar from '@/public/images/GoogleStar.svg'
 import {
-  AVSTAND_LABEL,
+  avstandText,
+  harAvstand,
   BIYTA_KVM,
   BIYTA_LABEL,
   BOHAG_LABEL,
@@ -28,7 +29,6 @@ import {
   samtalText,
   type AdressSvar,
   type Answers,
-  type Avstand,
   type BiytaTyp,
   type Bohag,
   type Bostadstyp,
@@ -37,7 +37,7 @@ import {
   type JaNejVet,
   type Tillval,
 } from './state'
-import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, WeekPicker, WindowIcon } from './ui'
+import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, MeterSlider, WeekPicker, WindowIcon } from './ui'
 import { ChevronDown } from './LiveMovePage'
 import { canCallNow, fmtLong, hideMorning, isSlotPassed, nextSelectable } from './datum'
 
@@ -415,13 +415,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
         </>
       )}
       <Section title={ut ? 'Hur långt bär vi till flyttbilen?' : 'Hur långt bär vi från flyttbilen?'} sub={ut ? 'Från dörren till närmaste plats bilen kan stå. Ungefärligt räcker.' : 'Från närmaste plats bilen kan stå till dörren. Ungefärligt räcker.'}>
-        <ChipRow>
-          {(Object.keys(AVSTAND_LABEL) as Avstand[]).map((v) => (
-            <Chip key={v} selected={s.avstand === v} onClick={() => set({ avstand: v })}>
-              {AVSTAND_LABEL[v]}
-            </Chip>
-          ))}
-        </ChipRow>
+        <MeterSlider value={s.avstand} onChange={(v) => set({ avstand: v })} />
       </Section>
       <Section title="Hur är framkomligheten?" sub={lagenhet ? 'Innergård, smal trapp, bom eller trång gata. Hoppa över om det är fritt fram.' : 'Grusväg, smal infart, trappor i trädgården. Hoppa över om det är fritt fram.'}>
         <TextInput value={s.framkomlighet} onChange={(v) => set({ framkomlighet: v })} placeholder={lagenhet ? 'T.ex. innergård, smal trapp' : 'T.ex. grusväg eller smal infart'} label="Framkomlighet" />
@@ -708,7 +702,7 @@ const vaningText = (v?: string) => (v === 'vet-ej' ? 'våning: vet inte' : v ===
 
 const adressLine = (label: string, s: AdressSvar) => {
   const lagenhet = s.bostadstyp === 'lagenhet'
-  const parts = [BOSTADSTYP_LABEL[s.bostadstyp].toLowerCase(), lagenhet ? vaningText(s.vaning) : null, lagenhet && s.hiss ? HISS_LABEL[s.hiss].toLowerCase().replace('vet inte', 'hiss: vet inte') : null, s.avstand ? (s.avstand === 'vet-ej' ? 'bärsträcka: vet inte' : `${AVSTAND_LABEL[s.avstand].toLowerCase()} att bära`) : null, s.framkomlighet || null].filter(Boolean)
+  const parts = [BOSTADSTYP_LABEL[s.bostadstyp].toLowerCase(), lagenhet ? vaningText(s.vaning) : null, lagenhet && s.hiss ? HISS_LABEL[s.hiss].toLowerCase().replace('vet inte', 'hiss: vet inte') : null, harAvstand(s.avstand) ? (s.avstand === 'vet-ej' ? 'bärsträcka: vet inte' : `${avstandText(s.avstand)} att bära`) : null, s.framkomlighet || null].filter(Boolean)
   return `${label}: ${parts.join(', ')}`
 }
 
