@@ -556,3 +556,19 @@ export const MeterSlider = ({ value, onChange }: { value: unknown; onChange: (v:
     </div>
   )
 }
+
+/** Reglage med fasta steg, värdet stort ovanför och etiketter under. Obesvarat tills det rörts. */
+export const RangeSlider = ({ value, min, max, step, onChange, text, ticks, label }: { value: unknown; min: number; max: number; step: number; onChange: (v: number) => void; text: (v: number) => string; ticks: string[]; label: string }) => {
+  const svar = typeof value === 'number' ? value : undefined
+  return (
+    <div>
+      <span className={clsx('block text-[18px] font-bold leading-6', svar === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>{svar === undefined ? 'Dra för att välja' : text(svar)}</span>
+      <input type="range" min={min} max={max} step={step} value={svar ?? min} aria-label={label} aria-valuetext={svar === undefined ? 'inget valt' : text(svar)} onChange={(e) => onChange(Number(e.target.value))} className="mt-2 h-11 w-full cursor-pointer accent-[var(--color-secondary-main)]" />
+      <div className="flex justify-between text-[12px] text-[var(--color-inactive-dark)]" aria-hidden>
+        {ticks.map((t) => (
+          <span key={t}>{t}</span>
+        ))}
+      </div>
+    </div>
+  )
+}

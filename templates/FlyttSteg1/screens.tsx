@@ -14,7 +14,9 @@ import {
   BOSTADSTYP_LABEL,
   FLOORS,
   FONSTER_LABEL,
-  FULLT,
+  BIYTA_KVM_MAX,
+  biytaKvmText,
+  fulltText,
   HISS_LABEL,
   PASS,
   STAD_MER,
@@ -37,7 +39,7 @@ import {
   type JaNejVet,
   type Tillval,
 } from './state'
-import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, MeterSlider, WeekPicker, WindowIcon } from './ui'
+import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, MeterSlider, RangeSlider, WeekPicker, WindowIcon } from './ui'
 import { ChevronDown } from './LiveMovePage'
 import { canCallNow, fmtLong, hideMorning, isSlotPassed, nextSelectable } from './datum'
 
@@ -461,22 +463,10 @@ export const BohagScreen = (p: ScreenProps) => {
                   </ChipRow>
                 </Field>
                 <Field label="Ungefär hur stort?">
-                  <ChipRow>
-                    {BIYTA_KVM.map((k) => (
-                      <Chip key={k} small selected={b.kvm === k} onClick={() => setBiyta(b.id, { kvm: k })}>
-                        {k} m²
-                      </Chip>
-                    ))}
-                  </ChipRow>
+                  <RangeSlider value={b.kvm} min={5} max={BIYTA_KVM_MAX} step={5} onChange={(v) => setBiyta(b.id, { kvm: v })} text={biytaKvmText} ticks={['5 m²', '25 m²', '50 m² eller mer']} label="Storlek i kvadratmeter" />
                 </Field>
-                <Field label="Hur fullt?">
-                  <ChipRow>
-                    {FULLT.map((f) => (
-                      <Chip key={f} small selected={b.fullt === f} onClick={() => setBiyta(b.id, { fullt: f })}>
-                        {f}
-                      </Chip>
-                    ))}
-                  </ChipRow>
+                <Field label="Hur fullt är det?">
+                  <RangeSlider value={b.fullt} min={25} max={100} step={25} onChange={(v) => setBiyta(b.id, { fullt: v })} text={fulltText} ticks={['En fjärdedel', 'Halvfullt', 'Trekvart', 'Fullt']} label="Hur fullt utrymmet är" />
                 </Field>
               </ItemCard>
             ))}
@@ -713,7 +703,7 @@ export const answerLines = (a: Answers, home: Home): string[] => {
   L.push(adressLine(home.from, a.fran), adressLine(home.to, a.till))
   if (a.bohag) L.push(`${BOHAG_LABEL[a.bohag]}, ${home.fromKvm} m²`)
   if (a.biytaSvar === 'nej') L.push('Inga utrymmen utöver boarean')
-  a.biytor.forEach((b) => L.push(`${b.typ ? BIYTA_LABEL[b.typ] : 'Utrymme'}${b.kvm ? ` ${b.kvm} m²` : ''}${b.fullt ? `, ${b.fullt.toLowerCase()}` : ''}`))
+  a.biytor.forEach((b) => L.push(`${b.typ ? BIYTA_LABEL[b.typ] : 'Utrymme'}${typeof b.kvm === 'number' ? ` ${biytaKvmText(b.kvm)}` : ''}${typeof b.fullt === 'number' ? `, ${fulltText(b.fullt).toLowerCase()}` : ''}`))
   if (a.sakerSvar === 'nej') L.push('Inga tunga eller ömtåliga föremål')
   a.saker.forEach((s) => L.push(`${s.vad || 'Föremål'}${s.vikt ? `, ${s.vikt}` : ''}${s.varde ? `, värde ${s.varde}` : ''}`))
   if (a.utemobler) L.push(a.utemobler === 'ja' ? 'Utemöbler ska med' : 'Inga utemöbler')

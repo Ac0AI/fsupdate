@@ -33,7 +33,8 @@ export type AdressSvar = {
   kvm?: string
 }
 
-export type Biyta = { id: string; typ?: BiytaTyp; kvm?: string; fullt?: string }
+/** kvm i steg om 5 (50 = 50 m² eller mer), fullt i fjärdedelar 25–100. */
+export type Biyta = { id: string; typ?: BiytaTyp; kvm?: number; fullt?: number }
 export type Sak = { id: string; vad: string; vikt?: string; varde?: string }
 export type Samtal = { dag: string; pass: string }
 
@@ -186,7 +187,10 @@ export const avstandText = (v: Avstand) => (v === 'vet-ej' ? 'Vet inte' : v >= A
 export const BOHAG_LABEL: Record<Bohag, string> = { lite: 'Lite bohag', normalt: 'Normalt bohag', mycket: 'Mycket bohag' }
 export const BIYTA_LABEL: Record<BiytaTyp, string> = { kallare: 'Källare', vind: 'Vind', forrad: 'Förråd', garage: 'Garage', uterum: 'Uterum', annat: 'Annat' }
 export const BIYTA_KVM = ['5', '10', '20', '30', '50+']
-export const FULLT = ['25 %', '50 %', '75 %', 'Fullt']
+export const BIYTA_KVM_MAX = 50
+export const biytaKvmText = (n: number) => (n >= BIYTA_KVM_MAX ? `${BIYTA_KVM_MAX} m² eller mer` : `${n} m²`)
+export const FULLT_LABEL: Record<number, string> = { 25: 'En fjärdedel', 50: 'Halvfullt', 75: 'Trekvart', 100: 'Fullt' }
+export const fulltText = (n: number) => FULLT_LABEL[n] ?? `${n} %`
 export const VIKT = ['0–80 kg', '80–150 kg', '150–200 kg', '200+ kg']
 export const VARDE = ['0–30 000 kr', '30 000–50 000 kr', '50 000–100 000 kr', '100 000+ kr']
 export const STAD_MER = ['Källare', 'Balkong', 'Förråd', 'Garage']
