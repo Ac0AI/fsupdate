@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { clsx } from 'clsx'
 import { HOME, OFFERS, RECOMMENDED, dateStatus, firstPossible, kwhFor, longDate, offerById, priceFor, type HomeType, type OfferId } from './data'
-import { ArrowRight, CheckCircle, ChevronDown, FramedField, Foot, Help, House, Lock, Logo, Pen, PenLarge, Pin, Shield, Steps, Title, fieldInput, press } from './ui'
+import { ArrowRight, CheckCircle, ChevronDown, FramedField, Foot, Help, Lock, Logo, PenLarge, Pin, Shield, Steps, Title, fieldInput, press } from './ui'
 
 export type ElState = {
   homeType: HomeType | null
@@ -215,134 +216,163 @@ const Compare = ({ s, set }: ScreenProps) => {
 }
 
 const TYPES: HomeType[] = ['Lägenhet', 'Radhus', 'Villa']
+const fmtNum = (n: number) => new Intl.NumberFormat('sv-SE').format(n)
 
-const HomeEditor = ({ s, set }: ScreenProps) => {
-  const [kvmDraft, setKvmDraft] = useState(String(s.kvm))
-  return (
-    <div className="flex flex-col rounded-[16px] bg-white p-[20px]">
-      <div className="flex items-center gap-[8px] pb-[12px]">
-        <Logo src="/images/el-demo/adress.svg" alt="" className="size-8" />
-        <span className={clsx('text-[14px] leading-[18px] font-bold tracking-[0.32px]', navy)}>Adress</span>
-      </div>
-      <FramedField label="Adress">
-        <input aria-label="Adress" className={fieldInput} defaultValue={`${HOME.street}, ${HOME.zip} ${HOME.city}`} />
-      </FramedField>
-      <div className="my-[20px] h-px shrink-0 bg-[#21476633] opacity-50" />
-      <div className="flex items-center gap-[8px] pb-[12px]">
-        <Logo src="/images/el-demo/boarea.svg" alt="" className="size-8" />
-        <span className={clsx('text-[14px] leading-[18px] font-bold tracking-[0.32px]', navy)}>Storlek på bostaden</span>
-      </div>
-      <FramedField label="Boarea">
-        <input
-          aria-label="Boarea"
-          inputMode="numeric"
-          className={fieldInput}
-          value={kvmDraft}
-          onChange={(e) => {
-            const v = e.target.value.replace(/\D/g, '').slice(0, 4)
-            setKvmDraft(v)
-            const n = Number(v)
-            if (n >= 10) set({ kvm: n, kwh: kwhFor(s.homeType ?? 'Lägenhet', n) })
-          }}
-        />
-        <span className="text-[15px] leading-[18px] text-[#767678]">kvm</span>
-      </FramedField>
-      <div className="my-[20px] h-px shrink-0 bg-[#21476633] opacity-50" />
-      <div className="flex items-center gap-[8px] pb-[12px]">
-        <Logo src="/images/el-demo/bostadstyp.svg" alt="" className="size-8" />
-        <span className={clsx('text-[14px] leading-[18px] font-bold tracking-[0.32px]', navy)}>Bostadstyp</span>
-      </div>
-      <div className="flex gap-[10px]" role="radiogroup" aria-label="Bostadstyp">
-        {TYPES.map((t) => {
-          const on = s.homeType === t
-          return (
-            <button
-              key={t}
-              type="button"
-              role="radio"
-              aria-checked={on}
-              onClick={() => set({ homeType: t, kwh: kwhFor(t, s.kvm), editHome: false })}
-              className={clsx(
-                'flex h-12 min-w-0 flex-1 items-center justify-center rounded-[8px] border',
-                on ? 'border-[#214766] bg-[#DCEFFF]' : 'border-[#21476633] bg-white',
-                press,
-              )}
-            >
-              <span className={clsx('text-[15px] leading-[18px] tracking-[0.32px]', navy, on && 'font-bold')}>{t}</span>
-            </button>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-const HomeCard = ({ s, set }: ScreenProps) => (
-  <div className="relative flex flex-col rounded-[16px] bg-[#4C96D0] py-[15px] pr-[15px] pl-[20px]">
-    <p className="pb-[10px] text-[18px] leading-[18px] font-bold tracking-[0.32px] text-white">Din bostad</p>
-    <p className="flex items-center gap-[8px] pb-[4px] text-[15px] leading-[18px] font-bold tracking-[0.32px] text-white">
-      <Pin />
-      {HOME.street}
-    </p>
-    <p className="flex items-center gap-[8px] text-[15px] leading-[18px] font-bold tracking-[0.32px] text-white">
-      <Logo src="/images/el-demo/boarea-vit.svg" alt="" className="h-[17px] w-[16px]" />
-      {s.kvm} kvm
-    </p>
-    <p className="flex items-center gap-[8px] pt-[4px] text-[15px] leading-[18px] font-bold tracking-[0.32px] text-white">
-      <House />
-      {s.homeType}
-    </p>
-    <button
-      type="button"
-      aria-label="Ändra bostad"
-      onClick={() => set({ editHome: true })}
-      className={clsx('absolute top-[9px] right-[9px] flex size-11 items-center justify-center rounded-full', press)}
-    >
-      <span className="flex size-8 items-center justify-center rounded-full bg-white">
-        <Pen />
+/** Bostaden som en kompakt rad ovanför elavtalen. Får texten inte plats på en rad bryts den efter adressen. */
+const HomeRow = ({ s, set }: ScreenProps) => (
+  <div className="flex items-center gap-[10px] rounded-[10px] bg-white py-[12px] pr-[4px] pl-[16px] shadow-[0_4px_8px_#00000014]">
+    <Pin color="#214766" />
+    <p className={clsx('@container min-w-0 flex-1 text-[14px] leading-[20px]', navy)}>
+      <span>{HOME.street}</span>
+      <span className="hidden @min-[330px]:inline"> · </span>
+      <span className="block @min-[330px]:inline">
+        {s.homeType} · <b>{s.kvm}</b> kvm · <b>{fmtNum(s.kwh)}</b> kWh/år
       </span>
+    </p>
+    <button type="button" onClick={() => set({ editHome: true })} className={clsx('flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-[8px] px-[12px]', press)}>
+      <span className="text-[14px] leading-[18px] font-bold text-[#3879AD]">Ändra</span>
     </button>
   </div>
 )
 
-const Consumption = ({ s, set }: ScreenProps) => {
-  const [draft, setDraft] = useState(String(s.kwh))
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  useEffect(() => setDraft(String(s.kwh)), [s.kwh])
-  useEffect(
-    () => () => {
-      if (timer.current) clearTimeout(timer.current)
-    },
-    [],
-  )
-  return (
-    <div className="mt-[-10px] flex items-center justify-between gap-[12px] rounded-[16px] bg-white p-[20px]">
-      <div className="flex flex-col gap-[4px]">
-        <span className={clsx('text-[13px] leading-[16px] font-bold tracking-[0.32px]', navy)}>Beräknad elförbrukning</span>
-        <span className="text-[11px] leading-[14px] tracking-[0.32px] text-[#2B567C]">Justera för mer exakt pris.</span>
-      </div>
-      <label className="flex items-end gap-[6px]">
-        <span className="w-[70px] shrink-0 border-b-2 border-dashed border-[#3879AD] pb-[5px]">
-          <input
-            aria-label="Beräknad elförbrukning i kWh per år"
-            inputMode="numeric"
-            value={draft}
-            onChange={(e) => {
-              const v = e.target.value.replace(/\D/g, '').slice(0, 5)
-              setDraft(v)
-              /* Räknas om först när kunden slutat skriva, inte vid varje siffra. */
-              if (timer.current) clearTimeout(timer.current)
-              timer.current = setTimeout(() => {
-                const n = Number(v)
-                if (n >= 500) set({ kwh: n })
-              }, 700)
-            }}
-            className="w-full bg-transparent text-center text-[22px]! leading-[26px]! font-bold! text-[#3879AD] outline-none"
-          />
-        </span>
-        <span className="pb-[7px] text-[13px] leading-[16px] font-bold text-[#3879AD]">kWh/år</span>
-      </label>
+/** Läge 1: bostadstypen saknas och raden blir en fråga (Paper 1B, "Bostadstyp · fråga"). Ett val visar priserna. */
+const HomeQuestion = ({ s, set }: ScreenProps) => (
+  <div className="flex flex-col gap-[14px] rounded-[10px] bg-white p-[20px] shadow-[0_4px_8px_#00000014]">
+    <div className="flex flex-col gap-[4px]">
+      <p className={clsx('text-[16px] leading-[20px] font-bold tracking-[0.32px]', navy)}>Vilken typ av bostad?</p>
+      <p className="text-[13px] leading-[16px] tracking-[0.32px] text-[#2B567C]">
+        {HOME.street}, {s.kvm} kvm. Det styr förbrukningen och priset.
+      </p>
     </div>
+    <div className="flex flex-col gap-[10px]" role="radiogroup" aria-label="Bostadstyp">
+      {TYPES.map((t) => (
+        <button
+          key={t}
+          type="button"
+          role="radio"
+          aria-checked={false}
+          onClick={() => set({ homeType: t, kwh: kwhFor(t, s.kvm) })}
+          className={clsx('flex h-12 w-full shrink-0 items-center justify-center rounded-[8px] border border-[#21476633] bg-white hover:border-[#214766]', press)}
+        >
+          <span className={clsx('text-[15px] leading-[18px] tracking-[0.32px]', navy)}>{t}</span>
+        </button>
+      ))}
+    </div>
+    <button type="button" onClick={() => set({ editHome: true })} className={clsx('flex min-h-11 items-center self-start', press)}>
+      <span className="text-[14px] leading-[18px] font-bold tracking-[0.32px] text-[#3879AD]">Ändra adress eller boarea</span>
+    </button>
+  </div>
+)
+
+/** Bottenarket bakom Ändra. Via portal, annars fastnar fixed i demons animerade ram. */
+const HomeSheet = ({ s, set }: ScreenProps) => {
+  const [type, setType] = useState<HomeType>(s.homeType ?? 'Lägenhet')
+  const [kvm, setKvm] = useState(String(s.kvm))
+  const [kwh, setKwh] = useState(String(s.kwh))
+  const [mounted, setMounted] = useState(false)
+  const close = () => set({ editHome: false })
+  useEffect(() => {
+    setMounted(true)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && set({ editHome: false })
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = prev
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [set])
+  /* Ändras typ eller boarea räknas förbrukningen om. Kunden kan sedan justera den själv. */
+  const reestimate = (t: HomeType, k: string) => Number(k) >= 10 && setKwh(String(kwhFor(t, Number(k))))
+  const kvmOk = Number(kvm) >= 10
+  const kwhOk = Number(kwh) >= 500
+  const save = () => kvmOk && kwhOk && set({ homeType: type, kvm: Number(kvm), kwh: Number(kwh), editHome: false })
+  if (!mounted) return null
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex flex-col justify-end" role="dialog" aria-modal aria-labelledby="el-home-title">
+      <button type="button" aria-label="Stäng" className="absolute inset-0 bg-black/30" onClick={close} />
+      <div className="relative mx-auto flex max-h-[90dvh] w-full max-w-[430px] flex-col overflow-y-auto rounded-t-[20px] bg-white shadow-[0_-4px_24px_rgba(0,0,0,0.15)] motion-safe:animate-[rise_.3s_ease-out_both]">
+        <div className="flex items-center justify-between py-[8px] pr-[8px] pl-[20px]">
+          <p id="el-home-title" className={clsx('text-[18px] leading-[22px] font-bold tracking-[0.32px]', navy)}>
+            Din bostad
+          </p>
+          <button type="button" aria-label="Stäng" onClick={close} className={clsx('flex size-11 items-center justify-center rounded-full', press)}>
+            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden>
+              <path d="M4 4l10 10M14 4L4 14" stroke="#214766" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+        <div className="flex flex-col px-[20px] pb-[20px]">
+          <p className={clsx('pt-[8px] pb-[12px] text-[14px] leading-[18px] font-bold tracking-[0.32px]', navy)}>Bostadstyp</p>
+          <div className="flex gap-[10px]" role="radiogroup" aria-label="Bostadstyp">
+            {TYPES.map((t) => {
+              const on = type === t
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => {
+                    setType(t)
+                    reestimate(t, kvm)
+                  }}
+                  className={clsx(
+                    'flex h-12 min-w-0 flex-1 items-center justify-center rounded-[8px] border',
+                    on ? 'border-[#214766] bg-[#DCEFFF]' : 'border-[#21476633] bg-white',
+                    press,
+                  )}
+                >
+                  <span className={clsx('text-[15px] leading-[18px] tracking-[0.32px]', navy, on && 'font-bold')}>{t}</span>
+                </button>
+              )
+            })}
+          </div>
+          <p className={clsx('pt-[24px] pb-[15px] text-[14px] leading-[18px] font-bold tracking-[0.32px]', navy)}>Storlek på bostaden</p>
+          <FramedField label="Boarea" error={!kvmOk}>
+            <input
+              aria-label="Boarea"
+              inputMode="numeric"
+              className={fieldInput}
+              value={kvm}
+              onChange={(e) => {
+                const v = e.target.value.replace(/\D/g, '').slice(0, 4)
+                setKvm(v)
+                reestimate(type, v)
+              }}
+            />
+            <span className="text-[15px] leading-[18px] text-[#767678]">kvm</span>
+          </FramedField>
+          <p className={clsx('pt-[24px] pb-[15px] text-[14px] leading-[18px] font-bold tracking-[0.32px]', navy)}>Beräknad elförbrukning</p>
+          <FramedField label="Förbrukning" error={!kwhOk}>
+            <input
+              aria-label="Beräknad elförbrukning"
+              inputMode="numeric"
+              className={fieldInput}
+              value={kwh}
+              onChange={(e) => setKwh(e.target.value.replace(/\D/g, '').slice(0, 5))}
+            />
+            <span className="text-[15px] leading-[18px] whitespace-nowrap text-[#767678]">kWh/år</span>
+          </FramedField>
+          <p className="pt-[8px] text-[12px] leading-[16px] tracking-[0.32px] text-[#2B567C]">Justera för mer exakt pris.</p>
+        </div>
+        <div className="sticky bottom-0 border-t border-[#EEEEF0] bg-white px-[20px] pt-[15px] pb-[max(25px,env(safe-area-inset-bottom))]">
+          <button
+            type="button"
+            aria-disabled={!kvmOk || !kwhOk}
+            onClick={save}
+            className={clsx(
+              'flex h-12 w-full items-center justify-center rounded-full border-2',
+              kvmOk && kwhOk ? 'border-[#214766] bg-[#214766] hover:bg-[#112E46]' : 'border-[#EEEEF0] bg-[#EEEEF0]',
+              press,
+            )}
+          >
+            <span className={clsx('text-[16px] leading-[18.4px] font-bold tracking-[0.32px]', kvmOk && kwhOk ? 'text-white' : 'text-[#BEBEC0]')}>Spara</span>
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
   )
 }
 
@@ -351,40 +381,33 @@ export const PriserScreen = (p: ScreenProps) => {
   const chosen = offerById(s.selected)
   if (!s.homeType)
     return (
-      <>
-        <div className="flex flex-col gap-[20px] px-[20px] pt-[15px] pb-10">
-          <Steps n={1} />
-          <Intro />
-          <HomeEditor {...p} />
-          <div className="flex flex-col gap-[20px]">
-            <div className="flex items-center gap-[10px]">
-              <Shield />
-              <p className={clsx('text-[14px] leading-[18px] font-bold tracking-[0.32px]', navy)}>fyll i informationen om din bostad för att se ditt pris</p>
-            </div>
-            <div aria-hidden className="flex flex-col gap-[12px] rounded-[10px] bg-white p-[20px] opacity-60 shadow-[0_4px_8px_#00000014]">
-              <div className="flex items-center justify-between">
-                <Logo src="/images/el-demo/skekraft.svg" alt="" className="h-9 w-[120px] opacity-50" />
-                <span className="h-[38px] w-24 rounded-[8px] bg-[#EEEEF0]" />
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="h-[38px] w-[130px] rounded-[8px] bg-[#EEEEF0]" />
-                <span className="text-[32px] leading-[38px] font-bold tracking-[-1px] text-[#BEBEC0]">– kr</span>
-              </div>
-            </div>
+      <div className="flex flex-col gap-[20px] px-[20px] pt-[15px] pb-10">
+        <Steps n={1} />
+        <Intro />
+        <HomeQuestion {...p} />
+        {s.editHome && <HomeSheet {...p} />}
+        <div aria-hidden className="flex flex-col gap-[12px] rounded-[10px] bg-white p-[20px] opacity-60 shadow-[0_4px_8px_#00000014]">
+          <div className="flex items-center justify-between">
+            <Logo src="/images/el-demo/skekraft.svg" alt="" className="h-9 w-[120px] opacity-50" />
+            <span className="h-[38px] w-24 rounded-[8px] bg-[#EEEEF0]" />
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="h-[38px] w-[130px] rounded-[8px] bg-[#EEEEF0]" />
+            <span className="text-[32px] leading-[38px] font-bold tracking-[-1px] text-[#BEBEC0]">– kr</span>
           </div>
         </div>
-      </>
+      </div>
     )
   return (
     <>
       <div className="flex flex-col gap-[20px] px-[20px] pt-[15px] pb-6">
         <Steps n={1} />
         <Intro />
+        <HomeRow {...p} />
         <RecommendedCard {...p} />
         <Compare {...p} />
-        {s.editHome ? <HomeEditor {...p} /> : <HomeCard {...p} />}
-        <Consumption {...p} />
       </div>
+      {s.editHome && <HomeSheet {...p} />}
       <Foot className="!flex-row items-center !gap-[12px]">
         <div className="flex min-w-0 flex-1 flex-col">
           <span className={clsx('truncate text-[12px] leading-[18px] tracking-[0.32px]', navy)}>{chosen.name}</span>
