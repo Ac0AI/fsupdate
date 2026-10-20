@@ -888,7 +888,7 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
               )}
             </span>
           ))}{' '}
-          14 dagars ångerrätt.
+          <span className="whitespace-nowrap">14 dagars ångerrätt.</span>
         </p>
         <button
           type="button"
