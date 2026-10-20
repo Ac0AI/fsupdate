@@ -36,7 +36,8 @@ export type AdressSvar = {
 /** kvm i steg om 5 (50 = 50 m² eller mer), fullt i fjärdedelar 25–100. klar = kunden har tryckt Klar, först då räknas kortet (David–Nils 20 okt). */
 export type Biyta = { id: string; typ?: BiytaTyp; kvm?: number; fullt?: number; klar?: boolean }
 export type Sak = { id: string; vad: string; vikt?: string; varde?: string; klar?: boolean }
-export type Samtal = { dag: string; pass: string }
+/** dag som text ('fredag 23/10'); iso YYYY-MM-DD när tiden satts av det nya flödet (förvald eller ändrad i bekräftelsen). */
+export type Samtal = { dag: string; pass: string; iso?: string }
 
 export type Answers = {
   /** Samtalet är bokat, Opportunityn finns. */
@@ -223,10 +224,24 @@ export const TILLVAL_LABEL: Record<Tillval, [string, string]> = {
   forvaring: ['Förvaring', 'Mellan ut- och inflytt'],
 }
 
-/** "fredag 23/10 kl. 13-15" eller "snart", i sajtens egen form. */
+/** "i morgon mellan 10 och 12", "fredag 23/10 kl. 13-15" eller "snart", i sajtens egen form. */
 export const samtalText = (s?: Samtal) => {
   if (!s) return ''
   if (s.pass === 'nu') return 'snart'
   if (s.pass === 'flexibel') return s.dag
+  if (s.iso) {
+    const [y, m, d] = s.iso.split('-').map(Number)
+    const [a, b] = s.pass.split('-').map(Number)
+    return `${relativDag(new Date(y, m - 1, d))} mellan ${a} och ${b}`
+  }
   return `${s.dag} kl. ${s.pass}`
+}
+
+const relativDag = (d: Date) => {
+  const idag = new Date()
+  const same = (x: Date, y: Date) => x.getFullYear() === y.getFullYear() && x.getMonth() === y.getMonth() && x.getDate() === y.getDate()
+  const imorgon = new Date(idag.getFullYear(), idag.getMonth(), idag.getDate() + 1)
+  if (same(d, idag)) return 'i dag'
+  if (same(d, imorgon)) return 'i morgon'
+  return `på ${new Intl.DateTimeFormat('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }).format(d)}`
 }

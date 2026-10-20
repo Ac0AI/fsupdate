@@ -29,7 +29,7 @@ import {
   type ScreenProps,
 } from './screens'
 
-const STEPS = ['Flyttsidan', 'Begär offert', 'Välj tid', 'Numret', 'Samtal bokat', 'Adresser', 'Bära ut', 'Bära in', 'Vad ska med', 'Städning', 'Sista detaljerna', 'Allt sparat', 'Säljaren', 'Offerten']
+const STEPS = ['Flyttsidan', 'Begär offert', 'Välj tid (gammal)', 'Numret (gammal)', 'Tack, vi kontaktar dig', 'Adresser', 'Bära ut', 'Bära in', 'Vad ska med', 'Städning', 'Sista detaljerna', 'Allt sparat', 'Säljaren', 'Offerten']
 const LAST = STEPS.length - 1
 const FIRST_QUESTION = 5
 const SALJARE = 12
@@ -169,7 +169,7 @@ const DemoFlyttFlow = () => {
   const demoBar = (
     <nav aria-label="Demo" className="flex w-full items-center gap-1 overflow-x-auto bg-[var(--color-secondary-dark)] px-3 py-2 text-white">
       <span className="shrink-0 pr-1 text-[11px] font-bold uppercase tracking-[0.1em] text-white/60">Demo</span>
-      {STEPS.map((label, i) => (
+      {STEPS.map((label, i) => i === 2 || i === 3 ? null : (
         <button key={label} type="button" onClick={() => go(i)} className={clsx('h-8 shrink-0 rounded-full px-3 text-[12px] whitespace-nowrap', i === step ? 'bg-white font-bold text-[var(--color-secondary-main)]' : 'text-white/85 hover:bg-white/10')}>
           {i} · {label}
         </button>

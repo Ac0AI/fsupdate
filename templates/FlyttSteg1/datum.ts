@@ -79,3 +79,15 @@ export const monthGrid = (d: Date): Array<Date | null> => {
   const days = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()
   return [...Array<null>(offset).fill(null), ...Array.from({ length: days }, (_, i) => new Date(d.getFullYear(), d.getMonth(), i + 1))]
 }
+
+/**
+ * Förvald tid när kunden begär offert (David 20 okt): nästa lediga pass, aldrig Ring mig nu.
+ * Före lunch en vardag: i dag 13–15. Annars nästa valbara dag 10–12, eller 13–15 om det är en måndag.
+ */
+export const defaultSlot = (): { dag: Date; pass: string } => {
+  const now = new Date()
+  if (isBusinessDay(now) && now.getHours() < 12) return { dag: startOfDay(now), pass: '13-15' }
+  let d = addDays(startOfDay(now), 1)
+  for (let i = 0; i < 14 && !isSelectable(d); i++) d = addDays(d, 1)
+  return { dag: d, pass: hideMorning(d) ? '13-15' : '10-12' }
+}

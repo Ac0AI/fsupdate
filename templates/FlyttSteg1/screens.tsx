@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, Car, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench } from 'lucide-react'
+import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, Car, Check, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench, X } from 'lucide-react'
 import clsx from 'clsx'
 import GoogleColor from '@/public/images/GoogleColor.svg'
 import GoogleStar from '@/public/images/GoogleStar.svg'
@@ -43,7 +43,7 @@ import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Fie
 import { useDemoUser } from '@/common/data/useDemoUser'
 import { writeDemoSession } from '@/common/data/demoPersona'
 import { AddressForm, ChevronDown } from './LiveMovePage'
-import { canCallNow, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable } from './datum'
+import { canCallNow, defaultSlot, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable, toIso } from './datum'
 
 export type Home = { from: string; to: string; fromKvm: number; toKvm: number; moveDay: string; moveDayLong: string; moveDateFull: string; moveDateIso: string; cleanDayLong: string; firstName: string }
 
@@ -89,38 +89,52 @@ const Sheet = ({ children }: { children: React.ReactNode }) => (
 )
 
 /* 1 · Arket i dag: Begär offert */
-export const OffertScreen = ({ go }: ScreenProps) => (
-  <Sheet>
-    <div className="px-6 pb-8 pt-4 text-center">
-      <h1 className="mx-auto max-w-[30ch] text-[18px] font-bold leading-[26px] text-[var(--color-text-main)]">Professionell flytthjälp – enkelt och prisvärt</h1>
-      <div className="mx-auto mt-6 max-w-[320px]">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-inactive-main)] bg-white px-3 py-1.5 shadow-sm">
-          <GoogleColor width={22} height={22} aria-hidden />
-          <span className="text-[18px] font-bold tracking-tight text-[var(--color-inactive-super-dark)]">4,7</span>
-          <span className="flex items-center gap-0.5" aria-label="5 av 5">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <GoogleStar key={i} width={16} height={16} aria-hidden />
+export const OffertScreen = ({ go, update }: ScreenProps) => {
+  /* Begär offert bokar nästa lediga pass direkt, som i dag när arket stängs, och visar bekräftelsen (David 20 okt). */
+  const begar = () => {
+    const d = defaultSlot()
+    update({ samtal: { dag: fmtLong(d.dag), pass: d.pass, iso: toIso(d.dag) } })
+    go(4)
+  }
+  return (
+    <Sheet>
+      <div className="px-6 pb-8 pt-4 text-center md:px-8 md:text-left">
+        <div className="mx-auto max-w-[320px] md:grid md:max-w-none md:grid-cols-2 md:items-start md:gap-10">
+          <div>
+            <h1 className="mx-auto max-w-[30ch] text-[18px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:mx-0 md:text-[24px]! md:leading-[30px]!">Professionell flytthjälp, enkelt och prisvärt</h1>
+            <div className="mt-5 md:mt-4">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-inactive-main)] bg-white px-3 py-1.5 shadow-sm">
+                <GoogleColor width={22} height={22} aria-hidden />
+                <span className="text-[18px] font-bold tracking-tight text-[var(--color-inactive-super-dark)]">4,7</span>
+                <span className="flex items-center gap-0.5" aria-label="5 av 5">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <GoogleStar key={i} width={16} height={16} aria-hidden />
+                  ))}
+                </span>
+                <span className="text-[14px] text-[var(--color-inactive-dark)]">(1 900)</span>
+              </span>
+              <p className="mt-1 text-[14px] text-[var(--color-inactive-dark)]">Över 250 000 nöjda flyttare</p>
+            </div>
+          </div>
+          <ul className="mt-4 flex flex-col gap-3 text-left md:mt-1">
+            {['Vi kontaktar dig och går igenom din flytt', 'Du får offert med fast förmånligt pris, inga dolda avgifter', 'En kontaktperson, erfarna flyttproffs & nöjd-kundgaranti'].map((t, i) => (
+              <li key={t} className="flex items-start gap-2">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-secondary-main)] text-[14px] font-bold text-white">{i + 1}</span>
+                <span className="pt-1 text-[14px] leading-[19px] text-[var(--color-text-main)]">{t}</span>
+              </li>
             ))}
-          </span>
-          <span className="text-[14px] text-[var(--color-inactive-dark)]">(1 900)</span>
-        </span>
-        <p className="mt-1 text-[14px] text-[var(--color-inactive-dark)]">Över 250 000 nöjda flyttare</p>
-        <ul className="mt-4 flex flex-col gap-3 text-left">
-          {['En flyttkoordinator går igenom din flytt', 'Du får offert med fast förmånligt pris, inga dolda avgifter', 'En kontaktperson, erfarna flyttproffs & nöjd-kundgaranti'].map((t, i) => (
-            <li key={t} className="flex items-start gap-2">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-secondary-main)] text-[14px] font-bold text-white">{i + 1}</span>
-              <span className="pt-1 text-[14px] leading-[19px] text-[var(--color-text-main)]">{t}</span>
-            </li>
-          ))}
-        </ul>
-        <PrimaryButton className="mt-8" rounded onClick={() => go(2)}>
-          Begär offert
-        </PrimaryButton>
-        <p className="mt-2 text-[14px] font-bold text-[var(--color-inactive-grey-light)]">Kostnadsfritt och ej bindande</p>
+          </ul>
+        </div>
+        <div className="mx-auto mt-8 max-w-[320px] md:mx-0 md:mt-6">
+          <PrimaryButton rounded onClick={begar}>
+            Begär offert
+          </PrimaryButton>
+          <p className="mt-2 text-center text-[14px] font-bold text-[var(--color-inactive-grey-light)]">Kostnadsfritt och ej bindande</p>
+        </div>
       </div>
-    </div>
-  </Sheet>
-)
+    </Sheet>
+  )
+}
 
 const VadHanderNu = () => (
   <SubCard className="mt-6">
@@ -248,35 +262,120 @@ export const NummerScreen = ({ a, update, go }: ScreenProps) => {
   )
 }
 
-/* 4 · Nytt: bekräftelsen stannar kvar och bjuder in till frågorna */
-export const BokatScreen = ({ a, go }: ScreenProps) => (
-  <Sheet>
-    <div className="px-4 pb-6">
-      <StatusHead title="Samtal bokat!" onClose={() => go(0)} />
-      <InfoCard className="mt-6 flex items-center gap-3 p-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-secondary-extra-extra-light)]">
-          <svg width="20" height="26" viewBox="158 0 26 33" fill="none" aria-hidden>
-            <path fillRule="evenodd" clipRule="evenodd" d="M183 25.1625C183 25.1625 168.602 23.5171 165.065 19.8486C161.528 16.1801 161.528 10.2324 165.065 6.5639C168.602 2.89537 174.338 2.89537 177.876 6.5639C181.413 10.2324 183 25.1625 183 25.1625ZM171.289 17.2059C169.087 17.2059 167.303 15.3553 167.303 13.0726C167.303 10.79 169.087 8.9394 171.289 8.9394C173.49 8.9394 175.274 10.79 175.274 13.0726C175.274 15.3553 173.49 17.2059 171.289 17.2059Z" fill="#51C8B4" />
-            <path fillRule="evenodd" clipRule="evenodd" d="M162.746 10.6764C162.752 10.7063 162.757 10.736 162.762 10.7658C163.166 9.30573 163.939 7.92722 165.081 6.77921C168.616 3.22626 174.347 3.22626 177.881 6.77921C178.85 7.75294 179.672 9.54572 180.355 11.6356C180.588 10.8302 180.712 9.97867 180.712 9.09793C180.712 4.07332 176.66 0 171.661 0C167.531 0 164.046 2.78126 162.961 6.58231L159.362 8.69235L162.746 10.6764ZM175.64 26.5466C172.232 25.8443 168.539 24.883 165.832 23.6441C168.433 27.976 171.661 32.025 171.661 32.025C171.661 32.025 173.573 29.6265 175.64 26.5466Z" fill="#214766" />
-          </svg>
-        </span>
-        <p className="text-[14px] font-bold leading-[19px] text-[var(--color-text-main)]">Vi ringer dig {samtalText(a.samtal)}</p>
-      </InfoCard>
-      <div className="mt-4 rounded-xl border border-[var(--color-inactive-main)] bg-[var(--color-secondary-extra-extra-light)] px-4 pb-4 pt-6 text-center">
-        <h2 className="text-[18px] font-bold leading-6 text-[var(--color-text-main)]">Berätta mer om din flytt</h2>
-        <p className="mx-auto mt-2 max-w-[300px] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Då vet vi hur det ser ut hos dig och ringer med priset klart. Det tar ett par minuter och allt sparas direkt, så du kan fortsätta senare om du vill.</p>
-        <PrimaryButton className="mt-5" rounded onClick={() => go(nextUnanswered(a))}>
-          Berätta om flytten
-        </PrimaryButton>
-        <div className="mt-4">
-          <TextLink muted onClick={() => go(0)}>
-            Senare, vi frågar i samtalet
+/* 4 · Nytt: bekräftelsen direkt efter Begär offert (David 20 okt). Tiden är förvald, numret förifyllt, båda går att ändra på plats. */
+const AVBRYT_SKAL = ['Har hittat en firma', 'Flyttar själv', 'Vill inte bli kontaktad', 'Annat']
+export const BokatScreen = ({ a, update, go }: ScreenProps) => {
+  const [andraTid, setAndraTid] = useState(false)
+  const [andraNr, setAndraNr] = useState(false)
+  const [tel, setTel] = useState(a.telefon)
+  const [avbryt, setAvbryt] = useState(false)
+  const [date, setDate] = useState<Date>(() => (a.samtal?.iso ? fromIso(a.samtal.iso) : nextSelectable()))
+  const nu = canCallNow(date)
+  const slots = PASS.filter(([pass]) => !(hideMorning(date) && (pass === '08-10' || pass === '10-12')))
+  const valj = (pass: string) => {
+    update({ samtal: { dag: fmtLong(date), pass, iso: pass === 'nu' || pass === 'flexibel' ? undefined : toIso(date) } })
+    setAndraTid(false)
+  }
+  return (
+    <Sheet>
+      <div className="px-4 pb-6 pt-1">
+        <div className="flex items-start justify-between">
+          <span className="mt-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D]">
+            <Check size={18} strokeWidth={3} />
+          </span>
+          <button type="button" aria-label="Stäng" onClick={() => go(0)} className="flex h-11 w-11 items-center justify-center rounded-full text-[var(--color-inactive-dark)]">
+            <X size={20} />
+          </button>
+        </div>
+        <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)]">Tack! Vi kontaktar dig {samtalText(a.samtal)} för att gå igenom din offert.</h1>
+        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
+          Passar en annan tid bättre?{' '}
+          <TextLink className="text-[14px]" onClick={() => setAndraTid((v) => !v)}>
+            {andraTid ? 'Stäng' : 'Ändra tid'}
+          </TextLink>
+        </p>
+        {andraTid && (
+          <InfoCard className="mt-3 px-3 pb-4 pt-3">
+            <button type="button" onClick={() => valj(nu ? 'nu' : 'flexibel')} className="flex w-full items-center justify-between rounded-lg border border-[var(--color-inactive-main)] bg-white px-4 py-3 text-left">
+              <span className="text-[16px] font-bold text-[var(--color-text-main)]">{nu ? 'Ring mig nu' : 'Jag är flexibel'}</span>
+              <span className="text-[20px] text-[var(--color-inactive-grey-light)]">›</span>
+            </button>
+            <div className="mt-8">
+              <WeekPicker value={date} onChange={setDate} />
+            </div>
+            <div className="mt-3 grid grid-cols-4 gap-2">
+              {slots.map(([pass]) => {
+                const passed = isSlotPassed(pass, date)
+                const vald = a.samtal?.pass === pass && a.samtal?.iso === toIso(date)
+                return (
+                  <button key={pass} type="button" disabled={passed} onClick={() => valj(pass)} className={clsx('h-11 rounded-lg border bg-white text-[15px] font-bold text-[var(--color-text-main)]', vald ? 'border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)]', passed && 'opacity-40')}>
+                    {pass}
+                  </button>
+                )
+              })}
+            </div>
+          </InfoCard>
+        )}
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-[var(--color-inactive-main)] bg-[#F8FAFC] px-4 py-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Vi kontaktar dig på</p>
+            {andraNr ? (
+              <div className="mt-1 max-w-[220px]">
+                <TextInput type="tel" value={tel} onChange={setTel} placeholder="070-123 45 67" label="Telefonnummer" />
+              </div>
+            ) : (
+              <p className="text-[16px] font-bold leading-6 text-[var(--color-text-main)]">{a.telefon}</p>
+            )}
+          </div>
+          <TextLink
+            className="text-[14px]"
+            onClick={() => {
+              if (andraNr && tel.trim()) update({ telefon: tel.trim() })
+              setAndraNr((v) => !v)
+            }}
+          >
+            {andraNr ? 'Spara' : 'Ändra'}
           </TextLink>
         </div>
+        <h2 className="mt-5 text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">Vill du ha priset klart när vi hör av oss?</h2>
+        <p className="mt-1 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Det tar ett par minuter och allt sparas direkt, så du kan fortsätta senare om du vill.</p>
+        <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
+          Berätta om flytten
+        </PrimaryButton>
+        <div className="mt-4 text-center text-[13px] text-[var(--color-inactive-grey-light)]">
+          {avbryt ? (
+            <div className="rounded-lg bg-[var(--color-inactive-quite-light)] p-3 text-left">
+              <p className="text-[14px] font-bold text-[var(--color-text-main)]">Varför vill du inte ha offert?</p>
+              <div className="mt-2">
+                <ChipRow>
+                  {AVBRYT_SKAL.map((r) => (
+                    <Chip
+                      key={r}
+                      small
+                      onClick={() => {
+                        update({ samtal: undefined })
+                        go(0)
+                      }}
+                    >
+                      {r}
+                    </Chip>
+                  ))}
+                </ChipRow>
+              </div>
+            </div>
+          ) : (
+            <>
+              Vill du inte ha offert?{' '}
+              <TextLink muted className="text-[13px]" onClick={() => setAvbryt(true)}>
+                Avbryt
+              </TextLink>
+            </>
+          )}
+        </div>
       </div>
-    </div>
-  </Sheet>
-)
+    </Sheet>
+  )
+}
 
 /* Ramen runt stegen. Krysset sparar det som är svarat och stänger arket. */
 const Q = ({ p, idx, title, sub, children, cta, foot, onNext }: { p: ScreenProps; idx: number; title: string; sub?: string; children: React.ReactNode; cta?: string; foot?: string; onNext?: () => void }) => {
@@ -821,7 +920,7 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => {
           <CheckCircle size={56} />
         </div>
         <h1 className="mt-4 text-[20px] font-bold leading-[26px] text-[var(--color-text-main)]">Tack, allt är sparat</h1>
-        <p className="mx-auto mt-2 max-w-[300px] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Vi ringer dig {samtalText(a.samtal)} och har priset klart. Vill du ändra något gör du det på flyttsidan fram till samtalet.</p>
+        <p className="mx-auto mt-2 max-w-[300px] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Vi kontaktar dig {samtalText(a.samtal)} och har priset klart. Vill du ändra något gör du det på flyttsidan fram till samtalet.</p>
         <PrimaryButton className="mt-6" onClick={() => go(0)}>
           Tillbaka till flyttsidan
         </PrimaryButton>
@@ -943,10 +1042,10 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
               <span className="rounded-full bg-[#DCFCE7] px-2 py-0.5 text-[12px] font-bold text-[#15803D]">{a.offertSkickad ? 'Offert skickad' : 'Offert på väg'}</span>
               <span className="inline-block h-2 w-2 rounded-full bg-[#22C55E]" />
             </div>
-            <p className="text-[13px] text-[#626263] md:text-[15px]">{a.offertSkickad ? 'Skickad till din mejl och här på flyttsidan' : a.manuell ? 'Vi återkommer med pris' : `Vi ringer dig ${samtalText(a.samtal)}`}</p>
+            <p className="text-[13px] text-[#626263] md:text-[15px]">{a.offertSkickad ? 'Skickad till din mejl och här på flyttsidan' : a.manuell ? 'Vi återkommer med pris' : `Vi kontaktar dig ${samtalText(a.samtal)}`}</p>
           </div>
         </div>
-        <button type="button" aria-label="Ändra tid" onClick={() => go(2)} className="ml-3 mt-1 shrink-0 text-[var(--color-inactive-grey-light)]">
+        <button type="button" aria-label="Ändra tid" onClick={() => go(4)} className="ml-3 mt-1 shrink-0 text-[var(--color-inactive-grey-light)]">
           <ChevronDown />
         </button>
       </div>
