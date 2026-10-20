@@ -119,8 +119,8 @@ const LiveMovePage = ({ home, inline, card, onOffer }: Props) => {
         </div>
       </div>
 
-      {/* WelcomeSection */}
-      {welcome && (
+      {/* WelcomeSection. Borta när samtalet är bokat: då bär kortet i listan läget och vägen vidare (David 20 okt). */}
+      {welcome && !card && (
         <section className="relative mx-[15px] mt-8 flex w-[calc(100%-30px)] items-center justify-start rounded-[10px] bg-white p-[30px_16px_24px_24px] shadow-[0_4px_8px_rgba(0,0,0,0.08)] md:mx-auto md:mt-12 md:w-[818px]">
           <div className="flex w-full flex-col">
             <p className="text-left text-[20px] font-bold leading-6 text-[var(--color-secondary-main)]">Välkommen till din flyttsida!</p>

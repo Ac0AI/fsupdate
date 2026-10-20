@@ -41,6 +41,8 @@ export type Samtal = { dag: string; pass: string }
 export type Answers = {
   /** Samtalet är bokat, Opportunityn finns. */
   samtal?: Samtal
+  /** Säljaren har skickat offerten: svaren låses och kortet länkar till offerten. */
+  offertSkickad?: boolean
   telefon: string
   sent: boolean
   /* 1 Adresser */

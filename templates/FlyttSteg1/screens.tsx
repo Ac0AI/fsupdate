@@ -59,6 +59,7 @@ export type ScreenProps = {
 const FIRST = 5
 const DONE = 11
 const SALJARE = 12
+const OFFERTEN = 13
 const ORD = ['en', 'två', 'tre', 'fyra', 'fem', 'sex']
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 /* Fast mellanslag före sista ordet, så att husnumret inte hamnar ensamt på en rad. */
@@ -822,7 +823,7 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => {
 }
 
 /* 12 · Säljaren ringer med svaren framför sig */
-export const SaljareScreen = ({ a, home }: ScreenProps) => {
+export const SaljareScreen = ({ a, home, update }: ScreenProps) => {
   const n = answeredCount(a)
   const left = questionsLeft(a).reduce((x, y) => x + y, 0)
   const lines = answerLines(a, home)
@@ -855,6 +856,49 @@ export const SaljareScreen = ({ a, home }: ScreenProps) => {
           Hej {home.firstName}, det är Nina på Flyttsmart. Jag ser att du begärt offert på flytten till {home.to.split(' ')[0]}
           {n > 0 ? ' och berättat om flytten' : ''}. Jag har {a.sent ? 'bara ett par saker att stämma av' : 'några frågor till'}, sedan har jag ett pris till dig.
         </p>
+        <Eyebrow className="mt-5">Efter samtalet</Eyebrow>
+        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">När offerten skickas låses kundens svar och kortet på flyttsidan länkar till offerten i stället för till frågorna.</p>
+        <PrimaryButton className="mt-3" tone={a.offertSkickad ? 'outline' : 'navy'} onClick={() => update({ offertSkickad: !a.offertSkickad })}>
+          {a.offertSkickad ? 'Ta tillbaka offerten (demo)' : 'Skicka offerten (demo)'}
+        </PrimaryButton>
+      </div>
+    </div>
+  )
+}
+
+/* 13 · Offerten: dit kortet länkar när offerten är skickad. Platshållare för dagens offertsida. */
+export const OffertenScreen = ({ a, go, home }: ScreenProps) => {
+  const stad = a.stad === 'ja'
+  return (
+    <div className="bg-[var(--color-inactive-quite-light)] px-4 py-6">
+      <div className="rounded-2xl bg-white p-5 shadow-sm">
+        <Eyebrow>Offert</Eyebrow>
+        <h1 className="mt-1 text-[22px]! font-bold leading-[28px]! text-[var(--color-text-main)]">Din flytt {home.moveDayLong}</h1>
+        <p className="mt-1 text-[14px] text-[var(--color-inactive-dark)]">
+          {home.from} till {home.to}. Gäller i sju dagar.
+        </p>
+        <div className="mt-5 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4">
+          <div className="flex items-center justify-between text-[15px] text-[var(--color-text-main)]">
+            <span>Flytthjälp{a.tillval.includes('packhjalp') ? ' med packhjälp' : ''}</span>
+            <span className="font-bold">{a.tillval.includes('packhjalp') ? '14 900 kr' : '11 450 kr'}</span>
+          </div>
+          {stad && (
+            <div className="mt-2 flex items-center justify-between text-[15px] text-[var(--color-text-main)]">
+              <span>Flyttstädning {home.fromKvm} m²</span>
+              <span className="font-bold">3 900 kr</span>
+            </div>
+          )}
+          <div className="mt-3 border-t border-[var(--color-inactive-main)] pt-3 text-[12px] text-[var(--color-inactive-dark)]">Priser efter RUT. Fast pris, inga dolda avgifter.</div>
+        </div>
+        <PrimaryButton className="mt-5" onClick={() => go(0)}>
+          Boka flytten
+        </PrimaryButton>
+        <div className="mt-3 text-center">
+          <TextLink muted onClick={() => go(0)}>
+            Tillbaka till flyttsidan
+          </TextLink>
+        </div>
+        <p className="mt-5 text-[12px] leading-[16px] text-[var(--color-inactive-dark)]">Platshållare i demon: skarpt visas dagens offertsida. Svaren från frågorna är låsta när offerten är skickad, ändringar görs med säljaren.</p>
       </div>
     </div>
   )
@@ -873,10 +917,10 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="activity-title pb-1 text-[15px] font-bold leading-4 text-[var(--color-text-main)] md:text-[18px]">Flytthjälp</span>
-              <span className="rounded-full bg-[#DCFCE7] px-2 py-0.5 text-[12px] font-bold text-[#15803D]">Offert på väg</span>
+              <span className="rounded-full bg-[#DCFCE7] px-2 py-0.5 text-[12px] font-bold text-[#15803D]">{a.offertSkickad ? 'Offert skickad' : 'Offert på väg'}</span>
               <span className="inline-block h-2 w-2 rounded-full bg-[#22C55E]" />
             </div>
-            <p className="text-[13px] text-[#626263] md:text-[15px]">Vi ringer dig {samtalText(a.samtal)}</p>
+            <p className="text-[13px] text-[#626263] md:text-[15px]">{a.offertSkickad ? 'Skickad till din mejl och här på flyttsidan' : `Vi ringer dig ${samtalText(a.samtal)}`}</p>
           </div>
         </div>
         <button type="button" aria-label="Ändra tid" onClick={() => go(2)} className="ml-3 mt-1 shrink-0 text-[var(--color-inactive-grey-light)]">
@@ -884,7 +928,14 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
         </button>
       </div>
       <div className="mt-3 w-full border-t border-[var(--color-inactive-main)] pt-3 md:pl-[52px]">
-        {a.sent ? (
+        {a.offertSkickad ? (
+          <>
+            <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">Din offert är klar. Priset gäller i sju dagar, boka direkt eller ring oss om du har frågor.</p>
+            <PrimaryButton className="mt-2.5 md:w-[260px]" onClick={() => go(OFFERTEN)}>
+              Visa offerten
+            </PrimaryButton>
+          </>
+        ) : a.sent ? (
           <>
             <p className="flex flex-wrap items-center gap-2 text-[13px] text-[var(--color-text-main)] md:text-[15px]">
               <GreenBadge>Dina svar är sparade</GreenBadge>
@@ -908,3 +959,4 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
 }
 
 export const SALJARE_STEP = SALJARE
+export const OFFERTEN_STEP = OFFERTEN

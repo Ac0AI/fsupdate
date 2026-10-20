@@ -17,6 +17,7 @@ import {
   BokatScreen,
   NummerScreen,
   OffertCard,
+  OffertenScreen,
   OffertScreen,
   SaljareScreen,
   SistaScreen,
@@ -28,7 +29,7 @@ import {
   type ScreenProps,
 } from './screens'
 
-const STEPS = ['Flyttsidan', 'Begär offert', 'Välj tid', 'Numret', 'Samtal bokat', 'Adresser', 'Bära ut', 'Bära in', 'Vad ska med', 'Städning', 'Sista detaljerna', 'Allt sparat', 'Säljaren']
+const STEPS = ['Flyttsidan', 'Begär offert', 'Välj tid', 'Numret', 'Samtal bokat', 'Adresser', 'Bära ut', 'Bära in', 'Vad ska med', 'Städning', 'Sista detaljerna', 'Allt sparat', 'Säljaren', 'Offerten']
 const LAST = STEPS.length - 1
 const FIRST_QUESTION = 5
 const SALJARE = 12
@@ -137,7 +138,7 @@ const DemoFlyttFlow = () => {
   const props: ScreenProps = { a: answers, update, go, next, home, savedBadge }
 
   // Som komponent, inte funktionsanrop: skärmarna har egna hooks och får inte dela DemoFlyttFlows hook-ordning.
-  const Screen = [null, OffertScreen, TidScreen, NummerScreen, BokatScreen, AdresserScreen, BaraUtScreen, BaraInScreen, BohagScreen, StadScreen, SistaScreen, SparatScreen, SaljareScreen][step]
+  const Screen = [null, OffertScreen, TidScreen, NummerScreen, BokatScreen, AdresserScreen, BaraUtScreen, BaraInScreen, BohagScreen, StadScreen, SistaScreen, SparatScreen, SaljareScreen, OffertenScreen][step]
   const screen = Screen ? <Screen key={step} {...props} /> : null
   const card = loaded && answers.samtal ? <OffertCard {...props} /> : null
 
@@ -165,7 +166,7 @@ const DemoFlyttFlow = () => {
   return (
     <div className="flex min-h-[calc(100dvh-52px)] flex-1 flex-col bg-[#E7ECF0]">
       {demoBar}
-      {step === SALJARE ? (
+      {step >= SALJARE ? (
         <div className="flex w-full flex-1 flex-col bg-white md:mx-auto md:my-6 md:max-w-[430px] md:flex-none md:overflow-clip md:rounded-[28px] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{screen}</div>
       ) : (
         <>
