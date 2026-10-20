@@ -906,32 +906,60 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
 
 /* ---------- BankID och Klart (texterna från flyttsmart-next live) ---------- */
 
+/**
+ * BankID-steget med live-texterna (common.json BANKID och Avbryt). Inget går vidare av sig
+ * självt: kunden trycker på BankID-ytan eller knappen, ser spinnern en kort stund som när
+ * appen bekräftar, och hamnar på Klart.
+ */
 export const BankIdScreen = ({ go }: ScreenProps) => {
   const [signing, setSigning] = useState(false)
   useEffect(() => {
     if (!signing) return
-    const t = setTimeout(() => go(7), 1800)
+    const t = setTimeout(() => go(7), 1200)
     return () => clearTimeout(t)
   }, [signing, go])
+  const sign = () => setSigning(true)
   return (
     <div className="flex flex-1 flex-col items-center px-[20px] pt-12 pb-10 text-center">
       <div role="heading" aria-level={1} className={clsx('pb-[12px] text-[24px] leading-[30px] font-bold tracking-[0.32px]', navy)}>
         Signera med BankID
       </div>
-      <p className={clsx('pb-10 text-[16px] leading-[20px]', navy)}>Starta din BankID-applikation på din mobil.</p>
-      <span
-        aria-label={signing ? 'Väntar på BankID' : undefined}
-        role={signing ? 'status' : undefined}
-        className={clsx('mb-10 size-12 rounded-full border-4 border-[#DCEFFF] border-t-[#51C8B4]', 'motion-safe:animate-spin')}
-      />
+      <p className={clsx('pb-[32px] text-[16px] leading-[20px]', navy)}>Starta din BankID-applikation på din mobil.</p>
+      <button
+        type="button"
+        onClick={sign}
+        disabled={signing}
+        aria-label="Starta BankID"
+        className={clsx(
+          'mb-[32px] flex size-[120px] items-center justify-center rounded-[16px] border-2 border-[#DCEFFF] bg-white shadow-[0_4px_8px_#00000014] hover:border-[#214766]',
+          press,
+        )}
+      >
+        {signing ? (
+          <span role="status" aria-label="Väntar på BankID" className="size-12 rounded-full border-4 border-[#DCEFFF] border-t-[#51C8B4] motion-safe:animate-spin" />
+        ) : (
+          <span
+            aria-hidden
+            className="h-[62px] w-[70px]"
+            style={{
+              backgroundColor: '#214766',
+              WebkitMask: 'url(/images/el-demo/bankid-vit.svg) center / 100% 100% no-repeat',
+              mask: 'url(/images/el-demo/bankid-vit.svg) center / 100% 100% no-repeat',
+            }}
+          />
+        )}
+      </button>
       <button
         type="button"
         disabled={signing}
-        onClick={() => setSigning(true)}
-        className={clsx('flex h-12 items-center justify-center gap-[10px] rounded-full border-2 border-[#214766] bg-white px-[52px] disabled:opacity-60', press)}
+        onClick={sign}
+        className={clsx(
+          'flex h-12 w-full max-w-[350px] items-center justify-center gap-[10px] rounded-full border-2 border-[#214766] bg-[#214766] px-[24px] hover:bg-[#112E46] disabled:opacity-60',
+          press,
+        )}
       >
-        <BankIdIcon color="#000000" />
-        <span className={clsx('text-[16px] leading-[18.4px] font-bold tracking-[0.32px]', navy)}>Starta BankID</span>
+        <BankIdIcon />
+        <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px] text-white">Starta BankID</span>
       </button>
       <button type="button" onClick={() => go(5)} className={clsx('mt-[16px] flex h-11 items-center px-[16px]', press)}>
         <span className={clsx('text-[16px] font-bold underline underline-offset-4', navy)}>Avbryt</span>
