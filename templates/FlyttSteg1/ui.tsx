@@ -745,25 +745,19 @@ const ChevronDownSmall = () => (
  */
 export const Reveal = ({ show, children }: { show: boolean; children: ReactNode }) => {
   const [visible, setVisible] = useState(show)
-  const ref = useRef<HTMLDivElement>(null)
-  // Scrollar bara när frågan just dykt upp (dold -> visad), inte vid öppning. Tål Reacts dubbla effekter i dev.
-  const forra = useRef<boolean | null>(null)
+  // Tonar in nästa fråga under den förra. Ingen scroll: på mobil hoppade sidan under tummen när reglaget
+  // fällde ut Framkomlighet, och det såg ut som att steget kollapsade (Nils 20 okt).
   useEffect(() => {
-    const nyss = forra.current === false && show
-    forra.current = show
     if (!show) {
       setVisible(false)
       return
     }
-    const t = requestAnimationFrame(() => {
-      setVisible(true)
-      if (nyss) ref.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-    })
+    const t = requestAnimationFrame(() => setVisible(true))
     return () => cancelAnimationFrame(t)
   }, [show])
   if (!show) return null
   return (
-    <div ref={ref} className={clsx('transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none', visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0')}>
+    <div className={clsx('transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none', visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0')}>
       {children}
     </div>
   )

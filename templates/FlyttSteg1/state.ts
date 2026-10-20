@@ -33,9 +33,9 @@ export type AdressSvar = {
   kvm?: string
 }
 
-/** kvm i steg om 5 (50 = 50 m² eller mer), fullt i fjärdedelar 25–100. */
-export type Biyta = { id: string; typ?: BiytaTyp; kvm?: number; fullt?: number }
-export type Sak = { id: string; vad: string; vikt?: string; varde?: string }
+/** kvm i steg om 5 (50 = 50 m² eller mer), fullt i fjärdedelar 25–100. klar = kunden har tryckt Klar, först då räknas kortet (David–Nils 20 okt). */
+export type Biyta = { id: string; typ?: BiytaTyp; kvm?: number; fullt?: number; klar?: boolean }
+export type Sak = { id: string; vad: string; vikt?: string; varde?: string; klar?: boolean }
 export type Samtal = { dag: string; pass: string }
 
 export type Answers = {
@@ -43,6 +43,8 @@ export type Answers = {
   samtal?: Samtal
   /** Säljaren har skickat offerten: svaren låses och kortet länkar till offerten. */
   offertSkickad?: boolean
+  /** Manuell hantering i Harry (väntar på leverantör): svaren låses för kunden, kortet förklarar varför. */
+  manuell?: boolean
   telefon: string
   sent: boolean
   /* 1 Adresser */
@@ -110,12 +112,19 @@ const adressLeft = (s: AdressSvar) => {
   return [lagenhet && !s.vaning, lagenhet && !s.hiss, !harAvstand(s.avstand)].filter(Boolean).length
 }
 
+/** Öppnade kort som inte klarmarkerats: ett halvfärdigt utrymme eller föremål stoppar Fortsätt tills det är Klar eller borttaget. */
+const oppnaKort = (a: Answers) => {
+  const biytor = a.biytaSvar === 'ja' ? Math.max(1, a.biytor.length) - a.biytor.filter((b) => b.klar).length : 0
+  const saker = a.sakerSvar === 'ja' ? Math.max(1, a.saker.length) - a.saker.filter((s) => s.klar).length : 0
+  return Math.max(0, biytor) + Math.max(0, saker)
+}
+
 /** Obesvarade knappfrågor per steg, i ordningen Adresser, Bära ut, Bära in, Vad ska med, Städning, Sista detaljerna. */
 export const questionsLeft = (a: Answers): number[] => [
   a.sammaDag ? 0 : 1,
   adressLeft(a.fran),
   adressLeft(a.till),
-  [!a.bohag, !a.biytaSvar, !a.sakerSvar, !a.utemobler].filter(Boolean).length,
+  [!a.bohag, !a.biytaSvar, !a.sakerSvar, !a.utemobler].filter(Boolean).length + oppnaKort(a),
   !a.stad ? 1 : a.stad === 'nej' ? 0 : [!a.stadYta, !a.balkong, Object.keys(a.fonster).length === 0 && !a.fonsterInga, !a.kansliga].filter(Boolean).length,
   (!a.flyttDag ? 1 : 0) + (a.stad === 'ja' && !a.stadDag ? 1 : 0),
 ]
