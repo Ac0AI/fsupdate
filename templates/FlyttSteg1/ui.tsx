@@ -88,7 +88,9 @@ export const ChoiceRow = <T extends string>({ options, value, onChange }: { opti
         onClick={() => onChange(v)}
         className={clsx(
           'flex h-11 min-w-0 flex-1 items-center justify-center rounded-[var(--radius-button)] border-[1.5px] px-2 text-[15px] transition-colors',
-          value === v ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] font-bold text-white' : 'border-[var(--color-inactive-main)] bg-white text-[var(--color-text-main)]',
+          value === v
+            ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] font-bold text-white'
+            : 'border-[var(--color-inactive-main)] bg-white text-[var(--color-text-main)]',
         )}
       >
         {label}
@@ -120,7 +122,9 @@ export const SubCard = ({ children, className }: { children: ReactNode; classNam
   <div className={clsx('rounded-[var(--radius-main)] bg-[var(--color-secondary-extra-extra-light)] p-4', className)}>{children}</div>
 )
 
-export const InfoNote = ({ children }: { children: ReactNode }) => <p className="mt-3 rounded-[var(--radius-main)] bg-[var(--color-secondary-extra-extra-light)] px-4 py-3 text-[14px] leading-[20px] text-[var(--color-text-main)]">{children}</p>
+export const InfoNote = ({ children }: { children: ReactNode }) => (
+  <p className="mt-3 rounded-[var(--radius-main)] bg-[var(--color-secondary-extra-extra-light)] px-4 py-3 text-[14px] leading-[20px] text-[var(--color-text-main)]">{children}</p>
+)
 
 /** Grön pill: "Från din flytt", "Steg 1 sparat". */
 export const GreenBadge = ({ children }: { children: ReactNode }) => (
@@ -151,7 +155,11 @@ export const InfoCard = ({ children, className }: { children: ReactNode; classNa
 
 /** Streckad "Lägg till"-ruta. */
 export const AddCard = ({ label, hint, onClick }: { label: string; hint: string; onClick: () => void }) => (
-  <button type="button" onClick={onClick} className="flex w-full items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] border-dashed border-[var(--color-inactive-grey-light)] bg-white p-3 text-left">
+  <button
+    type="button"
+    onClick={onClick}
+    className="flex w-full items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] border-dashed border-[var(--color-inactive-grey-light)] bg-white p-3 text-left"
+  >
     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-secondary-extra-extra-light)] text-[var(--color-secondary-main)]">
       <Plus size={18} />
     </span>
@@ -166,8 +174,29 @@ export const AddCard = ({ label, hint, onClick }: { label: string; hint: string;
  * Ett tillagt utrymme eller föremål. Öppet medan kunden fyller i, Klar fäller
  * ihop det till en rad med Ändra (David 20 okt: "fäll ihop den när det är klar").
  */
-export const ItemCard = ({ title, onRemove, children, collapsed, summary, onDone, onEdit }: { title: string; onRemove: () => void; children: ReactNode; collapsed?: boolean; summary?: string; onDone?: () => void; onEdit?: () => void }) => (
-  <div className={clsx('rounded-[var(--radius-main)] border-[1.5px] bg-white', collapsed ? 'border-[var(--color-inactive-main)] px-4 py-3' : 'border-[var(--color-secondary-main)] p-4')}>
+export const ItemCard = ({
+  title,
+  onRemove,
+  children,
+  collapsed,
+  summary,
+  onDone,
+  onEdit,
+}: {
+  title: string
+  onRemove: () => void
+  children: ReactNode
+  collapsed?: boolean
+  summary?: string
+  onDone?: () => void
+  onEdit?: () => void
+}) => (
+  <div
+    className={clsx(
+      'rounded-[var(--radius-main)] border-[1.5px] bg-white',
+      collapsed ? 'border-[var(--color-inactive-main)] px-4 py-3' : 'border-[var(--color-secondary-main)] p-4',
+    )}
+  >
     <div className="flex items-center justify-between gap-3">
       <span className="flex min-w-0 items-center gap-2 text-[15px] font-bold text-[var(--color-secondary-main)]">
         {collapsed && (
@@ -209,7 +238,19 @@ export const MoreLink = ({ children, onClick }: { children: ReactNode; onClick: 
 )
 
 /** 16 px text, annars zoomar iOS när fältet fokuseras. */
-export const TextField = ({ value, onChange, placeholder, rows = 3, label }: { value: string; onChange: (v: string) => void; placeholder: string; rows?: number; label: string }) => (
+export const TextField = ({
+  value,
+  onChange,
+  placeholder,
+  rows = 3,
+  label,
+}: {
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+  rows?: number
+  label: string
+}) => (
   <textarea
     value={value}
     onChange={(e) => onChange(e.target.value)}
@@ -220,7 +261,19 @@ export const TextField = ({ value, onChange, placeholder, rows = 3, label }: { v
   />
 )
 
-export const TextInput = ({ value, onChange, placeholder, label, type = 'text' }: { value: string; onChange: (v: string) => void; placeholder: string; label: string; type?: 'text' | 'tel' | 'number' }) => (
+export const TextInput = ({
+  value,
+  onChange,
+  placeholder,
+  label,
+  type = 'text',
+}: {
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+  label: string
+  type?: 'text' | 'tel' | 'number'
+}) => (
   <input
     type={type}
     inputMode={type === 'number' ? 'numeric' : type === 'tel' ? 'tel' : undefined}
@@ -234,28 +287,63 @@ export const TextInput = ({ value, onChange, placeholder, label, type = 'text' }
 
 export const Stepper = ({ value, onChange, min = 1, max = 99 }: { value: number; onChange: (v: number) => void; min?: number; max?: number }) => (
   <div className="flex items-center gap-1">
-    <button type="button" aria-label="Färre" onClick={() => onChange(Math.max(min, value - 1))} className="flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-[var(--color-inactive-main)] text-[var(--color-secondary-main)]">
+    <button
+      type="button"
+      aria-label="Färre"
+      onClick={() => onChange(Math.max(min, value - 1))}
+      className="flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-[var(--color-inactive-main)] text-[var(--color-secondary-main)]"
+    >
       <Minus size={16} />
     </button>
     <span className="w-8 text-center text-[16px] font-bold text-[var(--color-text-main)]">{value}</span>
-    <button type="button" aria-label="Fler" onClick={() => onChange(Math.min(max, value + 1))} className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-secondary-main)] text-white">
+    <button
+      type="button"
+      aria-label="Fler"
+      onClick={() => onChange(Math.min(max, value + 1))}
+      className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-secondary-main)] text-white"
+    >
       <Plus size={16} />
     </button>
   </div>
 )
 
 /** Kryssruta i kortform, för flerval som fönstertyper och tillval. */
-export const CheckTile = ({ label, hint, selected, onClick, icon, className }: { label: string; hint?: string; selected: boolean; onClick: () => void; icon?: ReactNode; className?: string }) => (
+export const CheckTile = ({
+  label,
+  hint,
+  selected,
+  onClick,
+  icon,
+  className,
+}: {
+  label: string
+  hint?: string
+  selected: boolean
+  onClick: () => void
+  icon?: ReactNode
+  className?: string
+}) => (
   <button
     type="button"
     aria-pressed={selected}
     onClick={onClick}
-    className={clsx('flex min-h-[60px] items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] p-3 text-left transition-colors', selected ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)] bg-white', className)}
+    className={clsx(
+      'flex min-h-[60px] items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] p-3 text-left transition-colors',
+      selected ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)] bg-white',
+      className,
+    )}
   >
     {icon ? (
       <span className="shrink-0 text-[var(--color-secondary-main)]">{icon}</span>
     ) : (
-      <span className={clsx('flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-[1.5px]', selected ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] text-white' : 'border-[var(--color-inactive-grey-light)]')}>{selected && <Check size={14} strokeWidth={3} />}</span>
+      <span
+        className={clsx(
+          'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-[1.5px]',
+          selected ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] text-white' : 'border-[var(--color-inactive-grey-light)]',
+        )}
+      >
+        {selected && <Check size={14} strokeWidth={3} />}
+      </span>
     )}
     <span className="min-w-0">
       <span className="block text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{label}</span>
@@ -271,7 +359,10 @@ export const Tile = ({ label, hint, selected, onClick, icon }: { label: string; 
     role="radio"
     aria-checked={selected}
     onClick={onClick}
-    className={clsx('flex min-h-[72px] flex-col items-center justify-center gap-0.5 rounded-[var(--radius-main)] border-[1.5px] px-2 py-3 text-center transition-colors', selected ? 'border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)] bg-white')}
+    className={clsx(
+      'flex min-h-[72px] flex-col items-center justify-center gap-0.5 rounded-[var(--radius-main)] border-[1.5px] px-2 py-3 text-center transition-colors',
+      selected ? 'border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)] bg-white',
+    )}
   >
     {icon && <span className="text-[var(--color-secondary-main)]">{icon}</span>}
     <span className="text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{label}</span>
@@ -290,7 +381,11 @@ export const FloorRow = ({ value, onChange, more, onMore }: { value?: string; on
           role="radio"
           aria-checked={value === f}
           onClick={() => onChange(f)}
-          className={clsx('flex h-full min-w-0 flex-1 items-center justify-center text-[15px] transition-colors', i > 0 && 'border-l border-[var(--color-inactive-main)]', value === f ? 'bg-[var(--color-secondary-main)] font-bold text-white' : 'text-[var(--color-text-main)]')}
+          className={clsx(
+            'flex h-full min-w-0 flex-1 items-center justify-center text-[15px] transition-colors',
+            i > 0 && 'border-l border-[var(--color-inactive-main)]',
+            value === f ? 'bg-[var(--color-secondary-main)] font-bold text-white' : 'text-[var(--color-text-main)]',
+          )}
         >
           {f}
         </button>
@@ -300,7 +395,12 @@ export const FloorRow = ({ value, onChange, more, onMore }: { value?: string; on
       <TextLink onClick={onMore} className="text-[13px]">
         {more ? 'Tillbaka till raden' : 'Högre upp eller källare?'}
       </TextLink>
-      <button type="button" aria-pressed={value === 'vet-ej'} onClick={() => onChange('vet-ej')} className={clsx('text-[13px] font-bold', value === 'vet-ej' ? 'text-[var(--color-secondary-main)] underline underline-offset-4' : 'text-[var(--color-inactive-dark)]')}>
+      <button
+        type="button"
+        aria-pressed={value === 'vet-ej'}
+        onClick={() => onChange('vet-ej')}
+        className={clsx('text-[13px] font-bold', value === 'vet-ej' ? 'text-[var(--color-secondary-main)] underline underline-offset-4' : 'text-[var(--color-inactive-dark)]')}
+      >
         Vet inte
       </button>
     </div>
@@ -443,7 +543,13 @@ export const Frame = ({
     </div>
     <ol className="flex gap-1 px-4 md:hidden" aria-hidden>
       {STEG.map((s, i) => (
-        <li key={s} className={clsx('h-1 flex-1 rounded-full', i < step ? 'bg-[var(--color-primary-main)]' : i === step ? 'bg-[var(--color-secondary-main)]' : 'bg-[var(--color-inactive-main)]')} />
+        <li
+          key={s}
+          className={clsx(
+            'h-1 flex-1 rounded-full',
+            i < step ? 'bg-[var(--color-primary-main)]' : i === step ? 'bg-[var(--color-secondary-main)]' : 'bg-[var(--color-inactive-main)]',
+          )}
+        />
       ))}
     </ol>
     <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-4 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4">
@@ -459,10 +565,23 @@ export const Frame = ({
                   onClick={() => onStep?.(i)}
                   className={clsx(
                     'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[14px]',
-                    state === 'current' ? 'bg-[var(--color-secondary-extra-extra-light)] font-bold text-[var(--color-text-main)]' : state === 'done' ? 'text-[var(--color-text-main)] hover:bg-[var(--color-inactive-quite-light)]' : 'text-[var(--color-inactive-dark)]',
+                    state === 'current'
+                      ? 'bg-[var(--color-secondary-extra-extra-light)] font-bold text-[var(--color-text-main)]'
+                      : state === 'done'
+                        ? 'text-[var(--color-text-main)] hover:bg-[var(--color-inactive-quite-light)]'
+                        : 'text-[var(--color-inactive-dark)]',
                   )}
                 >
-                  <span className={clsx('flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-bold', state === 'done' ? 'bg-[#DCFCE7] text-[#15803D]' : state === 'current' ? 'bg-[var(--color-secondary-main)] text-white' : 'border border-[var(--color-inactive-main)] text-[var(--color-inactive-dark)]')}>
+                  <span
+                    className={clsx(
+                      'flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-bold',
+                      state === 'done'
+                        ? 'bg-[#DCFCE7] text-[#15803D]'
+                        : state === 'current'
+                          ? 'bg-[var(--color-secondary-main)] text-white'
+                          : 'border border-[var(--color-inactive-main)] text-[var(--color-inactive-dark)]',
+                    )}
+                  >
                     {state === 'done' ? <Check size={14} strokeWidth={3} /> : i + 1}
                   </span>
                   {s}
@@ -516,7 +635,10 @@ export const WeekPicker = ({ value, onChange }: { value: Date; onChange: (d: Dat
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className={clsx('relative flex h-11 w-full items-center rounded-lg border bg-white px-3 text-left', open ? 'border-[var(--color-primary-main)] ring-1 ring-[var(--color-primary-main)]' : 'border-[#CBD5E1]')}
+        className={clsx(
+          'relative flex h-11 w-full items-center rounded-lg border bg-white px-3 text-left',
+          open ? 'border-[var(--color-primary-main)] ring-1 ring-[var(--color-primary-main)]' : 'border-[#CBD5E1]',
+        )}
       >
         <span className="pointer-events-none absolute -top-2.5 left-3 bg-white px-1 text-[12px] text-[var(--color-text-main)]">Välj datum</span>
         <span className="block min-w-0 flex-1 truncate text-[15px] font-medium text-[var(--color-text-main)]">{fmtShort(value)}</span>
@@ -524,13 +646,25 @@ export const WeekPicker = ({ value, onChange }: { value: Date; onChange: (d: Dat
       {open && (
         <div role="dialog" aria-label="Välj datum" className="absolute bottom-full left-1/2 z-50 mb-2 w-[320px] -translate-x-1/2 rounded-lg bg-white p-4 shadow-xl">
           <div className="mb-4 flex items-center justify-between text-[var(--color-secondary-main)]">
-            <button type="button" disabled={prevDisabled} aria-label="Förra veckan" onClick={() => setVisible((d) => addDays(d, -7))} className="inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white disabled:pointer-events-none disabled:opacity-30">
+            <button
+              type="button"
+              disabled={prevDisabled}
+              aria-label="Förra veckan"
+              onClick={() => setVisible((d) => addDays(d, -7))}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white disabled:pointer-events-none disabled:opacity-30"
+            >
               <ChevronLeft size={16} />
             </button>
             <span className="text-[16px] font-bold" aria-live="polite">
               {fmtWeekTitle(visible)}
             </span>
-            <button type="button" disabled={nextDisabled} aria-label="Nästa vecka" onClick={() => setVisible((d) => addDays(d, 7))} className="inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white disabled:pointer-events-none disabled:opacity-30">
+            <button
+              type="button"
+              disabled={nextDisabled}
+              aria-label="Nästa vecka"
+              onClick={() => setVisible((d) => addDays(d, 7))}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white disabled:pointer-events-none disabled:opacity-30"
+            >
               <ChevronRight size={16} />
             </button>
           </div>
@@ -580,7 +714,9 @@ export const MeterSlider = ({ value, onChange }: { value: unknown; onChange: (v:
   return (
     <div>
       <div className="flex items-center justify-between gap-3">
-        <span className={clsx('text-[22px] font-bold leading-7', svar === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>{svar === undefined ? 'Dra för att välja' : avstandText(svar)}</span>
+        <span className={clsx('text-[22px] font-bold leading-7', svar === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>
+          {svar === undefined ? 'Dra för att välja' : avstandText(svar)}
+        </span>
         <Chip small selected={vetEj} onClick={() => onChange('vet-ej')}>
           Vet inte
         </Chip>
@@ -610,11 +746,31 @@ export const MeterSlider = ({ value, onChange }: { value: unknown; onChange: (v:
 }
 
 /** Reglage med fasta steg, värdet stort ovanför och etiketter under. Obesvarat tills det rörts. */
-export const RangeSlider = ({ value, min, max, step, onChange, text, ticks, label }: { value: unknown; min: number; max: number; step: number; onChange: (v: number) => void; text: (v: number) => string; ticks: string[]; label: string }) => {
+export const RangeSlider = ({
+  value,
+  min,
+  max,
+  step,
+  onChange,
+  text,
+  ticks,
+  label,
+}: {
+  value: unknown
+  min: number
+  max: number
+  step: number
+  onChange: (v: number) => void
+  text: (v: number) => string
+  ticks: string[]
+  label: string
+}) => {
   const svar = typeof value === 'number' ? value : undefined
   return (
     <div>
-      <span className={clsx('block text-[18px] font-bold leading-6', svar === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>{svar === undefined ? 'Dra för att välja' : text(svar)}</span>
+      <span className={clsx('block text-[18px] font-bold leading-6', svar === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>
+        {svar === undefined ? 'Dra för att välja' : text(svar)}
+      </span>
       <input
         type="range"
         min={min}
@@ -641,7 +797,23 @@ export const RangeSlider = ({ value, min, max, step, onChange, text, ticks, labe
  * kunden valt, kalendern öppnar på flyttdagens månad med flyttdagen markerad
  * (David 20 okt: "lämna ej ifylld men poppa på movingdate när datepickern öppnas").
  */
-export const DayPicker = ({ value, start, min, label, placeholder, onChange, ringText = 'flyttdagen' }: { value?: string; start: string; min?: string; label: string; placeholder: string; onChange: (iso: string) => void; ringText?: string }) => {
+export const DayPicker = ({
+  value,
+  start,
+  min,
+  label,
+  placeholder,
+  onChange,
+  ringText = 'flyttdagen',
+}: {
+  value?: string
+  start: string
+  min?: string
+  label: string
+  placeholder: string
+  onChange: (iso: string) => void
+  ringText?: string
+}) => {
   const [open, setOpen] = useState(false)
   const [visible, setVisible] = useState(() => fromIso(value ?? start))
   // Kalendern öppnas som en centrerad ruta över sidan, inte nedfälld under fältet (Nils 20 okt).
@@ -666,69 +838,87 @@ export const DayPicker = ({ value, start, min, label, placeholder, onChange, rin
           setVisible(fromIso(value ?? start))
           setOpen((o) => !o)
         }}
-        className={clsx('relative flex h-12 w-full items-center rounded-[var(--radius-main)] border-[1.5px] bg-white px-3 text-left', open ? 'border-[var(--color-secondary-main)]' : 'border-[var(--color-inactive-main)]')}
+        className={clsx(
+          'relative flex h-12 w-full items-center rounded-[var(--radius-main)] border-[1.5px] bg-white px-3 text-left',
+          open ? 'border-[var(--color-secondary-main)]' : 'border-[var(--color-inactive-main)]',
+        )}
       >
         {vald && <span className="pointer-events-none absolute -top-2.5 left-3 bg-white px-1 text-[12px] text-[var(--color-text-main)]">{label}</span>}
-        <span className={clsx('block min-w-0 flex-1 truncate text-[16px]', vald ? 'font-bold text-[var(--color-text-main)]' : 'text-[var(--color-inactive-grey-light)]')}>{vald ? fmtLongDate(vald) : placeholder}</span>
+        <span className={clsx('block min-w-0 flex-1 truncate text-[16px]', vald ? 'font-bold text-[var(--color-text-main)]' : 'text-[var(--color-inactive-grey-light)]')}>
+          {vald ? fmtLongDate(vald) : placeholder}
+        </span>
         <CalendarDays size={20} className="shrink-0 text-[var(--color-secondary-main)]" aria-hidden />
       </button>
       {open &&
         createPortal(
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4" onClick={() => setOpen(false)}>
-        <div role="dialog" aria-label={label} onClick={(e) => e.stopPropagation()} className="w-full max-w-[360px] rounded-2xl bg-white p-4 shadow-xl">
-          <div className="mb-3 flex items-center justify-between text-[var(--color-secondary-main)]">
-            <button type="button" aria-label="Förra månaden" onClick={() => setVisible((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))} className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white">
-              <ChevronLeft size={16} />
-            </button>
-            <span className="text-[16px] font-bold capitalize" aria-live="polite">
-              {fmtMonth(visible)}
-            </span>
-            <button type="button" aria-label="Nästa månad" onClick={() => setVisible((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))} className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white">
-              <ChevronRight size={16} />
-            </button>
-          </div>
-          <div className="grid grid-cols-7 gap-1 text-center">
-            {['Mån', 'Tis', 'Ons', 'Tors', 'Fre', 'Lör', 'Sön'].map((v) => (
-              <span key={v} className="text-[12px] font-medium text-[var(--color-inactive-dark)]">
-                {v}
-              </span>
-            ))}
-            {monthGrid(visible).map((day, i) => {
-              if (!day) return <span key={`tom-${i}`} />
-              const disabled = (minDag && day < minDag) || day < new Date(idag.getFullYear(), idag.getMonth(), idag.getDate())
-              const selected = !!vald && sameDay(day, vald)
-              const arFlytt = sameDay(day, flytt)
-              return (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4" onClick={() => setOpen(false)}>
+            <div role="dialog" aria-label={label} onClick={(e) => e.stopPropagation()} className="w-full max-w-[360px] rounded-2xl bg-white p-4 shadow-xl">
+              <div className="mb-3 flex items-center justify-between text-[var(--color-secondary-main)]">
                 <button
-                  key={day.toISOString()}
                   type="button"
-                  disabled={disabled}
-                  aria-label={fmtLongDate(day) + (arFlytt ? `, ${ringText}` : '')}
-                  onClick={() => {
-                    onChange(toIso(day))
-                    setOpen(false)
-                  }}
-                  className={clsx(
-                    'mx-auto inline-flex h-9 w-9 items-center justify-center rounded-full text-[14px]',
-                    selected ? 'bg-[var(--color-primary-main)] font-bold text-white' : 'text-[var(--color-secondary-main)] hover:bg-[var(--color-primary-main)] hover:text-white',
-                    arFlytt && !selected && 'ring-2 ring-[var(--color-secondary-main)] font-bold',
-                    disabled && 'pointer-events-none text-[#94A3B8] opacity-50',
-                  )}
+                  aria-label="Förra månaden"
+                  onClick={() => setVisible((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white"
                 >
-                  {day.getDate()}
+                  <ChevronLeft size={16} />
                 </button>
-              )
-            })}
-          </div>
-          <p className="mt-3 text-[12px] text-[var(--color-inactive-dark)]">Ringen är {ringText}, {fmtLongDate(flytt)}.</p>
-        </div>
-        </div>,
+                <span className="text-[16px] font-bold capitalize" aria-live="polite">
+                  {fmtMonth(visible)}
+                </span>
+                <button
+                  type="button"
+                  aria-label="Nästa månad"
+                  onClick={() => setVisible((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--color-primary-main)] hover:text-white"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+              <div className="grid grid-cols-7 gap-1 text-center">
+                {['Mån', 'Tis', 'Ons', 'Tors', 'Fre', 'Lör', 'Sön'].map((v) => (
+                  <span key={v} className="text-[12px] font-medium text-[var(--color-inactive-dark)]">
+                    {v}
+                  </span>
+                ))}
+                {monthGrid(visible).map((day, i) => {
+                  if (!day) return <span key={`tom-${i}`} />
+                  const disabled = (minDag && day < minDag) || day < new Date(idag.getFullYear(), idag.getMonth(), idag.getDate())
+                  const selected = !!vald && sameDay(day, vald)
+                  const arFlytt = sameDay(day, flytt)
+                  return (
+                    <button
+                      key={day.toISOString()}
+                      type="button"
+                      disabled={disabled}
+                      aria-label={fmtLongDate(day) + (arFlytt ? `, ${ringText}` : '')}
+                      onClick={() => {
+                        onChange(toIso(day))
+                        setOpen(false)
+                      }}
+                      className={clsx(
+                        'mx-auto inline-flex h-9 w-9 items-center justify-center rounded-full text-[14px]',
+                        selected
+                          ? 'bg-[var(--color-primary-main)] font-bold text-white'
+                          : 'text-[var(--color-secondary-main)] hover:bg-[var(--color-primary-main)] hover:text-white',
+                        arFlytt && !selected && 'ring-2 ring-[var(--color-secondary-main)] font-bold',
+                        disabled && 'pointer-events-none text-[#94A3B8] opacity-50',
+                      )}
+                    >
+                      {day.getDate()}
+                    </button>
+                  )
+                })}
+              </div>
+              <p className="mt-3 text-[12px] text-[var(--color-inactive-dark)]">
+                Ringen är {ringText}, {fmtLongDate(flytt)}.
+              </p>
+            </div>
+          </div>,
           document.body,
         )}
     </div>
   )
 }
-
 
 /**
  * Reveal: nästa fråga visas först när den förra är svarad (Nils 20 okt:
@@ -736,29 +926,42 @@ export const DayPicker = ({ value, start, min, label, placeholder, onChange, rin
  * glider upp, och scrollar sig i bild. Det som redan var svarat vid öppning
  * visas direkt utan rörelse.
  */
-export const Reveal = ({ show, children }: { show: boolean; children: ReactNode }) => {
+/** scrollOnMount: även ett kort som skapas direkt synligt (nytt utrymme efter Ja) scrollas till mitten (Nils pdf 20 okt). */
+export const Reveal = ({ show, children, scrollOnMount }: { show: boolean; children: ReactNode; scrollOnMount?: boolean }) => {
   const [visible, setVisible] = useState(show)
   const ref = useRef<HTMLDivElement>(null)
   // Tonar in nästa fråga under den förra. När den just dykt upp (dold -> visad, inte vid öppning) scrollas den
   // till mitten en halv sekund senare, så att det inte rycker under tummen på ett reglage (Nils 20 okt: centrera nästa fråga).
   const forra = useRef<boolean | null>(null)
+  // Flaggan nollas först när scrollen faktiskt körts, så att Reacts dubbla effekter i dev inte äter upp den.
+  const vidMount = useRef(!!scrollOnMount)
   useEffect(() => {
-    const nyss = forra.current === false && show
+    const nyss = (forra.current === false && show) || (vidMount.current && show)
     forra.current = show
     if (!show) {
       setVisible(false)
       return
     }
     const raf = requestAnimationFrame(() => setVisible(true))
-    const t = nyss ? window.setTimeout(() => ref.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 450) : null
+    const t = nyss
+      ? window.setTimeout(() => {
+          vidMount.current = false
+          ref.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+        }, 450)
+      : null
     return () => {
       cancelAnimationFrame(raf)
       if (t) window.clearTimeout(t)
     }
+    // scrollOnMount läses bara vid första körningen, avsiktligt.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show])
   if (!show) return null
   return (
-    <div ref={ref} className={clsx('transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none', visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0')}>
+    <div
+      ref={ref}
+      className={clsx('transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none', visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0')}
+    >
       {children}
     </div>
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, Car, Check, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench, X } from 'lucide-react'
 import clsx from 'clsx'
 import GoogleColor from '@/public/images/GoogleColor.svg'
@@ -39,13 +39,58 @@ import {
   type JaNejVet,
   type Tillval,
 } from './state'
-import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, DayPicker, MeterSlider, RangeSlider, Reveal, WeekPicker, WindowIcon } from './ui'
+import {
+  AddCard,
+  CheckCircle,
+  CheckTile,
+  Chip,
+  ChipRow,
+  ChoiceRow,
+  Eyebrow,
+  Field,
+  FloorRow,
+  Frame,
+  GreenBadge,
+  InfoCard,
+  InfoNote,
+  InfoRow as Row,
+  ItemCard,
+  MoreLink,
+  PrimaryButton,
+  STEG,
+  Section,
+  SheetHandle,
+  StatusHead,
+  Stepper,
+  SubCard,
+  TextField,
+  TextInput,
+  TextLink,
+  Tile,
+  DayPicker,
+  MeterSlider,
+  RangeSlider,
+  Reveal,
+  WeekPicker,
+  WindowIcon,
+} from './ui'
 import { useDemoUser } from '@/common/data/useDemoUser'
 import { writeDemoSession } from '@/common/data/demoPersona'
 import { AddressForm, ChevronDown } from './LiveMovePage'
 import { canCallNow, defaultSlot, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable, toIso } from './datum'
 
-export type Home = { from: string; to: string; fromKvm: number; toKvm: number; moveDay: string; moveDayLong: string; moveDateFull: string; moveDateIso: string; cleanDayLong: string; firstName: string }
+export type Home = {
+  from: string
+  to: string
+  fromKvm: number
+  toKvm: number
+  moveDay: string
+  moveDayLong: string
+  moveDateFull: string
+  moveDateIso: string
+  cleanDayLong: string
+  firstName: string
+}
 
 export type ScreenProps = {
   a: Answers
@@ -101,7 +146,9 @@ export const OffertScreen = ({ go, update }: ScreenProps) => {
       <div className="px-6 pb-8 pt-4 text-center md:px-8 md:text-left">
         <div className="mx-auto max-w-[320px] md:grid md:max-w-none md:grid-cols-2 md:items-start md:gap-10">
           <div>
-            <h1 className="mx-auto max-w-[30ch] text-[18px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:mx-0 md:text-[24px]! md:leading-[30px]!">Professionell flytthjälp, enkelt och prisvärt</h1>
+            <h1 className="mx-auto max-w-[30ch] text-[18px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:mx-0 md:text-[24px]! md:leading-[30px]!">
+              Professionell flytthjälp, enkelt och prisvärt
+            </h1>
             <div className="mt-5 md:mt-4">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-inactive-main)] bg-white px-3 py-1.5 shadow-sm">
                 <GoogleColor width={22} height={22} aria-hidden />
@@ -117,7 +164,11 @@ export const OffertScreen = ({ go, update }: ScreenProps) => {
             </div>
           </div>
           <ul className="mt-4 flex flex-col gap-3 text-left md:mt-1">
-            {['Vi kontaktar dig och går igenom din flytt', 'Du får offert med fast förmånligt pris, inga dolda avgifter', 'En kontaktperson, erfarna flyttproffs & nöjd-kundgaranti'].map((t, i) => (
+            {[
+              'Vi kontaktar dig och går igenom din flytt',
+              'Du får offert med fast förmånligt pris, inga dolda avgifter',
+              'En kontaktperson, erfarna flyttproffs & nöjd-kundgaranti',
+            ].map((t, i) => (
               <li key={t} className="flex items-start gap-2">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-secondary-main)] text-[14px] font-bold text-white">{i + 1}</span>
                 <span className="pt-1 text-[14px] leading-[19px] text-[var(--color-text-main)]">{t}</span>
@@ -165,7 +216,11 @@ export const TidScreen = ({ a, update, go }: ScreenProps) => {
           <p className="text-[14px] leading-[19px] text-[var(--color-text-main)]">Vi ringer dig {a.samtal ? samtalText(a.samtal) : 'snart'}.</p>
           <p className="mt-1 text-[12px] text-[var(--color-inactive-dark)]">Finns det någon tid du önskar bli uppringd?</p>
           {/* Som live: Ring mig nu under kontorstid i dag, annars Jag är flexibel. */}
-          <button type="button" onClick={() => pick(nu ? 'nu' : 'flexibel')} className="mt-5 flex w-full items-center justify-between rounded-lg border border-[var(--color-inactive-main)] bg-white px-4 py-3 text-left">
+          <button
+            type="button"
+            onClick={() => pick(nu ? 'nu' : 'flexibel')}
+            className="mt-5 flex w-full items-center justify-between rounded-lg border border-[var(--color-inactive-main)] bg-white px-4 py-3 text-left"
+          >
             <span className="text-[16px] font-bold text-[var(--color-text-main)]">{nu ? 'Ring mig nu' : 'Jag är flexibel'}</span>
             <span className="text-[20px] text-[var(--color-inactive-grey-light)]">›</span>
           </button>
@@ -176,7 +231,13 @@ export const TidScreen = ({ a, update, go }: ScreenProps) => {
             {slots.map(([pass, sub]) => {
               const passed = isSlotPassed(pass, date)
               return (
-                <button key={pass} type="button" disabled={passed} onClick={() => pick(pass)} className={clsx('rounded-lg border border-[var(--color-inactive-main)] bg-white px-2 py-3 text-center', passed && 'opacity-40')}>
+                <button
+                  key={pass}
+                  type="button"
+                  disabled={passed}
+                  onClick={() => pick(pass)}
+                  className={clsx('rounded-lg border border-[var(--color-inactive-main)] bg-white px-2 py-3 text-center', passed && 'opacity-40')}
+                >
                   <span className="block text-[16px] font-bold text-[var(--color-text-main)]">{pass}</span>
                   <span className="block text-[12px] text-[var(--color-inactive-super-dark)]">{sub}</span>
                 </button>
@@ -291,10 +352,17 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
             <span className="mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D] md:mt-1">
               <Check size={18} strokeWidth={3} />
             </span>
-            <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:mt-1 md:text-[22px]! md:leading-[28px]! md:hidden">Tack! Vi kontaktar dig {samtalText(a.samtal)}.</h1>
+            <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:mt-1 md:text-[22px]! md:leading-[28px]! md:hidden">
+              Tack! Vi kontaktar dig {samtalText(a.samtal)}.
+            </h1>
             <h1 className="hidden text-[22px]! font-bold leading-[28px]! text-[var(--color-text-main)] md:block">Tack! Vi kontaktar dig {samtalText(a.samtal)}.</h1>
           </div>
-          <button type="button" aria-label="Stäng" onClick={() => go(0)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[var(--color-inactive-dark)]">
+          <button
+            type="button"
+            aria-label="Stäng"
+            onClick={() => go(0)}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[var(--color-inactive-dark)]"
+          >
             <X size={20} />
           </button>
         </div>
@@ -306,7 +374,11 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
         </p>
         {andraTid && (
           <InfoCard className="mt-3 px-3 pb-4 pt-3 md:ml-12 md:max-w-[400px]">
-            <button type="button" onClick={() => valj(nu ? 'nu' : 'flexibel')} className="flex w-full items-center justify-between rounded-lg border border-[var(--color-inactive-main)] bg-white px-4 py-3 text-left">
+            <button
+              type="button"
+              onClick={() => valj(nu ? 'nu' : 'flexibel')}
+              className="flex w-full items-center justify-between rounded-lg border border-[var(--color-inactive-main)] bg-white px-4 py-3 text-left"
+            >
               <span className="text-[16px] font-bold text-[var(--color-text-main)]">{nu ? 'Ring mig nu' : 'Jag är flexibel'}</span>
               <span className="text-[20px] text-[var(--color-inactive-grey-light)]">›</span>
             </button>
@@ -318,7 +390,17 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
                 const passed = isSlotPassed(pass, date)
                 const vald = a.samtal?.pass === pass && a.samtal?.iso === toIso(date)
                 return (
-                  <button key={pass} type="button" disabled={passed} onClick={() => valj(pass)} className={clsx('h-11 rounded-lg border bg-white text-[15px] font-bold text-[var(--color-text-main)]', vald ? 'border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)]', passed && 'opacity-40')}>
+                  <button
+                    key={pass}
+                    type="button"
+                    disabled={passed}
+                    onClick={() => valj(pass)}
+                    className={clsx(
+                      'h-11 rounded-lg border bg-white text-[15px] font-bold text-[var(--color-text-main)]',
+                      vald ? 'border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)]',
+                      passed && 'opacity-40',
+                    )}
+                  >
                     {pass}
                   </button>
                 )
@@ -348,7 +430,9 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
           </TextLink>
         </div>
         <h2 className="mt-5 text-[16px] font-bold leading-[22px] text-[var(--color-text-main)] md:ml-12">Få din offert snabbare</h2>
-        <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:ml-12">Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och allt sparas direkt.</p>
+        <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:ml-12">
+          Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och allt sparas direkt.
+        </p>
         <div className="md:ml-12 md:w-[300px]">
           <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
             Berätta om flytten
@@ -390,14 +474,44 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
 }
 
 /* Ramen runt stegen. Krysset sparar det som är svarat och stänger arket. */
-const Q = ({ p, idx, title, sub, children, cta, foot, onNext }: { p: ScreenProps; idx: number; title: string; sub?: string; children: React.ReactNode; cta?: string; foot?: string; onNext?: () => void }) => {
+const Q = ({
+  p,
+  idx,
+  title,
+  sub,
+  children,
+  cta,
+  foot,
+  onNext,
+}: {
+  p: ScreenProps
+  idx: number
+  title: string
+  sub?: string
+  children: React.ReactNode
+  cta?: string
+  foot?: string
+  onNext?: () => void
+}) => {
   const { a, go, next, savedBadge } = p
   const lefts = questionsLeft(a)
   const answered = answeredQuestions(a)
   const step = idx - FIRST
   const done = STEG.map((_, i) => i < step || (lefts[i] === 0 && answered[i]))
   return (
-    <Frame step={step} title={title} sub={sub} cta={cta} foot={foot} left={lefts[step]} savedBadge={savedBadge} done={done} onStep={(i) => go(FIRST + i)} onNext={onNext ?? (() => next(idx))} onClose={() => go(0)}>
+    <Frame
+      step={step}
+      title={title}
+      sub={sub}
+      cta={cta}
+      foot={foot}
+      left={lefts[step]}
+      savedBadge={savedBadge}
+      done={done}
+      onStep={(i) => go(FIRST + i)}
+      onNext={onNext ?? (() => next(idx))}
+      onClose={() => go(0)}
+    >
       {children}
     </Frame>
   )
@@ -509,7 +623,12 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
   const visaAvstand = (vaningKlar && hissKlar && vaningarKlar) || harAvstand(s.avstand)
   const visaFramkomlighet = (visaAvstand && harAvstand(s.avstand)) || !!s.framkomlighetVal
   return (
-    <Q p={p} idx={ut ? FIRST + 1 : FIRST + 2} title={ut ? `Utflytt från ${nb(home.from)}` : `Inflytt till ${nb(home.to)}`} sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Ändra om något inte stämmer.' : 'Bostadstypen är hämtad från din flytt. Samma frågor för den nya bostaden.'}>
+    <Q
+      p={p}
+      idx={ut ? FIRST + 1 : FIRST + 2}
+      title={ut ? `Utflytt från ${nb(home.from)}` : `Inflytt till ${nb(home.to)}`}
+      sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Ändra om något inte stämmer.' : 'Bostadstypen är hämtad från din flytt. Samma frågor för den nya bostaden.'}
+    >
       {edit ? (
         <InfoCard className="mt-5 p-3.5">
           <div className="flex items-center justify-between">
@@ -545,7 +664,13 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
             {more ? (
               <div className="flex items-center gap-3">
                 <div className="w-32">
-                  <TextInput type="number" value={s.vaning && !FLOORS.includes(s.vaning) && s.vaning !== 'vet-ej' ? s.vaning : ''} onChange={(v) => set({ vaning: v, vaningFranFlytten: false })} placeholder="T.ex. 9 eller -1" label="Våning" />
+                  <TextInput
+                    type="number"
+                    value={s.vaning && !FLOORS.includes(s.vaning) && s.vaning !== 'vet-ej' ? s.vaning : ''}
+                    onChange={(v) => set({ vaning: v, vaningFranFlytten: false })}
+                    placeholder="T.ex. 9 eller -1"
+                    label="Våning"
+                  />
                 </div>
                 <TextLink
                   className="text-[13px]"
@@ -586,12 +711,22 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
         </Section>
       )}
       <Reveal show={visaAvstand}>
-        <Section title={ut ? 'Hur långt bär vi till flyttbilen?' : 'Hur långt bär vi från flyttbilen?'} sub={ut ? 'Från dörren till närmaste plats bilen kan stå. Ungefärligt räcker.' : 'Från närmaste plats bilen kan stå till dörren. Ungefärligt räcker.'}>
+        <Section
+          title={ut ? 'Hur långt bär vi till flyttbilen?' : 'Hur långt bär vi från flyttbilen?'}
+          sub={ut ? 'Från dörren till närmaste plats bilen kan stå. Ungefärligt räcker.' : 'Från närmaste plats bilen kan stå till dörren. Ungefärligt räcker.'}
+        >
           <MeterSlider value={s.avstand} onChange={(v) => set({ avstand: v })} />
         </Section>
       </Reveal>
       <Reveal show={visaFramkomlighet}>
-        <Section title="Hur är framkomligheten?" sub={lagenhet ? 'God betyder att bilen kommer nära och trappan är vanlig. Annat: innergård, smal trapp, bom eller trång gata.' : 'God betyder att bilen kommer fram till huset. Annat: grusväg, smal infart eller trappor i trädgården.'}>
+        <Section
+          title="Hur är framkomligheten?"
+          sub={
+            lagenhet
+              ? 'God betyder att bilen kommer nära och trappan är vanlig. Annat: innergård, smal trapp, bom eller trång gata.'
+              : 'God betyder att bilen kommer fram till huset. Annat: grusväg, smal infart eller trappor i trädgården.'
+          }
+        >
           <ChipRow>
             {(Object.keys(FRAMKOMLIGHET_LABEL) as Array<'god' | 'annat'>).map((v) => (
               <Chip key={v} selected={s.framkomlighetVal === v} onClick={() => set({ framkomlighetVal: v, framkomlighet: v === 'god' ? '' : s.framkomlighet })}>
@@ -601,7 +736,12 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
           </ChipRow>
           {s.framkomlighetVal === 'annat' && (
             <div className="mt-3">
-              <TextInput value={s.framkomlighet} onChange={(v) => set({ framkomlighet: v })} placeholder={lagenhet ? 'T.ex. innergård, smal trapp' : 'T.ex. grusväg eller smal infart'} label="Framkomlighet" />
+              <TextInput
+                value={s.framkomlighet}
+                onChange={(v) => set({ framkomlighet: v })}
+                placeholder={lagenhet ? 'T.ex. innergård, smal trapp' : 'T.ex. grusväg eller smal infart'}
+                label="Framkomlighet"
+              />
             </div>
           )}
         </Section>
@@ -616,14 +756,26 @@ export const BaraInScreen = (p: ScreenProps) => <BaraScreen side="till" {...p} /
 /* 8 · Vad ska med */
 export const BohagScreen = (p: ScreenProps) => {
   const { a, update, home } = p
-  const setBiyta = (id: string, patch: Partial<Answers['biytor'][number]>) => update((prev) => ({ biytor: prev.biytor.map((b) => (b.id === id ? { ...b, ...('klar' in patch ? {} : { klar: false }), ...patch } : b)) }))
-  const setSak = (id: string, patch: Partial<Answers['saker'][number]>) => update((prev) => ({ saker: prev.saker.map((s) => (s.id === id ? { ...s, ...('klar' in patch ? {} : { klar: false }), ...patch } : s)) }))
+  const setBiyta = (id: string, patch: Partial<Answers['biytor'][number]>) =>
+    update((prev) => ({ biytor: prev.biytor.map((b) => (b.id === id ? { ...b, ...('klar' in patch ? {} : { klar: false }), ...patch } : b)) }))
+  const setSak = (id: string, patch: Partial<Answers['saker'][number]>) =>
+    update((prev) => ({ saker: prev.saker.map((s) => (s.id === id ? { ...s, ...('klar' in patch ? {} : { klar: false }), ...patch } : s)) }))
   // Ett kort är öppet tills kunden trycker Klar, sedan en rad med Ändra. Klar finns först när allt är ifyllt,
   // och ett öppet kort räknas som obesvarat så att Fortsätt väntar (David–Nils 20 okt).
   const biytaKlar = (b: Answers['biytor'][number]) => !!b.typ && typeof b.kvm === 'number' && typeof b.fullt === 'number'
   const sakKlar = (s: Answers['saker'][number]) => !!s.vad.trim() && !!s.vikt && !!s.varde
-  const nyBiyta = () => update((prev) => ({ biytor: [...prev.biytor, { id: newId() }] }))
-  const nySak = () => update((prev) => ({ saker: [...prev.saker, { id: newId(), vad: '' }] }))
+  // Senast skapade kortet scrollas till mitten när det dyker upp (Nils pdf 20 okt: autoscroll vid Ja på tunga lyft).
+  const nytt = useRef<string | null>(null)
+  const nyBiyta = () => {
+    const id = newId()
+    nytt.current = id
+    update((prev) => ({ biytor: [...prev.biytor, { id }] }))
+  }
+  const nySak = () => {
+    const id = newId()
+    nytt.current = id
+    update((prev) => ({ saker: [...prev.saker, { id, vad: '' }] }))
+  }
   return (
     <Q p={p} idx={FIRST + 3} title="Hur mycket ska med?" sub={`Jämfört med ett vanligt hem på ${home.fromKvm} m².`}>
       <div className="mt-5 grid grid-cols-3 gap-2">
@@ -651,37 +803,49 @@ export const BohagScreen = (p: ScreenProps) => {
           {a.biytaSvar === 'ja' && (
             <div className="mt-3 flex flex-col gap-3">
               {a.biytor.map((b, i) => (
-                <ItemCard
-                  key={b.id}
-                  title={b.typ ? BIYTA_LABEL[b.typ] : `Utrymme ${i + 1}`}
-                  onRemove={() => update((prev) => ({ biytor: prev.biytor.filter((x) => x.id !== b.id) }))}
-                  collapsed={!!b.klar && biytaKlar(b)}
-                  summary={[typeof b.kvm === 'number' ? biytaKvmText(b.kvm) : null, typeof b.fullt === 'number' ? fulltText(b.fullt).toLowerCase() : null].filter(Boolean).join(' · ')}
-                  onDone={biytaKlar(b) ? () => setBiyta(b.id, { klar: true }) : undefined}
-                  onEdit={() => setBiyta(b.id, { klar: false })}
-                >
-                  <Field label="Vilket utrymme?">
-                    <ChipRow>
-                      {(Object.keys(BIYTA_LABEL) as BiytaTyp[]).map((t) => (
-                        <Chip key={t} small selected={b.typ === t} onClick={() => setBiyta(b.id, { typ: t })} icon={BIYTA_IKON[t]}>
-                          {BIYTA_LABEL[t]}
-                        </Chip>
-                      ))}
-                    </ChipRow>
-                  </Field>
-                  <Field label="Ungefär hur stort?">
-                    <RangeSlider value={b.kvm} min={5} max={BIYTA_KVM_MAX} step={5} onChange={(v) => setBiyta(b.id, { kvm: v })} text={biytaKvmText} ticks={['5 m²', '25 m²', '50 m² eller mer']} label="Storlek i kvadratmeter" />
-                  </Field>
-                  <Field label="Hur fullt är det?">
-                    <ChipRow>
-                      {[25, 50, 75, 100].map((f) => (
-                        <Chip key={f} small selected={b.fullt === f} onClick={() => setBiyta(b.id, { fullt: f })}>
-                          {fulltText(f)}
-                        </Chip>
-                      ))}
-                    </ChipRow>
-                  </Field>
-                </ItemCard>
+                <Reveal key={b.id} show scrollOnMount={b.id === nytt.current}>
+                  <ItemCard
+                    title={b.typ ? BIYTA_LABEL[b.typ] : `Utrymme ${i + 1}`}
+                    onRemove={() => update((prev) => ({ biytor: prev.biytor.filter((x) => x.id !== b.id) }))}
+                    collapsed={!!b.klar && biytaKlar(b)}
+                    summary={[typeof b.kvm === 'number' ? biytaKvmText(b.kvm) : null, typeof b.fullt === 'number' ? fulltText(b.fullt).toLowerCase() : null]
+                      .filter(Boolean)
+                      .join(' · ')}
+                    onDone={biytaKlar(b) ? () => setBiyta(b.id, { klar: true }) : undefined}
+                    onEdit={() => setBiyta(b.id, { klar: false })}
+                  >
+                    <Field label="Vilket utrymme?">
+                      <ChipRow>
+                        {(Object.keys(BIYTA_LABEL) as BiytaTyp[]).map((t) => (
+                          <Chip key={t} small selected={b.typ === t} onClick={() => setBiyta(b.id, { typ: t })} icon={BIYTA_IKON[t]}>
+                            {BIYTA_LABEL[t]}
+                          </Chip>
+                        ))}
+                      </ChipRow>
+                    </Field>
+                    <Field label="Ungefär hur stort?">
+                      <RangeSlider
+                        value={b.kvm}
+                        min={5}
+                        max={BIYTA_KVM_MAX}
+                        step={5}
+                        onChange={(v) => setBiyta(b.id, { kvm: v })}
+                        text={biytaKvmText}
+                        ticks={['5 m²', '25 m²', '50 m² eller mer']}
+                        label="Storlek i kvadratmeter"
+                      />
+                    </Field>
+                    <Field label="Hur fullt är det?">
+                      <ChipRow>
+                        {[25, 50, 75, 100].map((f) => (
+                          <Chip key={f} small selected={b.fullt === f} onClick={() => setBiyta(b.id, { fullt: f })}>
+                            {fulltText(f)}
+                          </Chip>
+                        ))}
+                      </ChipRow>
+                    </Field>
+                  </ItemCard>
+                </Reveal>
               ))}
               <AddCard label="Lägg till ett utrymme till" hint="Vind, källare, garage eller förråd" onClick={nyBiyta} />
             </div>
@@ -702,37 +866,38 @@ export const BohagScreen = (p: ScreenProps) => {
           {a.sakerSvar === 'ja' && (
             <div className="mt-3 flex flex-col gap-3">
               {a.saker.map((s, i) => (
-                <ItemCard
-                  key={s.id}
-                  title={s.vad || `Föremål ${i + 1}`}
-                  onRemove={() => update((prev) => ({ saker: prev.saker.filter((x) => x.id !== s.id) }))}
-                  collapsed={!!s.klar && sakKlar(s)}
-                  summary={[s.vikt, s.varde].filter(Boolean).join(' · ')}
-                  onDone={sakKlar(s) ? () => setSak(s.id, { klar: true }) : undefined}
-                  onEdit={() => setSak(s.id, { klar: false })}
-                >
-                  <Field label="Vad är det?">
-                    <TextInput value={s.vad} onChange={(v) => setSak(s.id, { vad: v })} placeholder="T.ex. piano eller marmorbord" label="Vad är det?" />
-                  </Field>
-                  <Field label="Ungefärlig vikt">
-                    <ChipRow>
-                      {VIKT.map((v) => (
-                        <Chip key={v} small selected={s.vikt === v} onClick={() => setSak(s.id, { vikt: v })}>
-                          {v}
-                        </Chip>
-                      ))}
-                    </ChipRow>
-                  </Field>
-                  <Field label="Ungefärligt värde" sub="Värdefulla föremål kan behöva extra försäkring under flytten.">
-                    <ChipRow>
-                      {VARDE.map((v) => (
-                        <Chip key={v} small selected={s.varde === v} onClick={() => setSak(s.id, { varde: v })}>
-                          {v}
-                        </Chip>
-                      ))}
-                    </ChipRow>
-                  </Field>
-                </ItemCard>
+                <Reveal key={s.id} show scrollOnMount={s.id === nytt.current}>
+                  <ItemCard
+                    title={s.vad || `Föremål ${i + 1}`}
+                    onRemove={() => update((prev) => ({ saker: prev.saker.filter((x) => x.id !== s.id) }))}
+                    collapsed={!!s.klar && sakKlar(s)}
+                    summary={[s.vikt, s.varde].filter(Boolean).join(' · ')}
+                    onDone={sakKlar(s) ? () => setSak(s.id, { klar: true }) : undefined}
+                    onEdit={() => setSak(s.id, { klar: false })}
+                  >
+                    <Field label="Vad är det?">
+                      <TextInput value={s.vad} onChange={(v) => setSak(s.id, { vad: v })} placeholder="T.ex. piano eller marmorbord" label="Vad är det?" />
+                    </Field>
+                    <Field label="Ungefärlig vikt">
+                      <ChipRow>
+                        {VIKT.map((v) => (
+                          <Chip key={v} small selected={s.vikt === v} onClick={() => setSak(s.id, { vikt: v })}>
+                            {v}
+                          </Chip>
+                        ))}
+                      </ChipRow>
+                    </Field>
+                    <Field label="Ungefärligt värde" sub="Värdefulla föremål kan behöva extra försäkring under flytten.">
+                      <ChipRow>
+                        {VARDE.map((v) => (
+                          <Chip key={v} small selected={s.varde === v} onClick={() => setSak(s.id, { varde: v })}>
+                            {v}
+                          </Chip>
+                        ))}
+                      </ChipRow>
+                    </Field>
+                  </ItemCard>
+                </Reveal>
               ))}
               <AddCard label="Lägg till ett föremål till" hint="Så tar flyttfirman med rätt utrustning" onClick={nySak} />
             </div>
@@ -752,9 +917,15 @@ export const BohagScreen = (p: ScreenProps) => {
 
 export const StadScreen = (p: ScreenProps) => {
   const { a, update, home } = p
-  const setYta = (id: string, patch: Partial<Answers['stadYtor'][number]>) => update((prev) => ({ stadYtor: prev.stadYtor.map((y) => (y.id === id ? { ...y, ...('klar' in patch ? {} : { klar: false }), ...patch } : y)) }))
+  const setYta = (id: string, patch: Partial<Answers['stadYtor'][number]>) =>
+    update((prev) => ({ stadYtor: prev.stadYtor.map((y) => (y.id === id ? { ...y, ...('klar' in patch ? {} : { klar: false }), ...patch } : y)) }))
   const ytaKlar = (y: Answers['stadYtor'][number]) => !!y.typ && typeof y.kvm === 'number'
-  const nyYta = () => update((prev) => ({ stadYtor: [...prev.stadYtor, { id: newId() }] }))
+  const nytt = useRef<string | null>(null)
+  const nyYta = () => {
+    const id = newId()
+    nytt.current = id
+    update((prev) => ({ stadYtor: [...prev.stadYtor, { id }] }))
+  }
   const setAntal = (t: FonsterTyp, n: number) =>
     update((prev) => {
       const fonster = { ...prev.fonster }
@@ -786,28 +957,38 @@ export const StadScreen = (p: ScreenProps) => {
             {a.stadYta === 'mer' && (
               <div className="mt-3 flex flex-col gap-3">
                 {a.stadYtor.map((y, i) => (
-                  <ItemCard
-                    key={y.id}
-                    title={y.typ ? BIYTA_LABEL[y.typ] : `Utrymme ${i + 1}`}
-                    onRemove={() => update((prev) => ({ stadYtor: prev.stadYtor.filter((x) => x.id !== y.id) }))}
-                    collapsed={!!y.klar && ytaKlar(y)}
-                    summary={typeof y.kvm === 'number' ? biytaKvmText(y.kvm) : undefined}
-                    onDone={ytaKlar(y) ? () => setYta(y.id, { klar: true }) : undefined}
-                    onEdit={() => setYta(y.id, { klar: false })}
-                  >
-                    <Field label="Vilket utrymme?">
-                      <ChipRow>
-                        {(Object.keys(BIYTA_LABEL) as BiytaTyp[]).map((t) => (
-                          <Chip key={t} small selected={y.typ === t} onClick={() => setYta(y.id, { typ: t })} icon={BIYTA_IKON[t]}>
-                            {BIYTA_LABEL[t]}
-                          </Chip>
-                        ))}
-                      </ChipRow>
-                    </Field>
-                    <Field label="Ungefär hur stort?">
-                      <RangeSlider value={y.kvm} min={5} max={BIYTA_KVM_MAX} step={5} onChange={(v) => setYta(y.id, { kvm: v })} text={biytaKvmText} ticks={['5 m²', '25 m²', '50 m² eller mer']} label="Storlek" />
-                    </Field>
-                  </ItemCard>
+                  <Reveal key={y.id} show scrollOnMount={y.id === nytt.current}>
+                    <ItemCard
+                      title={y.typ ? BIYTA_LABEL[y.typ] : `Utrymme ${i + 1}`}
+                      onRemove={() => update((prev) => ({ stadYtor: prev.stadYtor.filter((x) => x.id !== y.id) }))}
+                      collapsed={!!y.klar && ytaKlar(y)}
+                      summary={typeof y.kvm === 'number' ? biytaKvmText(y.kvm) : undefined}
+                      onDone={ytaKlar(y) ? () => setYta(y.id, { klar: true }) : undefined}
+                      onEdit={() => setYta(y.id, { klar: false })}
+                    >
+                      <Field label="Vilket utrymme?">
+                        <ChipRow>
+                          {(Object.keys(BIYTA_LABEL) as BiytaTyp[]).map((t) => (
+                            <Chip key={t} small selected={y.typ === t} onClick={() => setYta(y.id, { typ: t })} icon={BIYTA_IKON[t]}>
+                              {BIYTA_LABEL[t]}
+                            </Chip>
+                          ))}
+                        </ChipRow>
+                      </Field>
+                      <Field label="Ungefär hur stort?">
+                        <RangeSlider
+                          value={y.kvm}
+                          min={5}
+                          max={BIYTA_KVM_MAX}
+                          step={5}
+                          onChange={(v) => setYta(y.id, { kvm: v })}
+                          text={biytaKvmText}
+                          ticks={['5 m²', '25 m²', '50 m² eller mer']}
+                          label="Storlek"
+                        />
+                      </Field>
+                    </ItemCard>
+                  </Reveal>
                 ))}
                 <AddCard label="Lägg till ett utrymme till" hint="Källare, förråd eller garage som ska städas" onClick={nyYta} />
               </div>
@@ -846,7 +1027,13 @@ export const StadScreen = (p: ScreenProps) => {
               {(Object.keys(FONSTER_LABEL) as FonsterTyp[]).map((t) => {
                 const n = a.fonster[t] ?? 0
                 return (
-                  <div key={t} className={clsx('flex items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] bg-white py-2 pl-3 pr-2', n > 0 ? 'border-[var(--color-secondary-main)]' : 'border-[var(--color-inactive-main)]')}>
+                  <div
+                    key={t}
+                    className={clsx(
+                      'flex items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] bg-white py-2 pl-3 pr-2',
+                      n > 0 ? 'border-[var(--color-secondary-main)]' : 'border-[var(--color-inactive-main)]',
+                    )}
+                  >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center text-[var(--color-secondary-main)]">
                       <WindowIcon type={t} />
                     </span>
@@ -862,7 +1049,12 @@ export const StadScreen = (p: ScreenProps) => {
                 type="button"
                 aria-pressed={a.fonsterInga}
                 onClick={() => update({ fonsterInga: !a.fonsterInga, fonster: {} })}
-                className={clsx('flex h-11 w-full items-center justify-center rounded-[var(--radius-button)] border-[1.5px] text-[15px] transition-colors', a.fonsterInga ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] font-bold text-white' : 'border-[var(--color-inactive-main)] bg-white text-[var(--color-text-main)]')}
+                className={clsx(
+                  'flex h-11 w-full items-center justify-center rounded-[var(--radius-button)] border-[1.5px] text-[15px] transition-colors',
+                  a.fonsterInga
+                    ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] font-bold text-white'
+                    : 'border-[var(--color-inactive-main)] bg-white text-[var(--color-text-main)]',
+                )}
               >
                 Inga sådana fönster
               </button>
@@ -872,7 +1064,12 @@ export const StadScreen = (p: ScreenProps) => {
             <ChoiceRow options={JA_NEJ} value={a.kansliga} onChange={(v) => update({ kansliga: v })} />
             {a.kansliga === 'ja' && (
               <div className="mt-3">
-                <TextField value={a.kansligaText} onChange={(v) => update({ kansligaText: v })} placeholder="Vilka ytor och var? T.ex. marmorgolv i badrummet" label="Känsliga ytor" />
+                <TextField
+                  value={a.kansligaText}
+                  onChange={(v) => update({ kansligaText: v })}
+                  placeholder="Vilka ytor och var? T.ex. marmorgolv i badrummet"
+                  label="Känsliga ytor"
+                />
               </div>
             )}
           </Section>
@@ -911,7 +1108,15 @@ export const SistaScreen = (p: ScreenProps) => {
       </Section>
       {a.stad === 'ja' && (
         <Section title="Vilken dag vill du ha flyttstädningen?" sub="Oftast dagen efter flytten, när bostaden är tömd.">
-          <DayPicker value={a.stadDag} start={a.flyttDag ?? home.moveDateIso} min={a.flyttDag ?? home.moveDateIso} label="Städdag" placeholder="Välj dag" onChange={(iso) => update({ stadDag: iso })} ringText={a.flyttDag ? 'flyttdagen' : 'tillträdesdagen'} />
+          <DayPicker
+            value={a.stadDag}
+            start={a.flyttDag ?? home.moveDateIso}
+            min={a.flyttDag ?? home.moveDateIso}
+            label="Städdag"
+            placeholder="Välj dag"
+            onChange={(iso) => update({ stadDag: iso })}
+            ringText={a.flyttDag ? 'flyttdagen' : 'tillträdesdagen'}
+          />
         </Section>
       )}
       <Section title="Vill du ha något av det här?">
@@ -922,7 +1127,12 @@ export const SistaScreen = (p: ScreenProps) => {
         </div>
       </Section>
       <Section title="Bra att veta inför flytten">
-        <TextField value={a.ovrigt} onChange={(v) => update({ ovrigt: v })} placeholder="Önskemål om flytten, t.ex. ömtåliga saker eller speciella omständigheter" label="Bra att veta" />
+        <TextField
+          value={a.ovrigt}
+          onChange={(v) => update({ ovrigt: v })}
+          placeholder="Önskemål om flytten, t.ex. ömtåliga saker eller speciella omständigheter"
+          label="Bra att veta"
+        />
       </Section>
     </Q>
   )
@@ -932,7 +1142,13 @@ const vaningText = (v?: string) => (v === 'vet-ej' ? 'våning: vet inte' : v ===
 
 const adressLine = (label: string, s: AdressSvar) => {
   const lagenhet = s.bostadstyp === 'lagenhet'
-  const parts = [BOSTADSTYP_LABEL[s.bostadstyp].toLowerCase(), lagenhet ? vaningText(s.vaning) : null, lagenhet && s.hiss ? HISS_LABEL[s.hiss].toLowerCase().replace('vet inte', 'hiss: vet inte') : null, harAvstand(s.avstand) ? (s.avstand === 'vet-ej' ? 'bärsträcka: vet inte' : `${avstandText(s.avstand)} att bära`) : null, s.framkomlighet || null].filter(Boolean)
+  const parts = [
+    BOSTADSTYP_LABEL[s.bostadstyp].toLowerCase(),
+    lagenhet ? vaningText(s.vaning) : null,
+    lagenhet && s.hiss ? HISS_LABEL[s.hiss].toLowerCase().replace('vet inte', 'hiss: vet inte') : null,
+    harAvstand(s.avstand) ? (s.avstand === 'vet-ej' ? 'bärsträcka: vet inte' : `${avstandText(s.avstand)} att bära`) : null,
+    s.framkomlighet || null,
+  ].filter(Boolean)
   return `${label}: ${parts.join(', ')}`
 }
 
@@ -944,15 +1160,28 @@ export const answerLines = (a: Answers, home: Home): string[] => {
   if (a.bohag) L.push(`${BOHAG_LABEL[a.bohag]}, ${home.fromKvm} m²`)
   if (a.flyttDag) L.push(`Flytt ${fmtLongDate(fromIso(a.flyttDag))}`)
   if (a.biytaSvar === 'nej') L.push('Inga utrymmen utöver boarean')
-  a.biytor.forEach((b) => L.push(`${b.typ ? BIYTA_LABEL[b.typ] : 'Utrymme'}${typeof b.kvm === 'number' ? ` ${biytaKvmText(b.kvm)}` : ''}${typeof b.fullt === 'number' ? `, ${fulltText(b.fullt).toLowerCase()}` : ''}`))
+  a.biytor.forEach((b) =>
+    L.push(
+      `${b.typ ? BIYTA_LABEL[b.typ] : 'Utrymme'}${typeof b.kvm === 'number' ? ` ${biytaKvmText(b.kvm)}` : ''}${typeof b.fullt === 'number' ? `, ${fulltText(b.fullt).toLowerCase()}` : ''}`,
+    ),
+  )
   if (a.sakerSvar === 'nej') L.push('Inga tunga eller ömtåliga föremål')
   a.saker.forEach((s) => L.push(`${s.vad || 'Föremål'}${s.vikt ? `, ${s.vikt}` : ''}${s.varde ? `, värde ${s.varde}` : ''}`))
   if (a.utemobler) L.push(a.utemobler === 'ja' ? 'Utemöbler ska med' : 'Inga utemöbler')
   if (a.stad === 'nej') L.push('Ingen flyttstädning')
   if (a.stad === 'ja') {
-    const mer = a.stadYta === 'mer' ? ` + ${a.stadYtor.filter((y) => y.typ).map((y) => `${(y.typ ? BIYTA_LABEL[y.typ] : '').toLowerCase()}${typeof y.kvm === 'number' ? ` ${y.kvm} m²` : ''}`).join(', ') || 'mer'}` : ''
+    const mer =
+      a.stadYta === 'mer'
+        ? ` + ${
+            a.stadYtor
+              .filter((y) => y.typ)
+              .map((y) => `${(y.typ ? BIYTA_LABEL[y.typ] : '').toLowerCase()}${typeof y.kvm === 'number' ? ` ${y.kvm} m²` : ''}`)
+              .join(', ') || 'mer'
+          }`
+        : ''
     L.push(`Flyttstäd${a.stadDag ? ` ${fmtLongDate(fromIso(a.stadDag))}` : ''}: boarean ${home.fromKvm} m²${mer}`)
-    if (a.balkong === 'ja') L.push(`Inglasad balkong${a.balkongStorlek ? `, ${a.balkongStorlek}` : ''}${a.balkongGlas ? `, ${a.balkongGlas === 'hel' ? 'helinglasad' : 'halvinglasad'}` : ''}`)
+    if (a.balkong === 'ja')
+      L.push(`Inglasad balkong${a.balkongStorlek ? `, ${a.balkongStorlek}` : ''}${a.balkongGlas ? `, ${a.balkongGlas === 'hel' ? 'helinglasad' : 'halvinglasad'}` : ''}`)
     const f = (Object.keys(a.fonster) as FonsterTyp[]).map((t) => `${FONSTER_LABEL[t][0].toLowerCase()} ×${a.fonster[t]}`)
     if (f.length) L.push(`Fönster: ${f.join(', ')}`)
     else if (a.fonsterInga) L.push('Inga specialfönster')
@@ -973,7 +1202,9 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => {
           <CheckCircle size={56} />
         </div>
         <h1 className="mt-4 text-[20px] font-bold leading-[26px] text-[var(--color-text-main)]">Tack, allt är sparat</h1>
-        <p className="mx-auto mt-2 max-w-[300px] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Vi kontaktar dig {samtalText(a.samtal)} och har priset klart. Vill du ändra något gör du det på flyttsidan fram till samtalet.</p>
+        <p className="mx-auto mt-2 max-w-[300px] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
+          Vi kontaktar dig {samtalText(a.samtal)} och har priset klart. Vill du ändra något gör du det på flyttsidan fram till samtalet.
+        </p>
         <PrimaryButton className="mt-6" onClick={() => go(0)}>
           Tillbaka till flyttsidan
         </PrimaryButton>
@@ -1013,7 +1244,9 @@ export const SaljareScreen = ({ a, home, update }: ScreenProps) => {
         <div className="mt-4 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4">
           <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">{a.samtal ? `Samtal bokat ${samtalText(a.samtal)}` : 'Inget samtal bokat'}</p>
           <p className="text-[13px] text-[var(--color-inactive-dark)]">
-            Flytthjälp{a.stad === 'ja' ? ' och flyttstäd' : ''}. {a.sent ? 'Alla steg klara.' : left > 0 ? `${left} frågor kvar att ställa i samtalet.` : 'Kunden har inte börjat svara.'} Svaren ligger på Opportunityn, guiden hoppar över det som redan är svarat.
+            Flytthjälp{a.stad === 'ja' ? ' och flyttstäd' : ''}.{' '}
+            {a.sent ? 'Alla steg klara.' : left > 0 ? `${left} frågor kvar att ställa i samtalet.` : 'Kunden har inte börjat svara.'} Svaren ligger på Opportunityn, guiden hoppar
+            över det som redan är svarat.
           </p>
         </div>
         <Eyebrow className="mt-5">Kundens svar</Eyebrow>
@@ -1028,11 +1261,15 @@ export const SaljareScreen = ({ a, home, update }: ScreenProps) => {
           {n > 0 ? ' och berättat om flytten' : ''}. Jag har {a.sent ? 'bara ett par saker att stämma av' : 'några frågor till'}, sedan har jag ett pris till dig.
         </p>
         <Eyebrow className="mt-5">Efter samtalet</Eyebrow>
-        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">När offerten skickas låses kundens svar och kortet på flyttsidan länkar till offerten i stället för till frågorna.</p>
+        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
+          När offerten skickas låses kundens svar och kortet på flyttsidan länkar till offerten i stället för till frågorna.
+        </p>
         <PrimaryButton className="mt-3" tone={a.offertSkickad ? 'outline' : 'navy'} onClick={() => update({ offertSkickad: !a.offertSkickad })}>
           {a.offertSkickad ? 'Ta tillbaka offerten (demo)' : 'Skicka offerten (demo)'}
         </PrimaryButton>
-        <p className="mt-4 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Manuell hantering i Harry låser också kundens svar medan vi väntar på leverantören. Kortet säger att vi prissätter förfrågan.</p>
+        <p className="mt-4 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
+          Manuell hantering i Harry låser också kundens svar medan vi väntar på leverantören. Kortet säger att vi prissätter förfrågan.
+        </p>
         <PrimaryButton className="mt-3" tone={a.manuell ? 'outline' : 'navy'} onClick={() => update({ manuell: !a.manuell })}>
           {a.manuell ? 'Avsluta manuell hantering (demo)' : 'Manuell hantering, väntar på leverantör (demo)'}
         </PrimaryButton>
@@ -1063,7 +1300,9 @@ export const OffertenScreen = ({ a, go, home }: ScreenProps) => {
               <span className="font-bold">3 900 kr</span>
             </div>
           )}
-          <div className="mt-3 border-t border-[var(--color-inactive-main)] pt-3 text-[12px] text-[var(--color-inactive-dark)]">Priser efter RUT. Fast pris, inga dolda avgifter.</div>
+          <div className="mt-3 border-t border-[var(--color-inactive-main)] pt-3 text-[12px] text-[var(--color-inactive-dark)]">
+            Priser efter RUT. Fast pris, inga dolda avgifter.
+          </div>
         </div>
         <PrimaryButton className="mt-5" onClick={() => go(0)}>
           Boka flytten
@@ -1073,7 +1312,9 @@ export const OffertenScreen = ({ a, go, home }: ScreenProps) => {
             Tillbaka till flyttsidan
           </TextLink>
         </div>
-        <p className="mt-5 text-[12px] leading-[16px] text-[var(--color-inactive-dark)]">Platshållare i demon: skarpt visas dagens offertsida. Svaren från frågorna är låsta när offerten är skickad, ändringar görs med säljaren.</p>
+        <p className="mt-5 text-[12px] leading-[16px] text-[var(--color-inactive-dark)]">
+          Platshållare i demon: skarpt visas dagens offertsida. Svaren från frågorna är låsta när offerten är skickad, ändringar görs med säljaren.
+        </p>
       </div>
     </div>
   )
@@ -1095,7 +1336,9 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
               <span className="rounded-full bg-[#DCFCE7] px-2 py-0.5 text-[12px] font-bold text-[#15803D]">{a.offertSkickad ? 'Offert skickad' : 'Offert på väg'}</span>
               <span className="inline-block h-2 w-2 rounded-full bg-[#22C55E]" />
             </div>
-            <p className="text-[13px] text-[#626263] md:text-[15px]">{a.offertSkickad ? 'Skickad till din mejl och här på flyttsidan' : a.manuell ? 'Vi återkommer med pris' : `Vi kontaktar dig ${samtalText(a.samtal)}`}</p>
+            <p className="text-[13px] text-[#626263] md:text-[15px]">
+              {a.offertSkickad ? 'Skickad till din mejl och här på flyttsidan' : a.manuell ? 'Vi återkommer med pris' : `Vi kontaktar dig ${samtalText(a.samtal)}`}
+            </p>
           </div>
         </div>
         <button type="button" aria-label="Ändra tid" onClick={() => go(4)} className="ml-3 mt-1 shrink-0 text-[var(--color-inactive-grey-light)]">
@@ -1105,13 +1348,17 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
       <div className="mt-3 w-full border-t border-[var(--color-inactive-main)] pt-3 md:pl-[52px]">
         {a.offertSkickad ? (
           <>
-            <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">Din offert är klar. Priset gäller i sju dagar, boka direkt eller ring oss om du har frågor.</p>
+            <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">
+              Din offert är klar. Priset gäller i sju dagar, boka direkt eller ring oss om du har frågor.
+            </p>
             <PrimaryButton className="mt-2.5 md:w-[260px]" onClick={() => go(OFFERTEN)}>
               Visa offerten
             </PrimaryButton>
           </>
         ) : a.manuell ? (
-          <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">Vi prissätter din förfrågan just nu. Dina svar är låsta så länge, ring oss om något ändras.</p>
+          <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">
+            Vi prissätter din förfrågan just nu. Dina svar är låsta så länge, ring oss om något ändras.
+          </p>
         ) : a.sent ? (
           <>
             <p className="flex flex-wrap items-center gap-2 text-[13px] text-[var(--color-text-main)] md:text-[15px]">
@@ -1124,7 +1371,11 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
           </>
         ) : (
           <>
-            <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">{n === 0 ? 'Berätta mer om din flytt innan samtalet, så ringer vi med priset klart. Det tar ett par minuter.' : `${cap(ORD[n - 1])} av sex steg sparade. Fortsätt när du vill, allt sparas direkt.`}</p>
+            <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">
+              {n === 0
+                ? 'Berätta mer om din flytt innan samtalet, så ringer vi med priset klart. Det tar ett par minuter.'
+                : `${cap(ORD[n - 1])} av sex steg sparade. Fortsätt när du vill, allt sparas direkt.`}
+            </p>
             <PrimaryButton className="mt-2.5 md:w-[260px]" onClick={() => go(nextUnanswered(a))}>
               {n === 0 ? 'Berätta om flytten' : 'Fortsätt berätta'}
             </PrimaryButton>
