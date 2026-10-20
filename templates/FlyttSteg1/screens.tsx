@@ -39,7 +39,7 @@ import {
   type JaNejVet,
   type Tillval,
 } from './state'
-import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, DayPicker, MeterSlider, RangeSlider, WeekPicker, WindowIcon } from './ui'
+import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, DayPicker, MeterSlider, RangeSlider, Reveal, WeekPicker, WindowIcon } from './ui'
 import { ChevronDown } from './LiveMovePage'
 import { canCallNow, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable } from './datum'
 
@@ -362,6 +362,12 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
   const kvm = s.kvm ?? String(ut ? home.fromKvm : home.toKvm)
   // Byte av bostadstyp nollar det som bara gäller lägenhet. Samma typ igen rör inget.
   const valjTyp = (t: Bostadstyp) => set(t === s.bostadstyp ? {} : { bostadstyp: t, vaning: undefined, vaningFranFlytten: false, hiss: undefined })
+  // Reveal: en fråga i taget inom steget. Nästa visas när den förra är svarad, det förifyllda räknas som svarat.
+  const vaningKlar = !lagenhet || !!s.vaning
+  const hissKlar = !lagenhet || !!s.hiss
+  const visaHiss = lagenhet && vaningKlar
+  const visaAvstand = vaningKlar && hissKlar
+  const visaFramkomlighet = visaAvstand && harAvstand(s.avstand)
   return (
     <Q p={p} idx={ut ? FIRST + 1 : FIRST + 2} title={ut ? `Utflytt från ${nb(home.from)}` : `Inflytt till ${nb(home.to)}`} sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Ändra om något inte stämmer.' : 'Bostadstypen är hämtad från din flytt. Samma frågor för den nya bostaden.'}>
       {edit ? (
@@ -415,23 +421,29 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
               <FloorRow value={s.vaning} onChange={(v) => set({ vaning: v, vaningFranFlytten: false })} more={more} onMore={() => setMore(true)} />
             )}
           </Section>
-          <Section title="Finns det hiss?" sub="Stor hiss rymmer sex personer eller fler.">
-            <ChipRow>
-              {(Object.keys(HISS_LABEL) as Hiss[]).map((h) => (
-                <Chip key={h} selected={s.hiss === h} onClick={() => set({ hiss: h })}>
-                  {HISS_LABEL[h]}
-                </Chip>
-              ))}
-            </ChipRow>
-          </Section>
+          <Reveal show={visaHiss}>
+            <Section title="Finns det hiss?" sub="Stor hiss rymmer sex personer eller fler.">
+              <ChipRow>
+                {(Object.keys(HISS_LABEL) as Hiss[]).map((h) => (
+                  <Chip key={h} selected={s.hiss === h} onClick={() => set({ hiss: h })}>
+                    {HISS_LABEL[h]}
+                  </Chip>
+                ))}
+              </ChipRow>
+            </Section>
+          </Reveal>
         </>
       )}
-      <Section title={ut ? 'Hur långt bär vi till flyttbilen?' : 'Hur långt bär vi från flyttbilen?'} sub={ut ? 'Från dörren till närmaste plats bilen kan stå. Ungefärligt räcker.' : 'Från närmaste plats bilen kan stå till dörren. Ungefärligt räcker.'}>
-        <MeterSlider value={s.avstand} onChange={(v) => set({ avstand: v })} />
-      </Section>
-      <Section title="Hur är framkomligheten?" sub={lagenhet ? 'Innergård, smal trapp, bom eller trång gata. Hoppa över om det är fritt fram.' : 'Grusväg, smal infart, trappor i trädgården. Hoppa över om det är fritt fram.'}>
-        <TextInput value={s.framkomlighet} onChange={(v) => set({ framkomlighet: v })} placeholder={lagenhet ? 'T.ex. innergård, smal trapp' : 'T.ex. grusväg eller smal infart'} label="Framkomlighet" />
-      </Section>
+      <Reveal show={visaAvstand}>
+        <Section title={ut ? 'Hur långt bär vi till flyttbilen?' : 'Hur långt bär vi från flyttbilen?'} sub={ut ? 'Från dörren till närmaste plats bilen kan stå. Ungefärligt räcker.' : 'Från närmaste plats bilen kan stå till dörren. Ungefärligt räcker.'}>
+          <MeterSlider value={s.avstand} onChange={(v) => set({ avstand: v })} />
+        </Section>
+      </Reveal>
+      <Reveal show={visaFramkomlighet}>
+        <Section title="Hur är framkomligheten?" sub={lagenhet ? 'Innergård, smal trapp, bom eller trång gata. Hoppa över om det är fritt fram.' : 'Grusväg, smal infart, trappor i trädgården. Hoppa över om det är fritt fram.'}>
+          <TextInput value={s.framkomlighet} onChange={(v) => set({ framkomlighet: v })} placeholder={lagenhet ? 'T.ex. innergård, smal trapp' : 'T.ex. grusväg eller smal infart'} label="Framkomlighet" />
+        </Section>
+      </Reveal>
     </Q>
   )
 }

@@ -710,3 +710,35 @@ const ChevronDownSmall = () => (
     <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )
+
+/**
+ * Reveal: nästa fråga visas först när den förra är svarad (Nils 20 okt:
+ * luftigare och guidande, något händer efter varje svar). Tonar in och
+ * glider upp, och scrollar sig i bild. Det som redan var svarat vid öppning
+ * visas direkt utan rörelse.
+ */
+export const Reveal = ({ show, children }: { show: boolean; children: ReactNode }) => {
+  const [visible, setVisible] = useState(show)
+  const ref = useRef<HTMLDivElement>(null)
+  const first = useRef(true)
+  useEffect(() => {
+    if (!show) {
+      setVisible(false)
+      first.current = false
+      return
+    }
+    const nyss = !first.current
+    first.current = false
+    const t = requestAnimationFrame(() => {
+      setVisible(true)
+      if (nyss) ref.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    })
+    return () => cancelAnimationFrame(t)
+  }, [show])
+  if (!show) return null
+  return (
+    <div ref={ref} className={clsx('transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none', visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0')}>
+      {children}
+    </div>
+  )
+}
