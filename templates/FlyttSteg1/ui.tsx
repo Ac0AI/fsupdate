@@ -1,17 +1,16 @@
 'use client'
 
-import { Check, ChevronLeft, Minus, Plus, X } from 'lucide-react'
+import { Check, ChevronUp, Minus, Plus, X } from 'lucide-react'
 import clsx from 'clsx'
 import type { ReactNode } from 'react'
 import Button from '@/components/atoms/Button'
 import SiteChip from '@/components/atoms/Chip'
-import Switch from '@/components/atoms/Switch'
-import { TOTAL } from './state'
+import { FLOORS, TOTAL, type FonsterTyp } from './state'
 
 /*
- * Byggstenar för frågeskärmarna, i sajtens tokens och atomer. Upplägget är
- * Nils prototyp: frågan först, full bredd, Fortsätt fast i botten. Marginaler
- * ligger på omslutande div:ar eftersom sajtens reset-css nollar margin på button.
+ * Byggstenar för arket och frågestegen, i sajtens tokens och atomer. Frågan
+ * först, full bredd, Fortsätt fast i botten av arket. Marginaler ligger på
+ * omslutande div:ar eftersom sajtens reset-css nollar margin på button.
  */
 
 const noop = () => undefined
@@ -25,15 +24,17 @@ export const Eyebrow = ({ children, className }: { children: ReactNode; classNam
 export const PrimaryButton = ({
   children,
   onClick,
-  tone = 'orange',
+  tone = 'navy',
   disabled,
   className,
+  rounded,
 }: {
   children: string
   onClick?: () => void
   tone?: 'orange' | 'navy' | 'outline' | 'ghost'
   disabled?: boolean
   className?: string
+  rounded?: boolean
 }) => (
   <div className={clsx('w-full', className)}>
     <Button
@@ -43,13 +44,13 @@ export const PrimaryButton = ({
       disabled={disabled}
       onClick={onClick ?? noop}
       text={children}
-      className="min-h-[52px]"
+      className={clsx('min-h-[48px]', rounded && '!rounded-xl', disabled && '!border-[var(--color-inactive-main)] !bg-[var(--color-inactive-main)] !text-[var(--color-inactive-grey-light)] !opacity-100')}
     />
   </div>
 )
 
-export const TextLink = ({ children, onClick, className }: { children: ReactNode; onClick?: () => void; className?: string }) => (
-  <button type="button" onClick={onClick} className={clsx('text-[14px] text-[var(--color-secondary-main)] underline underline-offset-4', className)}>
+export const TextLink = ({ children, onClick, className, muted }: { children: ReactNode; onClick?: () => void; className?: string; muted?: boolean }) => (
+  <button type="button" onClick={onClick} className={clsx('text-[14px] font-bold', muted ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-secondary-main)]', className)}>
     {children}
   </button>
 )
@@ -62,7 +63,7 @@ export const Chip = ({ children, selected, onClick, small }: { children: ReactNo
 
 export const ChipRow = ({ children }: { children: ReactNode }) => <div className="flex flex-wrap gap-2">{children}</div>
 
-/** Två eller tre val som delar bredden, som Nils Ja/Nej-knappar. */
+/** Två eller tre val som delar bredden. */
 export const ChoiceRow = <T extends string>({ options, value, onChange }: { options: [T, string][]; value?: T; onChange: (v: T) => void }) => (
   <div className="flex gap-2">
     {options.map(([v, label]) => (
@@ -82,22 +83,12 @@ export const ChoiceRow = <T extends string>({ options, value, onChange }: { opti
   </div>
 )
 
-export const SwitchRow = ({ label, hint, on, onChange }: { label: string; hint?: string; on: boolean; onChange: (v: boolean) => void }) => (
-  <button type="button" role="switch" aria-checked={on} onClick={() => onChange(!on)} className="flex w-full items-center justify-between gap-4 border-t border-[var(--color-inactive-main)] py-3 text-left first:border-t-0">
-    <span className="min-w-0">
-      <span className="block text-[15px] leading-[21px] text-[var(--color-text-main)]">{label}</span>
-      {hint && <span className="block text-[13px] text-[var(--color-inactive-dark)]">{hint}</span>}
-    </span>
-    <span className="flex shrink-0 items-center gap-2 text-[13px] text-[var(--color-inactive-dark)]">
-      {on ? 'Ja' : 'Nej'}
-      <Switch on={on} />
-    </span>
-  </button>
-)
-
-export const Section = ({ title, sub, children, className }: { title: string; sub?: string; children: ReactNode; className?: string }) => (
+export const Section = ({ title, sub, children, className, badge }: { title: string; sub?: string; children: ReactNode; className?: string; badge?: ReactNode }) => (
   <section className={className ?? 'mt-7'}>
-    <h2 className="text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">{title}</h2>
+    <div className="flex items-start justify-between gap-3">
+      <h2 className="text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">{title}</h2>
+      {badge}
+    </div>
     {sub && <p className="mt-0.5 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">{sub}</p>}
     <div className="mt-3">{children}</div>
   </section>
@@ -117,7 +108,34 @@ export const SubCard = ({ children, className }: { children: ReactNode; classNam
 
 export const InfoNote = ({ children }: { children: ReactNode }) => <p className="mt-3 rounded-[var(--radius-main)] bg-[var(--color-secondary-extra-extra-light)] px-4 py-3 text-[14px] leading-[20px] text-[var(--color-text-main)]">{children}</p>
 
-/** Streckad "Lägg till"-ruta, som Nils. */
+/** Grön pill: "Från din flytt", "Steg 1 sparat". */
+export const GreenBadge = ({ children }: { children: ReactNode }) => (
+  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#DCFCE7] px-2 py-1 text-[11px] font-bold leading-[14px] text-[#15803D]">
+    <Check size={12} strokeWidth={3} />
+    {children}
+  </span>
+)
+
+/** Rad med hämtad uppgift och Ändra, som adresserna och bostadstypen. */
+export const InfoRow = ({ label, value, action, onAction, first }: { label: string; value: string; action?: string; onAction?: () => void; first?: boolean }) => (
+  <div className={clsx('flex items-center justify-between gap-3 px-3.5 py-3', !first && 'border-t border-[var(--color-inactive-main)]')}>
+    <span className="min-w-0">
+      <span className="block text-[12px] leading-4 text-[var(--color-inactive-dark)]">{label}</span>
+      <span className="block truncate text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{value}</span>
+    </span>
+    {action && (
+      <TextLink onClick={onAction} muted={!onAction}>
+        {action}
+      </TextLink>
+    )}
+  </div>
+)
+
+export const InfoCard = ({ children, className }: { children: ReactNode; className?: string }) => (
+  <div className={clsx('rounded-[var(--radius-main)] border border-[var(--color-inactive-main)] bg-[var(--color-secondary-extra-extra-light)]', className)}>{children}</div>
+)
+
+/** Streckad "Lägg till"-ruta. */
 export const AddCard = ({ label, hint, onClick }: { label: string; hint: string; onClick: () => void }) => (
   <button type="button" onClick={onClick} className="flex w-full items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] border-dashed border-[var(--color-inactive-grey-light)] bg-white p-3 text-left">
     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-secondary-extra-extra-light)] text-[var(--color-secondary-main)]">
@@ -134,14 +152,16 @@ export const ItemCard = ({ title, onRemove, children }: { title: string; onRemov
   <div className="rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-secondary-main)] bg-white p-4">
     <div className="flex items-center justify-between gap-3">
       <span className="truncate text-[15px] font-bold text-[var(--color-secondary-main)]">{title}</span>
-      <TextLink onClick={onRemove}>Ta bort</TextLink>
+      <TextLink onClick={onRemove} muted>
+        Ta bort
+      </TextLink>
     </div>
     <div className="mt-3">{children}</div>
   </div>
 )
 
 export const MoreLink = ({ children, onClick }: { children: ReactNode; onClick: () => void }) => (
-  <button type="button" onClick={onClick} className="flex items-center gap-2 py-1 text-[14px] text-[var(--color-secondary-main)] underline underline-offset-4">
+  <button type="button" onClick={onClick} className="flex items-center gap-1 py-1 text-[14px] font-bold text-[var(--color-secondary-main)]">
     <Plus size={16} className="shrink-0" />
     {children}
   </button>
@@ -159,9 +179,10 @@ export const TextField = ({ value, onChange, placeholder, rows = 3, label }: { v
   />
 )
 
-export const TextInput = ({ value, onChange, placeholder, label }: { value: string; onChange: (v: string) => void; placeholder: string; label: string }) => (
+export const TextInput = ({ value, onChange, placeholder, label, type = 'text' }: { value: string; onChange: (v: string) => void; placeholder: string; label: string; type?: 'text' | 'tel' | 'number' }) => (
   <input
-    type="text"
+    type={type}
+    inputMode={type === 'number' ? 'numeric' : type === 'tel' ? 'tel' : undefined}
     value={value}
     onChange={(e) => onChange(e.target.value)}
     placeholder={placeholder}
@@ -172,11 +193,11 @@ export const TextInput = ({ value, onChange, placeholder, label }: { value: stri
 
 export const Stepper = ({ value, onChange, min = 1, max = 99 }: { value: number; onChange: (v: number) => void; min?: number; max?: number }) => (
   <div className="flex items-center gap-1">
-    <button type="button" aria-label="Färre" onClick={() => onChange(Math.max(min, value - 1))} className="flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-[var(--color-inactive-main)] text-[var(--color-secondary-main)]">
+    <button type="button" aria-label="Färre" onClick={() => onChange(Math.max(min, value - 1))} className="flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-[var(--color-inactive-main)] text-[var(--color-secondary-main)]">
       <Minus size={16} />
     </button>
     <span className="w-8 text-center text-[16px] font-bold text-[var(--color-text-main)]">{value}</span>
-    <button type="button" aria-label="Fler" onClick={() => onChange(Math.min(max, value + 1))} className="flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-[var(--color-inactive-main)] text-[var(--color-secondary-main)]">
+    <button type="button" aria-label="Fler" onClick={() => onChange(Math.min(max, value + 1))} className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-secondary-main)] text-white">
       <Plus size={16} />
     </button>
   </div>
@@ -188,69 +209,129 @@ export const CheckTile = ({ label, hint, selected, onClick, icon, className }: {
     type="button"
     aria-pressed={selected}
     onClick={onClick}
-    className={clsx('flex min-h-[64px] items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] p-3 text-left transition-colors', selected ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)] bg-white', className)}
+    className={clsx('flex min-h-[60px] items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] p-3 text-left transition-colors', selected ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)] bg-white', className)}
   >
     {icon ? (
-      <span className={clsx('shrink-0', selected ? 'text-[var(--color-secondary-main)]' : 'text-[var(--color-inactive-dark)]')}>{icon}</span>
+      <span className="shrink-0 text-[var(--color-secondary-main)]">{icon}</span>
     ) : (
       <span className={clsx('flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-[1.5px]', selected ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] text-white' : 'border-[var(--color-inactive-grey-light)]')}>{selected && <Check size={14} strokeWidth={3} />}</span>
     )}
     <span className="min-w-0">
-      <span className="block text-[15px] font-bold leading-5 text-[var(--color-secondary-main)]">{label}</span>
+      <span className="block text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{label}</span>
       {hint && <span className="block text-[12px] leading-4 text-[var(--color-inactive-dark)]">{hint}</span>}
     </span>
   </button>
 )
 
-/** Envalskort med ikon, som Lite/Normalt/Mycket. */
+/** Envalskort, som Lite/Normalt/Mycket. */
 export const Tile = ({ label, hint, selected, onClick, icon }: { label: string; hint?: string; selected: boolean; onClick: () => void; icon?: ReactNode }) => (
   <button
     type="button"
     role="radio"
     aria-checked={selected}
     onClick={onClick}
-    className={clsx('flex min-h-[96px] flex-col items-center justify-center gap-1 rounded-[var(--radius-main)] border-[1.5px] px-2 py-4 text-center transition-colors', selected ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)] bg-white')}
+    className={clsx('flex min-h-[72px] flex-col items-center justify-center gap-0.5 rounded-[var(--radius-main)] border-[1.5px] px-2 py-3 text-center transition-colors', selected ? 'border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)] bg-white')}
   >
     {icon && <span className="text-[var(--color-secondary-main)]">{icon}</span>}
-    <span className="mt-1 text-[15px] font-bold leading-5 text-[var(--color-secondary-main)]">{label}</span>
+    <span className="text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{label}</span>
     {hint && <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">{hint}</span>}
   </button>
 )
 
-export const GreenHead = ({ title, sub }: { title: string; sub: string }) => (
-  <div className="bg-[var(--color-primary-dark)] px-5 pb-7 pt-8 text-white">
-    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary-dark)]">
-      <Check size={20} strokeWidth={3} />
-    </span>
-    <h1 className="mt-5 text-[28px] font-bold leading-[34px] text-white">{title}</h1>
-    <p className="mt-3 text-[16px] leading-[24px] text-white/90">{sub}</p>
-  </div>
-)
-
-export const Timeline = ({ rows }: { rows: { when: string; what: string }[] }) => (
-  <div className="px-5">
-    <h2 className="text-[16px] font-bold text-[var(--color-text-main)]">Så här blir det nu</h2>
-    <dl className="mt-2 grid grid-cols-[96px_1fr] gap-x-3 gap-y-2">
-      {rows.map((r) => (
-        <div key={r.when} className="contents">
-          <dt className="text-[14px] font-bold leading-[20px] text-[var(--color-primary-dark)]">{r.when}</dt>
-          <dd className="text-[15px] leading-[21px] text-[var(--color-text-main)]">{r.what}</dd>
-        </div>
+/** En rad BV till 7, exakt siffra som Harry lagrar. Fler öppnar ett sifferfält. */
+export const FloorRow = ({ value, onChange, more, onMore }: { value?: string; onChange: (v: string) => void; more: boolean; onMore: () => void }) => (
+  <div>
+    <div className="flex h-[46px] w-full overflow-clip rounded-xl border-[1.5px] border-[var(--color-inactive-main)] bg-white" role="radiogroup" aria-label="Våningsplan">
+      {FLOORS.map((f, i) => (
+        <button
+          key={f}
+          type="button"
+          role="radio"
+          aria-checked={value === f}
+          onClick={() => onChange(f)}
+          className={clsx('flex h-full min-w-0 flex-1 items-center justify-center text-[15px] transition-colors', i > 0 && 'border-l border-[var(--color-inactive-main)]', value === f ? 'bg-[var(--color-secondary-main)] font-bold text-white' : 'text-[var(--color-text-main)]')}
+        >
+          {f}
+        </button>
       ))}
-    </dl>
+    </div>
+    <div className="mt-2.5 flex items-center justify-between">
+      <TextLink onClick={onMore} className="text-[13px]">
+        {more ? 'Tillbaka till raden' : 'Högre upp eller källare?'}
+      </TextLink>
+      <button type="button" aria-pressed={value === 'vet-ej'} onClick={() => onChange('vet-ej')} className={clsx('text-[13px] font-bold', value === 'vet-ej' ? 'text-[var(--color-secondary-main)] underline underline-offset-4' : 'text-[var(--color-inactive-dark)]')}>
+        Vet inte
+      </button>
+    </div>
   </div>
 )
 
-export const ContactBox = () => (
-  <div className="mx-5 rounded-[var(--radius-main)] bg-[var(--color-secondary-extra-extra-light)] px-4 py-3">
-    <p className="text-[15px] font-bold text-[var(--color-text-main)]">Vi finns med hela vägen</p>
-    <p className="text-[13px] text-[var(--color-inactive-dark)]">Dyker frågor upp är det bara att ringa eller skriva till oss.</p>
+/** Streckikoner för fönstertyperna, de enda bilderna i stegen. */
+export const WindowIcon = ({ type }: { type: FonsterTyp }) => {
+  const s = { stroke: 'currentColor', strokeWidth: 1.75, fill: 'none' } as const
+  return (
+    <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden>
+      {type === 'fyrsidiga' && (
+        <>
+          <rect x="4" y="5" width="24" height="22" rx="1.5" {...s} />
+          <line x1="16" y1="5" x2="16" y2="27" {...s} />
+          <rect x="7.5" y="8.5" width="5" height="15" {...s} strokeWidth={1.5} />
+          <rect x="19.5" y="8.5" width="5" height="15" {...s} strokeWidth={1.5} />
+        </>
+      )}
+      {type === 'sprojsade' && (
+        <>
+          <rect x="4" y="5" width="24" height="22" rx="1.5" {...s} />
+          <line x1="12" y1="5" x2="12" y2="27" {...s} strokeWidth={1.5} />
+          <line x1="20" y1="5" x2="20" y2="27" {...s} strokeWidth={1.5} />
+          <line x1="4" y1="12.3" x2="28" y2="12.3" {...s} strokeWidth={1.5} />
+          <line x1="4" y1="19.7" x2="28" y2="19.7" {...s} strokeWidth={1.5} />
+        </>
+      )}
+      {type === 'panorama' && (
+        <>
+          <rect x="2" y="8" width="28" height="16" rx="1.5" {...s} />
+          <path d="M5 19 L11 14 L15 17 L21 12 L27 16" {...s} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+          <line x1="8" y1="27" x2="24" y2="27" {...s} strokeWidth={1.5} strokeLinecap="round" />
+        </>
+      )}
+      {type === 'svaratkomliga' && (
+        <>
+          <rect x="10" y="3" width="12" height="10" rx="1.5" {...s} />
+          <line x1="16" y1="3" x2="16" y2="13" {...s} strokeWidth={1.5} />
+          <line x1="16" y1="29" x2="16" y2="18" {...s} strokeLinecap="round" />
+          <path d="M12 22 L16 18 L20 22" {...s} strokeLinecap="round" strokeLinejoin="round" />
+          <line x1="5" y1="29" x2="27" y2="29" {...s} strokeWidth={1.5} strokeLinecap="round" />
+        </>
+      )}
+    </svg>
+  )
+}
+
+export const CheckCircle = ({ size = 40 }: { size?: number }) => (
+  <span className="flex shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#16A34A]" style={{ width: size, height: size }}>
+    <Check size={size * 0.5} strokeWidth={3} />
+  </span>
+)
+
+/** Rubrikraden i arket efter Begär offert: bock, rubrik och pilen som stänger. */
+export const StatusHead = ({ title, onClose }: { title: string; onClose: () => void }) => (
+  <div className="flex items-center justify-between">
+    <span className="flex items-center gap-3">
+      <CheckCircle />
+      <span className="text-[15px] font-bold text-[var(--color-text-main)]">{title}</span>
+    </span>
+    <button type="button" onClick={onClose} aria-label="Stäng" className="flex h-11 w-11 items-center justify-center text-[var(--color-inactive-dark)]">
+      <ChevronUp size={22} />
+    </button>
   </div>
 )
+
+export const SheetHandle = () => <span className="mx-auto mb-2 mt-3 block h-1 w-10 shrink-0 rounded-full bg-[var(--color-inactive-grey-light)]/60" />
 
 /**
- * Ramen runt varje frågeskärm: tillbaka, steg x av 6, krysset, frågan, och
- * Fortsätt fast i botten. Allt är frivilligt, så Fortsätt är aldrig låst.
+ * Ramen runt varje frågesteg: steg x av 6, Sparat-bocken, krysset, frågan,
+ * och Fortsätt fast i botten. Fortsätt tänds när stegets knappfrågor har svar.
  */
 export const Frame = ({
   step,
@@ -258,10 +339,10 @@ export const Frame = ({
   sub,
   children,
   cta = 'Fortsätt',
-  ctaTone = 'navy',
-  foot = 'Allt sparas direkt. Hoppa över det du inte vet.',
+  left = 0,
+  foot = 'Allt sparas direkt. Vet du inte, välj Vet inte.',
+  savedBadge,
   onNext,
-  onBack,
   onClose,
 }: {
   step: number
@@ -269,39 +350,44 @@ export const Frame = ({
   sub?: string
   children: ReactNode
   cta?: string
-  ctaTone?: 'navy' | 'orange'
+  left?: number
   foot?: string
+  savedBadge?: string | null
   onNext: () => void
-  onBack: () => void
   onClose: () => void
 }) => (
-  <div className="flex flex-1 flex-col bg-white">
-    <div className="flex items-center justify-between px-2 pt-1">
-      <button type="button" onClick={onBack} aria-label="Tillbaka" className="flex h-11 w-11 items-center justify-center rounded-full text-[var(--color-secondary-main)]">
-        <ChevronLeft size={24} />
-      </button>
+  <div className="flex h-full min-h-0 flex-1 flex-col bg-white">
+    <div className="flex items-center justify-between pl-4 pr-1">
       <span className="text-[13px] font-bold text-[var(--color-text-main)]">
         Steg {step + 1} av {TOTAL} · {STEG[step]}
       </span>
-      <button type="button" onClick={onClose} aria-label="Stäng" className="flex h-11 w-11 items-center justify-center rounded-full text-[var(--color-secondary-main)]">
-        <X size={22} />
-      </button>
+      <span className="flex items-center gap-2">
+        {savedBadge && <GreenBadge>{savedBadge}</GreenBadge>}
+        <button type="button" onClick={onClose} aria-label="Spara och stäng" className="flex h-11 w-11 items-center justify-center rounded-full text-[var(--color-inactive-dark)]">
+          <X size={20} />
+        </button>
+      </span>
     </div>
-    <ol className="flex gap-1.5 px-4 pt-1" aria-hidden>
+    <ol className="flex gap-1 px-4" aria-hidden>
       {STEG.map((s, i) => (
         <li key={s} className={clsx('h-1 flex-1 rounded-full', i < step ? 'bg-[var(--color-primary-main)]' : i === step ? 'bg-[var(--color-secondary-main)]' : 'bg-[var(--color-inactive-main)]')} />
       ))}
     </ol>
-    <div className="flex-1 px-4 pb-8 pt-6">
-      <h1 className="text-[24px] font-bold leading-[30px] text-[var(--color-text-main)]">{title}</h1>
-      {sub && <p className="mt-1 text-[15px] leading-[21px] text-[var(--color-inactive-dark)]">{sub}</p>}
+    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-5">
+      <h1 className="text-[22px] font-bold leading-[28px] text-[var(--color-text-main)]">{title}</h1>
+      {sub && <p className="mt-1 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">{sub}</p>}
       {children}
     </div>
-    <div className="sticky bottom-0 z-10 border-t border-[var(--color-inactive-main)] bg-white px-4 pb-4 pt-3">
-      <PrimaryButton tone={ctaTone} onClick={onNext}>
+    <div className="shrink-0 border-t border-[var(--color-inactive-main)] bg-white px-4 pb-4 pt-3">
+      <PrimaryButton onClick={onNext} disabled={left > 0}>
         {cta}
       </PrimaryButton>
-      <p className="mt-2 text-center text-[12px] text-[var(--color-inactive-dark)]">{foot}</p>
+      {left > 0 && (
+        <p className="mt-2 text-center text-[12px] font-bold text-[var(--color-secondary-main)]">
+          {left} {left === 1 ? 'fråga' : 'frågor'} kvar
+        </p>
+      )}
+      <p className={clsx('text-center text-[12px] text-[var(--color-inactive-dark)]', left > 0 ? 'mt-0.5' : 'mt-2')}>{foot}</p>
     </div>
   </div>
 )
