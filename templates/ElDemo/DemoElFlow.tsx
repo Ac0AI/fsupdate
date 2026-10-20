@@ -30,7 +30,7 @@ const initial = (oldAddress: string): ElState => ({
   touched: false,
   accepted: false,
   showMissing: false,
-  specOpen: true,
+  specOpen: false,
   dateHelp: false,
   aptHelp: false,
 })
