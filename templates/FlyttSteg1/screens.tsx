@@ -258,10 +258,10 @@ export const BokatScreen = ({ a, go }: ScreenProps) => (
         <p className="text-[14px] font-bold leading-[19px] text-[var(--color-text-main)]">Vi ringer dig {samtalText(a.samtal)}</p>
       </InfoCard>
       <div className="mt-4 rounded-xl border border-[var(--color-inactive-main)] bg-[var(--color-secondary-extra-extra-light)] px-4 pb-4 pt-6 text-center">
-        <h2 className="text-[18px] font-bold leading-6 text-[var(--color-text-main)]">Svara på frågorna nu?</h2>
-        <p className="mx-auto mt-2 max-w-[300px] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Då har vi priset klart när vi ringer. Det tar ett par minuter och allt sparas direkt, du kan sluta när du vill.</p>
+        <h2 className="text-[18px] font-bold leading-6 text-[var(--color-text-main)]">Berätta mer om din flytt</h2>
+        <p className="mx-auto mt-2 max-w-[300px] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Då vet vi hur det ser ut hos dig och ringer med priset klart. Det tar ett par minuter, allt sparas direkt och du kan sluta när du vill.</p>
         <PrimaryButton className="mt-5" rounded onClick={() => go(nextUnanswered(a))}>
-          Svara på frågorna
+          Berätta om flytten
         </PrimaryButton>
         <div className="mt-4">
           <TextLink muted onClick={() => go(0)}>
@@ -815,9 +815,9 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
           </>
         ) : (
           <>
-            <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">{n === 0 ? 'Svara på frågorna innan samtalet, så har vi priset klart när vi ringer. Det tar ett par minuter.' : `${cap(ORD[n - 1])} av sex steg sparade. Fortsätt när du vill, allt sparas direkt.`}</p>
+            <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">{n === 0 ? 'Berätta mer om din flytt innan samtalet, så ringer vi med priset klart. Det tar ett par minuter.' : `${cap(ORD[n - 1])} av sex steg sparade. Fortsätt när du vill, allt sparas direkt.`}</p>
             <PrimaryButton className="mt-2.5 md:w-[260px]" onClick={() => go(nextUnanswered(a))}>
-              {n === 0 ? 'Svara på frågorna' : 'Fortsätt svara'}
+              {n === 0 ? 'Berätta om flytten' : 'Fortsätt berätta'}
             </PrimaryButton>
           </>
         )}
