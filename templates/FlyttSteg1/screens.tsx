@@ -40,7 +40,9 @@ import {
   type Tillval,
 } from './state'
 import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, DayPicker, MeterSlider, RangeSlider, Reveal, WeekPicker, WindowIcon } from './ui'
-import { ChevronDown } from './LiveMovePage'
+import { useDemoUser } from '@/common/data/useDemoUser'
+import { writeDemoSession } from '@/common/data/demoPersona'
+import { AddressForm, ChevronDown } from './LiveMovePage'
 import { canCallNow, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable } from './datum'
 
 export type Home = { from: string; to: string; fromKvm: number; toKvm: number; moveDay: string; moveDayLong: string; moveDateFull: string; moveDateIso: string; cleanDayLong: string; firstName: string }
@@ -313,11 +315,24 @@ const BIYTA_IKON: Record<BiytaTyp, React.ReactNode> = {
 /* 5 · Adresser */
 export const AdresserScreen = (p: ScreenProps) => {
   const { a, update, home } = p
+  const move = useDemoUser().currentMove
+  const [andra, setAndra] = useState<'fran' | 'till' | null>(null)
   const setStopp = (i: number, v: string) => update((prev) => ({ stopp: prev.stopp.map((s, j) => (j === i ? v : s)) }))
   return (
     <Q p={p} idx={FIRST} title="Stämmer adresserna?" sub="Hämtade från din flytt. Ändra om något inte stämmer.">
       <InfoCard className="mt-5">
-        <Row label="Från" value={`${home.from}, Uppsala`} action="Ändra" first />
+        <Row label="Från" value={`${home.from}, ${move.fromAddress.city}`} action={andra === 'fran' ? undefined : 'Ändra'} onAction={() => setAndra('fran')} first />
+        {andra === 'fran' && (
+          <div className="border-t border-[var(--color-inactive-main)] px-3.5 py-3">
+            <AddressForm
+              address={move.fromAddress}
+              onSave={(adr) => {
+                writeDemoSession({ fromAddress: adr })
+                setAndra(null)
+              }}
+            />
+          </div>
+        )}
         {a.stopp.map((s, i) => (
           <div key={i} className="border-t border-[var(--color-inactive-main)] px-3.5 py-3">
             <div className="flex items-center justify-between">
@@ -331,7 +346,18 @@ export const AdresserScreen = (p: ScreenProps) => {
             </div>
           </div>
         ))}
-        <Row label="Till" value={`${home.to}, Uppsala`} action="Ändra" />
+        <Row label="Till" value={`${home.to}, ${move.toAddress.city}`} action={andra === 'till' ? undefined : 'Ändra'} onAction={() => setAndra('till')} />
+        {andra === 'till' && (
+          <div className="border-t border-[var(--color-inactive-main)] px-3.5 py-3">
+            <AddressForm
+              address={move.toAddress}
+              onSave={(adr) => {
+                writeDemoSession({ toAddress: adr })
+                setAndra(null)
+              }}
+            />
+          </div>
+        )}
       </InfoCard>
       <div className="mt-3">
         <MoreLink onClick={() => update((prev) => ({ stopp: [...prev.stopp, ''] }))}>{a.stopp.length ? 'Lägg till ett stopp till' : 'Lägg till ett stopp på vägen'}</MoreLink>

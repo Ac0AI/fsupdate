@@ -79,6 +79,8 @@ const DemoFlyttFlow = () => {
   const { isTabletPortraitOrGreater: desktop } = useResponsive()
   const [savedBadge, setSavedBadge] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
+  /* Mobil helskärm: panelen följer den synliga vyn så att iOS-tangentbordet inte skjuter upp sidan bakom (Nils 20 okt). */
+  const [vy, setVy] = useState<{ top: number; height: number } | null>(null)
   const badgeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const step = Math.min(LAST, Math.max(0, Number(search.get('s') ?? 0) || 0))
@@ -99,6 +101,28 @@ const DemoFlyttFlow = () => {
     if (inline) document.getElementById('flytt-inline')?.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior })
     else if (!inSheet) window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
   }, [step, inline, inSheet])
+
+  useEffect(() => {
+    if (!helskarm) return
+    const v = window.visualViewport
+    const html = document.documentElement
+    const forra = html.style.overflow
+    html.style.overflow = 'hidden'
+    if (!v) return () => void (html.style.overflow = forra)
+    const upd = () => setVy({ top: v.offsetTop, height: v.height })
+    upd()
+    v.addEventListener('resize', upd)
+    v.addEventListener('scroll', upd)
+    return () => {
+      v.removeEventListener('resize', upd)
+      v.removeEventListener('scroll', upd)
+      html.style.overflow = forra
+      setVy(null)
+    }
+  }, [helskarm])
+  /* Tangentbordet uppe: visuella vyn är klart lägre än fönstret. Då täcker panelen exakt det som syns. */
+  const tangentbord = helskarm && vy && vy.height < window.innerHeight - 150
+  const panelStyle = tangentbord ? { top: vy.top, height: vy.height, bottom: 'auto' } : undefined
 
   const go = useCallback(
     (s: number) => {
@@ -176,7 +200,7 @@ const DemoFlyttFlow = () => {
             mounted &&
             (!desktop || dialog) &&
             createPortal(
-              <div className={clsx('fixed inset-x-0 bottom-0 z-50 flex flex-col', helskarm ? 'top-[52px]' : 'top-0', dialog ? 'items-center justify-center p-6' : 'justify-end')} role="dialog" aria-modal>
+              <div className={clsx('fixed inset-x-0 bottom-0 z-50 flex flex-col', helskarm ? 'top-[52px]' : 'top-0', dialog ? 'items-center justify-center p-6' : 'justify-end')} style={panelStyle} role="dialog" aria-modal>
                 {!helskarm && <button type="button" aria-label="Stäng" className={clsx('absolute inset-0', dialog ? 'bg-black/40' : 'bg-black/30')} onClick={() => go(0)} />}
                 <div className={clsx('relative flex w-full flex-col overflow-clip bg-white', dialog ? 'max-h-[88dvh] max-w-[840px] rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.25)]' : helskarm ? 'h-full' : 'mx-auto max-h-[90dvh] max-w-[430px] rounded-t-[20px] shadow-[0_-4px_24px_rgba(0,0,0,0.15)]')}>{screen}</div>
               </div>,

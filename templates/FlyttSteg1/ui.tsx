@@ -445,7 +445,7 @@ export const Frame = ({
         <li key={s} className={clsx('h-1 flex-1 rounded-full', i < step ? 'bg-[var(--color-primary-main)]' : i === step ? 'bg-[var(--color-secondary-main)]' : 'bg-[var(--color-inactive-main)]')} />
       ))}
     </ol>
-    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-4 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4">
+    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-4 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4">
       <nav className="hidden md:sticky md:top-0 md:block" aria-label="Steg">
         <ol className="flex flex-col gap-1">
           {STEG.map((s, i) => {
@@ -745,19 +745,27 @@ const ChevronDownSmall = () => (
  */
 export const Reveal = ({ show, children }: { show: boolean; children: ReactNode }) => {
   const [visible, setVisible] = useState(show)
-  // Tonar in nästa fråga under den förra. Ingen scroll: på mobil hoppade sidan under tummen när reglaget
-  // fällde ut Framkomlighet, och det såg ut som att steget kollapsade (Nils 20 okt).
+  const ref = useRef<HTMLDivElement>(null)
+  // Tonar in nästa fråga under den förra. När den just dykt upp (dold -> visad, inte vid öppning) scrollas den
+  // till mitten en halv sekund senare, så att det inte rycker under tummen på ett reglage (Nils 20 okt: centrera nästa fråga).
+  const forra = useRef<boolean | null>(null)
   useEffect(() => {
+    const nyss = forra.current === false && show
+    forra.current = show
     if (!show) {
       setVisible(false)
       return
     }
-    const t = requestAnimationFrame(() => setVisible(true))
-    return () => cancelAnimationFrame(t)
+    const raf = requestAnimationFrame(() => setVisible(true))
+    const t = nyss ? window.setTimeout(() => ref.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 450) : null
+    return () => {
+      cancelAnimationFrame(raf)
+      if (t) window.clearTimeout(t)
+    }
   }, [show])
   if (!show) return null
   return (
-    <div className={clsx('transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none', visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0')}>
+    <div ref={ref} className={clsx('transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none', visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0')}>
       {children}
     </div>
   )

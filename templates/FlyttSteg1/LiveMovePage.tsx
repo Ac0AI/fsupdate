@@ -70,7 +70,7 @@ const SaveButton = ({ onClick }: { onClick: () => void }) => (
 )
 
 /* Det utfällda formuläret under Från och Till, som live: vitt kort med adressen och, för Från, boarean. */
-const AddressForm = ({ address, kvm, onSave }: { address: DemoAddress; kvm?: number; onSave: (a: DemoAddress, kvm?: number) => void }) => {
+export const AddressForm = ({ address, kvm, onSave }: { address: DemoAddress; kvm?: number; onSave: (a: DemoAddress, kvm?: number) => void }) => {
   const [street, setStreet] = useState(address.street)
   const [zip, setZip] = useState(address.zip)
   const [city, setCity] = useState(address.city)
