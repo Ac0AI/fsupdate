@@ -227,7 +227,7 @@ const Compare = ({ s, set }: ScreenProps) => {
             <span className="flex min-w-0 flex-1 flex-col gap-[6px]">
               <Logo src={o.logo} alt={o.name} className="h-6 w-[100px]" />
               <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">{o.compareSub}</span>
-              <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">Jämförpris {formatOre(comparePrice(o, compareLevel(s.kwh)))} öre/kWh</span>
+              <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">Jämförpris {`${formatOre(comparePrice(o, compareLevel(s.kwh)))}\u00a0öre/kWh`}</span>
             </span>
             <Price value={priceFor(o, s.kwh)} size="row" tone={o.hasDiscount ? 'mint' : 'navy'} />
             <Radio on={on} />
