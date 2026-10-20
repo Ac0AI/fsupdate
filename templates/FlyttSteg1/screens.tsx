@@ -20,6 +20,7 @@ import {
   VARDE,
   VIKT,
   answeredCount,
+  answeredQuestions,
   newId,
   questionsLeft,
   samtalText,
@@ -34,9 +35,10 @@ import {
   type JaNejVet,
   type Tillval,
 } from './state'
-import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, WindowIcon } from './ui'
+import { AddCard, CheckCircle, CheckTile, Chip, ChipRow, ChoiceRow, Eyebrow, Field, FloorRow, Frame, GreenBadge, InfoCard, InfoNote, InfoRow as Row, ItemCard, MoreLink, PrimaryButton, STEG, Section, SheetHandle, StatusHead, Stepper, SubCard, TextField, TextInput, TextLink, Tile, WindowIcon } from './ui'
+import { ChevronDown } from './LiveMovePage'
 
-export type Home = { from: string; to: string; fromKvm: number; toKvm: number; moveDay: string; moveDayLong: string; cleanDayLong: string; firstName: string }
+export type Home = { from: string; to: string; fromKvm: number; toKvm: number; moveDay: string; moveDayLong: string; moveDateFull: string; cleanDayLong: string; firstName: string }
 
 export type ScreenProps = {
   a: Answers
@@ -57,7 +59,7 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 /* Fast mellanslag före sista ordet, så att husnumret inte hamnar ensamt på en rad. */
 const nb = (s: string) => s.replace(/ (\S+)$/, ' $1')
 
-const nextUnanswered = (a: Answers) => {
+export const nextUnanswered = (a: Answers) => {
   const i = questionsLeft(a).findIndex((x) => x > 0)
   return i === -1 ? FIRST : FIRST + i
 }
@@ -75,10 +77,11 @@ const nextDayShort = () => {
   return new Intl.DateTimeFormat('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' }).format(d).replace('.', '')
 }
 
+/* Arket på mobil. På desktop (inuti Flytthjälp-kortet) en centrerad kolumn, som live. */
 const Sheet = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex h-full min-h-0 flex-col bg-white">
+  <div className="flex h-full min-h-0 flex-col bg-white md:h-auto">
     <SheetHandle />
-    <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+    <div className="min-h-0 flex-1 overflow-y-auto md:mx-auto md:w-full md:max-w-[560px] md:overflow-visible md:py-2">{children}</div>
   </div>
 )
 
@@ -177,7 +180,7 @@ export const NummerScreen = ({ a, update, go }: ScreenProps) => {
           <p className="text-[14px] leading-[19px] text-[var(--color-text-main)]">Vi ringer dig {samtalText(samtal)}.</p>
         </InfoCard>
         <div className="mt-4 rounded-xl bg-[var(--color-secondary-extra-extra-light)] px-4 pb-4 pt-6 text-center">
-          <h2 className="text-[16px] font-bold text-[var(--color-text-main)]">{edit ? 'Ange ditt telefonnummer' : 'Sista steget! Bekräfta ditt nummer'}</h2>
+          <h2 className="text-[16px] font-bold text-[var(--color-text-main)]">{edit ? 'Ange ditt telefonnummer' : 'Bekräfta ditt nummer'}</h2>
           <div className="mt-4">
             {edit ? (
               <div className="mx-auto max-w-[220px]">
@@ -265,9 +268,12 @@ export const BokatScreen = ({ a, go }: ScreenProps) => (
 /* Ramen runt stegen. Krysset sparar det som är svarat och stänger arket. */
 const Q = ({ p, idx, title, sub, children, cta, foot, onNext }: { p: ScreenProps; idx: number; title: string; sub?: string; children: React.ReactNode; cta?: string; foot?: string; onNext?: () => void }) => {
   const { a, go, next, savedBadge } = p
-  const left = questionsLeft(a)[idx - FIRST]
+  const lefts = questionsLeft(a)
+  const answered = answeredQuestions(a)
+  const step = idx - FIRST
+  const done = STEG.map((_, i) => i < step || (lefts[i] === 0 && answered[i]))
   return (
-    <Frame step={idx - FIRST} title={title} sub={sub} cta={cta} foot={foot} left={left} savedBadge={savedBadge} onNext={onNext ?? (() => next(idx))} onClose={() => go(0)}>
+    <Frame step={step} title={title} sub={sub} cta={cta} foot={foot} left={lefts[step]} savedBadge={savedBadge} done={done} onStep={(i) => go(FIRST + i)} onNext={onNext ?? (() => next(idx))} onClose={() => go(0)}>
       {children}
     </Frame>
   )
@@ -765,46 +771,44 @@ export const SaljareScreen = ({ a, home }: ScreenProps) => {
   )
 }
 
-/* Kortet på flyttsidan när samtalet är bokat: Offert på väg, med vägen in till frågorna. */
+/* Kortet i listan när samtalet är bokat, som live: bock, Flytthjälp, Offert på väg, och vägen in till frågorna. */
 export const OffertCard = ({ a, go }: ScreenProps) => {
   const n = answeredCount(a)
   return (
-    <div className="rounded-lg border-2 border-white bg-white p-3 shadow-[0_4px_8px_rgba(0,0,0,0.08)]">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex gap-3">
-          <span className="mt-0.5">
+    <div className="mb-3 flex w-full flex-col rounded-[8px] border-2 border-white bg-white p-3 shadow-[0_4px_8px_rgba(0,0,0,0.08)]">
+      <div className="flex w-full items-start justify-between">
+        <div className="flex min-w-0 gap-3">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center sm:h-10 sm:w-10">
             <CheckCircle size={36} />
           </span>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[15px] font-bold leading-4 text-[var(--color-text-main)]">Flytthjälp</span>
+              <span className="activity-title pb-1 text-[15px] font-bold leading-4 text-[var(--color-text-main)] md:text-[18px]">Flytthjälp</span>
               <span className="rounded-full bg-[#DCFCE7] px-2 py-0.5 text-[12px] font-bold text-[#15803D]">Offert på väg</span>
               <span className="inline-block h-2 w-2 rounded-full bg-[#22C55E]" />
             </div>
-            <p className="mt-1 text-[13px] text-[#626263]">Vi ringer dig {samtalText(a.samtal)}</p>
+            <p className="text-[13px] text-[#626263] md:text-[15px]">Vi ringer dig {samtalText(a.samtal)}</p>
           </div>
         </div>
-        <button type="button" aria-label="Ändra tid" onClick={() => go(2)} className="mt-1 shrink-0 text-[var(--color-inactive-grey-light)]">
-          <svg width="25" height="24" viewBox="0 0 25 24" fill="none" aria-hidden>
-            <path d="M6.75 9L12.75 15L18.75 9" stroke="currentColor" strokeWidth="2" />
-          </svg>
+        <button type="button" aria-label="Ändra tid" onClick={() => go(2)} className="ml-3 mt-1 shrink-0 text-[var(--color-inactive-grey-light)]">
+          <ChevronDown />
         </button>
       </div>
-      <div className="mt-3 border-t border-[var(--color-inactive-main)] pt-3">
+      <div className="mt-3 w-full border-t border-[var(--color-inactive-main)] pt-3 md:pl-[52px]">
         {a.sent ? (
           <>
-            <p className="flex items-center gap-2 text-[13px] text-[var(--color-text-main)]">
+            <p className="flex flex-wrap items-center gap-2 text-[13px] text-[var(--color-text-main)] md:text-[15px]">
               <GreenBadge>Dina svar är sparade</GreenBadge>
               Vi har priset klart när vi ringer.
             </p>
-            <PrimaryButton className="mt-2.5" tone="outline" onClick={() => go(DONE)}>
+            <PrimaryButton className="mt-2.5 md:w-[260px]" tone="outline" onClick={() => go(DONE)}>
               Ändra svar
             </PrimaryButton>
           </>
         ) : (
           <>
-            <p className="text-[13px] leading-[18px] text-[var(--color-text-main)]">{n === 0 ? 'Svara på frågorna innan samtalet, så har vi priset klart när vi ringer. Det tar ett par minuter.' : `${cap(ORD[n - 1])} av sex steg sparade. Fortsätt när du vill, allt sparas direkt.`}</p>
-            <PrimaryButton className="mt-2.5" onClick={() => go(nextUnanswered(a))}>
+            <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">{n === 0 ? 'Svara på frågorna innan samtalet, så har vi priset klart när vi ringer. Det tar ett par minuter.' : `${cap(ORD[n - 1])} av sex steg sparade. Fortsätt när du vill, allt sparas direkt.`}</p>
+            <PrimaryButton className="mt-2.5 md:w-[260px]" onClick={() => go(nextUnanswered(a))}>
               {n === 0 ? 'Svara på frågorna' : 'Fortsätt svara'}
             </PrimaryButton>
           </>

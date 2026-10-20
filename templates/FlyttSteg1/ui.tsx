@@ -327,11 +327,26 @@ export const StatusHead = ({ title, onClose }: { title: string; onClose: () => v
   </div>
 )
 
-export const SheetHandle = () => <span className="mx-auto mb-2 mt-3 block h-1 w-10 shrink-0 rounded-full bg-[var(--color-inactive-grey-light)]/60" />
+export const SheetHandle = () => <span className="mx-auto mb-2 mt-3 block h-1 w-10 shrink-0 rounded-full bg-[var(--color-inactive-grey-light)]/60 md:hidden" />
+
+/* Fortsätt, "N frågor kvar" och foten. Mobil: fast i botten. Desktop: i innehållskolumnen, knappen till vänster. */
+const FrameFooter = ({ cta, left, foot, onNext, desktop }: { cta: string; left: number; foot: string; onNext: () => void; desktop?: boolean }) => (
+  <div className={clsx(desktop && 'flex items-center gap-5')}>
+    <PrimaryButton className={desktop ? 'md:w-[240px]' : undefined} onClick={onNext} disabled={left > 0}>
+      {cta}
+    </PrimaryButton>
+    <div className={desktop ? 'text-left' : 'text-center'}>
+      {left > 0 && <p className={clsx('text-[12px] font-bold text-[var(--color-secondary-main)]', desktop ? 'text-[13px]' : 'mt-2')}>{left} {left === 1 ? 'fråga' : 'frågor'} kvar</p>}
+      <p className={clsx('text-[12px] text-[var(--color-inactive-dark)]', desktop ? 'mt-0.5 text-[13px]' : left > 0 ? 'mt-0.5' : 'mt-2')}>{foot}</p>
+    </div>
+  </div>
+)
 
 /**
  * Ramen runt varje frågesteg: steg x av 6, Sparat-bocken, krysset, frågan,
  * och Fortsätt fast i botten. Fortsätt tänds när stegets knappfrågor har svar.
+ * Desktop (inuti Flytthjälp-kortet): steglista till vänster, frågan till höger,
+ * Fortsätt under frågan. Klara steg går att hoppa tillbaka till.
  */
 export const Frame = ({
   step,
@@ -342,6 +357,8 @@ export const Frame = ({
   left = 0,
   foot = 'Allt sparas direkt. Vet du inte, välj Vet inte.',
   savedBadge,
+  done,
+  onStep,
   onNext,
   onClose,
 }: {
@@ -353,12 +370,15 @@ export const Frame = ({
   left?: number
   foot?: string
   savedBadge?: string | null
+  /** Ett värde per steg: besvarat, så att desktop-listan visar bocken. */
+  done?: boolean[]
+  onStep?: (i: number) => void
   onNext: () => void
   onClose: () => void
 }) => (
-  <div className="flex h-full min-h-0 flex-1 flex-col bg-white">
-    <div className="flex items-center justify-between pl-4 pr-1">
-      <span className="text-[13px] font-bold text-[var(--color-text-main)]">
+  <div className="flex h-full min-h-0 flex-1 flex-col bg-white md:h-auto md:flex-none">
+    <div className="flex items-center justify-between pl-4 pr-1 md:pl-0 md:pr-0">
+      <span className="text-[13px] font-bold text-[var(--color-text-main)] md:text-[14px]">
         Steg {step + 1} av {TOTAL} · {STEG[step]}
       </span>
       <span className="flex items-center gap-2">
@@ -368,26 +388,48 @@ export const Frame = ({
         </button>
       </span>
     </div>
-    <ol className="flex gap-1 px-4" aria-hidden>
+    <ol className="flex gap-1 px-4 md:hidden" aria-hidden>
       {STEG.map((s, i) => (
         <li key={s} className={clsx('h-1 flex-1 rounded-full', i < step ? 'bg-[var(--color-primary-main)]' : i === step ? 'bg-[var(--color-secondary-main)]' : 'bg-[var(--color-inactive-main)]')} />
       ))}
     </ol>
-    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-5">
-      <h1 className="text-[22px] font-bold leading-[28px] text-[var(--color-text-main)]">{title}</h1>
-      {sub && <p className="mt-1 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">{sub}</p>}
-      {children}
+    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-5 md:grid md:grid-cols-[200px_minmax(0,560px)] md:gap-10 md:overflow-visible md:px-0 md:pb-2 md:pt-5">
+      <nav className="hidden md:block" aria-label="Steg">
+        <ol className="flex flex-col gap-1">
+          {STEG.map((s, i) => {
+            const state = i === step ? 'current' : done?.[i] ? 'done' : 'todo'
+            return (
+              <li key={s}>
+                <button
+                  type="button"
+                  disabled={state === 'todo'}
+                  onClick={() => onStep?.(i)}
+                  className={clsx(
+                    'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[14px]',
+                    state === 'current' ? 'bg-[var(--color-secondary-extra-extra-light)] font-bold text-[var(--color-text-main)]' : state === 'done' ? 'text-[var(--color-text-main)] hover:bg-[var(--color-inactive-quite-light)]' : 'text-[var(--color-inactive-dark)]',
+                  )}
+                >
+                  <span className={clsx('flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-bold', state === 'done' ? 'bg-[#DCFCE7] text-[#15803D]' : state === 'current' ? 'bg-[var(--color-secondary-main)] text-white' : 'border border-[var(--color-inactive-main)] text-[var(--color-inactive-dark)]')}>
+                    {state === 'done' ? <Check size={14} strokeWidth={3} /> : i + 1}
+                  </span>
+                  {s}
+                </button>
+              </li>
+            )
+          })}
+        </ol>
+      </nav>
+      <div className="min-w-0">
+        <h1 className="text-[22px] font-bold leading-[28px] text-[var(--color-text-main)] md:text-[26px] md:leading-[32px]">{title}</h1>
+        {sub && <p className="mt-1 text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:text-[15px] md:leading-[22px]">{sub}</p>}
+        {children}
+        <div className="mt-8 hidden md:block">
+          <FrameFooter cta={cta} left={left} foot={foot} onNext={onNext} desktop />
+        </div>
+      </div>
     </div>
-    <div className="shrink-0 border-t border-[var(--color-inactive-main)] bg-white px-4 pb-4 pt-3">
-      <PrimaryButton onClick={onNext} disabled={left > 0}>
-        {cta}
-      </PrimaryButton>
-      {left > 0 && (
-        <p className="mt-2 text-center text-[12px] font-bold text-[var(--color-secondary-main)]">
-          {left} {left === 1 ? 'fråga' : 'frågor'} kvar
-        </p>
-      )}
-      <p className={clsx('text-center text-[12px] text-[var(--color-inactive-dark)]', left > 0 ? 'mt-0.5' : 'mt-2')}>{foot}</p>
+    <div className="shrink-0 border-t border-[var(--color-inactive-main)] bg-white px-4 pb-4 pt-3 md:hidden">
+      <FrameFooter cta={cta} left={left} foot={foot} onNext={onNext} />
     </div>
   </div>
 )

@@ -5,10 +5,28 @@ import { createPortal } from 'react-dom'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
 import { useDemoUser } from '@/common/data/useDemoUser'
+import useResponsive from '@/common/hooks/useResponsive'
 import { setFlyttSteg1 } from '@/common/utils/demoNavigation'
-import MovePage from '@/templates/MovePage'
 import { answeredCount, useDemoState } from './state'
-import { AdresserScreen, BaraInScreen, BaraUtScreen, BohagScreen, BokatScreen, NummerScreen, OffertCard, OffertScreen, SaljareScreen, SistaScreen, SparatScreen, StadScreen, TidScreen, type Home, type ScreenProps } from './screens'
+import LiveMovePage from './LiveMovePage'
+import {
+  AdresserScreen,
+  BaraInScreen,
+  BaraUtScreen,
+  BohagScreen,
+  BokatScreen,
+  NummerScreen,
+  OffertCard,
+  OffertScreen,
+  SaljareScreen,
+  SistaScreen,
+  SparatScreen,
+  StadScreen,
+  TidScreen,
+  nextUnanswered,
+  type Home,
+  type ScreenProps,
+} from './screens'
 
 const STEPS = ['Flyttsidan', 'Begär offert', 'Välj tid', 'Numret', 'Samtal bokat', 'Adresser', 'Bära ut', 'Bära in', 'Vad ska med', 'Städning', 'Sista detaljerna', 'Allt sparat', 'Säljaren']
 const LAST = STEPS.length - 1
@@ -31,12 +49,19 @@ const longDay = (iso: string, plusDays = 0) => {
   if (!d) return plusDays ? 'lördag 31 oktober' : 'fredag 30 oktober'
   return new Intl.DateTimeFormat('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
 }
+/* Som flyttsidans blå ruta skriver datumet: "10 november 2026". */
+const fullDate = (iso: string) => {
+  const d = parse(iso)
+  if (!d) return '30 oktober 2026'
+  return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' }).format(d)
+}
 
 /**
- * Prototyp av flyttflödet steg 1, utan pris. Dagens flyttsida är ingången och
- * dagens ark (Begär offert, ringtid, nummer) är orört. Skillnaden börjar efter
- * Ja!: bekräftelsen stannar kvar och bjuder in till sex frivilliga steg i
- * samma ark. Varje steg sparas direkt. Ren frontend, inget lämnar webbläsaren.
+ * Prototyp av flyttflödet steg 1, utan pris. Ingången är dagens flyttsida
+ * (LiveMovePage, byggd från live-koden) och dagens tre skärmar är orörda.
+ * Skillnaden börjar efter Ja!: bekräftelsen stannar kvar och bjuder in till
+ * sex steg som sparas direkt. På mobil ligger allt i ett ark ovanpå sidan, på
+ * desktop inuti Flytthjälp-kortet, som live gör i dag. Ren frontend.
  */
 const DemoFlyttFlow = () => {
   const router = useRouter()
@@ -44,20 +69,25 @@ const DemoFlyttFlow = () => {
   const search = useSearchParams()
   const demoUser = useDemoUser()
   const { answers, update, reset, loaded } = useDemoState()
+  const { isTabletPortraitOrGreater: desktop } = useResponsive()
   const [savedBadge, setSavedBadge] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   const badgeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const step = Math.min(LAST, Math.max(0, Number(search.get('s') ?? 0) || 0))
+  const inSheet = step > 0 && step < SALJARE
+  const inline = inSheet && desktop
 
   useEffect(() => {
     setFlyttSteg1(true)
     setMounted(true)
   }, [])
 
+  /* Desktop: nytt steg börjar högst upp i kortet. Flyttsidan och Säljaren börjar högst upp på sidan. */
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
-  }, [step])
+    if (inline) document.getElementById('flytt-inline')?.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior })
+    else if (!inSheet) window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+  }, [step, inline, inSheet])
 
   const go = useCallback(
     (s: number) => {
@@ -87,6 +117,7 @@ const DemoFlyttFlow = () => {
       toKvm: 78,
       moveDay: shortDay(move.movingDate),
       moveDayLong: longDay(move.movingDate),
+      moveDateFull: fullDate(move.movingDate),
       cleanDayLong: longDay(move.movingDate, 1),
       firstName: demoUser.profile?.firstName || 'Anna',
     }
@@ -96,7 +127,8 @@ const DemoFlyttFlow = () => {
 
   // Som komponent, inte funktionsanrop: skärmarna har egna hooks och får inte dela DemoFlyttFlows hook-ordning.
   const Screen = [null, OffertScreen, TidScreen, NummerScreen, BokatScreen, AdresserScreen, BaraUtScreen, BaraInScreen, BohagScreen, StadScreen, SistaScreen, SparatScreen, SaljareScreen][step]
-  const inSheet = step > 0 && step < SALJARE
+  const screen = Screen ? <Screen key={step} {...props} /> : null
+  const card = loaded && answers.samtal ? <OffertCard {...props} /> : null
 
   const demoBar = (
     <nav aria-label="Demo" className="flex w-full items-center gap-1 overflow-x-auto bg-[var(--color-secondary-dark)] px-3 py-2 text-white">
@@ -120,25 +152,21 @@ const DemoFlyttFlow = () => {
   )
 
   return (
-    <div className="flex min-h-[calc(100dvh-52px)] flex-1 flex-col bg-[#E8EDF0]">
+    <div className="flex min-h-[calc(100dvh-52px)] flex-1 flex-col bg-[#E7ECF0]">
       {demoBar}
       {step === SALJARE ? (
-        <div className="flex w-full flex-1 flex-col bg-white md:mx-auto md:my-6 md:max-w-[430px] md:flex-none md:overflow-clip md:rounded-[28px] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{Screen && <Screen key={step} {...props} />}</div>
+        <div className="flex w-full flex-1 flex-col bg-white md:mx-auto md:my-6 md:max-w-[430px] md:flex-none md:overflow-clip md:rounded-[28px] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{screen}</div>
       ) : (
         <>
-          {loaded && answers.samtal && step === 0 && (
-            <div className="mx-auto w-full max-w-[640px] px-4 pt-4">
-              <OffertCard {...props} />
-            </div>
-          )}
-          <MovePage completedBookings={[]} />
-          {/* Portal, annars fastnar fixed i demons animerade ram. */}
+          <LiveMovePage home={home} inline={inline ? screen : null} card={card} onOffer={() => go(answers.samtal ? nextUnanswered(answers) : 1)} />
+          {/* Mobil: arket via portal, annars fastnar fixed i demons animerade ram. */}
           {inSheet &&
             mounted &&
+            !desktop &&
             createPortal(
               <div className="fixed inset-0 z-50 flex flex-col justify-end" role="dialog" aria-modal>
-                <button type="button" aria-label="Stäng" className="flex-1 bg-black/30" onClick={() => go(0)} />
-                <div className="mx-auto flex max-h-[90dvh] w-full max-w-[430px] flex-col overflow-clip rounded-t-[20px] bg-white shadow-[0_-4px_24px_rgba(0,0,0,0.15)]">{Screen && <Screen key={step} {...props} />}</div>
+                <button type="button" aria-label="Stäng" className="absolute inset-0 bg-black/30" onClick={() => go(0)} />
+                <div className="relative mx-auto flex max-h-[90dvh] w-full max-w-[430px] flex-col overflow-clip rounded-t-[20px] bg-white shadow-[0_-4px_24px_rgba(0,0,0,0.15)]">{screen}</div>
               </div>,
               document.body,
             )}
