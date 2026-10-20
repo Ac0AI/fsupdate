@@ -17,6 +17,9 @@ export type DemoSession = {
   toAddress: DemoAddress | null
   movingDate: string
   onboarded: boolean
+  // Flyttsidans Från-rad (demo/flytt): kunden kan ändra nuvarande adress och boarea, som live.
+  fromAddress?: DemoAddress
+  fromResidenceSize?: number
   // Städet bokat via demoflödet: flyttsidan tänder elkortets 100 kr-krok på den.
   cleanBooked?: boolean
 }
@@ -88,7 +91,8 @@ export const getDemoUser = () => {
     ...demoUser,
     currentMove: {
       ...demoUser.currentMove,
-      fromAddress: SOLD_HOME,
+      fromAddress: s.fromAddress ?? SOLD_HOME,
+      fromResidenceSize: s.fromResidenceSize ?? demoUser.currentMove.fromResidenceSize,
       toAddress: s.toAddress ?? emptyAddress,
       movingDate: s.movingDate,
       addressStatus: s.toAddress ? 'ready' : 'empty',

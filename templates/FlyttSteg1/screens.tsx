@@ -424,7 +424,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
             )}
           </Section>
           <Reveal show={visaHiss}>
-            <Section title="Finns det hiss?" sub="Stor hiss rymmer sex personer eller fler.">
+            <Section title="Finns det hiss?" sub="Stor hiss rymmer fem personer eller fler.">
               <ChipRow>
                 {(Object.keys(HISS_LABEL) as Hiss[]).map((h) => (
                   <Chip key={h} selected={s.hiss === h} onClick={() => set({ hiss: h })}>
