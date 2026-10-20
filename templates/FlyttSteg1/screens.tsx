@@ -518,7 +518,13 @@ export const BohagScreen = (p: ScreenProps) => {
                   <RangeSlider value={b.kvm} min={5} max={BIYTA_KVM_MAX} step={5} onChange={(v) => setBiyta(b.id, { kvm: v })} text={biytaKvmText} ticks={['5 m²', '25 m²', '50 m² eller mer']} label="Storlek i kvadratmeter" />
                 </Field>
                 <Field label="Hur fullt är det?">
-                  <RangeSlider value={b.fullt} min={25} max={100} step={25} onChange={(v) => setBiyta(b.id, { fullt: v })} text={fulltText} ticks={['En fjärdedel', 'Halvfullt', 'Trekvart', 'Fullt']} label="Hur fullt utrymmet är" />
+                  <ChipRow>
+                    {[25, 50, 75, 100].map((f) => (
+                      <Chip key={f} small selected={b.fullt === f} onClick={() => setBiyta(b.id, { fullt: f })}>
+                        {fulltText(f)}
+                      </Chip>
+                    ))}
+                  </ChipRow>
                 </Field>
               </ItemCard>
             ))}

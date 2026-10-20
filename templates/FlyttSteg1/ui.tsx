@@ -48,7 +48,7 @@ export const PrimaryButton = ({
       disabled={disabled}
       onClick={onClick ?? noop}
       text={children}
-      className={clsx('min-h-[48px]', rounded && '!rounded-xl', disabled && '!opacity-100')}
+      className={clsx('min-h-[48px]', rounded && '!rounded-xl', disabled && '!opacity-100 [-webkit-text-fill-color:#475569]')}
     />
   </div>
 )
