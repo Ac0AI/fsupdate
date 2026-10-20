@@ -134,7 +134,7 @@ const DemoElFlow = () => {
   const Screen = [PriserScreen, DetaljerScreen, SammanfattningScreen, BankIdScreen, KlartScreen][screen]
 
   return (
-    <div className="flex min-h-[calc(100dvh-52px)] w-full flex-1 flex-col bg-[#E7ECF0]">
+    <div className="flex min-h-[calc(100dvh-52px)] w-full flex-1 flex-col bg-[#E7ECF0] min-[1024px]:bg-[#F8FAF9]">
       <nav aria-label="Demo" className="flex w-full items-center gap-1 overflow-x-auto bg-[var(--color-secondary-dark)] px-3 py-2 text-white">
         <span className="shrink-0 pr-1 text-[11px] font-bold tracking-[0.1em] text-white/60 uppercase">Demo</span>
         {STEPS.map((label, i) => (
@@ -154,9 +154,9 @@ const DemoElFlow = () => {
           Börja om
         </button>
       </nav>
-      <div className="flex w-full flex-1 flex-col bg-[#F8FAF9] md:mx-auto md:my-6 md:min-h-[780px] md:max-w-[430px] md:flex-none md:overflow-clip md:rounded-[28px] md:border md:border-[#D5DDE5] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">
+      <div className="flex w-full flex-1 flex-col bg-[#F8FAF9] md:mx-auto md:my-6 md:min-h-[780px] md:max-w-[430px] md:flex-none md:overflow-clip md:rounded-[28px] md:border md:border-[#D5DDE5] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)] min-[1024px]:my-0 min-[1024px]:min-h-0 min-[1024px]:max-w-none min-[1024px]:flex-1 min-[1024px]:rounded-none min-[1024px]:border-0 min-[1024px]:shadow-none">
         {screen < 3 && (
-          <div className="flex h-[38px] shrink-0 items-center bg-[#3879AD] px-[9px]">
+          <div className="flex h-[38px] shrink-0 items-center bg-[#3879AD] px-[9px] min-[1024px]:pl-[max(9px,calc((100%_-_1080px)/2_+_9px))]">
             <button
               type="button"
               aria-label="Tillbaka"

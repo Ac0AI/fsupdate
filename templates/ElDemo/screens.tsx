@@ -24,7 +24,7 @@ import {
   type HomeType,
   type OfferId,
 } from './data'
-import { ArrowRight, CheckCircle, ChevronDown, FramedField, Foot, Help, Logo, Pin, Shield, Steps, Title, fieldInput, press } from './ui'
+import { ArrowRight, CheckCircle, ChevronDown, FramedField, Foot, Help, Logo, Pin, Shell, Shield, Steps, Title, fieldInput, press } from './ui'
 
 export type ElState = {
   homeType: HomeType | null
@@ -357,9 +357,14 @@ const HomeSheet = ({ s, set }: ScreenProps) => {
   const save = () => kvmOk && kwhOk && set({ homeType: type, kvm: Number(kvm), kwh: Number(kwh), editHome: false })
   if (!mounted) return null
   return createPortal(
-    <div className="fixed inset-0 z-50 flex flex-col justify-end" role="dialog" aria-modal aria-labelledby="el-home-title">
+    <div
+      className="fixed inset-0 z-50 flex flex-col justify-end min-[1024px]:items-center min-[1024px]:justify-center min-[1024px]:p-[24px]"
+      role="dialog"
+      aria-modal
+      aria-labelledby="el-home-title"
+    >
       <button type="button" aria-label="Stäng" className="absolute inset-0 bg-black/30" onClick={close} />
-      <div className="relative mx-auto flex max-h-[90dvh] w-full max-w-[430px] flex-col overflow-y-auto rounded-t-[20px] bg-white shadow-[0_-4px_24px_rgba(0,0,0,0.15)] motion-safe:animate-[rise_.3s_ease-out_both]">
+      <div className="relative mx-auto flex max-h-[90dvh] w-full max-w-[430px] flex-col overflow-y-auto rounded-t-[20px] bg-white shadow-[0_-4px_24px_rgba(0,0,0,0.15)] motion-safe:animate-[rise_.3s_ease-out_both] min-[1024px]:max-w-[520px] min-[1024px]:rounded-[20px]">
         <div className="flex items-center justify-between py-[8px] pr-[8px] pl-[20px]">
           <p id="el-home-title" className={clsx('text-[18px] leading-[22px] font-bold tracking-[0.32px]', navy)}>
             Din bostad
@@ -444,39 +449,126 @@ const HomeSheet = ({ s, set }: ScreenProps) => {
   )
 }
 
+/** Desktop: kortet Ditt val i högerkolumnen, med valt avtal, pris, jämförpris och stegets knapp. */
+const DittVal = ({ o, kwh, children }: { o: Offer; kwh: number; children: React.ReactNode }) => (
+  <div className="flex flex-col gap-[16px] rounded-[10px] bg-white p-[20px] shadow-[0_4px_8px_#00000014]">
+    <p className={clsx('text-[16px] leading-[20px] font-bold tracking-[0.32px]', navy)}>Ditt val</p>
+    <div className="flex items-center justify-between gap-[12px]">
+      <Logo src={o.logo} alt={o.name} className="h-9 w-[120px]" />
+      <div className="flex flex-col items-end">
+        <span className={clsx('pb-[2px] text-[12px] leading-[18px] tracking-[0.32px]', navy)}>Beräknad månadskostnad</span>
+        <Price value={priceFor(o, kwh)} size="card" tone={o.hasDiscount ? 'mint' : 'navy'} />
+      </div>
+    </div>
+    <div className="flex flex-col gap-[4px] border-t border-[#3879AD33] pt-[12px]">
+      <span className={clsx('text-[14px] leading-[18px] font-bold tracking-[0.32px]', navy)}>
+        Jämförpris {formatOre(comparePrice(o, compareLevel(kwh)))} öre/kWh ({new Intl.NumberFormat('sv-SE').format(compareLevel(kwh))} kWh/år)
+      </span>
+      <span className="text-[12px] leading-[16px] tracking-[0.32px] text-[#767678]">{compareNote(o)}</span>
+    </div>
+    {children}
+  </div>
+)
+
+/** Frågor och svar från live (MOVESUMMARY), under elavtalen. Bara på desktop: mobilen är som förut. */
+const FAQ = [
+  {
+    q: 'Ingår elen i min hyra/månadsavgift?',
+    a: [
+      'El ingår oftast inte i hyran/månadsavgiften. Det börjar dock bli vanligare att bostadsrättsföreningar och ägare av flerfamiljshus tecknar ett gemensamt elavtal. Det brukar bli lite billigare för dig som användare.',
+      'Vi vet tyvärr inte vad som gäller i just din bostad. Fråga din fastighetsägare eller bostadsrättsförening för ett säkert svar på den här frågan.',
+    ],
+  },
+  {
+    q: 'Hur säger jag upp mitt nuvarande elavtal?',
+    a: [
+      "När du tecknar ett nytt elavtal på Flyttsmart kan du passa på att avsluta ditt nuvarande. Kryssa bara i boxen 'Säg upp nuvarande elavtal' och ange vilket datum elen ska stängas av, så sköter vi resten.",
+      'Observera att vi bara kan säga upp avtal som tecknats av dig personligen.',
+    ],
+  },
+  {
+    q: 'Vilka elavtal behöver jag teckna till min nya bostad?',
+    a: [
+      'För att få tillgång till el i ditt nya hem behöver du teckna två olika avtal:',
+      '• Elnätsavtal, så att elen når fram till bostaden',
+      '• Elhandelsavtal, för din löpande elförbrukning',
+      'När du fixar elen på Flyttsmart får du välja mellan flera förslag på elhandelsavtal. Vi har tagit fram de bästa alternativen på din nya adress och pressat priserna.',
+      'Du tecknar samtidigt ett elnätsavtal med den leverantör som äger elnätet i ditt nya bostadsområde. Här kan du med andra ord inte välja mellan olika leverantörer. Du behöver inte kontakta leverantören – vi löser det åt dig.',
+    ],
+  },
+]
+
+const Faq = () => (
+  <div className="hidden flex-col gap-[10px] min-[1024px]:flex">
+    {FAQ.map((f) => (
+      <details key={f.q} className="group rounded-[10px] bg-white shadow-[0_4px_8px_#00000014]">
+        <summary className={clsx('flex min-h-14 cursor-pointer list-none items-center justify-between gap-[12px] px-[20px] py-[12px] [&::-webkit-details-marker]:hidden', navy)}>
+          <span className="text-[15px] leading-[20px] font-bold tracking-[0.32px]">{f.q}</span>
+          <span className="shrink-0 transition-transform duration-200 group-open:rotate-180">
+            <ChevronDown />
+          </span>
+        </summary>
+        <div className={clsx('flex flex-col gap-[8px] px-[20px] pb-[16px] text-[14px] leading-[20px]', navy)}>
+          {f.a.map((t) => (
+            <p key={t}>{t}</p>
+          ))}
+        </div>
+      </details>
+    ))}
+  </div>
+)
+
 export const PriserScreen = (p: ScreenProps) => {
   const { s, go } = p
   const chosen = offerById(s.selected)
   if (!s.homeType)
     return (
-      <div className="flex flex-col gap-[20px] px-[20px] pt-[15px] pb-10">
-        <Steps n={1} />
-        <Intro />
-        <HomeQuestion {...p} />
-        {s.editHome && <HomeSheet {...p} />}
-        <div aria-hidden className="flex flex-col gap-[12px] rounded-[10px] bg-white p-[20px] opacity-60 shadow-[0_4px_8px_#00000014]">
-          <div className="flex items-center justify-between">
-            <Logo src="/images/el-demo/skekraft.svg" alt="" className="h-9 w-[120px] opacity-50" />
-            <span className="h-[38px] w-24 rounded-[8px] bg-[#EEEEF0]" />
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="h-[38px] w-[130px] rounded-[8px] bg-[#EEEEF0]" />
-            <span className="text-[32px] leading-[38px] font-bold tracking-[-1px] text-[#BEBEC0]">– kr</span>
+      <Shell>
+        <div className="flex flex-col gap-[20px] px-[20px] pt-[15px] pb-10 min-[1024px]:px-0">
+          <Steps n={1} />
+          <Intro />
+          <HomeQuestion {...p} />
+          {s.editHome && <HomeSheet {...p} />}
+          <div aria-hidden className="flex flex-col gap-[12px] rounded-[10px] bg-white p-[20px] opacity-60 shadow-[0_4px_8px_#00000014]">
+            <div className="flex items-center justify-between">
+              <Logo src="/images/el-demo/skekraft.svg" alt="" className="h-9 w-[120px] opacity-50" />
+              <span className="h-[38px] w-24 rounded-[8px] bg-[#EEEEF0]" />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="h-[38px] w-[130px] rounded-[8px] bg-[#EEEEF0]" />
+              <span className="text-[32px] leading-[38px] font-bold tracking-[-1px] text-[#BEBEC0]">– kr</span>
+            </div>
           </div>
         </div>
-      </div>
+      </Shell>
     )
   return (
     <>
-      <div className="flex flex-col gap-[20px] px-[20px] pt-[15px] pb-6">
-        <Steps n={1} />
-        <Intro />
-        <HomeRow {...p} />
-        <RecommendedCard {...p} />
-        <Compare {...p} />
-      </div>
+      <Shell
+        side={
+          <DittVal o={chosen} kwh={s.kwh}>
+            <button
+              type="button"
+              onClick={() => go(3)}
+              className={clsx('flex h-12 w-full items-center justify-center gap-[10px] rounded-full border-2 border-[#214766] bg-[#214766] hover:bg-[#112E46]', press)}
+            >
+              <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px] whitespace-nowrap text-white">Välj elavtal</span>
+              <ArrowRight />
+            </button>
+          </DittVal>
+        }
+      >
+        <div className="flex flex-col gap-[20px] px-[20px] pt-[15px] pb-6 min-[1024px]:px-0">
+          <Steps n={1} />
+          <Intro />
+          <HomeRow {...p} />
+          <RecommendedCard {...p} />
+          <Compare {...p} />
+          <Faq />
+        </div>
+      </Shell>
       {s.editHome && <HomeSheet {...p} />}
-      <Foot className="!flex-row items-center !gap-[12px]">
+      <Foot className="!flex-row items-center !gap-[12px] min-[1024px]:hidden">
         <div className="flex min-w-0 flex-1 flex-col">
           <span className={clsx('truncate text-[12px] leading-[18px] tracking-[0.32px]', navy)}>{chosen.name}</span>
           <Price value={priceFor(chosen, s.kwh)} size="foot" tone={chosen.hasDiscount ? 'mint' : 'navy'} />
@@ -571,6 +663,21 @@ export const DetaljerScreen = ({ s, set, go }: ScreenProps) => {
   const st = dateStatus(s.startDate)
   const suggestion = firstPossible()
   const valid = detailsValid(s)
+  const fortsatt = (
+    <button
+      type="button"
+      aria-disabled={!valid}
+      onClick={() => (valid ? go(5) : set({ touched: true }))}
+      className={clsx(
+        'flex h-12 shrink-0 items-center justify-center gap-[10px] rounded-full border-2',
+        valid ? 'border-[#214766] bg-[#214766] text-white hover:bg-[#112E46]' : 'border-[#EEEEF0] bg-[#EEEEF0] text-[#BEBEC0]',
+        press,
+      )}
+    >
+      <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px]">Fortsätt</span>
+      <ArrowRight size={18} width={1.6} />
+    </button>
+  )
   const [aptBlurred, setAptBlurred] = useState(false)
   const aptError = (s.touched || aptBlurred) && !/^\d{4}$/.test(s.apartment)
   const facilityError =
@@ -583,143 +690,139 @@ export const DetaljerScreen = ({ s, set, go }: ScreenProps) => {
       : null
   return (
     <>
-      <div className="flex flex-col px-[20px] pt-[15px] pb-6">
-        <Steps n={2} />
-        <Title onBack={() => go(0)}>Detaljer</Title>
-        <div className="flex flex-col rounded-[10px] bg-white p-[20px] shadow-[0_4px_8px_#00000014]">
-          <OfferHead id={s.selected} pill={16} />
-          <Label>Välj startdatum för ditt nya elavtal</Label>
-          <div className="flex flex-col gap-[10px]">
-            <DateInput
-              label="Välj datum"
-              value={s.startDate}
-              error={st === 'early' || (s.touched && st === 'empty')}
-              onChange={(v) => set({ startDate: v })}
-              onHelp={() => set({ dateHelp: !s.dateHelp })}
-            />
-            {s.dateHelp && <HelpText>Du kan välja ett datum inom 7 dagar, om du har din nya bostads anläggningsID.</HelpText>}
-            {st === 'early' && (
-              <div className="flex flex-col gap-[12px] rounded-[8px] bg-[#ECF9F7] px-[20px] py-[15px] text-[#123A33] motion-safe:animate-[rise_.3s_ease-out_both]">
-                <p className="text-[15px] leading-[18px] font-bold tracking-[0.32px]">Behöver du el inom 3 arbetsdagar?</p>
-                <p className="text-[15px] leading-[18px] tracking-[0.32px]">
-                  Vi hinner tyvärr inte ordna elavtal som startar inom 3 arbetsdagar. Välj ett senare datum, eller ring oss så hjälper vi dig.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => set({ startDate: suggestion })}
-                  className={clsx('flex h-12 shrink-0 items-center justify-center rounded-full border-2 border-[#214766] bg-white hover:bg-[#F8FAF9]', press)}
-                >
-                  <span className={clsx('text-[16px] leading-[18.4px] font-bold tracking-[0.32px]', navy)}>Välj {suggestion}</span>
-                </button>
-                <div className="flex flex-col gap-[2px] text-[15px] leading-[18px] tracking-[0.32px]">
-                  <p className="font-bold">Kontakta kundtjänst direkt:</p>
-                  <p>
-                    Telefon:{' '}
-                    <a href="tel:0812008822" className="text-[#123A33]! no-underline! hover:underline!">
-                      08-12 00 88 22
-                    </a>{' '}
-                    (vardagar 9:00-17:00)
+      <Shell
+        side={
+          <DittVal o={offerById(s.selected)} kwh={s.kwh}>
+            {fortsatt}
+          </DittVal>
+        }
+      >
+        <div className="flex flex-col px-[20px] pt-[15px] pb-6 min-[1024px]:px-0">
+          <Steps n={2} />
+          <Title onBack={() => go(0)}>Detaljer</Title>
+          <div className="flex flex-col rounded-[10px] bg-white p-[20px] shadow-[0_4px_8px_#00000014]">
+            <OfferHead id={s.selected} pill={16} />
+            <Label>Välj startdatum för ditt nya elavtal</Label>
+            <div className="flex flex-col gap-[10px]">
+              <DateInput
+                label="Välj datum"
+                value={s.startDate}
+                error={st === 'early' || (s.touched && st === 'empty')}
+                onChange={(v) => set({ startDate: v })}
+                onHelp={() => set({ dateHelp: !s.dateHelp })}
+              />
+              {s.dateHelp && <HelpText>Du kan välja ett datum inom 7 dagar, om du har din nya bostads anläggningsID.</HelpText>}
+              {st === 'early' && (
+                <div className="flex flex-col gap-[12px] rounded-[8px] bg-[#ECF9F7] px-[20px] py-[15px] text-[#123A33] motion-safe:animate-[rise_.3s_ease-out_both]">
+                  <p className="text-[15px] leading-[18px] font-bold tracking-[0.32px]">Behöver du el inom 3 arbetsdagar?</p>
+                  <p className="text-[15px] leading-[18px] tracking-[0.32px]">
+                    Vi hinner tyvärr inte ordna elavtal som startar inom 3 arbetsdagar. Välj ett senare datum, eller ring oss så hjälper vi dig.
                   </p>
-                  <p>
-                    E-post:{' '}
-                    <a href="mailto:hej@flyttsmart.se" className="text-[#123A33]! no-underline! hover:underline!">
-                      hej@flyttsmart.se
-                    </a>
-                  </p>
+                  <button
+                    type="button"
+                    onClick={() => set({ startDate: suggestion })}
+                    className={clsx('flex h-12 shrink-0 items-center justify-center rounded-full border-2 border-[#214766] bg-white hover:bg-[#F8FAF9]', press)}
+                  >
+                    <span className={clsx('text-[16px] leading-[18.4px] font-bold tracking-[0.32px]', navy)}>Välj {suggestion}</span>
+                  </button>
+                  <div className="flex flex-col gap-[2px] text-[15px] leading-[18px] tracking-[0.32px]">
+                    <p className="font-bold">Kontakta kundtjänst direkt:</p>
+                    <p>
+                      Telefon:{' '}
+                      <a href="tel:0812008822" className="text-[#123A33]! no-underline! hover:underline!">
+                        08-12 00 88 22
+                      </a>{' '}
+                      (vardagar 9:00-17:00)
+                    </p>
+                    <p>
+                      E-post:{' '}
+                      <a href="mailto:hej@flyttsmart.se" className="text-[#123A33]! no-underline! hover:underline!">
+                        hej@flyttsmart.se
+                      </a>
+                    </p>
+                  </div>
                 </div>
+              )}
+            </div>
+            {st === 'facility' && (
+              <>
+                <Label>Fyll i bostadens anläggningsID</Label>
+                <FramedField label="AnläggningsID" error={!!facilityError}>
+                  <input
+                    aria-label="AnläggningsID"
+                    inputMode="numeric"
+                    className={fieldInput}
+                    value={s.facilityId}
+                    onChange={(e) => set({ facilityId: e.target.value.replace(/\D/g, '').slice(0, 18) })}
+                  />
+                </FramedField>
+                {facilityError ? (
+                  <ErrorLine>{facilityError}</ErrorLine>
+                ) : (
+                  <p className="pt-[6px] text-[12px] leading-[16px] text-[#767678]">
+                    Välj ett startdatum senare än 7 arbetsdagar från idag, så behöver du inte fylla i anläggningsID.
+                  </p>
+                )}
+              </>
+            )}
+            <Label help={s.aptHelp} onHelp={() => set({ aptHelp: !s.aptHelp })}>
+              Fyll i bostadens lägenhetsnummer
+            </Label>
+            {s.aptHelp && (
+              <div className="pb-[16px]">
+                <HelpText>Ett lägenhetsnummer består av fyra siffror och används av Skatteverket för att identifiera lägenheter.</HelpText>
+              </div>
+            )}
+            <FramedField label="Lägenhetsnummer" error={aptError}>
+              <input
+                aria-label="Lägenhetsnummer"
+                inputMode="numeric"
+                className={fieldInput}
+                value={s.apartment}
+                onBlur={() => setAptBlurred(true)}
+                onChange={(e) => set({ apartment: e.target.value.replace(/\D/g, '').slice(0, 4) })}
+              />
+            </FramedField>
+            {aptError && <ErrorLine>Lägenhetsnumret måste vara 4 siffror</ErrorLine>}
+          </div>
+          <div className="mt-[16px] flex flex-col rounded-[10px] bg-white p-[20px] shadow-[0_4px_8px_#00000014]">
+            <label className="flex cursor-pointer items-start gap-[8px]">
+              <input type="checkbox" className="peer sr-only" checked={s.terminate} onChange={(e) => set({ terminate: e.target.checked, endDate: s.endDate || s.startDate })} />
+              <span className="ml-[-13px] flex h-6 w-11 shrink-0 items-start justify-center pt-px peer-focus-visible:[&>span]:ring-2 peer-focus-visible:[&>span]:ring-[#3879AD]">
+                <span
+                  className={clsx(
+                    'flex size-[18.4px] items-center justify-center rounded-[4px] transition-colors duration-150',
+                    s.terminate ? 'bg-[#51C8B4]' : 'border-[2.4px] border-[#9F9FA1] bg-white',
+                  )}
+                >
+                  {s.terminate && (
+                    <svg width="12" height="9" viewBox="0 0 14 10" aria-hidden>
+                      <path d="M1.5 5.2l3.6 3.3L12.5 1.5" fill="none" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </span>
+              </span>
+              <span className={clsx('ml-[-13px] flex-1 text-[16px] leading-[20px] tracking-[0.32px]', navy)}>
+                Säg upp mitt nuvarande elavtal åt mig i samband med nyteckningen.
+              </span>
+            </label>
+            {s.terminate && (
+              <div className="flex flex-col motion-safe:animate-[rise_.3s_ease-out_both]">
+                <Label>Välj datum då elavtalet avslutas</Label>
+                <DateInput label="Välj datum" value={s.endDate} error={s.touched && !s.endDate} onChange={(v) => set({ endDate: v })} />
+                <Label>Adress - nuvarande elavtal</Label>
+                <FramedField label="Adress">
+                  <input aria-label="Adress - nuvarande elavtal" className={fieldInput} value={s.oldAddress} onChange={(e) => set({ oldAddress: e.target.value })} />
+                </FramedField>
+                <p className="pt-[12px] text-[12px] leading-[16px] text-[#767678]">
+                  Notera att vi kan bara hjälpa dig med uppsägningen om det är du personligen som står på elavtalet.
+                </p>
               </div>
             )}
           </div>
-          {st === 'facility' && (
-            <>
-              <Label>Fyll i bostadens anläggningsID</Label>
-              <FramedField label="AnläggningsID" error={!!facilityError}>
-                <input
-                  aria-label="AnläggningsID"
-                  inputMode="numeric"
-                  className={fieldInput}
-                  value={s.facilityId}
-                  onChange={(e) => set({ facilityId: e.target.value.replace(/\D/g, '').slice(0, 18) })}
-                />
-              </FramedField>
-              {facilityError ? (
-                <ErrorLine>{facilityError}</ErrorLine>
-              ) : (
-                <p className="pt-[6px] text-[12px] leading-[16px] text-[#767678]">
-                  Välj ett startdatum senare än 7 arbetsdagar från idag, så behöver du inte fylla i anläggningsID.
-                </p>
-              )}
-            </>
-          )}
-          <Label help={s.aptHelp} onHelp={() => set({ aptHelp: !s.aptHelp })}>
-            Fyll i bostadens lägenhetsnummer
-          </Label>
-          {s.aptHelp && (
-            <div className="pb-[16px]">
-              <HelpText>Ett lägenhetsnummer består av fyra siffror och används av Skatteverket för att identifiera lägenheter.</HelpText>
-            </div>
-          )}
-          <FramedField label="Lägenhetsnummer" error={aptError}>
-            <input
-              aria-label="Lägenhetsnummer"
-              inputMode="numeric"
-              className={fieldInput}
-              value={s.apartment}
-              onBlur={() => setAptBlurred(true)}
-              onChange={(e) => set({ apartment: e.target.value.replace(/\D/g, '').slice(0, 4) })}
-            />
-          </FramedField>
-          {aptError && <ErrorLine>Lägenhetsnumret måste vara 4 siffror</ErrorLine>}
         </div>
-        <div className="mt-[16px] flex flex-col rounded-[10px] bg-white p-[20px] shadow-[0_4px_8px_#00000014]">
-          <label className="flex cursor-pointer items-start gap-[8px]">
-            <input type="checkbox" className="peer sr-only" checked={s.terminate} onChange={(e) => set({ terminate: e.target.checked, endDate: s.endDate || s.startDate })} />
-            <span className="ml-[-13px] flex h-6 w-11 shrink-0 items-start justify-center pt-px peer-focus-visible:[&>span]:ring-2 peer-focus-visible:[&>span]:ring-[#3879AD]">
-              <span
-                className={clsx(
-                  'flex size-[18.4px] items-center justify-center rounded-[4px] transition-colors duration-150',
-                  s.terminate ? 'bg-[#51C8B4]' : 'border-[2.4px] border-[#9F9FA1] bg-white',
-                )}
-              >
-                {s.terminate && (
-                  <svg width="12" height="9" viewBox="0 0 14 10" aria-hidden>
-                    <path d="M1.5 5.2l3.6 3.3L12.5 1.5" fill="none" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
-              </span>
-            </span>
-            <span className={clsx('ml-[-13px] flex-1 text-[16px] leading-[20px] tracking-[0.32px]', navy)}>Säg upp mitt nuvarande elavtal åt mig i samband med nyteckningen.</span>
-          </label>
-          {s.terminate && (
-            <div className="flex flex-col motion-safe:animate-[rise_.3s_ease-out_both]">
-              <Label>Välj datum då elavtalet avslutas</Label>
-              <DateInput label="Välj datum" value={s.endDate} error={s.touched && !s.endDate} onChange={(v) => set({ endDate: v })} />
-              <Label>Adress - nuvarande elavtal</Label>
-              <FramedField label="Adress">
-                <input aria-label="Adress - nuvarande elavtal" className={fieldInput} value={s.oldAddress} onChange={(e) => set({ oldAddress: e.target.value })} />
-              </FramedField>
-              <p className="pt-[12px] text-[12px] leading-[16px] text-[#767678]">
-                Notera att vi kan bara hjälpa dig med uppsägningen om det är du personligen som står på elavtalet.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-      <Foot>
-        <button
-          type="button"
-          aria-disabled={!valid}
-          onClick={() => (valid ? go(5) : set({ touched: true }))}
-          className={clsx(
-            'flex h-12 shrink-0 items-center justify-center gap-[10px] rounded-full border-2',
-            valid ? 'border-[#214766] bg-[#214766] text-white hover:bg-[#112E46]' : 'border-[#EEEEF0] bg-[#EEEEF0] text-[#BEBEC0]',
-            press,
-          )}
-        >
-          <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px]">Fortsätt</span>
-          <ArrowRight size={18} width={1.6} />
-        </button>
-      </Foot>
+      </Shell>
+      <Foot className="min-[1024px]:hidden">{fortsatt}</Foot>
     </>
   )
 }
@@ -761,11 +864,16 @@ const PoaSheet = ({ name, onClose }: { name: string; onClose: () => void }) => {
   }, [onClose])
   if (!mounted) return null
   return createPortal(
-    <div className="fixed inset-0 z-50 flex flex-col justify-end" role="dialog" aria-modal aria-labelledby="el-poa-title">
+    <div
+      className="fixed inset-0 z-50 flex flex-col justify-end min-[1024px]:items-center min-[1024px]:justify-center min-[1024px]:p-[24px]"
+      role="dialog"
+      aria-modal
+      aria-labelledby="el-poa-title"
+    >
       <button type="button" aria-label="Stäng" className="absolute inset-0 bg-black/30" onClick={onClose} />
       <div
         className={clsx(
-          'relative mx-auto flex max-h-[90dvh] w-full max-w-[430px] flex-col overflow-y-auto rounded-t-[20px] bg-white pb-[max(25px,env(safe-area-inset-bottom))] shadow-[0_-4px_24px_rgba(0,0,0,0.15)] motion-safe:animate-[rise_.3s_ease-out_both]',
+          'relative mx-auto flex max-h-[90dvh] w-full max-w-[430px] flex-col overflow-y-auto rounded-t-[20px] bg-white pb-[max(25px,env(safe-area-inset-bottom))] shadow-[0_-4px_24px_rgba(0,0,0,0.15)] motion-safe:animate-[rise_.3s_ease-out_both] min-[1024px]:max-w-[520px] min-[1024px]:rounded-[20px]',
           navy,
         )}
       >
@@ -803,102 +911,111 @@ const PoaSheet = ({ name, onClose }: { name: string; onClose: () => void }) => {
 export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
   const o = offerById(s.selected)
   const [poaOpen, setPoaOpen] = useState(false)
+  const sign = (
+    <>
+      {/* Samtycket i foten i stället för en kryssruta: att signera är att godkänna (David 20/10). */}
+      <p className={clsx('text-center text-[12px] leading-[16px] tracking-[0.32px] text-[#2B567C]')}>
+        {o.terms.map((seg, i) => (
+          <span key={i}>
+            {i > 0 ? ' ' : ''}
+            {seg.t === 'fullmakt' ? (
+              <button type="button" onClick={() => setPoaOpen(true)} className="font-bold text-[#51C8B4] underline-offset-2 hover:underline">
+                fullmakt
+              </button>
+            ) : (
+              <span className={seg.b ? 'font-bold text-[#51C8B4]' : undefined}>{seg.t}</span>
+            )}
+          </span>
+        ))}{' '}
+        <span className="whitespace-nowrap">14 dagars ångerrätt.</span>
+      </p>
+      <button
+        type="button"
+        onClick={() => go(6)}
+        className={clsx('flex h-12 shrink-0 items-center justify-center gap-[10px] rounded-full border-2 border-[#214766] bg-[#214766] hover:bg-[#112E46]', press)}
+      >
+        <BankIdIcon />
+        <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px] text-white">Teckna elavtal</span>
+      </button>
+    </>
+  )
   return (
     <>
-      <div className="flex flex-col px-[20px] pt-[15px] pb-6">
-        <Steps n={3} />
-        <Title onBack={() => go(3)}>Sammanfattning</Title>
-        {/* Bekräftelsen först: valet, priset och varför det är bra. Detaljerna på en rad. */}
-        <div className="flex flex-col overflow-clip rounded-[10px] border-2 border-[#51C8B4] bg-white shadow-[0_4px_8px_#00000014]">
-          <div className="flex min-h-[42px] items-center justify-between bg-[#ECF9F7] px-[20px] py-[10px]">
-            <span className="text-[14px] leading-[18px] font-bold tracking-[0.32px] text-[#1F6156]">Ett bra val</span>
-            <CheckCircle />
-          </div>
-          <div className="flex flex-col px-[20px] pt-[20px]">
-            <div className="flex items-center justify-between gap-[12px]">
-              <Logo src={o.logo} alt={o.name} className="h-9 w-[120px]" />
-              <div className="flex flex-col items-end">
-                <span className={clsx('pb-[2px] text-[12px] leading-[18px] tracking-[0.32px]', navy)}>Beräknad månadskostnad</span>
-                <Price value={priceFor(o, s.kwh)} size="card" tone={o.hasDiscount ? 'mint' : 'navy'} />
-              </div>
+      <Shell side={<div className="flex flex-col gap-[12px] rounded-[10px] bg-white p-[20px] shadow-[0_4px_8px_#00000014]">{sign}</div>}>
+        <div className="flex flex-col px-[20px] pt-[15px] pb-6 min-[1024px]:px-0">
+          <Steps n={3} />
+          <Title onBack={() => go(3)}>Sammanfattning</Title>
+          {/* Bekräftelsen först: valet, priset och varför det är bra. Detaljerna på en rad. */}
+          <div className="flex flex-col overflow-clip rounded-[10px] border-2 border-[#51C8B4] bg-white shadow-[0_4px_8px_#00000014]">
+            <div className="flex min-h-[42px] items-center justify-between bg-[#ECF9F7] px-[20px] py-[10px]">
+              <span className="text-[14px] leading-[18px] font-bold tracking-[0.32px] text-[#1F6156]">Ett bra val</span>
+              <CheckCircle />
             </div>
-            <div className="flex flex-col gap-[10px] pt-[16px] pb-[16px]">
-              <p className={clsx('flex items-center gap-[12px] text-[15px] leading-[20px]', navy)}>
-                <CheckCircle stroke={1.8} />
-                Ingen bindningstid
-              </p>
-              {/* Bara påståenden som stämmer: avtal utan rabatt (Tibber) får ingen rabattrad. */}
-              {(s.selected === RECOMMENDED || o.discountRow) && (
+            <div className="flex flex-col px-[20px] pt-[20px]">
+              <div className="flex items-center justify-between gap-[12px]">
+                <Logo src={o.logo} alt={o.name} className="h-9 w-[120px]" />
+                <div className="flex flex-col items-end">
+                  <span className={clsx('pb-[2px] text-[12px] leading-[18px] tracking-[0.32px]', navy)}>Beräknad månadskostnad</span>
+                  <Price value={priceFor(o, s.kwh)} size="card" tone={o.hasDiscount ? 'mint' : 'navy'} />
+                </div>
+              </div>
+              <div className="flex flex-col gap-[10px] pt-[16px] pb-[16px]">
                 <p className={clsx('flex items-center gap-[12px] text-[15px] leading-[20px]', navy)}>
                   <CheckCircle stroke={1.8} />
-                  {s.selected === RECOMMENDED ? 'Vårt bästa pris, förhandlad rabatt' : 'Förhandlad rabatt'}
+                  Ingen bindningstid
                 </p>
-              )}
-            </div>
-            <div className="flex items-center justify-between gap-[8px] border-t border-[#3879AD33] py-[6px]">
-              <div className={clsx('min-w-0 text-[15px] leading-[20px]', navy)}>
-                <p>
-                  <span className="whitespace-nowrap">Startar {shortDate(s.startDate)}</span> ·{' '}
-                  <span className="whitespace-nowrap">
-                    {HOME.street}, lgh {s.apartment || '1102'}
-                  </span>
-                </p>
-                {s.terminate && s.endDate && <p className="text-[13px] leading-[18px] text-[#2B567C]">Säg upp nuvarande elavtal {shortDate(s.endDate)}</p>}
+                {/* Bara påståenden som stämmer: avtal utan rabatt (Tibber) får ingen rabattrad. */}
+                {(s.selected === RECOMMENDED || o.discountRow) && (
+                  <p className={clsx('flex items-center gap-[12px] text-[15px] leading-[20px]', navy)}>
+                    <CheckCircle stroke={1.8} />
+                    {s.selected === RECOMMENDED ? 'Vårt bästa pris, förhandlad rabatt' : 'Förhandlad rabatt'}
+                  </p>
+                )}
               </div>
-              <button type="button" onClick={() => go(3)} className={clsx('-mr-[12px] flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-[8px] px-[12px]', press)}>
-                <span className="text-[14px] leading-[18px] font-bold text-[#3879AD]">Ändra</span>
-              </button>
-            </div>
-            <div className="flex flex-col border-t border-[#3879AD33] pb-[10px]">
-              <button
-                type="button"
-                aria-expanded={s.specOpen}
-                onClick={() => set({ specOpen: !s.specOpen })}
-                className={clsx('flex h-11 shrink-0 items-center justify-between text-left', press)}
-              >
-                <span className="text-[15px] leading-[18px] font-bold tracking-[0.32px] text-[#112E46]">Prisspecifikation</span>
-                <ChevronDown up={s.specOpen} />
-              </button>
-              {s.specOpen && (
-                <div className="flex flex-col pb-[10px] motion-safe:animate-[rise_.25s_ease-out_both]">
-                  <Row label="Uppskattad kostnad" value={`ca ${new Intl.NumberFormat('sv-SE').format(priceFor(o, s.kwh))} kr/mån`} />
-                  {o.discountRow && <Row label={o.discountRow.label} value={o.discountRow.value} />}
-                  <div className={clsx('mt-[15px] flex flex-col gap-[10px] rounded-[8px] bg-[#E8F0F8] p-[20px]', navy)}>
-                    <p className="text-[14px] leading-[18px] font-bold tracking-[0.32px]">Din elkostnad varierar</p>
-                    <p className="text-[14px] leading-[18px] tracking-[0.32px]">Kostnaden beror på elpris, inköpskostnader och din förbrukning. Elnätskostnad tillkommer.</p>
-                  </div>
+              <div className="flex items-center justify-between gap-[8px] border-t border-[#3879AD33] py-[6px]">
+                <div className={clsx('min-w-0 text-[15px] leading-[20px]', navy)}>
+                  <p>
+                    <span className="whitespace-nowrap">Startar {shortDate(s.startDate)}</span> ·{' '}
+                    <span className="whitespace-nowrap">
+                      {HOME.street}, lgh {s.apartment || '1102'}
+                    </span>
+                  </p>
+                  {s.terminate && s.endDate && <p className="text-[13px] leading-[18px] text-[#2B567C]">Säg upp nuvarande elavtal {shortDate(s.endDate)}</p>}
                 </div>
-              )}
+                <button
+                  type="button"
+                  onClick={() => go(3)}
+                  className={clsx('-mr-[12px] flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-[8px] px-[12px]', press)}
+                >
+                  <span className="text-[14px] leading-[18px] font-bold text-[#3879AD]">Ändra</span>
+                </button>
+              </div>
+              <div className="flex flex-col border-t border-[#3879AD33] pb-[10px]">
+                <button
+                  type="button"
+                  aria-expanded={s.specOpen}
+                  onClick={() => set({ specOpen: !s.specOpen })}
+                  className={clsx('flex h-11 shrink-0 items-center justify-between text-left', press)}
+                >
+                  <span className="text-[15px] leading-[18px] font-bold tracking-[0.32px] text-[#112E46]">Prisspecifikation</span>
+                  <ChevronDown up={s.specOpen} />
+                </button>
+                {s.specOpen && (
+                  <div className="flex flex-col pb-[10px] motion-safe:animate-[rise_.25s_ease-out_both]">
+                    <Row label="Uppskattad kostnad" value={`ca ${new Intl.NumberFormat('sv-SE').format(priceFor(o, s.kwh))} kr/mån`} />
+                    {o.discountRow && <Row label={o.discountRow.label} value={o.discountRow.value} />}
+                    <div className={clsx('mt-[15px] flex flex-col gap-[10px] rounded-[8px] bg-[#E8F0F8] p-[20px]', navy)}>
+                      <p className="text-[14px] leading-[18px] font-bold tracking-[0.32px]">Din elkostnad varierar</p>
+                      <p className="text-[14px] leading-[18px] tracking-[0.32px]">Kostnaden beror på elpris, inköpskostnader och din förbrukning. Elnätskostnad tillkommer.</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <Foot>
-        {/* Samtycket i foten i stället för en kryssruta: att signera är att godkänna (David 20/10). */}
-        <p className={clsx('text-center text-[12px] leading-[16px] tracking-[0.32px] text-[#2B567C]')}>
-          {o.terms.map((seg, i) => (
-            <span key={i}>
-              {i > 0 ? ' ' : ''}
-              {seg.t === 'fullmakt' ? (
-                <button type="button" onClick={() => setPoaOpen(true)} className="font-bold text-[#51C8B4] underline-offset-2 hover:underline">
-                  fullmakt
-                </button>
-              ) : (
-                <span className={seg.b ? 'font-bold text-[#51C8B4]' : undefined}>{seg.t}</span>
-              )}
-            </span>
-          ))}{' '}
-          <span className="whitespace-nowrap">14 dagars ångerrätt.</span>
-        </p>
-        <button
-          type="button"
-          onClick={() => go(6)}
-          className={clsx('flex h-12 shrink-0 items-center justify-center gap-[10px] rounded-full border-2 border-[#214766] bg-[#214766] hover:bg-[#112E46]', press)}
-        >
-          <BankIdIcon />
-          <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px] text-white">Teckna elavtal</span>
-        </button>
-      </Foot>
+      </Shell>
+      <Foot className="min-[1024px]:hidden">{sign}</Foot>
       {poaOpen && <PoaSheet name={o.name} onClose={() => setPoaOpen(false)} />}
     </>
   )
@@ -920,7 +1037,7 @@ export const BankIdScreen = ({ go }: ScreenProps) => {
   }, [signing, go])
   const sign = () => setSigning(true)
   return (
-    <div className="flex flex-1 flex-col items-center px-[20px] pt-12 pb-10 text-center">
+    <div className="flex flex-1 flex-col items-center px-[20px] pt-12 pb-10 text-center min-[1024px]:mx-auto min-[1024px]:w-full min-[1024px]:max-w-[560px]">
       <div role="heading" aria-level={1} className={clsx('pb-[12px] text-[24px] leading-[30px] font-bold tracking-[0.32px]', navy)}>
         Signera med BankID
       </div>
@@ -982,7 +1099,7 @@ export const KlartScreen = ({ s }: ScreenProps) => {
     ['Adress', `${HOME.street}, ${HOME.zip} ${HOME.city}`],
   ]
   return (
-    <div className="flex flex-1 flex-col px-[16px] pt-6 pb-10">
+    <div className="flex flex-1 flex-col px-[16px] pt-6 pb-10 min-[1024px]:mx-auto min-[1024px]:w-full min-[1024px]:max-w-[560px]">
       <div className="flex flex-col items-center rounded-[16px] bg-white p-[20px] shadow-[0_4px_8px_#00000014] motion-safe:animate-[rise_.4s_ease-out_both]">
         <div role="heading" aria-level={1} className={clsx('pb-6 text-center text-[24px] leading-[28px] font-black', navy)}>
           Grattis till ett aktivt val av<span className="text-[#51C8B4]"> elavtal!</span>

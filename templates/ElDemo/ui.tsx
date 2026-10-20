@@ -160,6 +160,15 @@ export const Title = ({ children, onBack }: { children: React.ReactNode; onBack:
 )
 
 /** Fast fot. Sticky i stället för fixed: följer med både i mobilens helbredd och i desktopramen. */
+/** Desktop från 1024 px: stegets innehåll till vänster (640 px) och en sticky kolumn till höger (360 px). Under 1024 px är det bara innehållet, som förut. */
+export const DESKTOP = 'min-[1024px]'
+export const Shell = ({ children, side }: { children: React.ReactNode; side?: React.ReactNode }) => (
+  <div className="min-[1024px]:mx-auto min-[1024px]:grid min-[1024px]:w-full min-[1024px]:max-w-[1080px] min-[1024px]:grid-cols-[minmax(0,640px)_360px] min-[1024px]:items-start min-[1024px]:justify-between min-[1024px]:gap-[40px] min-[1024px]:px-[20px] min-[1024px]:pb-[48px]">
+    <div className="min-w-0">{children}</div>
+    {side ? <aside className="hidden min-[1024px]:sticky min-[1024px]:top-[76px] min-[1024px]:flex min-[1024px]:flex-col min-[1024px]:pt-[15px]">{side}</aside> : null}
+  </div>
+)
+
 export const Foot = ({ children, className }: { children: React.ReactNode; className?: string }) => (
   <div
     className={clsx(
