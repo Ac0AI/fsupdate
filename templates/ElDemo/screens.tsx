@@ -70,7 +70,9 @@ const Intro = () => (
     <p className={clsx('text-[16px] leading-[19.2px] font-bold tracking-[0.32px]', navy)}>Teckna nytt elavtal på 2 minuter. Vi säger upp ditt gamla åt dig, utan avgift.</p>
     <div className="flex items-center gap-[10px] pt-[4px]">
       <Shield />
-      <p className="text-[12px] leading-[14.4px] font-bold tracking-[0.32px] text-black">Över 50 000 flyttar med oss varje år. Därför får du rabatter vi har förhandlat fram.</p>
+      <p className="text-[12px] leading-[14.4px] font-bold tracking-[0.32px] text-black">
+        Över 50 000 flyttar med oss varje år. Därför får du rabatter du inte hittar någon annanstans.
+      </p>
     </div>
     <div className="flex items-center gap-[10px]">
       <Shield />
