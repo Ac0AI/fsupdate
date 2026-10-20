@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { clsx } from 'clsx'
 import { useDemoUser } from '@/common/data/useDemoUser'
-import { BASE_KWH, HOME, RECOMMENDED, dateStatus, defaultStart, tooEarlyExample } from './data'
+import { BASE_KWH, GRID_OWNER, HOME, RECOMMENDED, dateStatus, defaultStart, tooEarlyExample } from './data'
 import { BankIdScreen, DetaljerScreen, KlartScreen, PriserScreen, SammanfattningScreen, type ElState, type ScreenProps } from './screens'
 import { ArrowLeft, press } from './ui'
 
@@ -82,12 +82,15 @@ const DemoElFlow = () => {
   const scrollTarget = useRef<string | null>(step === 2 ? 'el-compare' : null)
   const lastScreen = useRef<number | null>(null)
 
+  /* ?natagare=0 visar texterna utan nätägare (fallbacken). Följer med vid varje steg. */
+  const noGrid = search.get('natagare') === '0'
   const url = useCallback(
-    (n: number) => {
+    (n: number, ng: boolean = noGrid) => {
       const prefix = params?.locale && params.locale !== 'sv' ? `/${params.locale}` : ''
-      return n === 0 ? `${prefix}/demo/el` : `${prefix}/demo/el?s=${n}`
+      const q = [n ? `s=${n}` : '', ng ? 'natagare=0' : ''].filter(Boolean).join('&')
+      return `${prefix}/demo/el${q ? `?${q}` : ''}`
     },
-    [params?.locale],
+    [params?.locale, noGrid],
   )
   const go = useCallback((n: number) => router.push(url(n), { scroll: false }), [router, url])
 
@@ -130,7 +133,7 @@ const DemoElFlow = () => {
     if (v !== step) router.replace(url(v), { scroll: false })
   }, [s, screen, step, router, url])
 
-  const props: ScreenProps = { s, set, go }
+  const props: ScreenProps = { s, set, go, grid: noGrid ? null : GRID_OWNER }
   const Screen = [PriserScreen, DetaljerScreen, SammanfattningScreen, BankIdScreen, KlartScreen][screen]
 
   return (
@@ -152,6 +155,13 @@ const DemoElFlow = () => {
         ))}
         <button type="button" onClick={restart} className="h-8 shrink-0 rounded-full px-3 text-[12px] text-white/70 hover:bg-white/10">
           Börja om
+        </button>
+        <button
+          type="button"
+          onClick={() => router.replace(url(step, !noGrid), { scroll: false })}
+          className="h-8 shrink-0 rounded-full border border-white/30 px-3 text-[12px] whitespace-nowrap text-white/85 hover:bg-white/10"
+        >
+          Nätägare: {noGrid ? 'saknas' : GRID_OWNER}
         </button>
       </nav>
       <div className="flex w-full flex-1 flex-col bg-[#F8FAF9] md:mx-auto md:my-6 md:min-h-[780px] md:max-w-[430px] md:flex-none md:overflow-clip md:rounded-[28px] md:border md:border-[#D5DDE5] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)] min-[1024px]:my-0 min-[1024px]:min-h-0 min-[1024px]:max-w-none min-[1024px]:flex-1 min-[1024px]:rounded-none min-[1024px]:border-0 min-[1024px]:shadow-none">

@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 import {
   HOME,
-  GRID_OWNER,
   OFFERS,
   RECOMMENDED,
   compareLevel,
@@ -57,6 +56,8 @@ export type ScreenProps = {
   s: ElState
   set: (patch: Partial<ElState>) => void
   go: (step: number) => void
+  /** Nätägaren på den nya adressen, null när den saknas (?natagare=0). */
+  grid: string | null
 }
 
 const navy = 'text-[#214766]'
@@ -296,19 +297,42 @@ const TYPES: HomeType[] = ['Lägenhet', 'Radhus', 'Villa']
 const fmtNum = (n: number) => new Intl.NumberFormat('sv-SE').format(n)
 
 /** Bostaden som en kompakt rad ovanför elavtalen. Får texten inte plats på en rad bryts den efter adressen. */
-const HomeRow = ({ s, set }: ScreenProps) => (
-  <div className="flex items-center gap-[10px] rounded-[10px] bg-white py-[12px] pr-[4px] pl-[16px] shadow-[0_4px_8px_#00000014]">
-    <Pin color="#214766" />
-    <p className={clsx('@container min-w-0 flex-1 text-[14px] leading-[20px]', navy)}>
-      <span>{HOME.street}</span>
-      <span className="hidden @min-[330px]:inline"> · </span>
-      <span className="block @min-[330px]:inline">
-        {s.homeType} · <b>{s.kvm}</b> kvm · <b>{fmtNum(s.kwh)}</b> kWh/år
+const Bolt = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden className="shrink-0">
+    <path d="M9 1.5L3 9h4.5L7 14.5 13 7H8.5L9 1.5z" fill="none" stroke="#51C8B4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+const HomeRow = ({ s, set, grid }: ScreenProps) => (
+  <div className="flex flex-col rounded-[10px] bg-white shadow-[0_4px_8px_#00000014]">
+    <div className="flex items-center gap-[10px] py-[12px] pr-[4px] pl-[16px]">
+      <Pin color="#214766" />
+      <p className={clsx('@container min-w-0 flex-1 text-[14px] leading-[20px]', navy)}>
+        <span>{HOME.street}</span>
+        <span className="hidden @min-[330px]:inline"> · </span>
+        <span className="block @min-[330px]:inline">
+          {s.homeType} · <b>{s.kvm}</b> kvm · <b>{fmtNum(s.kwh)}</b> kWh/år
+        </span>
+      </p>
+      <button type="button" onClick={() => set({ editHome: true })} className={clsx('flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-[8px] px-[12px]', press)}>
+        <span className="text-[14px] leading-[18px] font-bold text-[#3879AD]">Ändra</span>
+      </button>
+    </div>
+    {/* Nätägaren från samma GRID_OWNER som Klart. Saknas den gäller fallbacken. */}
+    <p className={clsx('flex items-start gap-[10px] border-t border-[#EEEEF0] py-[10px] pr-[16px] pl-[16px] text-[13px] leading-[18px]', navy)}>
+      <span className="pt-[1px]">
+        <Bolt />
+      </span>
+      <span>
+        {grid ? (
+          <>
+            Elnätet här är <b>{grid}</b>, det ordnar vi åt dig. Välj ditt elavtal nedan.
+          </>
+        ) : (
+          'Elnätet ordnar vi åt dig. Välj ditt elavtal nedan.'
+        )}
       </span>
     </p>
-    <button type="button" onClick={() => set({ editHome: true })} className={clsx('flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-[8px] px-[12px]', press)}>
-      <span className="text-[14px] leading-[18px] font-bold text-[#3879AD]">Ändra</span>
-    </button>
   </div>
 )
 
@@ -1133,7 +1157,7 @@ export const BankIdScreen = ({ go }: ScreenProps) => {
   )
 }
 
-export const KlartScreen = ({ s }: ScreenProps) => {
+export const KlartScreen = ({ s, grid }: ScreenProps) => {
   const o = offerById(s.selected)
   const rows: [string, string][] = [
     ['Elavtal', o.choice],
@@ -1167,7 +1191,7 @@ export const KlartScreen = ({ s }: ScreenProps) => {
           <ol className="flex flex-col">
             {[
               'Du får en bekräftelse på mejl inom kort.',
-              `Vi ordnar elnätet${GRID_OWNER ? ` hos ${GRID_OWNER}` : ''} till din nya adress med fullmakten${s.terminate ? ' och säger upp ditt nuvarande elavtal' : ''}.`,
+              `Vi ordnar elnätet${grid ? ` hos ${grid}` : ''} till din nya adress med fullmakten${s.terminate ? ' och säger upp ditt nuvarande elavtal' : ''}.`,
               `Elen är på från ${longDate(s.startDate)}. Vi skickar ett sms när allt är klart.`,
             ].map((text, i, all) => (
               <li key={i} className="flex gap-[12px]">
