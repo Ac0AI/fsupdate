@@ -23,6 +23,9 @@ import {
   formatOre,
   dateStatus,
   firstPossible,
+  MOVE_DAY,
+  toIso,
+  today,
   kwhFor,
   longDate,
   offerById,
@@ -61,6 +64,9 @@ export type ScreenProps = {
 }
 
 const navy = 'text-[#214766]'
+
+/** Under stegens knappar: inget blir bindande förrän signeringen i sista steget. */
+const Reassure = () => <p className="text-center text-[12px] leading-[16px] tracking-[0.32px] text-[#2B567C]">Inget bindande händer nu. Du signerar först i sista steget.</p>
 
 /* ---------- Skärm 1 · Priser ---------- */
 
@@ -558,14 +564,17 @@ export const PriserScreen = (p: ScreenProps) => {
       <Shell
         side={
           <DittVal o={chosen} kwh={s.kwh}>
-            <button
-              type="button"
-              onClick={() => go(3)}
-              className={clsx('flex h-12 w-full items-center justify-center gap-[10px] rounded-full border-2 border-[#214766] bg-[#214766] hover:bg-[#112E46]', press)}
-            >
-              <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px] whitespace-nowrap text-white">Välj elavtal</span>
-              <ArrowRight />
-            </button>
+            <div className="flex flex-col gap-[10px]">
+              <button
+                type="button"
+                onClick={() => go(3)}
+                className={clsx('flex h-12 w-full items-center justify-center gap-[10px] rounded-full border-2 border-[#214766] bg-[#214766] hover:bg-[#112E46]', press)}
+              >
+                <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px] whitespace-nowrap text-white">Välj elavtal</span>
+                <ArrowRight />
+              </button>
+              <Reassure />
+            </div>
           </DittVal>
         }
       >
@@ -579,22 +588,25 @@ export const PriserScreen = (p: ScreenProps) => {
         </div>
       </Shell>
       {s.editHome && <HomeSheet {...p} />}
-      <Foot className="!flex-row items-center !gap-[12px] min-[1024px]:hidden">
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className={clsx('truncate text-[12px] leading-[18px] tracking-[0.32px]', navy)}>{chosen.name}</span>
-          <Price value={priceFor(chosen, s.kwh)} size="foot" tone={chosen.hasDiscount ? 'mint' : 'navy'} />
+      <Foot className="min-[1024px]:hidden">
+        <div className="flex items-center gap-[12px]">
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className={clsx('truncate text-[12px] leading-[18px] tracking-[0.32px]', navy)}>{chosen.name}</span>
+            <Price value={priceFor(chosen, s.kwh)} size="foot" tone={chosen.hasDiscount ? 'mint' : 'navy'} />
+          </div>
+          <button
+            type="button"
+            onClick={() => go(3)}
+            className={clsx(
+              'flex h-12 min-w-[180px] items-center justify-center gap-[10px] rounded-full border-2 border-[#214766] bg-[#214766] py-[10px] pr-6 pl-8 hover:bg-[#112E46]',
+              press,
+            )}
+          >
+            <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px] whitespace-nowrap text-white">Välj elavtal</span>
+            <ArrowRight />
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => go(3)}
-          className={clsx(
-            'flex h-12 min-w-[180px] items-center justify-center gap-[10px] rounded-full border-2 border-[#214766] bg-[#214766] py-[10px] pr-6 pl-8 hover:bg-[#112E46]',
-            press,
-          )}
-        >
-          <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px] whitespace-nowrap text-white">Välj elavtal</span>
-          <ArrowRight />
-        </button>
+        <Reassure />
       </Foot>
     </>
   )
@@ -636,6 +648,29 @@ const HelpText = ({ children }: { children: React.ReactNode }) => (
 )
 const ErrorLine = ({ children }: { children: React.ReactNode }) => <p className="pt-[6px] text-[12px] leading-[16px] text-[#F25A43]">{children}</p>
 
+/** Varför datumet är förvalt: flyttdagen, dagen kunden får tillträde. Är ett annat datum valt går det att hoppa tillbaka till flyttdagen. */
+const DateHint = ({ value, onPick }: { value: string; onPick: (iso: string) => void }) => {
+  const cls = 'text-[12px] leading-[16px] text-[#767678]'
+  if (value === MOVE_DAY) return <p className={cls}>Din flyttdag, dagen du får tillträde till bostaden.</p>
+  const st = dateStatus(MOVE_DAY)
+  if (st === 'ok' || st === 'facility')
+    return (
+      <div className="flex flex-wrap items-center gap-x-[10px]">
+        <span className={cls}>Din flyttdag är {longDate(MOVE_DAY)}.</span>
+        <button type="button" onClick={() => onPick(MOVE_DAY)} className={clsx('-my-[8px] flex min-h-11 items-center text-[13px] font-bold text-[#3879AD]', press)}>
+          Välj flyttdagen
+        </button>
+      </div>
+    )
+  if (MOVE_DAY >= toIso(today()))
+    return (
+      <p className={cls}>
+        Din flyttdag {longDate(MOVE_DAY)} hinner vi inte med. Första möjliga startdag är {longDate(firstPossible())}.
+      </p>
+    )
+  return <p className={cls}>Första möjliga startdag är {longDate(firstPossible())}.</p>
+}
+
 const DateInput = ({ value, onChange, label, error, onHelp }: { value: string; onChange: (v: string) => void; label: string; error?: boolean; onHelp?: () => void }) => (
   <FramedField label={label} tone="date" error={error}>
     {/* Datumet skrivs som i Paper (2026-10-30) oavsett webbläsarens språk. Det riktiga datumfältet ligger osynligt ovanpå och öppnar kalendern. */}
@@ -675,19 +710,22 @@ export const DetaljerScreen = ({ s, set, go }: ScreenProps) => {
   const suggestion = firstPossible()
   const valid = detailsValid(s)
   const fortsatt = (
-    <button
-      type="button"
-      aria-disabled={!valid}
-      onClick={() => (valid ? go(5) : set({ touched: true }))}
-      className={clsx(
-        'flex h-12 shrink-0 items-center justify-center gap-[10px] rounded-full border-2',
-        valid ? 'border-[#214766] bg-[#214766] text-white hover:bg-[#112E46]' : 'border-[#EEEEF0] bg-[#EEEEF0] text-[#BEBEC0]',
-        press,
-      )}
-    >
-      <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px]">Fortsätt</span>
-      <ArrowRight size={18} width={1.6} />
-    </button>
+    <>
+      <button
+        type="button"
+        aria-disabled={!valid}
+        onClick={() => (valid ? go(5) : set({ touched: true }))}
+        className={clsx(
+          'flex h-12 shrink-0 items-center justify-center gap-[10px] rounded-full border-2',
+          valid ? 'border-[#214766] bg-[#214766] text-white hover:bg-[#112E46]' : 'border-[#EEEEF0] bg-[#EEEEF0] text-[#BEBEC0]',
+          press,
+        )}
+      >
+        <span className="text-[16px] leading-[18.4px] font-bold tracking-[0.32px]">Fortsätt</span>
+        <ArrowRight size={18} width={1.6} />
+      </button>
+      <Reassure />
+    </>
   )
   const [aptBlurred, setAptBlurred] = useState(false)
   const isApt = s.homeType === 'Lägenhet'
@@ -724,6 +762,7 @@ export const DetaljerScreen = ({ s, set, go }: ScreenProps) => {
                 onHelp={() => set({ dateHelp: !s.dateHelp })}
               />
               {s.dateHelp && <HelpText>Du kan välja ett datum inom 7 dagar, om du har din nya bostads anläggningsID.</HelpText>}
+              {st !== 'early' && <DateHint value={s.startDate} onPick={(v) => set({ startDate: v })} />}
               {st === 'early' && (
                 <div className="flex flex-col gap-[12px] rounded-[8px] bg-[#ECF9F7] px-[20px] py-[15px] text-[#123A33] motion-safe:animate-[rise_.3s_ease-out_both]">
                   <p className="text-[15px] leading-[18px] font-bold tracking-[0.32px]">Behöver du el inom 3 arbetsdagar?</p>
@@ -1106,7 +1145,8 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
  * självt: kunden trycker på BankID-ytan eller knappen, ser spinnern en kort stund som när
  * appen bekräftar, och hamnar på Klart.
  */
-export const BankIdScreen = ({ go }: ScreenProps) => {
+export const BankIdScreen = ({ s, go }: ScreenProps) => {
+  const o = offerById(s.selected)
   const [signing, setSigning] = useState(false)
   useEffect(() => {
     if (!signing) return
@@ -1119,7 +1159,12 @@ export const BankIdScreen = ({ go }: ScreenProps) => {
       <div role="heading" aria-level={1} className={clsx('pb-[12px] text-[24px] leading-[30px] font-bold tracking-[0.32px]', navy)}>
         Signera med BankID
       </div>
-      <p className={clsx('pb-[32px] text-[16px] leading-[20px]', navy)}>Starta din BankID-applikation på din mobil.</p>
+      <p className={clsx('pb-[12px] text-[16px] leading-[20px]', navy)}>Starta din BankID-applikation på din mobil.</p>
+      {/* Vad signaturen omfattar, så att sista steget inte skapar tvekan. Följer fullmaktens punkter (live) och gäller i 12 månader. */}
+      <p className="max-w-[350px] pb-[32px] text-[14px] leading-[20px] text-[#2B567C]">
+        I appen står fullmakten du skriver under: att Flyttsmart får hämta anläggningsuppgifter, ordna elnätet och teckna elavtalet med {o.name} på din nya adress
+        {s.terminate ? ', samt säga upp ditt nuvarande elavtal' : ''}. Den gäller i 12 månader.
+      </p>
       <button
         type="button"
         onClick={sign}
@@ -1159,6 +1204,7 @@ export const BankIdScreen = ({ go }: ScreenProps) => {
       <button type="button" onClick={() => go(5)} className={clsx('mt-[16px] flex h-11 items-center px-[16px]', press)}>
         <span className={clsx('text-[16px] font-bold underline underline-offset-4', navy)}>Avbryt</span>
       </button>
+      <p className="max-w-[350px] pt-[4px] text-[12px] leading-[16px] text-[#767678]">Avbryter du händer ingenting. Avtalet gäller först när du har skrivit under.</p>
     </div>
   )
 }
