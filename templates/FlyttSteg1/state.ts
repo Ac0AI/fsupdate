@@ -241,8 +241,7 @@ export const newId = () => Math.random().toString(36).slice(2, 8)
 
 export const FLOORS = ['BV', '1', '2', '3', '4', '5', '6', '7']
 export const PASS: [string, string][] = [
-  ['08-10', 'Förmiddag'],
-  ['10-12', 'Lunchtid'],
+  ['10-12', 'Förmiddag'],
   ['13-15', 'Tidig em.'],
   ['15-17', 'Sen em.'],
 ]
@@ -280,6 +279,8 @@ export const TILLVAL_LABEL: Record<Tillval, [string, string]> = {
 /** "i morgon mellan 10 och 12", "fredag 23/10 kl. 13-15" eller "snart", i sajtens egen form. */
 export const samtalText = (s?: Samtal) => {
   if (!s) return ''
+  // '2d' = löftet utan klockslag (David–Nils 21 okt).
+  if (s.pass === '2d') return 'inom två arbetsdagar'
   if (s.pass === 'nu') return 'snart'
   if (s.pass === 'flexibel') return s.dag
   if (s.iso) {

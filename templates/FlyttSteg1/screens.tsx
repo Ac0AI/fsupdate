@@ -80,7 +80,7 @@ import {
 import { useDemoUser } from '@/common/data/useDemoUser'
 import { writeDemoSession, type DemoAddress } from '@/common/data/demoPersona'
 import { ChevronDown } from './LiveMovePage'
-import { canCallNow, defaultSlot, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable, toIso } from './datum'
+import { canCallNow, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable, slotsFor, toIso } from './datum'
 
 export type Home = {
   from: string
@@ -140,10 +140,9 @@ const Sheet = ({ children }: { children: React.ReactNode }) => (
 
 /* 1 · Arket i dag: Begär offert */
 export const OffertScreen = ({ go, update }: ScreenProps) => {
-  /* Begär offert bokar nästa lediga pass direkt, som i dag när arket stängs, och visar bekräftelsen (David 20 okt). */
+  /* Begär offert skapar Opportunityn direkt och visar bekräftelsen med löftet: svar inom två arbetsdagar (David–Nils 21 okt). */
   const begar = () => {
-    const d = defaultSlot()
-    update({ samtal: { dag: fmtLong(d.dag), pass: d.pass, iso: toIso(d.dag) } })
+    update({ samtal: { dag: '', pass: '2d' } })
     go(4)
   }
   return (
@@ -336,16 +335,16 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
   const [tel, setTel] = useState(a.telefon)
   const [avbryt, setAvbryt] = useState(false)
   const [date, setDate] = useState<Date>(() => (a.samtal?.iso ? fromIso(a.samtal.iso) : nextSelectable()))
-  // Öppnas skärmen direkt från demoraden finns ingen bokning: boka den förvalda tiden så att texten stämmer.
+  // Öppnas skärmen direkt från demoraden finns ingen bokning: lägg löftet så att texten stämmer.
   useEffect(() => {
     if (a.samtal) return
-    const d = defaultSlot()
-    update({ samtal: { dag: fmtLong(d.dag), pass: d.pass, iso: toIso(d.dag) } })
+    update({ samtal: { dag: '', pass: '2d' } })
   }, [a.samtal, update])
-  const nu = canCallNow(date)
-  const slots = PASS.filter(([pass]) => !(hideMorning(date) && (pass === '08-10' || pass === '10-12')))
+  // Löftet är två arbetsdagar utan klockslag. Kunden kan välja ett tvåtimmarspass från i morgon, och den tiden prioriteras (21 okt).
+  const vald = !!a.samtal && a.samtal.pass !== '2d'
+  const slots = slotsFor(date)
   const valj = (pass: string) => {
-    update({ samtal: { dag: fmtLong(date), pass, iso: pass === 'nu' || pass === 'flexibel' ? undefined : toIso(date) } })
+    update({ samtal: { dag: fmtLong(date), pass, iso: toIso(date) } })
     setAndraTid(false)
   }
   return (
@@ -366,9 +365,11 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
           </button>
         </div>
         <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:text-[22px]! md:leading-[28px]!">
-          Tack! Vi kontaktar dig {samtalText(a.samtal)}.
+          {vald ? `Tack! Vi ringer dig ${samtalText(a.samtal)}.` : 'Tack! Vi hör av oss inom två arbetsdagar.'}
         </h1>
-        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Då går vi igenom din offert.</p>
+        <p className="mt-2 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
+          {vald ? 'Samtalet tar inte mer än tio minuter.' : 'Vi tar fram rätt underlag för din flytt och tittar på lediga flyttbilar, så att du får ett bra erbjudande.'}
+        </p>
         {/* En riktig knapp, inte en länk i texten (Nils 21 okt: "Ändra tid är inte tydlig knapp"). */}
         <button
           type="button"
@@ -377,23 +378,16 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
           className="mt-3 inline-flex h-10 items-center gap-2 rounded-[var(--radius-button)] border-[1.5px] border-[var(--color-secondary-main)] bg-white px-4 text-[14px] font-bold text-[var(--color-secondary-main)]"
         >
           <CalendarDays size={16} />
-          {andraTid ? 'Stäng' : 'Passar inte tiden? Ändra'}
+          {andraTid ? 'Stäng' : vald ? 'Ändra tid' : 'Välj en tid som passar dig'}
         </button>
         {andraTid && (
           <InfoCard className="mt-3 px-3 pb-4 pt-3 md:max-w-[400px]">
-            <button
-              type="button"
-              onClick={() => valj(nu ? 'nu' : 'flexibel')}
-              className="flex w-full items-center justify-between rounded-lg border border-[var(--color-inactive-main)] bg-white px-4 py-3 text-left"
-            >
-              <span className="text-[16px] font-bold text-[var(--color-text-main)]">{nu ? 'Ring mig nu' : 'Jag är flexibel'}</span>
-              <span className="text-[20px] text-[var(--color-inactive-grey-light)]">›</span>
-            </button>
-            <div className="mt-8">
+            <p className="text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">Vi ringer inom det pass du väljer. Samtalet tar inte mer än tio minuter.</p>
+            <div className="mt-3">
               <WeekPicker value={date} onChange={setDate} />
             </div>
-            <div className="mt-3 grid grid-cols-4 gap-2">
-              {slots.map(([pass]) => {
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {slots.map((pass) => {
                 const passed = isSlotPassed(pass, date)
                 const vald = a.samtal?.pass === pass && a.samtal?.iso === toIso(date)
                 return (
@@ -415,6 +409,9 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
             </div>
           </InfoCard>
         )}
+        <p className="mt-3 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">
+          Är det brådskande? Ring oss på <span className="font-bold text-[var(--color-text-main)]">08-12 00 88 22</span>, vardagar 9–17.
+        </p>
         <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-[var(--color-inactive-main)] bg-[#F8FAFC] px-4 py-3 md:max-w-[400px]">
           <div className="min-w-0 flex-1">
             <p className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Vi kontaktar dig på</p>
@@ -1488,7 +1485,7 @@ export const SaljareScreen = ({ a, home, update }: ScreenProps) => {
           </span>
         </div>
         <div className="mt-4 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4">
-          <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">{a.samtal ? `Samtal bokat ${samtalText(a.samtal)}` : 'Inget samtal bokat'}</p>
+          <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">{a.samtal ? (a.samtal.pass === '2d' ? 'Lovat: svar inom två arbetsdagar' : `Samtal bokat ${samtalText(a.samtal)}`) : 'Inget samtal bokat'}</p>
           <p className="text-[13px] text-[var(--color-inactive-dark)]">
             Flytthjälp{a.stad === 'ja' ? ' och flyttstäd' : ''}.{' '}
             {n === 0 ? 'Kunden har inte börjat svara.' : left > 0 ? `${left} frågor kvar att ställa i samtalet.` : 'Alla frågor besvarade.'} Svaren ligger på Opportunityn, guiden hoppar

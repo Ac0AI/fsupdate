@@ -24,12 +24,14 @@ export const maxDay = () => addDays(startOfWeek(new Date()), 13)
 
 export const CLOSING_HOUR = 17
 
-/** Dagen går att välja: vardag, inte passerad, inte efter stängning i dag, högst nästa vecka. */
+/** Dagen går att välja: vardag från i morgon, högst nästa vecka (David–Nils 21 okt: aldrig samma dag, brådskande ringer in). */
 export const isSelectable = (d: Date) => {
   if (!isBusinessDay(d) || isPastDay(d) || startOfDay(d) > maxDay()) return false
-  if (sameDay(d, new Date()) && new Date().getHours() >= CLOSING_HOUR) return false
+  if (sameDay(d, new Date())) return false
   return true
 }
+/** Passen kunden kan välja: 10–12, 13–15, 15–17. Måndag före 13 går inte (återkomster), fredag 15–17 går inte (21 okt). */
+export const slotsFor = (d: Date): string[] => ['10-12', '13-15', '15-17'].filter((p) => !(d.getDay() === 1 && p === '10-12') && !(d.getDay() === 5 && p === '15-17'))
 export const nextSelectable = () => {
   let d = startOfDay(new Date())
   for (let i = 0; i < 14 && !isSelectable(d); i++) d = addDays(d, 1)
