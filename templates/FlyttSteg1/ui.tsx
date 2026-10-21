@@ -40,6 +40,8 @@ export const PrimaryButton = ({
   onClick,
   tone = 'navy',
   disabled,
+  inactive,
+  onInactiveClick,
   className,
   rounded,
 }: {
@@ -47,22 +49,38 @@ export const PrimaryButton = ({
   onClick?: () => void
   tone?: 'orange' | 'navy' | 'outline' | 'ghost'
   disabled?: boolean
+  /** Ser ut som disabled men går att trycka på: klicket går till onInactiveClick (visa vilken fråga som saknas, David 21 okt). */
+  inactive?: boolean
+  onInactiveClick?: () => void
   className?: string
   rounded?: boolean
 }) => (
   // Grå knapp med läsbar text: sajtens disabled-variant läser färgerna från CSS-variabler, så de byts här.
-  <div className={clsx('w-full', className)} style={disabled ? DISABLED_VARS : undefined}>
+  <div className={clsx('w-full', className, inactive && 'cursor-pointer')} style={disabled || inactive ? DISABLED_VARS : undefined} onClick={inactive ? onInactiveClick : undefined}>
     <Button
       variant={tone === 'orange' ? 'orange' : tone === 'navy' ? 'primary' : tone === 'outline' ? 'outline' : 'ghostInverted'}
       withFullWidth
       fontSize={16}
-      disabled={disabled}
+      disabled={disabled || inactive}
       onClick={onClick ?? noop}
       text={children}
-      className={clsx('min-h-[48px]', rounded && '!rounded-xl', disabled && '!opacity-100 [-webkit-text-fill-color:#475569]')}
+      className={clsx('min-h-[48px]', rounded && '!rounded-xl', (disabled || inactive) && '!opacity-100 [-webkit-text-fill-color:#475569]', inactive && 'pointer-events-none')}
     />
   </div>
 )
+
+/** Grå Fortsätt: scrolla till första obesvarade frågan och låt den blinka grönt (David 21 okt, Nils runda 3). */
+export const visaSaknadFraga = () => {
+  const el = document.querySelector<HTMLElement>('[data-scroll] [data-kvar="1"]')
+  if (!el) return
+  el.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  el.style.transition = 'box-shadow 250ms ease'
+  el.style.borderRadius = '12px'
+  el.style.boxShadow = '0 0 0 4px #86EFAC'
+  window.setTimeout(() => {
+    el.style.boxShadow = '0 0 0 0 rgba(134,239,172,0)'
+  }, 1200)
+}
 
 export const TextLink = ({ children, onClick, className, muted }: { children: ReactNode; onClick?: () => void; className?: string; muted?: boolean }) => (
   <button type="button" onClick={onClick} className={clsx('text-[14px] font-bold', muted ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-secondary-main)]', className)}>
@@ -130,8 +148,9 @@ export const Why = ({ text }: { text: string }) => {
   )
 }
 
-export const Section = ({ title, sub, why, children, className, badge }: { title: string; sub?: string; why?: string; children: ReactNode; className?: string; badge?: ReactNode }) => (
-  <section className={className ?? 'mt-7'}>
+export const Section = ({ title, sub, why, children, className, badge, kvar }: { title: string; sub?: string; why?: string; children: ReactNode; className?: string; badge?: ReactNode; kvar?: boolean }) => (
+  // data-kvar: frågan saknar svar, dit scrollar grå Fortsätt.
+  <section className={className ?? 'mt-7'} data-kvar={kvar ? '1' : undefined}>
     <div className="flex items-start justify-between gap-3">
       <h2 className="relative text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">
         {title}
@@ -245,8 +264,10 @@ export const InfoRow = ({ label, value, action, onAction, first }: { label: stri
   </div>
 )
 
-export const InfoCard = ({ children, className }: { children: ReactNode; className?: string }) => (
-  <div className={clsx('rounded-[var(--radius-main)] border border-[var(--color-inactive-main)] bg-[var(--color-secondary-extra-extra-light)]', className)}>{children}</div>
+export const InfoCard = ({ children, className, kvar }: { children: ReactNode; className?: string; kvar?: boolean }) => (
+  <div className={clsx('rounded-[var(--radius-main)] border border-[var(--color-inactive-main)] bg-[var(--color-secondary-extra-extra-light)]', className)} data-kvar={kvar ? '1' : undefined}>
+    {children}
+  </div>
 )
 
 /** Streckad "Lägg till"-ruta. */
@@ -578,13 +599,13 @@ const FrameFooter = ({ cta, left, foot, onNext }: { cta: string; left: number; f
   return (
     <div className="md:flex md:items-center md:gap-5">
       <div className="md:hidden">
-        <PrimaryButton onClick={onNext} disabled={left > 0}>
+        <PrimaryButton onClick={onNext} inactive={left > 0} onInactiveClick={visaSaknadFraga}>
           {left > 0 ? kvar : cta}
         </PrimaryButton>
         <p className="mt-1.5 text-center text-[12px] leading-4 text-[var(--color-inactive-dark)]">{kort}</p>
       </div>
       <div className="hidden md:block md:w-[240px]">
-        <PrimaryButton onClick={onNext} disabled={left > 0}>
+        <PrimaryButton onClick={onNext} inactive={left > 0} onInactiveClick={visaSaknadFraga}>
           {cta}
         </PrimaryButton>
       </div>

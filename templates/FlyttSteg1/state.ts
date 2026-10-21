@@ -269,11 +269,12 @@ export const FONSTER_LABEL: Record<FonsterTyp, [string, string]> = {
   svaratkomliga: ['Svåråtkomliga', 'Högt upp eller svåra att nå'],
 }
 export const TILLVAL_LABEL: Record<Tillval, [string, string]> = {
-  packhjalp: ['Packhjälp', 'Vi packar, lån av flyttlådor ingår'],
-  lador: ['Lån av flyttlådor', 'Ingår i flytten, hemleverans kostar extra'],
-  bortforsling: ['Bortforsling', 'Återbruk ger RUT-avdrag, återvinning gör det inte'],
-  montering: ['Montering', 'Möbler som måste tas isär för att bäras ut, t.ex. garderober och sängar'],
-  forvaring: ['Förvaring', 'Mellan ut- och inflytt, per påbörjad månad'],
+  // Brödtexten säger vad som görs, inte vad som ingår eller kostar (David 21 okt). Villkoren hör hemma i tooltipen och offerten.
+  packhjalp: ['Packhjälp', 'Vi packar dina saker inför flytten'],
+  lador: ['Lån av flyttlådor', 'Lådor att packa i inför flytten'],
+  bortforsling: ['Bortforsling', 'Vi kör bort det du inte vill ha kvar'],
+  montering: ['Montering', 'Vi tar isär och sätter ihop möbler, t.ex. garderober och sängar'],
+  forvaring: ['Förvaring', 'Vi förvarar sakerna mellan ut- och inflytt'],
 }
 
 /** "i morgon mellan 10 och 12", "fredag 23/10 kl. 13-15" eller "snart", i sajtens egen form. */
