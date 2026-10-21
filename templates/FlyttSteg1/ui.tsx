@@ -2,7 +2,7 @@
 
 import { CalendarDays, Check, ChevronLeft, ChevronRight, ChevronUp, Minus, Plus, X } from 'lucide-react'
 import clsx from 'clsx'
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type CSSProperties, type KeyboardEvent as TangentEvent, type PointerEvent as PekEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import Button from '@/components/atoms/Button'
 import SiteChip from '@/components/atoms/Chip'
@@ -317,15 +317,18 @@ export const TextInput = ({
   placeholder,
   label,
   type = 'text',
+  autoFocus,
 }: {
   value: string
   onChange: (v: string) => void
   placeholder: string
   label: string
   type?: 'text' | 'tel' | 'number'
+  autoFocus?: boolean
 }) => (
   <input
     type={type}
+    autoFocus={autoFocus}
     inputMode={type === 'number' ? 'numeric' : type === 'tel' ? 'tel' : undefined}
     value={value}
     onChange={(e) => onChange(e.target.value)}
@@ -443,7 +446,7 @@ export const FloorRow = ({ value, onChange, more, onMore }: { value?: string; on
     </div>
     <div className="mt-2.5 flex items-center justify-between">
       <TextLink onClick={onMore} className="text-[13px]">
-        {more ? 'Tillbaka till raden' : 'Högre upp eller källare?'}
+        {more ? 'Tillbaka till raden' : 'Annan våning'}
       </TextLink>
       <button
         type="button"
@@ -602,7 +605,7 @@ export const Frame = ({
         />
       ))}
     </ol>
-    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-4 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4">
+    <div data-scroll className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-4 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4">
       <nav className="hidden md:sticky md:top-0 md:block" aria-label="Steg">
         <ol className="flex flex-col gap-1">
           {STEG.map((s, i) => {
@@ -757,15 +760,60 @@ export const WeekPicker = ({ value, onChange }: { value: Date; onChange: (d: Dat
  * Bärsträckan som reglage i steg om fem meter (David 20 okt), med Vet inte
  * bredvid. Värdet står stort ovanför, reglaget är obesvarat tills det rörts.
  */
+/**
+ * Reglagen visar värdet medan tummen dras men sparar först när den släpps (Nils 21 okt:
+ * nästa fråga dök upp och scrollade mitt i draget, och varje steg skrev till lagringen och laggade).
+ * Släpps tummen utanför reglaget fångas det på fönstret. Ett tryck utan drag sparar läget det står i.
+ */
+const useSlapp = (onChange: (v: number) => void) => {
+  const [drag, setDrag] = useState<number | null>(null)
+  const senast = useRef<number | null>(null)
+  const slapp = useCallback(
+    (v: number) => {
+      senast.current = null
+      setDrag(null)
+      onChange(v)
+    },
+    [onChange],
+  )
+  useEffect(() => {
+    if (drag === null) return
+    const upp = () => {
+      if (senast.current !== null) slapp(senast.current)
+    }
+    window.addEventListener('pointerup', upp)
+    window.addEventListener('pointercancel', upp)
+    window.addEventListener('touchend', upp)
+    return () => {
+      window.removeEventListener('pointerup', upp)
+      window.removeEventListener('pointercancel', upp)
+      window.removeEventListener('touchend', upp)
+    }
+  }, [drag, slapp])
+  const props = {
+    onChange: (e: ChangeEvent<HTMLInputElement>) => {
+      senast.current = Number(e.target.value)
+      setDrag(senast.current)
+    },
+    onPointerUp: (e: PekEvent<HTMLInputElement>) => slapp(Number(e.currentTarget.value)),
+    onKeyUp: (e: TangentEvent<HTMLInputElement>) => {
+      if (senast.current !== null) slapp(Number(e.currentTarget.value))
+    },
+  }
+  return { drag, props }
+}
+
 export const MeterSlider = ({ value, onChange }: { value: unknown; onChange: (v: Avstand) => void }) => {
   const svar = harAvstand(value) ? value : undefined
   const vetEj = svar === 'vet-ej'
   const tal = typeof svar === 'number' ? svar : 25
+  const { drag, props } = useSlapp(onChange)
+  const visat = drag ?? svar
   return (
     <div>
       <div className="flex items-center justify-between gap-3">
-        <span className={clsx('text-[22px] font-bold leading-7', svar === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>
-          {svar === undefined ? 'Dra för att välja' : avstandText(svar)}
+        <span className={clsx('text-[22px] font-bold leading-7', visat === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>
+          {visat === undefined ? 'Dra för att välja' : avstandText(visat)}
         </span>
         <Chip small selected={vetEj} onClick={() => onChange('vet-ej')}>
           Vet inte
@@ -777,12 +825,10 @@ export const MeterSlider = ({ value, onChange }: { value: unknown; onChange: (v:
           min={0}
           max={AVSTAND_MAX}
           step={AVSTAND_STEG}
-          value={tal}
+          value={drag ?? tal}
           aria-label="Bärsträcka i meter"
-          aria-valuetext={svar === undefined ? 'inget valt' : avstandText(svar)}
-          onChange={(e) => onChange(Number(e.target.value))}
-          // Ett tryck på reglaget utan att dra ger inget change-event. Då gäller läget det står i.
-          onPointerUp={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          aria-valuetext={visat === undefined ? 'inget valt' : avstandText(visat)}
+          {...props}
           className="mt-3 h-11 w-full cursor-pointer accent-[var(--color-secondary-main)]"
         />
       </div>
@@ -816,21 +862,22 @@ export const RangeSlider = ({
   label: string
 }) => {
   const svar = typeof value === 'number' ? value : undefined
+  const { drag, props } = useSlapp(onChange)
+  const visat = drag ?? svar
   return (
     <div>
-      <span className={clsx('block text-[18px] font-bold leading-6', svar === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>
-        {svar === undefined ? 'Dra för att välja' : text(svar)}
+      <span className={clsx('block text-[18px] font-bold leading-6', visat === undefined ? 'text-[var(--color-inactive-dark)]' : 'text-[var(--color-text-main)]')}>
+        {visat === undefined ? 'Dra för att välja' : text(visat)}
       </span>
       <input
         type="range"
         min={min}
         max={max}
         step={step}
-        value={svar ?? min}
+        value={drag ?? svar ?? min}
         aria-label={label}
-        aria-valuetext={svar === undefined ? 'inget valt' : text(svar)}
-        onChange={(e) => onChange(Number(e.target.value))}
-        onPointerUp={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+        aria-valuetext={visat === undefined ? 'inget valt' : text(visat)}
+        {...props}
         className="mt-2 h-11 w-full cursor-pointer accent-[var(--color-secondary-main)]"
       />
       <div className="flex justify-between text-[12px] text-[var(--color-inactive-dark)]" aria-hidden>
@@ -996,7 +1043,12 @@ export const Reveal = ({ show, children, scrollOnMount }: { show: boolean; child
     const t = nyss
       ? window.setTimeout(() => {
           vidMount.current = false
-          ref.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+          const el = ref.current
+          if (!el) return
+          // Ett högt kort (utrymme eller föremål med Klar-knapp) läggs högst upp så att hela kortet syns,
+          // en kort fråga centreras (Nils 21 okt: Klar hamnade under skärmen).
+          const synlig = (el.closest('[data-scroll]') as HTMLElement | null)?.clientHeight ?? window.innerHeight
+          el.scrollIntoView({ block: el.offsetHeight > synlig * 0.6 ? 'start' : 'center', behavior: 'smooth' })
         }, 450)
       : null
     return () => {

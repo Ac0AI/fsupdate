@@ -107,11 +107,23 @@ const DemoFlyttFlow = () => {
     const forra = html.style.overflow
     html.style.overflow = 'hidden'
     if (!v) return () => void (html.style.overflow = forra)
-    const upd = () => setVy({ top: v.offsetTop, height: v.height })
+    // Mäts en gång per bildruta och sätter bara state när måtten ändrats. Varje scroll-event gav annars
+    // en omritning av hela flödet och det laggade på iPhone (Nils 21 okt, steg 3).
+    let raf = 0
+    const upd = () => {
+      if (raf) return
+      raf = requestAnimationFrame(() => {
+        raf = 0
+        const top = Math.round(v.offsetTop)
+        const height = Math.round(v.height)
+        setVy((prev) => (prev && prev.top === top && prev.height === height ? prev : { top, height }))
+      })
+    }
     upd()
     v.addEventListener('resize', upd)
     v.addEventListener('scroll', upd)
     return () => {
+      if (raf) cancelAnimationFrame(raf)
       v.removeEventListener('resize', upd)
       v.removeEventListener('scroll', upd)
       html.style.overflow = forra

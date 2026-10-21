@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, Car, Check, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench, X } from 'lucide-react'
+import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, CalendarDays, Car, Check, Fence, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench, X } from 'lucide-react'
 import clsx from 'clsx'
 import GoogleColor from '@/public/images/GoogleColor.svg'
 import GoogleStar from '@/public/images/GoogleStar.svg'
@@ -19,6 +19,7 @@ import {
   HISS_LABEL,
   PASS,
   FRAMKOMLIGHET_LABEL,
+  type Framkomlighet,
   VANINGAR,
   TILLVAL_LABEL,
   TOTAL,
@@ -77,8 +78,8 @@ import {
   WindowIcon,
 } from './ui'
 import { useDemoUser } from '@/common/data/useDemoUser'
-import { writeDemoSession } from '@/common/data/demoPersona'
-import { AddressForm, ChevronDown } from './LiveMovePage'
+import { writeDemoSession, type DemoAddress } from '@/common/data/demoPersona'
+import { ChevronDown } from './LiveMovePage'
 import { canCallNow, defaultSlot, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable, toIso } from './datum'
 
 export type Home = {
@@ -365,12 +366,17 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
         <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:text-[22px]! md:leading-[28px]!">
           Tack! Vi kontaktar dig {samtalText(a.samtal)}.
         </h1>
-        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
-          Då går vi igenom din offert. Passar inte tiden?{' '}
-          <TextLink className="text-[14px]" onClick={() => setAndraTid((v) => !v)}>
-            {andraTid ? 'Stäng' : 'Ändra tid'}
-          </TextLink>
-        </p>
+        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">Då går vi igenom din offert.</p>
+        {/* En riktig knapp, inte en länk i texten (Nils 21 okt: "Ändra tid är inte tydlig knapp"). */}
+        <button
+          type="button"
+          aria-expanded={andraTid}
+          onClick={() => setAndraTid((v) => !v)}
+          className="mt-3 inline-flex h-10 items-center gap-2 rounded-[var(--radius-button)] border-[1.5px] border-[var(--color-secondary-main)] bg-white px-4 text-[14px] font-bold text-[var(--color-secondary-main)]"
+        >
+          <CalendarDays size={16} />
+          {andraTid ? 'Stäng' : 'Passar inte tiden? Ändra'}
+        </button>
         {andraTid && (
           <InfoCard className="mt-3 px-3 pb-4 pt-3 md:max-w-[400px]">
             <button
@@ -418,8 +424,10 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
               <p className="text-[16px] font-bold leading-6 text-[var(--color-text-main)]">{a.telefon}</p>
             )}
           </div>
+          {/* Dämpad tills kunden öppnar den, Spara i färg (Nils 21 okt: Ändra tog för mycket uppmärksamhet). */}
           <TextLink
-            className="text-[14px]"
+            muted={!andraNr}
+            className="text-[13px]"
             onClick={() => {
               if (andraNr && tel.trim()) update({ telefon: tel.trim() })
               setAndraNr((v) => !v)
@@ -533,7 +541,28 @@ const BIYTA_IKON: Record<BiytaTyp, React.ReactNode> = {
   forrad: <Archive size={14} />,
   garage: <Car size={14} />,
   uterum: <Sun size={14} />,
+  balkong: <Fence size={14} />,
   annat: <MoreHorizontal size={14} />,
+}
+
+/* En ruta för hela adressen, öppen med markören i direkt (Nils 21 okt). Sajtens adressförslag fyller den medan kunden skriver. */
+const AdressRuta = ({ address, onSave }: { address: DemoAddress; onSave: (a: DemoAddress) => void }) => {
+  const [text, setText] = useState([address.street, [address.zip, address.city].filter(Boolean).join(' ')].filter(Boolean).join(', '))
+  const spara = () => {
+    const [gata, ...rest] = text.split(',').map((s) => s.trim())
+    const m = rest.join(' ').match(/^(\d{3}\s?\d{2})?\s*(.*)$/)
+    onSave({ ...address, street: gata || address.street, zip: m?.[1] || address.zip, city: m?.[2] || address.city })
+  }
+  return (
+    <div>
+      <TextInput autoFocus value={text} onChange={setText} placeholder="Gatuadress, postnummer och ort" label="Adress" />
+      <div className="mt-2 flex justify-end">
+        <button type="button" onClick={spara} className="h-10 rounded-[var(--radius-button)] bg-[var(--color-secondary-main)] px-5 text-[14px] font-bold text-white">
+          Spara
+        </button>
+      </div>
+    </div>
+  )
 }
 
 /* 5 · Adresser */
@@ -559,7 +588,7 @@ export const AdresserScreen = (p: ScreenProps) => {
         >
           {andra === 'fran' && (
             <div className="mt-2">
-              <AddressForm
+              <AdressRuta
                 address={move.fromAddress}
                 onSave={(adr) => {
                   writeDemoSession({ fromAddress: adr })
@@ -599,7 +628,7 @@ export const AdresserScreen = (p: ScreenProps) => {
         >
           {andra === 'till' && (
             <div className="mt-2">
-              <AddressForm
+              <AdressRuta
                 address={move.toAddress}
                 onSave={(adr) => {
                   writeDemoSession({ toAddress: adr })
@@ -621,7 +650,6 @@ export const AdresserScreen = (p: ScreenProps) => {
             </Chip>
           ))}
         </ChipRow>
-        {a.sammaDag === 'nej' && <InfoNote>Vi förvarar sakerna tills du kan flytta in. Säljaren räknar in förvaringen i priset.</InfoNote>}
       </Section>
     </Q>
   )
@@ -746,30 +774,26 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
       </Reveal>
       <Reveal show={visaFramkomlighet}>
         <Section
-          title="Hur är framkomligheten?"
-          sub={
-            lagenhet
-              ? 'God betyder att bilen kommer nära och trappan är vanlig. Annat: innergård, smal trapp, bom eller trång gata.'
-              : 'God betyder att bilen kommer fram till huset. Annat: grusväg, smal infart eller trappor i trädgården.'
-          }
+          title="Är det lätt att komma fram med flyttbilen?"
+          sub={lagenhet ? 'Hinder kan vara innergård, smal trapp, bom eller trång gata.' : 'Hinder kan vara grusväg, smal infart eller trappor i trädgården.'}
         >
           <ChipRow>
-            {(Object.keys(FRAMKOMLIGHET_LABEL) as Array<'god' | 'annat'>).map((v) => (
-              <Chip key={v} selected={s.framkomlighetVal === v} onClick={() => set({ framkomlighetVal: v, framkomlighet: v === 'god' ? '' : s.framkomlighet })}>
+            {(Object.keys(FRAMKOMLIGHET_LABEL) as Framkomlighet[]).map((v) => (
+              <Chip key={v} selected={s.framkomlighetVal === v} onClick={() => set({ framkomlighetVal: v, framkomlighet: v === 'hinder' ? s.framkomlighet : '' })}>
                 {FRAMKOMLIGHET_LABEL[v]}
               </Chip>
             ))}
           </ChipRow>
-          {s.framkomlighetVal === 'annat' && (
+          <Reveal show={s.framkomlighetVal === 'hinder'}>
             <div className="mt-3">
               <TextInput
                 value={s.framkomlighet}
                 onChange={(v) => set({ framkomlighet: v })}
-                placeholder={lagenhet ? 'T.ex. innergård, smal trapp' : 'T.ex. grusväg eller smal infart'}
-                label="Framkomlighet"
+                placeholder={lagenhet ? 'Vad är det för hinder? T.ex. innergård, smal trapp' : 'Vad är det för hinder? T.ex. grusväg, smal infart'}
+                label="Hinder"
               />
             </div>
-          )}
+          </Reveal>
         </Section>
       </Reveal>
     </Q>
@@ -959,6 +983,17 @@ export const StadScreen = (p: ScreenProps) => {
       else fonster[t] = n
       return { fonster, fonsterInga: false }
     })
+  // Reveal: en fråga i taget även här (Nils 21 okt). Det som redan är svarat stannar kvar.
+  const ytorKlara = a.stadYta === 'boyta' || (a.stadYta === 'mer' && a.stadYtor.length > 0 && a.stadYtor.every((y) => y.klar))
+  const visaBalkong = ytorKlara || a.balkong !== undefined
+  const balkongSvarad = !!a.balkongStorlek && !!a.balkongGlas
+  const balkongKlar = a.balkong === 'nej' || (a.balkong === 'ja' && balkongSvarad)
+  const visaFonster = (visaBalkong && balkongKlar) || Object.keys(a.fonster).length > 0 || a.fonsterInga
+  const fonsterKlara = Object.keys(a.fonster).length > 0 || a.fonsterInga
+  const visaKansliga = (visaFonster && fonsterKlara) || a.kansliga !== undefined
+  // Balkongkortet stänger sig när båda frågorna är svarade, Ändra öppnar det igen (Nils 21 okt).
+  const [balkongOppen, setBalkongOppen] = useState(false)
+  const balkongText = [a.balkongStorlek === 'liten' ? 'Liten' : a.balkongStorlek === 'mellan' ? 'Mellan' : 'Stor', a.balkongGlas === 'hel' ? 'helinglasad' : 'halvinglasad'].join(' · ')
   return (
     <Q p={p} idx={FIRST + 4} title="Flyttstädning">
       <Section title="Vill du ha pris på flyttstädning också?" sub="Nöjd-kund-garanti: anmärkningar vid besiktningen åtgärdas kostnadsfritt." className="mt-4">
@@ -1020,34 +1055,56 @@ export const StadScreen = (p: ScreenProps) => {
               </div>
             )}
           </Section>
-          <Section title="Har du inglasad balkong?">
-            <ChoiceRow options={JA_NEJ} value={a.balkong} onChange={(v) => update({ balkong: v })} />
-            {a.balkong === 'ja' && (
-              <SubCard className="mt-3">
-                <Field label="Hur stor är den?" sub="Liten under 6 m², mellan 6–8 m², stor över 8 m².">
-                  <ChoiceRow
-                    options={[
-                      ['liten', 'Liten'],
-                      ['mellan', 'Mellan'],
-                      ['stor', 'Stor'],
-                    ]}
-                    value={a.balkongStorlek}
-                    onChange={(v) => update({ balkongStorlek: v })}
-                  />
-                </Field>
-                <Field label="Inglasning">
-                  <ChoiceRow
-                    options={[
-                      ['halv', 'Halv'],
-                      ['hel', 'Hel'],
-                    ]}
-                    value={a.balkongGlas}
-                    onChange={(v) => update({ balkongGlas: v })}
-                  />
-                </Field>
-              </SubCard>
-            )}
-          </Section>
+          <Reveal show={visaBalkong}>
+            <Section title="Har du inglasad balkong?">
+              <ChoiceRow options={JA_NEJ} value={a.balkong} onChange={(v) => update({ balkong: v })} />
+              {a.balkong === 'ja' && balkongSvarad && !balkongOppen && (
+                <div className="mt-3 flex items-center justify-between gap-3 rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-inactive-main)] bg-white px-4 py-3">
+                  <span className="flex min-w-0 items-center gap-2 text-[14px] text-[var(--color-text-main)]">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D]">
+                      <Check size={12} strokeWidth={3} />
+                    </span>
+                    <span className="truncate">{balkongText}</span>
+                  </span>
+                  <TextLink onClick={() => setBalkongOppen(true)}>Ändra</TextLink>
+                </div>
+              )}
+              {a.balkong === 'ja' && (!balkongSvarad || balkongOppen) && (
+                <Reveal show scrollOnMount>
+                  <SubCard className="mt-3">
+                    <Field label="Hur stor är den?" sub="Liten under 6 m², mellan 6–8 m², stor över 8 m².">
+                      <ChoiceRow
+                        options={[
+                          ['liten', 'Liten'],
+                          ['mellan', 'Mellan'],
+                          ['stor', 'Stor'],
+                        ]}
+                        value={a.balkongStorlek}
+                        onChange={(v) => {
+                          update({ balkongStorlek: v })
+                          if (a.balkongGlas) setBalkongOppen(false)
+                        }}
+                      />
+                    </Field>
+                    <Field label="Inglasning">
+                      <ChoiceRow
+                        options={[
+                          ['halv', 'Halv'],
+                          ['hel', 'Hel'],
+                        ]}
+                        value={a.balkongGlas}
+                        onChange={(v) => {
+                          update({ balkongGlas: v })
+                          if (a.balkongStorlek) setBalkongOppen(false)
+                        }}
+                      />
+                    </Field>
+                  </SubCard>
+                </Reveal>
+              )}
+            </Section>
+          </Reveal>
+          <Reveal show={visaFonster}>
           <Section title="Har du fönster som tar extra tid att putsa?" sub="Ange antal per typ, eller välj att det inte finns några.">
             <div className="flex flex-col gap-2">
               {(Object.keys(FONSTER_LABEL) as FonsterTyp[]).map((t) => {
@@ -1086,19 +1143,22 @@ export const StadScreen = (p: ScreenProps) => {
               </button>
             </div>
           </Section>
-          <Section title="Finns det känsliga ytor?" sub="Natursten, oljade golv eller högglansluckor.">
-            <ChoiceRow options={JA_NEJ} value={a.kansliga} onChange={(v) => update({ kansliga: v })} />
-            {a.kansliga === 'ja' && (
-              <div className="mt-3">
-                <TextField
-                  value={a.kansligaText}
-                  onChange={(v) => update({ kansligaText: v })}
-                  placeholder="Vilka ytor och var? T.ex. marmorgolv i badrummet"
-                  label="Känsliga ytor"
-                />
-              </div>
-            )}
-          </Section>
+          </Reveal>
+          <Reveal show={visaKansliga}>
+            <Section title="Finns det känsliga ytor?" sub="Natursten, oljade golv eller högglansluckor.">
+              <ChoiceRow options={JA_NEJ} value={a.kansliga} onChange={(v) => update({ kansliga: v })} />
+              <Reveal show={a.kansliga === 'ja'}>
+                <div className="mt-3">
+                  <TextField
+                    value={a.kansligaText}
+                    onChange={(v) => update({ kansligaText: v })}
+                    placeholder="Vilka ytor och var? T.ex. marmorgolv i badrummet"
+                    label="Känsliga ytor"
+                  />
+                </div>
+              </Reveal>
+            </Section>
+          </Reveal>
         </>
       )}
     </Q>
@@ -1145,19 +1205,19 @@ export const SistaScreen = (p: ScreenProps) => {
           />
         </Section>
       )}
-      <Section title="Vill du ha något av det här?">
+      <Section title="Vill du ha hjälp med något mer?" sub="Kryssa i så tar vi med det i offerten.">
         <div className="flex flex-col gap-2">
           {(Object.keys(TILLVAL_LABEL) as Tillval[]).map((t) => (
             <CheckTile key={t} label={TILLVAL_LABEL[t][0]} hint={TILLVAL_LABEL[t][1]} selected={a.tillval.includes(t)} onClick={() => toggleTillval(t)} icon={TILLVAL_IKON[t]} />
           ))}
         </div>
       </Section>
-      <Section title="Bra att veta inför flytten">
+      <Section title="Något annat vi bör veta?" sub="Önskemål eller sådant som påverkar flytten.">
         <TextField
           value={a.ovrigt}
           onChange={(v) => update({ ovrigt: v })}
-          placeholder="Önskemål om flytten, t.ex. ömtåliga saker eller speciella omständigheter"
-          label="Bra att veta"
+          placeholder="T.ex. ömtåliga saker, parkering eller tider som inte passar"
+          label="Något annat vi bör veta"
         />
       </Section>
     </Q>
@@ -1173,7 +1233,7 @@ const adressLine = (label: string, s: AdressSvar) => {
     lagenhet ? vaningText(s.vaning) : null,
     lagenhet && s.hiss ? HISS_LABEL[s.hiss].toLowerCase().replace('vet inte', 'hiss: vet inte') : null,
     harAvstand(s.avstand) ? (s.avstand === 'vet-ej' ? 'bärsträcka: vet inte' : `${avstandText(s.avstand)} att bära`) : null,
-    s.framkomlighet || null,
+    s.framkomlighetVal === 'hinder' ? s.framkomlighet || 'hinder på vägen' : s.framkomlighetVal === 'vet-ej' ? 'framkomlighet: vet inte' : null,
   ].filter(Boolean)
   return `${label}: ${parts.join(', ')}`
 }

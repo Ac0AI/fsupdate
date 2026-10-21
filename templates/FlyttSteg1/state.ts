@@ -16,7 +16,8 @@ export type Hiss = 'stor' | 'liten' | 'nej' | 'vet-ej'
 /** Bärsträcka i meter i steg om 5, 100 = 100 m eller mer, eller Vet inte. */
 export type Avstand = number | 'vet-ej'
 export type Bohag = 'lite' | 'normalt' | 'mycket'
-export type BiytaTyp = 'kallare' | 'vind' | 'forrad' | 'garage' | 'uterum' | 'annat'
+export type Framkomlighet = 'god' | 'hinder' | 'vet-ej'
+export type BiytaTyp = 'kallare' | 'vind' | 'forrad' | 'garage' | 'uterum' | 'balkong' | 'annat'
 export type FonsterTyp = 'fyrsidiga' | 'sprojsade' | 'panorama' | 'svaratkomliga'
 export type Tillval = 'packhjalp' | 'lador' | 'bortforsling' | 'montering' | 'forvaring'
 
@@ -28,8 +29,8 @@ export type AdressSvar = {
   vaningFranFlytten: boolean
   hiss?: Hiss
   avstand?: Avstand
-  /** God eller Annat (Nils 20 okt). Annat öppnar fritexten. */
-  framkomlighetVal?: 'god' | 'annat'
+  /** Inga hinder, Det finns hinder eller Vet inte (Nils 21 okt: God/Annat var oklart). Hinder öppnar fritexten. */
+  framkomlighetVal?: Framkomlighet
   framkomlighet: string
   /** Radhus och villa: antal våningar 1, 1,5, 2, 3 eller 4+ (Nils 20 okt). */
   vaningar?: string
@@ -208,7 +209,7 @@ export const AVSTAND_STEG = 5
 export const AVSTAND_MAX = 100
 export const avstandText = (v: Avstand) => (v === 'vet-ej' ? 'Vet inte' : v >= AVSTAND_MAX ? `${AVSTAND_MAX} m eller mer` : `${v} m`)
 export const BOHAG_LABEL: Record<Bohag, string> = { lite: 'Lite bohag', normalt: 'Normalt bohag', mycket: 'Mycket bohag' }
-export const BIYTA_LABEL: Record<BiytaTyp, string> = { kallare: 'Källare', vind: 'Vind', forrad: 'Förråd', garage: 'Garage', uterum: 'Uterum', annat: 'Annat' }
+export const BIYTA_LABEL: Record<BiytaTyp, string> = { kallare: 'Källare', vind: 'Vind', forrad: 'Förråd', garage: 'Garage', uterum: 'Uterum', balkong: 'Balkong', annat: 'Annat' }
 export const BIYTA_KVM = ['5', '10', '20', '30', '50+']
 export const BIYTA_KVM_MAX = 50
 export const biytaKvmText = (n: number) => (n >= BIYTA_KVM_MAX ? `${BIYTA_KVM_MAX} m² eller mer` : `${n} m²`)
@@ -217,7 +218,7 @@ export const fulltText = (n: number) => FULLT_LABEL[n] ?? `${n} %`
 export const VIKT = ['0–80 kg', '80–150 kg', '150–200 kg', '200+ kg']
 export const VARDE = ['0–30 000 kr', '30 000–50 000 kr', '50 000–100 000 kr', '100 000+ kr']
 export const VANINGAR = ['1', '1,5', '2', '3', '4+']
-export const FRAMKOMLIGHET_LABEL: Record<'god' | 'annat', string> = { god: 'God', annat: 'Annat' }
+export const FRAMKOMLIGHET_LABEL: Record<Framkomlighet, string> = { god: 'Inga hinder', hinder: 'Det finns hinder', 'vet-ej': 'Vet inte' }
 export const FONSTER_LABEL: Record<FonsterTyp, [string, string]> = {
   fyrsidiga: ['Fyrsidiga', 'Två bågar, fyra sidor att putsa'],
   sprojsade: ['Spröjsade', 'Många små rutor'],
