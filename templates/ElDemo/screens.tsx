@@ -196,7 +196,7 @@ const RecommendedCard = ({ s, set }: ScreenProps) => {
             <span className={clsx('pt-[5px] text-[14px] leading-[18px] tracking-[0.32px]', navy)}>ingen bindningstid</span>
           </div>
           <div className="flex flex-col items-end">
-            <span className={clsx('pb-[5px] text-[12px] leading-[18px] tracking-[0.32px]', navy)}>Uppskattad kostnad</span>
+            <span className={clsx('pb-[5px] text-[12px] leading-[18px] tracking-[0.32px]', navy)}>Beräknad månadskostnad</span>
             <span className="pt-[4px]">
               <Price value={priceFor(o, s.kwh)} size="card" tone="mint" />
             </span>
@@ -1074,7 +1074,7 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
                 </button>
                 {s.specOpen && (
                   <div className="flex flex-col pb-[10px] motion-safe:animate-[rise_.25s_ease-out_both]">
-                    <Row label="Uppskattad kostnad" value={`ca ${new Intl.NumberFormat('sv-SE').format(priceFor(o, s.kwh))} kr/mån`} />
+                    <Row label="Beräknad månadskostnad" value={`ca ${new Intl.NumberFormat('sv-SE').format(priceFor(o, s.kwh))} kr/mån`} />
                     <PriceSpecTable id={o.id} kwh={s.kwh} />
                     <div className={clsx('mt-[15px] flex flex-col gap-[10px] rounded-[8px] bg-[#E8F0F8] p-[20px]', navy)}>
                       <p className="text-[14px] leading-[18px] font-bold tracking-[0.32px]">Din elkostnad varierar</p>
