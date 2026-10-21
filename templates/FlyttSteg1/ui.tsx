@@ -2,7 +2,17 @@
 
 import { CalendarDays, Check, ChevronLeft, ChevronRight, ChevronUp, Minus, Plus, X } from 'lucide-react'
 import clsx from 'clsx'
-import { useCallback, useEffect, useRef, useState, type ChangeEvent, type CSSProperties, type KeyboardEvent as TangentEvent, type PointerEvent as PekEvent, type ReactNode } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type CSSProperties,
+  type KeyboardEvent as TangentEvent,
+  type PointerEvent as PekEvent,
+  type ReactNode,
+} from 'react'
 import { createPortal } from 'react-dom'
 import Button from '@/components/atoms/Button'
 import SiteChip from '@/components/atoms/Chip'
@@ -149,7 +159,19 @@ const ROUTE_MID = 26
 const ROUTE_PAD = 12
 const ROUTE_GAP = 3
 
-export const RoutePoint = ({ kind, label, value, action, children }: { kind: 'fran' | 'stopp' | 'till'; label: string; value?: string; action?: ReactNode; children?: ReactNode }) => {
+export const RoutePoint = ({
+  kind,
+  label,
+  value,
+  action,
+  children,
+}: {
+  kind: 'fran' | 'stopp' | 'till'
+  label: string
+  value?: string
+  action?: ReactNode
+  children?: ReactNode
+}) => {
   const size = kind === 'stopp' ? 8 : 12
   // Ett stopp har bara etikett ovanför fältet, då står pricken mitt på etiketten.
   const markTop = (value ? ROUTE_MID : 8) - size / 2
@@ -566,6 +588,7 @@ export const Frame = ({
   done,
   onStep,
   onNext,
+  onBack,
   onClose,
 }: {
   step: number
@@ -580,12 +603,21 @@ export const Frame = ({
   done?: boolean[]
   onStep?: (i: number) => void
   onNext: () => void
+  /** Ett steg bakåt. Pilen ligger längst upp till vänster på alla bredder, krysset sparar och stänger (David 21 okt: man måste kunna backa). */
+  onBack?: () => void
   onClose: () => void
 }) => (
   <div className="flex h-full min-h-0 flex-1 flex-col bg-white">
-    <div className="flex items-center justify-between pl-4 pr-1 md:px-6 md:pt-3">
-      <span className="text-[13px] font-bold text-[var(--color-text-main)] md:text-[14px]">
-        Steg {step + 1} av {TOTAL} · {STEG[step]}
+    <div className={clsx('flex items-center justify-between pr-1 md:pt-3', onBack ? 'pl-1 md:px-3' : 'pl-4 md:px-6')}>
+      <span className="flex items-center gap-1">
+        {onBack && (
+          <button type="button" onClick={onBack} aria-label="Tillbaka" className="flex h-11 w-11 items-center justify-center rounded-full text-[var(--color-text-main)]">
+            <ChevronLeft size={22} />
+          </button>
+        )}
+        <span className="text-[13px] font-bold text-[var(--color-text-main)] md:text-[14px]">
+          Steg {step + 1} av {TOTAL} · {STEG[step]}
+        </span>
       </span>
       <span className="flex items-center gap-2">
         {savedBadge && <GreenBadge>{savedBadge}</GreenBadge>}
@@ -605,7 +637,10 @@ export const Frame = ({
         />
       ))}
     </ol>
-    <div data-scroll className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-4 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4">
+    <div
+      data-scroll
+      className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-4 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4"
+    >
       <nav className="hidden md:sticky md:top-0 md:block" aria-label="Steg">
         <ol className="flex flex-col gap-1">
           {STEG.map((s, i) => {

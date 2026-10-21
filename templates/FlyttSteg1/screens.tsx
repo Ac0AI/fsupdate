@@ -517,6 +517,7 @@ const Q = ({
       done={done}
       onStep={(i) => go(FIRST + i)}
       onNext={onNext ?? (() => next(idx))}
+      onBack={() => go(idx - 1)}
       onClose={() => go(0)}
     >
       {children}
@@ -993,7 +994,9 @@ export const StadScreen = (p: ScreenProps) => {
   const visaKansliga = (visaFonster && fonsterKlara) || a.kansliga !== undefined
   // Balkongkortet stänger sig när båda frågorna är svarade, Ändra öppnar det igen (Nils 21 okt).
   const [balkongOppen, setBalkongOppen] = useState(false)
-  const balkongText = [a.balkongStorlek === 'liten' ? 'Liten' : a.balkongStorlek === 'mellan' ? 'Mellan' : 'Stor', a.balkongGlas === 'hel' ? 'helinglasad' : 'halvinglasad'].join(' · ')
+  const balkongText = [a.balkongStorlek === 'liten' ? 'Liten' : a.balkongStorlek === 'mellan' ? 'Mellan' : 'Stor', a.balkongGlas === 'hel' ? 'helinglasad' : 'halvinglasad'].join(
+    ' · ',
+  )
   return (
     <Q p={p} idx={FIRST + 4} title="Flyttstädning">
       <Section title="Vill du ha pris på flyttstädning också?" sub="Nöjd-kund-garanti: anmärkningar vid besiktningen åtgärdas kostnadsfritt." className="mt-4">
@@ -1105,44 +1108,44 @@ export const StadScreen = (p: ScreenProps) => {
             </Section>
           </Reveal>
           <Reveal show={visaFonster}>
-          <Section title="Har du fönster som tar extra tid att putsa?" sub="Ange antal per typ, eller välj att det inte finns några.">
-            <div className="flex flex-col gap-2">
-              {(Object.keys(FONSTER_LABEL) as FonsterTyp[]).map((t) => {
-                const n = a.fonster[t] ?? 0
-                return (
-                  <div
-                    key={t}
-                    className={clsx(
-                      'flex items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] bg-white py-2 pl-3 pr-2',
-                      n > 0 ? 'border-[var(--color-secondary-main)]' : 'border-[var(--color-inactive-main)]',
-                    )}
-                  >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center text-[var(--color-secondary-main)]">
-                      <WindowIcon type={t} />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{FONSTER_LABEL[t][0]}</span>
-                      <span className="block text-[12px] leading-4 text-[var(--color-inactive-dark)]">{FONSTER_LABEL[t][1]}</span>
-                    </span>
-                    <Stepper value={n} min={0} onChange={(v) => setAntal(t, v)} />
-                  </div>
-                )
-              })}
-              <button
-                type="button"
-                aria-pressed={a.fonsterInga}
-                onClick={() => update({ fonsterInga: !a.fonsterInga, fonster: {} })}
-                className={clsx(
-                  'flex h-11 w-full items-center justify-center rounded-[var(--radius-button)] border-[1.5px] text-[15px] transition-colors',
-                  a.fonsterInga
-                    ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] font-bold text-white'
-                    : 'border-[var(--color-inactive-main)] bg-white text-[var(--color-text-main)]',
-                )}
-              >
-                Inga sådana fönster
-              </button>
-            </div>
-          </Section>
+            <Section title="Har du fönster som tar extra tid att putsa?" sub="Ange antal per typ, eller välj att det inte finns några.">
+              <div className="flex flex-col gap-2">
+                {(Object.keys(FONSTER_LABEL) as FonsterTyp[]).map((t) => {
+                  const n = a.fonster[t] ?? 0
+                  return (
+                    <div
+                      key={t}
+                      className={clsx(
+                        'flex items-center gap-3 rounded-[var(--radius-main)] border-[1.5px] bg-white py-2 pl-3 pr-2',
+                        n > 0 ? 'border-[var(--color-secondary-main)]' : 'border-[var(--color-inactive-main)]',
+                      )}
+                    >
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center text-[var(--color-secondary-main)]">
+                        <WindowIcon type={t} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[15px] font-bold leading-5 text-[var(--color-text-main)]">{FONSTER_LABEL[t][0]}</span>
+                        <span className="block text-[12px] leading-4 text-[var(--color-inactive-dark)]">{FONSTER_LABEL[t][1]}</span>
+                      </span>
+                      <Stepper value={n} min={0} onChange={(v) => setAntal(t, v)} />
+                    </div>
+                  )
+                })}
+                <button
+                  type="button"
+                  aria-pressed={a.fonsterInga}
+                  onClick={() => update({ fonsterInga: !a.fonsterInga, fonster: {} })}
+                  className={clsx(
+                    'flex h-11 w-full items-center justify-center rounded-[var(--radius-button)] border-[1.5px] text-[15px] transition-colors',
+                    a.fonsterInga
+                      ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] font-bold text-white'
+                      : 'border-[var(--color-inactive-main)] bg-white text-[var(--color-text-main)]',
+                  )}
+                >
+                  Inga sådana fönster
+                </button>
+              </div>
+            </Section>
           </Reveal>
           <Reveal show={visaKansliga}>
             <Section title="Finns det känsliga ytor?" sub="Natursten, oljade golv eller högglansluckor.">
