@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { getDemoUser, type DemoAddress } from '@/common/data/demoPersona'
 
 /*
  * Svaren i steg 1 utan pris. Frågorna följer Harrys Opportunity-sida ett till
@@ -22,12 +23,16 @@ export type FonsterTyp = 'fyrsidiga' | 'sprojsade' | 'panorama' | 'svaratkomliga
 export type Tillval = 'packhjalp' | 'lador' | 'bortforsling' | 'montering' | 'forvaring'
 
 export type AdressSvar = {
-  bostadstyp: Bostadstyp
+  /** Saknas tills kunden valt, om inte flytten redan säger lägenhet (våning eller hiss känd). */
+  bostadstyp?: Bostadstyp
+  bostadstypFranFlytten?: boolean
   /** Våning som text: 'BV', '1'…'7', fritt tal via Fler, eller 'vet-ej'. */
   vaning?: string
   /** Sant tills kunden själv rört våningen. Visar "Från din flytt". */
   vaningFranFlytten: boolean
   hiss?: Hiss
+  /** Hissen kom från flytten. Visar "Från din flytt". */
+  hissFranFlytten?: boolean
   avstand?: Avstand
   /** Inga hinder, Det finns hinder eller Vet inte (Nils 21 okt: God/Annat var oklart). Hinder öppnar fritexten. */
   framkomlighetVal?: Framkomlighet
@@ -87,15 +92,48 @@ export type Answers = {
   ovrigt: string
 }
 
-const FRAN: AdressSvar = { bostadstyp: 'lagenhet', vaning: '1', vaningFranFlytten: true, framkomlighet: '' }
-const TILL: AdressSvar = { bostadstyp: 'lagenhet', vaningFranFlytten: false, framkomlighet: '' }
+const TOM_ADRESS: AdressSvar = { vaningFranFlytten: false, framkomlighet: '' }
+
+/* Det flytten vet om en adress: våning och hiss finns på den sålda bostaden (från mäklaren), inget om den nya.
+   Finns våning eller hiss är det en lägenhet. Allt annat frågas (David 21 okt: datan ska stämma, inget påhittat). */
+const adressFranFlytten = (adr: Partial<DemoAddress> | null | undefined): AdressSvar => {
+  const vaning = typeof adr?.floor === 'number' ? (adr.floor === 0 ? 'BV' : String(adr.floor)) : undefined
+  const hiss: Hiss | undefined = adr?.elevator === 'big' ? 'stor' : adr?.elevator === 'small' ? 'liten' : adr?.elevator === 'none' ? 'nej' : undefined
+  const lagenhet = vaning !== undefined || hiss !== undefined
+  return {
+    ...TOM_ADRESS,
+    bostadstyp: lagenhet ? 'lagenhet' : undefined,
+    bostadstypFranFlytten: lagenhet,
+    vaning,
+    vaningFranFlytten: vaning !== undefined,
+    hiss,
+    hissFranFlytten: hiss !== undefined,
+  }
+}
+
+/** +46701234567 → 070-123 45 67, som sajten visar numret. */
+const fmtTel = (p?: string) => {
+  const d = (p ?? '').replace(/\D/g, '').replace(/^46/, '0')
+  return d.length === 10 ? `${d.slice(0, 3)}-${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}` : (p ?? '')
+}
+
+/** Startläget med det flytten redan vet: kundens nummer, våning och hiss på den sålda bostaden. */
+export const prefill = (): Answers => {
+  const u = getDemoUser()
+  return {
+    ...EMPTY,
+    telefon: fmtTel(u.contact?.phone) || EMPTY.telefon,
+    fran: adressFranFlytten(u.currentMove.fromAddress),
+    till: adressFranFlytten(u.currentMove.toAddress),
+  }
+}
 
 export const EMPTY: Answers = {
   telefon: '070-123 45 67',
   sent: false,
   stopp: [],
-  fran: FRAN,
-  till: TILL,
+  fran: TOM_ADRESS,
+  till: TOM_ADRESS,
   biytor: [],
   saker: [],
   stadYtor: [],
@@ -106,7 +144,7 @@ export const EMPTY: Answers = {
   ovrigt: '',
 }
 
-const KEY = 'flyttsmart-demo-flytt-steg1-v3'
+const KEY = 'flyttsmart-demo-flytt-steg1-v4'
 
 export const TOTAL = 6
 
@@ -114,6 +152,8 @@ export const TOTAL = 6
 export const harAvstand = (v: unknown): v is Avstand => typeof v === 'number' || v === 'vet-ej'
 
 const adressLeft = (s: AdressSvar) => {
+  // Utan bostadstyp: typen, bärsträckan och framkomligheten är minst tre frågor kvar.
+  if (!s.bostadstyp) return 3
   const lagenhet = s.bostadstyp === 'lagenhet'
   return [lagenhet && !s.vaning, lagenhet && !s.hiss, !lagenhet && !s.vaningar, !harAvstand(s.avstand), !s.framkomlighetVal].filter(Boolean).length
 }
@@ -138,7 +178,9 @@ export const questionsLeft = (a: Answers): number[] => [
   (!a.flyttDag ? 1 : 0) + (a.stad === 'ja' && !a.stadDag ? 1 : 0),
 ]
 
-const adressTouched = (s: AdressSvar) => !!(s.hiss || harAvstand(s.avstand) || s.framkomlighetVal || s.vaningar || !s.vaningFranFlytten)
+/** Kunden har rört steget: något som inte kom från flytten är svarat. (Förr räknades en tom adress som rörd, så Bära in låg ett steg för högt.) */
+const adressTouched = (s: AdressSvar) =>
+  !!((s.hiss && !s.hissFranFlytten) || harAvstand(s.avstand) || s.framkomlighetVal || s.vaningar || (s.vaning && !s.vaningFranFlytten) || (s.bostadstyp && !s.bostadstypFranFlytten))
 
 /** En flagga per steg: har kunden svarat på något där. */
 export const answeredQuestions = (a: Answers) => [
@@ -161,10 +203,12 @@ export const useDemoState = () => {
       const raw = window.sessionStorage.getItem(KEY)
       if (raw) {
         const saved = JSON.parse(raw) as Partial<Answers>
-        if (saved.fran && saved.till && Array.isArray(saved.stopp)) setAnswers({ ...EMPTY, ...saved })
-      }
+        if (saved.fran && saved.till && Array.isArray(saved.stopp)) setAnswers({ ...prefill(), ...saved })
+        else setAnswers(prefill())
+      } else setAnswers(prefill())
     } catch {
       // sessionStorage kan saknas, då börjar demon om varje gång
+      setAnswers(prefill())
     }
     setLoaded(true)
   }, [])
@@ -187,7 +231,7 @@ export const useDemoState = () => {
     } catch {
       // ignoreras
     }
-    setAnswers(EMPTY)
+    setAnswers(prefill())
   }, [])
 
   return { answers, update, reset, loaded }

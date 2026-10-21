@@ -152,13 +152,15 @@ const DemoFlyttFlow = () => {
       from: move.fromAddress?.street || 'Storgatan 12',
       to: move.toAddress?.street || 'nya adressen',
       fromKvm: move.fromResidenceSize || 62,
-      toKvm: 78,
+      // Nya bostadens storlek och typ kommer inte från mäklaren, så de frågas i Bära in (David 21 okt: datan ska stämma).
+      toKvm: undefined,
       moveDay: shortDay(move.movingDate),
       moveDayLong: longDay(move.movingDate),
       moveDateFull: fullDate(move.movingDate),
       moveDateIso: isoDate(move.movingDate),
       cleanDayLong: longDay(move.movingDate, 1),
       firstName: demoUser.profile?.firstName || 'Anna',
+      lastName: demoUser.profile?.lastName || 'Karlsson',
     }
   }, [demoUser])
 

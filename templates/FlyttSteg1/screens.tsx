@@ -86,13 +86,15 @@ export type Home = {
   from: string
   to: string
   fromKvm: number
-  toKvm: number
+  /** Okänd tills kunden fyller i den. */
+  toKvm?: number
   moveDay: string
   moveDayLong: string
   moveDateFull: string
   moveDateIso: string
   cleanDayLong: string
   firstName: string
+  lastName: string
 }
 
 export type ScreenProps = {
@@ -669,31 +671,40 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
   const [edit, setEdit] = useState(false)
   const ut = side === 'fran'
   const lagenhet = s.bostadstyp === 'lagenhet'
-  const kvm = s.kvm ?? String(ut ? home.fromKvm : home.toKvm)
+  const hus = s.bostadstyp === 'radhus' || s.bostadstyp === 'villa'
+  const kantKvm = ut ? home.fromKvm : home.toKvm
+  const kvm = s.kvm ?? (kantKvm ? String(kantKvm) : '')
   // Byte av bostadstyp nollar det som bara gäller lägenhet. Samma typ igen rör inget.
-  const valjTyp = (t: Bostadstyp) => set(t === s.bostadstyp ? {} : { bostadstyp: t, vaning: undefined, vaningFranFlytten: false, hiss: undefined })
+  const valjTyp = (t: Bostadstyp) =>
+    set(t === s.bostadstyp ? {} : { bostadstyp: t, bostadstypFranFlytten: false, vaning: undefined, vaningFranFlytten: false, hiss: undefined, hissFranFlytten: false })
+  // Saknas bostadstypen (nya bostaden: mäklaren skickar bara adressen) är kortet öppet som första fråga.
+  const oppen = edit || !s.bostadstyp
   // Reveal: en fråga i taget inom steget. Nästa visas när den förra är svarad, det förifyllda räknas som svarat.
   const vaningKlar = !lagenhet || !!s.vaning
   const hissKlar = !lagenhet || !!s.hiss
   // Det som redan är svarat stannar kvar även om en tidigare fråga ändras.
   const visaHiss = lagenhet && (vaningKlar || !!s.hiss)
-  const vaningarKlar = lagenhet || !!s.vaningar
-  const visaAvstand = (vaningKlar && hissKlar && vaningarKlar) || harAvstand(s.avstand)
+  const vaningarKlar = !hus || !!s.vaningar
+  const visaAvstand = (!!s.bostadstyp && vaningKlar && hissKlar && vaningarKlar) || harAvstand(s.avstand)
   const visaFramkomlighet = (visaAvstand && harAvstand(s.avstand)) || !!s.framkomlighetVal
   return (
     <Q
       p={p}
       idx={ut ? FIRST + 1 : FIRST + 2}
       title={ut ? `Utflytt från ${nb(home.from)}` : `Inflytt till ${nb(home.to)}`}
-      sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Ändra om något inte stämmer.' : 'Bostadstypen är hämtad från din flytt. Samma frågor för den nya bostaden.'}
+      sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Ändra om något inte stämmer.' : 'Samma frågor för den nya bostaden.'}
     >
-      {edit ? (
+      {oppen ? (
         <InfoCard className="mt-5 p-3.5">
           <div className="flex items-center justify-between">
-            <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Bostadstyp</span>
-            <TextLink className="text-[13px]" onClick={() => setEdit(false)}>
-              Klar
-            </TextLink>
+            <span className={clsx(s.bostadstyp ? 'text-[12px] leading-4 text-[var(--color-inactive-dark)]' : 'text-[15px] font-bold leading-5 text-[var(--color-text-main)]')}>
+              {s.bostadstyp ? 'Bostadstyp' : 'Vilken typ av bostad är det?'}
+            </span>
+            {s.bostadstyp && (
+              <TextLink className="text-[13px]" onClick={() => setEdit(false)}>
+                Klar
+              </TextLink>
+            )}
           </div>
           <div className="mt-2">
             <ChipRow>
@@ -705,15 +716,15 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
             </ChipRow>
           </div>
           <div className="mt-3">
-            <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Boarea i m²</span>
+            <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">{ut ? 'Boarea i m²' : 'Boarea i m², om du vet den'}</span>
             <div className="mt-1 w-40">
-              <TextInput type="number" value={kvm} onChange={(v) => set({ kvm: v })} placeholder="62" label="Boarea i m²" />
+              <TextInput type="number" value={kvm} onChange={(v) => set({ kvm: v })} placeholder={ut ? '62' : 'T.ex. 78'} label="Boarea i m²" />
             </div>
           </div>
         </InfoCard>
       ) : (
         <InfoCard className="mt-5">
-          <Row label="Bostadstyp" value={`${BOSTADSTYP_LABEL[s.bostadstyp]} · ${kvm || '?'} m²`} action="Ändra" onAction={() => setEdit(true)} first />
+          <Row label="Bostadstyp" value={`${s.bostadstyp ? BOSTADSTYP_LABEL[s.bostadstyp] : ''}${kvm ? ` · ${kvm} m²` : ''}`} action="Ändra" onAction={() => setEdit(true)} first />
         </InfoCard>
       )}
       {lagenhet && (
@@ -745,10 +756,10 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
             )}
           </Section>
           <Reveal show={visaHiss}>
-            <Section title="Finns det hiss?" sub="Stor hiss rymmer fem personer eller fler.">
+            <Section title="Finns det hiss?" sub="Stor hiss rymmer fem personer eller fler." badge={s.hissFranFlytten && s.hiss ? <GreenBadge>Från din flytt</GreenBadge> : undefined}>
               <ChipRow>
                 {(Object.keys(HISS_LABEL) as Hiss[]).map((h) => (
-                  <Chip key={h} selected={s.hiss === h} onClick={() => set({ hiss: h })}>
+                  <Chip key={h} selected={s.hiss === h} onClick={() => set({ hiss: h, hissFranFlytten: false })}>
                     {HISS_LABEL[h]}
                   </Chip>
                 ))}
@@ -757,7 +768,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
           </Reveal>
         </>
       )}
-      {!lagenhet && (
+      {hus && (
         <Section title="Hur många våningar har huset?" sub="Räkna med källare och inredd vind om vi ska bära där." why="Fler våningar betyder mer bärande inomhus innan sakerna når bilen.">
           <ChipRow>
             {VANINGAR.map((v) => (
@@ -1237,11 +1248,11 @@ const vaningText = (v?: string) => (v === 'vet-ej' ? 'våning: vet inte' : v ===
 const adressLine = (label: string, s: AdressSvar) => {
   const lagenhet = s.bostadstyp === 'lagenhet'
   const parts = [
-    BOSTADSTYP_LABEL[s.bostadstyp].toLowerCase(),
+    s.bostadstyp ? BOSTADSTYP_LABEL[s.bostadstyp].toLowerCase() : 'bostadstyp ej svarad',
     lagenhet ? vaningText(s.vaning) : null,
     lagenhet && s.hiss ? HISS_LABEL[s.hiss].toLowerCase().replace('vet inte', 'hiss: vet inte') : null,
     harAvstand(s.avstand) ? (s.avstand === 'vet-ej' ? 'bärsträcka: vet inte' : `${avstandText(s.avstand)} att bära`) : null,
-    s.framkomlighetVal === 'hinder' ? s.framkomlighet || 'hinder på vägen' : s.framkomlighetVal === 'vet-ej' ? 'framkomlighet: vet inte' : null,
+    s.framkomlighetVal === 'hinder' ? s.framkomlighet || 'hinder på vägen' : s.framkomlighetVal === 'vet-ej' ? 'framkomlighet: vet inte' : s.framkomlighetVal === 'god' ? 'inga hinder' : null,
   ].filter(Boolean)
   return `${label}: ${parts.join(', ')}`
 }
@@ -1290,10 +1301,11 @@ export const answerLines = (a: Answers, home: Home): string[] => {
 export type SvarRad = { label: string; value: string }
 export type SvarGrupp = { step: number; title: string; rows: SvarRad[] }
 
-const adressRows = (s: AdressSvar, kvm: number): SvarRad[] => {
+const adressRows = (s: AdressSvar, kvm?: number): SvarRad[] => {
   const lagenhet = s.bostadstyp === 'lagenhet'
+  const yta = s.kvm || kvm
   const rows: (SvarRad | null)[] = [
-    { label: 'Bostad', value: `${BOSTADSTYP_LABEL[s.bostadstyp]} · ${s.kvm || kvm} m²` },
+    { label: 'Bostad', value: s.bostadstyp ? `${BOSTADSTYP_LABEL[s.bostadstyp]}${yta ? ` · ${yta} m²` : ''}` : 'Ej svarat' },
     lagenhet && s.vaning ? { label: 'Våning', value: s.vaning === 'vet-ej' ? 'Vet inte' : s.vaning === 'BV' ? 'Bottenvåning' : s.vaning } : null,
     !lagenhet && s.vaningar ? { label: 'Våningar', value: s.vaningar } : null,
     lagenhet && s.hiss ? { label: 'Hiss', value: HISS_LABEL[s.hiss] } : null,
@@ -1412,8 +1424,11 @@ export const SaljareScreen = ({ a, home, update }: ScreenProps) => {
       <div className="rounded-2xl bg-white p-5 shadow-sm">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">{home.firstName} Andersson</p>
-            <p className="text-[13px] text-[var(--color-inactive-dark)]">Demomäklaren · flytt {home.moveDay}</p>
+            <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">
+              {home.firstName} {home.lastName}
+            </p>
+            {/* Kundens valda flyttdag om den finns, annars tillträdesdagen. */}
+            <p className="text-[13px] text-[var(--color-inactive-dark)]">Demomäklaren · flytt {a.flyttDag ? fmtLongDate(fromIso(a.flyttDag)) : home.moveDayLong}</p>
           </div>
           <span className="shrink-0 rounded-full bg-[var(--color-accent-lighter)] px-3 py-1 text-[12px] font-bold text-[var(--color-accent-dark-main)]">
             {n} av {TOTAL} steg
@@ -1423,7 +1438,7 @@ export const SaljareScreen = ({ a, home, update }: ScreenProps) => {
           <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">{a.samtal ? `Samtal bokat ${samtalText(a.samtal)}` : 'Inget samtal bokat'}</p>
           <p className="text-[13px] text-[var(--color-inactive-dark)]">
             Flytthjälp{a.stad === 'ja' ? ' och flyttstäd' : ''}.{' '}
-            {a.sent ? 'Alla steg klara.' : left > 0 ? `${left} frågor kvar att ställa i samtalet.` : 'Kunden har inte börjat svara.'} Svaren ligger på Opportunityn, guiden hoppar
+            {n === 0 ? 'Kunden har inte börjat svara.' : left > 0 ? `${left} frågor kvar att ställa i samtalet.` : 'Alla frågor besvarade.'} Svaren ligger på Opportunityn, guiden hoppar
             över det som redan är svarat.
           </p>
         </div>
@@ -1463,7 +1478,7 @@ export const OffertenScreen = ({ a, go, home }: ScreenProps) => {
     <div className="bg-[var(--color-inactive-quite-light)] px-4 py-6">
       <div className="rounded-2xl bg-white p-5 shadow-sm">
         <Eyebrow>Offert</Eyebrow>
-        <h1 className="mt-1 text-[22px]! font-bold leading-[28px]! text-[var(--color-text-main)]">Din flytt {home.moveDayLong}</h1>
+        <h1 className="mt-1 text-[22px]! font-bold leading-[28px]! text-[var(--color-text-main)]">Din flytt {a.flyttDag ? fmtLongDate(fromIso(a.flyttDag)) : home.moveDayLong}</h1>
         <p className="mt-1 text-[14px] text-[var(--color-inactive-dark)]">
           {home.from} till {home.to}. Gäller i sju dagar.
         </p>
@@ -1541,7 +1556,7 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
           <>
             <p className="flex flex-wrap items-center gap-2 text-[13px] text-[var(--color-text-main)] md:text-[15px]">
               <GreenBadge>Dina svar är sparade</GreenBadge>
-              Vi har priset klart när vi ringer.
+              Vi har priset klart när vi hör av oss.
             </p>
             <PrimaryButton className="mt-2.5 md:w-[260px]" tone="outline" onClick={() => go(DONE)}>
               Ändra svar
