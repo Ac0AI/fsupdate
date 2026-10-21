@@ -616,7 +616,7 @@ export const AdresserScreen = (p: ScreenProps) => {
             }
           >
             <div className="mt-1">
-              <TextInput value={s} onChange={(v) => setStopp(i, v)} placeholder="Adress, t.ex. ett förråd eller magasin" label={`Stopp ${i + 1}`} />
+              <TextInput value={s} onChange={(v) => setStopp(i, v)} placeholder="Adress, och vad som ska hämtas eller lämnas där" label={`Stopp ${i + 1}`} />
             </div>
           </RoutePoint>
         ))}
@@ -858,7 +858,7 @@ export const BohagScreen = (p: ScreenProps) => {
         ))}
       </div>
       <Reveal show={!!a.bohag || !!a.biytaSvar}>
-        <Section title="Har du saker i förråd eller annat utrymme utöver boarean?" why="Förråd, vind och källare syns inte i boarean men ska också få plats i bilen.">
+        <Section title="Har du saker i förråd eller annat utrymme utöver boarean?" why="Det som ligger i förråd, vind eller källare syns inte i boarean men ska också med i bilen. Berätta ungefär hur stort och hur fullt det är, så får flyttfirman en bild av bohaget.">
           <ChoiceRow
             options={JA_NEJ}
             value={a.biytaSvar}
@@ -1165,7 +1165,7 @@ export const StadScreen = (p: ScreenProps) => {
             </Section>
           </Reveal>
           <Reveal show={visaKansliga}>
-            <Section title="Finns det känsliga ytor?" sub="Natursten, oljade golv eller högglansluckor." why="Natursten, oljade golv och högglans kräver andra medel. Städfirman vill veta det i förväg.">
+            <Section title="Finns det känsliga ytor?" sub="T.ex. parkett, marmor, oljat trä, natursten eller lackade luckor." why="Ytor som kräver anpassad rengöring för att undvika skador. Städfirman vill veta det i förväg.">
               <ChoiceRow options={JA_NEJ} value={a.kansliga} onChange={(v) => update({ kansliga: v })} />
               <Reveal show={a.kansliga === 'ja'}>
                 <div className="mt-3">
@@ -1213,7 +1213,7 @@ export const SistaScreen = (p: ScreenProps) => {
         <DayPicker value={a.flyttDag} start={home.moveDateIso} label="Flyttdag" placeholder="Välj dag" onChange={(iso) => update({ flyttDag: iso })} ringText="tillträdesdagen" />
       </Section>
       {a.stad === 'ja' && (
-        <Section title="Vilken dag vill du ha flyttstädningen?" sub="Oftast dagen efter flytten, när bostaden är tömd.">
+        <Section title="Vilken dag vill du ha flyttstädningen?" sub="Oftast dagen efter flytten, när bostaden är tömd." why="Är du inte hemma när det städas behöver städfirman veta hur de kommer in. Det tar vi i samtalet.">
           <DayPicker
             value={a.stadDag}
             start={a.flyttDag ?? home.moveDateIso}
@@ -1225,7 +1225,7 @@ export const SistaScreen = (p: ScreenProps) => {
           />
         </Section>
       )}
-      <Section title="Vill du ha hjälp med något mer?" sub="Kryssa i så tar vi med det i offerten.">
+      <Section title="Vill du ha hjälp med något mer?" sub="Kryssa i så tar vi med det i offerten." why="Flyttlådor: räkna med ungefär 0,8 lådor per kvadratmeter boarea. Att låna dem ingår i flytten, hemleverans kostar extra. Vid bortforsling ger återbruk RUT-avdrag, återvinning gör det inte.">
         <div className="flex flex-col gap-2">
           {(Object.keys(TILLVAL_LABEL) as Tillval[]).map((t) => (
             <CheckTile key={t} label={TILLVAL_LABEL[t][0]} hint={TILLVAL_LABEL[t][1]} selected={a.tillval.includes(t)} onClick={() => toggleTillval(t)} icon={TILLVAL_IKON[t]} />

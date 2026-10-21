@@ -264,17 +264,17 @@ export const VARDE = ['0–30 000 kr', '30 000–50 000 kr', '50 000–100 000 k
 export const VANINGAR = ['1', '1,5', '2', '3', '4+']
 export const FRAMKOMLIGHET_LABEL: Record<Framkomlighet, string> = { god: 'Inga hinder', hinder: 'Det finns hinder', 'vet-ej': 'Vet inte' }
 export const FONSTER_LABEL: Record<FonsterTyp, [string, string]> = {
-  fyrsidiga: ['Fyrsidiga', 'Två bågar, fyra sidor att putsa'],
-  sprojsade: ['Spröjsade', 'Många små rutor'],
-  panorama: ['Panoramafönster', 'Stora glaspartier'],
+  fyrsidiga: ['Fyrsidiga', 'Öppnas åt alla håll, fyra sidor att putsa'],
+  sprojsade: ['Spröjsade', 'Spröjs som delar glaset i små rutor'],
+  panorama: ['Panoramafönster', 'Från golv till tak, kräver specialutrustning'],
   svaratkomliga: ['Svåråtkomliga', 'Högt upp eller svåra att nå'],
 }
 export const TILLVAL_LABEL: Record<Tillval, [string, string]> = {
   packhjalp: ['Packhjälp', 'Vi packar, lån av flyttlådor ingår'],
-  lador: ['Lån av flyttlådor', 'Levereras hem före flytten'],
-  bortforsling: ['Bortforsling', 'Återvinning av det som inte ska med'],
-  montering: ['Montering', 'Vi plockar isär och sätter ihop möbler som inte går in hela'],
-  forvaring: ['Förvaring', 'Mellan ut- och inflytt'],
+  lador: ['Lån av flyttlådor', 'Ingår i flytten, hemleverans kostar extra'],
+  bortforsling: ['Bortforsling', 'Återbruk ger RUT-avdrag, återvinning gör det inte'],
+  montering: ['Montering', 'Möbler som måste tas isär för att bäras ut, t.ex. garderober och sängar'],
+  forvaring: ['Förvaring', 'Mellan ut- och inflytt, per påbörjad månad'],
 }
 
 /** "i morgon mellan 10 och 12", "fredag 23/10 kl. 13-15" eller "snart", i sajtens egen form. */
