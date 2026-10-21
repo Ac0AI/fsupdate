@@ -676,7 +676,7 @@ export const Frame = ({
     </ol>
     <div
       data-scroll
-      className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-4 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-10 md:px-6 md:pb-8 md:pt-4"
+      className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-4 md:grid md:grid-cols-[220px_minmax(0,1fr)] md:items-start md:gap-12 md:px-8 md:pb-8 md:pt-4"
     >
       <nav className="hidden md:sticky md:top-0 md:block" aria-label="Steg">
         <ol className="flex flex-col gap-1">
@@ -694,7 +694,7 @@ export const Frame = ({
                       ? 'bg-[var(--color-secondary-extra-extra-light)] font-bold text-[var(--color-text-main)]'
                       : state === 'done'
                         ? 'text-[var(--color-text-main)] hover:bg-[var(--color-inactive-quite-light)]'
-                        : 'text-[var(--color-inactive-dark)]',
+                        : 'text-[var(--color-inactive-dark)] opacity-50',
                   )}
                 >
                   <span
@@ -716,7 +716,7 @@ export const Frame = ({
           })}
         </ol>
       </nav>
-      <div className="min-w-0 md:max-w-[560px]">
+      <div className="min-w-0 md:max-w-[720px]">
         <h1 className="relative text-[19px]! font-bold leading-[24px]! text-[var(--color-text-main)] md:text-[24px]! md:leading-[30px]!">
           {title}
           {why && <Why text={why} />}
@@ -725,7 +725,7 @@ export const Frame = ({
         {children}
       </div>
     </div>
-    <div className="shrink-0 border-t border-[var(--color-inactive-main)] bg-white px-4 py-3 md:py-4 md:pl-[264px] md:pr-6">
+    <div className="shrink-0 border-t border-[var(--color-inactive-main)] bg-white px-4 py-3 md:py-4 md:pl-[300px] md:pr-8">
       <FrameFooter cta={cta} left={left} foot={foot} onNext={onNext} />
     </div>
   </div>

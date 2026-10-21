@@ -1545,7 +1545,7 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
               Din offert är klar. Priset gäller i sju dagar, boka direkt eller ring oss om du har frågor.
             </p>
             <PrimaryButton className="mt-2.5 md:w-[260px]" onClick={() => go(OFFERTEN)}>
-              Visa offerten
+              Se offert
             </PrimaryButton>
           </>
         ) : a.manuell ? (
