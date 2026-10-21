@@ -87,26 +87,15 @@ export const Chip = ({ children, selected, onClick, small, icon }: { children: R
 
 export const ChipRow = ({ children }: { children: ReactNode }) => <div className="flex flex-wrap gap-2">{children}</div>
 
-/** Två eller tre val som delar bredden. */
+/** Ja/Nej och andra korta val som chips, samma vikt som övriga val (Nils 21 okt: de breda knapparna bröt hierarkin). */
 export const ChoiceRow = <T extends string>({ options, value, onChange }: { options: [T, string][]; value?: T; onChange: (v: T) => void }) => (
-  <div className="flex gap-2">
+  <ChipRow>
     {options.map(([v, label]) => (
-      <button
-        key={v}
-        type="button"
-        aria-pressed={value === v}
-        onClick={() => onChange(v)}
-        className={clsx(
-          'flex h-11 min-w-0 flex-1 items-center justify-center rounded-[var(--radius-button)] border-[1.5px] px-2 text-[15px] transition-colors',
-          value === v
-            ? 'border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] font-bold text-white'
-            : 'border-[var(--color-inactive-main)] bg-white text-[var(--color-text-main)]',
-        )}
-      >
+      <Chip key={v} selected={value === v} onClick={() => onChange(v)}>
         {label}
-      </button>
+      </Chip>
     ))}
-  </div>
+  </ChipRow>
 )
 
 /**

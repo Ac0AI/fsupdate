@@ -576,7 +576,13 @@ export const AdresserScreen = (p: ScreenProps) => {
   const { a, update, home } = p
   const move = useDemoUser().currentMove
   const [andra, setAndra] = useState<'fran' | 'till' | null>(null)
+  // Stoppet skrivs i ett fält med Klar, sedan en rad med Ändra (Nils 21 okt: saknade klar/spara).
+  const [stoppEdit, setStoppEdit] = useState<number | null>(null)
   const setStopp = (i: number, v: string) => update((prev) => ({ stopp: prev.stopp.map((s, j) => (j === i ? v : s)) }))
+  const taBortStopp = (i: number) => {
+    update((prev) => ({ stopp: prev.stopp.filter((_, j) => j !== i) }))
+    setStoppEdit(null)
+  }
   return (
     <Q p={p} idx={FIRST} title="Stämmer adresserna?" sub="Hämtade från din flytt. Ändra om något inte stämmer." foot="Svaren sparas när du går vidare. Vet du inte, välj Vet inte.">
       <RouteCard className="mt-5">
@@ -604,22 +610,44 @@ export const AdresserScreen = (p: ScreenProps) => {
             </div>
           )}
         </RoutePoint>
-        {a.stopp.map((s, i) => (
-          <RoutePoint
-            key={i}
-            kind="stopp"
-            label={`Stopp ${i + 1}`}
-            action={
-              <TextLink muted className="h-[44px] text-[13px]" onClick={() => update((prev) => ({ stopp: prev.stopp.filter((_, j) => j !== i) }))}>
-                Ta bort
-              </TextLink>
-            }
-          >
-            <div className="mt-1">
-              <TextInput value={s} onChange={(v) => setStopp(i, v)} placeholder="Adress, och vad som ska hämtas eller lämnas där" label={`Stopp ${i + 1}`} />
-            </div>
-          </RoutePoint>
-        ))}
+        {a.stopp.map((s, i) => {
+          const oppen = stoppEdit === i || !s.trim()
+          return (
+            <RoutePoint
+              key={i}
+              kind="stopp"
+              label={`Stopp ${i + 1}`}
+              value={oppen ? undefined : s}
+              action={
+                <span className="flex items-center gap-4">
+                  {!oppen && (
+                    <TextLink className="h-[44px]" onClick={() => setStoppEdit(i)}>
+                      Ändra
+                    </TextLink>
+                  )}
+                  <TextLink muted className="h-[44px] text-[13px]" onClick={() => taBortStopp(i)}>
+                    Ta bort
+                  </TextLink>
+                </span>
+              }
+            >
+              {oppen && (
+                <div className="mt-1">
+                  <TextInput autoFocus value={s} onChange={(v) => setStopp(i, v)} placeholder="Adress, och vad som ska hämtas eller lämnas där" label={`Stopp ${i + 1}`} />
+                  <div className="mt-2 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => (s.trim() ? setStoppEdit(null) : taBortStopp(i))}
+                      className="h-10 rounded-[var(--radius-button)] bg-[var(--color-secondary-main)] px-5 text-[14px] font-bold text-white"
+                    >
+                      Klar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </RoutePoint>
+          )
+        })}
         <RoutePoint
           kind="till"
           label="Till"
@@ -646,7 +674,12 @@ export const AdresserScreen = (p: ScreenProps) => {
         </RoutePoint>
       </RouteCard>
       <div className="mt-3">
-        <MoreLink onClick={() => update((prev) => ({ stopp: [...prev.stopp, ''] }))}>{a.stopp.length ? 'Lägg till ett stopp till' : 'Lägg till ett stopp på vägen'}</MoreLink>
+        <MoreLink
+          onClick={() => {
+            setStoppEdit(a.stopp.length)
+            update((prev) => ({ stopp: [...prev.stopp, ''] }))
+          }}
+        >{a.stopp.length ? 'Lägg till ett stopp till' : 'Lägg till ett stopp på vägen'}</MoreLink>
       </div>
       <Section title="Flyttar du ut och in samma dag?" sub="Om inte ordnar vi tillfällig förvaring däremellan." why="Flyttar du inte in samma dag behöver sakerna förvaras däremellan. Magasinering är ett tillval som vi kan ta med i offerten.">
         <ChipRow>
@@ -701,11 +734,6 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
             <span className={clsx(s.bostadstyp ? 'text-[12px] leading-4 text-[var(--color-inactive-dark)]' : 'text-[15px] font-bold leading-5 text-[var(--color-text-main)]')}>
               {s.bostadstyp ? 'Bostadstyp' : 'Vilken typ av bostad är det?'}
             </span>
-            {s.bostadstyp && (
-              <TextLink className="text-[13px]" onClick={() => setEdit(false)}>
-                Klar
-              </TextLink>
-            )}
           </div>
           <div className="mt-2">
             <ChipRow>
@@ -722,6 +750,14 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
               <TextInput type="number" value={kvm} onChange={(v) => set({ kvm: v })} placeholder={ut ? '62' : 'T.ex. 78'} label="Boarea i m²" />
             </div>
           </div>
+          {/* Klar som riktig knapp, inte en länk i hörnet (Nils 21 okt: otydlig och gömd, kortet stängdes aldrig). */}
+          {s.bostadstyp && (
+            <div className="mt-4">
+              <PrimaryButton tone="outline" onClick={() => setEdit(false)}>
+                Klar
+              </PrimaryButton>
+            </div>
+          )}
         </InfoCard>
       ) : (
         <InfoCard className="mt-5">
@@ -791,7 +827,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
       </Reveal>
       <Reveal show={visaFramkomlighet}>
         <Section
-          title="Är det lätt att komma fram med flyttbilen?"
+          title="Är det lätt att komma fram med flyttbil och personal?"
           why="Kan bilen inte komma nära bostaden tar flytten längre tid. Flyttfirman vill veta det i förväg för att planera rätt."
           sub={lagenhet ? 'Hinder kan vara innergård, smal trapp, bom eller trång gata.' : 'Hinder kan vara grusväg, smal infart eller trappor i trädgården.'}
         >
@@ -874,7 +910,13 @@ export const BohagScreen = (p: ScreenProps) => {
                 <Reveal key={b.id} show scrollOnMount={b.id === nytt.current}>
                   <ItemCard
                     title={b.typ ? BIYTA_LABEL[b.typ] : `Utrymme ${i + 1}`}
-                    onRemove={() => update((prev) => ({ biytor: prev.biytor.filter((x) => x.id !== b.id) }))}
+                    onRemove={() =>
+                      update((prev) => {
+                        const rest = prev.biytor.filter((x) => x.id !== b.id)
+                        // Sista kortet bort = svaret blir Nej, annars står kunden i ett tomt läge (Nils 21 okt).
+                        return rest.length ? { biytor: rest } : { biytor: rest, biytaSvar: 'nej' }
+                      })
+                    }
                     collapsed={!!b.klar && biytaKlar(b)}
                     summary={[typeof b.kvm === 'number' ? biytaKvmText(b.kvm) : null, typeof b.fullt === 'number' ? fulltText(b.fullt).toLowerCase() : null]
                       .filter(Boolean)
@@ -937,7 +979,12 @@ export const BohagScreen = (p: ScreenProps) => {
                 <Reveal key={s.id} show scrollOnMount={s.id === nytt.current}>
                   <ItemCard
                     title={s.vad || `Föremål ${i + 1}`}
-                    onRemove={() => update((prev) => ({ saker: prev.saker.filter((x) => x.id !== s.id) }))}
+                    onRemove={() =>
+                      update((prev) => {
+                        const rest = prev.saker.filter((x) => x.id !== s.id)
+                        return rest.length ? { saker: rest } : { saker: rest, sakerSvar: 'nej' }
+                      })
+                    }
                     collapsed={!!s.klar && sakKlar(s)}
                     summary={[s.vikt, s.varde].filter(Boolean).join(' · ')}
                     onDone={sakKlar(s) ? () => setSak(s.id, { klar: true }) : undefined}
@@ -1041,7 +1088,12 @@ export const StadScreen = (p: ScreenProps) => {
                   <Reveal key={y.id} show scrollOnMount={y.id === nytt.current}>
                     <ItemCard
                       title={y.typ ? BIYTA_LABEL[y.typ] : `Utrymme ${i + 1}`}
-                      onRemove={() => update((prev) => ({ stadYtor: prev.stadYtor.filter((x) => x.id !== y.id) }))}
+                      onRemove={() =>
+                        update((prev) => {
+                          const rest = prev.stadYtor.filter((x) => x.id !== y.id)
+                          return rest.length ? { stadYtor: rest } : { stadYtor: rest, stadYta: undefined }
+                        })
+                      }
                       collapsed={!!y.klar && ytaKlar(y)}
                       summary={typeof y.kvm === 'number' ? biytaKvmText(y.kvm) : undefined}
                       onDone={ytaKlar(y) ? () => setYta(y.id, { klar: true }) : undefined}
@@ -1225,13 +1277,6 @@ export const SistaScreen = (p: ScreenProps) => {
           />
         </Section>
       )}
-      <Section title="Vill du ha hjälp med något mer?" sub="Kryssa i så tar vi med det i offerten." why="Flyttlådor: räkna med ungefär 0,8 lådor per kvadratmeter boarea. Att låna dem ingår i flytten, hemleverans kostar extra. Vid bortforsling ger återbruk RUT-avdrag, återvinning gör det inte.">
-        <div className="flex flex-col gap-2">
-          {(Object.keys(TILLVAL_LABEL) as Tillval[]).map((t) => (
-            <CheckTile key={t} label={TILLVAL_LABEL[t][0]} hint={TILLVAL_LABEL[t][1]} selected={a.tillval.includes(t)} onClick={() => toggleTillval(t)} icon={TILLVAL_IKON[t]} />
-          ))}
-        </div>
-      </Section>
       <Section title="Något annat vi bör veta?" sub="Önskemål eller sådant som påverkar flytten.">
         <TextField
           value={a.ovrigt}
@@ -1239,6 +1284,13 @@ export const SistaScreen = (p: ScreenProps) => {
           placeholder="T.ex. ömtåliga saker, parkering eller tider som inte passar"
           label="Något annat vi bör veta"
         />
+      </Section>
+      <Section title="Vill du ha hjälp med något mer?" sub="Kryssa i så tar vi med det i offerten." why="Flyttlådor: räkna med ungefär 0,8 lådor per kvadratmeter boarea. Att låna dem ingår i flytten, hemleverans kostar extra. Vid bortforsling ger återbruk RUT-avdrag, återvinning gör det inte.">
+        <div className="flex flex-col gap-2">
+          {(Object.keys(TILLVAL_LABEL) as Tillval[]).map((t) => (
+            <CheckTile key={t} label={TILLVAL_LABEL[t][0]} hint={TILLVAL_LABEL[t][1]} selected={a.tillval.includes(t)} onClick={() => toggleTillval(t)} icon={TILLVAL_IKON[t]} />
+          ))}
+        </div>
       </Section>
     </Q>
   )
