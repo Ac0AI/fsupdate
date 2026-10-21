@@ -21,10 +21,22 @@ type Item = { type: string; icon: string; title: string; subtitle: string; link:
 
 const ITEMS: Item[] = [
   { type: 'movehelp', icon: '/Common/Move_help_new_PtPweqWxS.svg', title: 'Flytthjälp', subtitle: 'Få en prisvärd flyttoffert - anpassad för just din flytt.', link: 'Få offert' },
-  { type: 'moveclean', icon: '/Common/Cleaning_new_Mrf-43onJ.svg', title: 'Flyttstädning', subtitle: 'Jämför de bästa, mest prisvärda städfirmorna nära dig och boka direkt!', link: 'Boka flyttstädning' },
+  {
+    type: 'moveclean',
+    icon: '/Common/Cleaning_new_Mrf-43onJ.svg',
+    title: 'Flyttstädning',
+    subtitle: 'Jämför de bästa, mest prisvärda städfirmorna nära dig och boka direkt!',
+    link: 'Boka flyttstädning',
+  },
   { type: 'power', icon: '/Common/Electricity.svg', title: 'Elavtal', subtitle: 'Jämför, teckna och säg upp elavtal - Allt på ett ställe', link: 'Hantera elavtal' },
   { type: 'internet', icon: '/Common/Broadband_new_3cCspN6bV.svg', title: 'Bredband', subtitle: 'Se och jämför tillgängliga bredband till {{address}}', link: 'Hantera bredband' },
-  { type: 'insurance', icon: '/Common/Insurance_new_s4siMfSOoh.svg', title: 'Hemförsäkring', subtitle: 'Få hjälp med din hemförsäkring till {{address}}', link: 'Flytta hemförsäkring' },
+  {
+    type: 'insurance',
+    icon: '/Common/Insurance_new_s4siMfSOoh.svg',
+    title: 'Hemförsäkring',
+    subtitle: 'Få hjälp med din hemförsäkring till {{address}}',
+    link: 'Flytta hemförsäkring',
+  },
   { type: 'addresschange', icon: '/Common/Addresschange_new_wfU_gle-V.svg', title: 'Flyttanmälan', subtitle: 'Anmäl din flytt till Skatteverket här', link: 'Anmäl din flytt' },
 ]
 
@@ -43,7 +55,12 @@ export const ChevronDown = ({ className }: { className?: string }) => (
 
 const CalendarPlus = () => (
   <svg width="16" height="17" viewBox="0 0 16 17" fill="none" aria-hidden>
-    <path d="M8.489 14.129H3C2.724 14.129 2.5 13.905 2.5 13.629V3.629C2.5 3.353 2.724 3.129 3 3.129H13C13.276 3.129 13.5 3.353 13.5 3.629V9.126" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M8.489 14.129H3C2.724 14.129 2.5 13.905 2.5 13.629V3.629C2.5 3.353 2.724 3.129 3 3.129H13C13.276 3.129 13.5 3.353 13.5 3.629V9.126"
+      stroke="#fff"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
     <path d="M11 2.129V4.129M5 2.129V4.129M2.5 6.129H13.5M14.5 12.637H9.516M12.008 10.145V15.129" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )
@@ -56,7 +73,12 @@ const CloseThin = () => (
 
 /* En rad i den blå rutan: Från, Till, När. Som live: 70 px etikett, värdet från 88 px, och ett dragspel som fälls ut under raden. */
 const HeaderRow = ({ label, value, className, open, onToggle }: { label: string; value: string; className?: string; open: boolean; onToggle: () => void }) => (
-  <button type="button" aria-expanded={open} onClick={onToggle} className={clsx('relative flex h-10 w-full items-center rounded-[10px] text-left', open ? 'bg-[#3879AD]' : 'bg-[#214766]', className)}>
+  <button
+    type="button"
+    aria-expanded={open}
+    onClick={onToggle}
+    className={clsx('relative flex h-10 w-full items-center rounded-[10px] text-left', open ? 'bg-[#3879AD]' : 'bg-[#214766]', className)}
+  >
     <span className="flex h-10 w-[70px] shrink-0 items-center rounded-l-[10px] bg-[#3879AD] pl-2.5 text-lg font-bold text-white">{label}</span>
     <span className="absolute left-[88px] right-10 truncate text-lg font-bold text-white">{value}</span>
     <ChevronDown className={clsx('absolute right-3 text-white transition-transform', open && 'rotate-180')} />
@@ -64,7 +86,11 @@ const HeaderRow = ({ label, value, className, open, onToggle }: { label: string;
 )
 
 const SaveButton = ({ onClick }: { onClick: () => void }) => (
-  <button type="button" onClick={onClick} className="mt-2 inline-flex h-9 items-center justify-center rounded-full border-2 border-[var(--color-secondary-main)] px-10 text-[15px] font-bold text-[var(--color-secondary-main)]">
+  <button
+    type="button"
+    onClick={onClick}
+    className="mt-2 inline-flex h-9 items-center justify-center rounded-full border-2 border-[var(--color-secondary-main)] px-10 text-[15px] font-bold text-[var(--color-secondary-main)]"
+  >
     Spara
   </button>
 )
@@ -85,7 +111,9 @@ export const AddressForm = ({ address, kvm, onSave }: { address: DemoAddress; kv
         <TextInput value={city} onChange={setCity} placeholder="Ort" label="Ort" />
         {kvm !== undefined && <TextInput value={area} onChange={setArea} placeholder="Boarea (m²)" label="Boarea i kvadratmeter" type="number" />}
       </div>
-      <SaveButton onClick={() => onSave({ ...address, street: street.trim() || address.street, zip: zip.trim(), city: city.trim() }, kvm !== undefined ? Number(area) || kvm : undefined)} />
+      <SaveButton
+        onClick={() => onSave({ ...address, street: street.trim() || address.street, zip: zip.trim(), city: city.trim() }, kvm !== undefined ? Number(area) || kvm : undefined)}
+      />
     </div>
   )
 }
@@ -195,7 +223,7 @@ const LiveMovePage = ({ home, inline, card, onOffer }: Props) => {
             <div className="flex flex-col items-center justify-center gap-6 pt-4 md:flex-row md:items-start md:gap-8 md:pr-4 md:pt-3">
               <div className="flex w-full flex-col">
                 <p className="text-left text-[16px] leading-5 text-[var(--color-secondary-dark)]">Dags att göra din flytt smidig och stressfri.</p>
-                <p className="text-left text-[16px] leading-5 text-[var(--color-secondary-dark)]">Börja med att få kostnadsfria offerter från lokala flyttfirmor!</p>
+                <p className="text-left text-[16px] leading-5 text-[var(--color-secondary-dark)]">Börja med att få en kostnadsfri offert på flytthjälp och flyttstädning.</p>
                 <div className="flex items-end pt-[13px]">
                   <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full border border-[#bfbfbf]">
                     <Image src="/demo/flyttkoordinator.jpg" alt="" fill sizes="32px" className="object-cover object-center" />
@@ -208,7 +236,7 @@ const LiveMovePage = ({ home, inline, card, onOffer }: Props) => {
                 onClick={onOffer}
                 className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2.5 rounded-full border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-main)] py-2.5 pl-8 pr-4 text-[16px] font-bold text-white md:w-auto md:px-8 md:py-1"
               >
-                Få kostnadsfria offerter
+                Få kostnadsfri offert
                 <ArrowRightThin className="h-5 w-5" />
               </button>
             </div>
@@ -238,7 +266,11 @@ const LiveMovePage = ({ home, inline, card, onOffer }: Props) => {
         {ITEMS.map((item) => {
           if (item.type === 'movehelp' && inline) {
             return (
-              <div key={item.type} id="flytt-inline" className="mb-3 w-full scroll-mt-20 rounded-[8px] border-2 border-white bg-white p-3 shadow-[0_4px_8px_rgba(0,0,0,0.08)] md:p-5">
+              <div
+                key={item.type}
+                id="flytt-inline"
+                className="mb-3 w-full scroll-mt-20 rounded-[8px] border-2 border-white bg-white p-3 shadow-[0_4px_8px_rgba(0,0,0,0.08)] md:p-5"
+              >
                 {inline}
               </div>
             )

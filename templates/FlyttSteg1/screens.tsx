@@ -362,11 +362,10 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
           </button>
         </div>
         <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:text-[22px]! md:leading-[28px]!">
-          {vald ? `Tack! Vi ringer dig ${samtalText(a.samtal)}.` : 'Tack! Vi hör av oss inom två arbetsdagar.'}
+          {vald
+            ? `Tack! Vi ringer dig ${samtalText(a.samtal)} med ett skräddarsytt upplägg för din flytt.`
+            : 'Tack! Inom två arbetsdagar hör vi av oss med ett skräddarsytt upplägg för din flytt.'}
         </h1>
-        <p className="mt-2 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
-          {vald ? 'Samtalet tar inte mer än tio minuter.' : 'Vi tar fram rätt underlag för din flytt och tittar på lediga flyttbilar, så att du får ett bra erbjudande.'}
-        </p>
         {/* Telefonen som en rad, inte en låda: kunden ska förstå att vi kontaktar dem, inte stanna vid numret (David 21 okt). */}
         {andraNr ? (
           <div className="mt-3 flex items-end gap-3 md:max-w-[400px]">
@@ -380,7 +379,7 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
                 setAndraNr(false)
               }}
             >
-              Spara
+              Klar
             </TextLink>
           </div>
         ) : (
@@ -560,7 +559,7 @@ const AdressRuta = ({ address, onSave }: { address: DemoAddress; onSave: (a: Dem
       <TextInput autoFocus value={text} onChange={setText} placeholder="Gatuadress, postnummer och ort" label="Adress" />
       <div className="mt-2 flex justify-end">
         <button type="button" onClick={spara} className="h-10 rounded-[var(--radius-button)] bg-[var(--color-secondary-main)] px-5 text-[14px] font-bold text-white">
-          Spara
+          Klar
         </button>
       </div>
     </div>
@@ -647,7 +646,7 @@ export const AdresserScreen = (p: ScreenProps) => {
         <RoutePoint
           kind="till"
           label="Till"
-          value={`${home.to}, ${move.toAddress.city}`}
+          value={a.tillOkand ? 'Vet inte ännu' : `${home.to}, ${move.toAddress.city}`}
           action={
             andra === 'till' ? undefined : (
               <TextLink className="h-[44px]" onClick={() => setAndra('till')}>
@@ -662,9 +661,23 @@ export const AdresserScreen = (p: ScreenProps) => {
                 address={move.toAddress}
                 onSave={(adr) => {
                   writeDemoSession({ toAddress: adr })
+                  update({ tillOkand: false })
                   setAndra(null)
                 }}
               />
+              {/* Vet ej: t.ex. magasin först. Kunden som inte alls vet är inte målgruppen, men den som ska till magasin är (Nils 21 okt). */}
+              <p className="mt-3 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">
+                Vet du inte vart du flyttar än, till exempel om sakerna ska till magasin först?{' '}
+                <TextLink
+                  className="text-[13px]"
+                  onClick={() => {
+                    update({ tillOkand: true })
+                    setAndra(null)
+                  }}
+                >
+                  Jag vet inte ännu
+                </TextLink>
+              </p>
             </div>
           )}
         </RoutePoint>
@@ -714,30 +727,49 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
   const kvm = s.kvm ?? (kantKvm ? String(kantKvm) : '')
   // Byte av bostadstyp nollar det som bara gäller lägenhet. Samma typ igen rör inget.
   const valjTyp = (t: Bostadstyp) =>
-    set(t === s.bostadstyp ? {} : { bostadstyp: t, bostadstypFranFlytten: false, vaning: undefined, vaningFranFlytten: false, hiss: undefined, hissFranFlytten: false })
-  // Saknas bostadstypen (nya bostaden: mäklaren skickar bara adressen) är kortet öppet som första fråga.
-  const oppen = edit || !s.bostadstyp
+    set(
+      t === s.bostadstyp
+        ? {}
+        : { bostadstyp: t, bostadstypFranFlytten: false, bostadKlar: false, vaning: undefined, vaningFranFlytten: false, hiss: undefined, hissFranFlytten: false },
+    )
+  // Kortet är öppet tills kunden tryckt Klar, även när typ och boarea är förifyllda (David–Nils 21 okt: förifyllt passerar bara ögonen, fel kvadrat ger fel offert).
+  const oppen = edit || !s.bostadKlar
+  const kvmOk = Number(kvm) > 0
   // Reveal: en fråga i taget inom steget. Nästa visas när den förra är svarad, det förifyllda räknas som svarat.
   const vaningKlar = !lagenhet || !!s.vaning
   const hissKlar = !lagenhet || !!s.hiss
   // Det som redan är svarat stannar kvar även om en tidigare fråga ändras.
-  const visaHiss = lagenhet && (vaningKlar || !!s.hiss)
+  const visaHiss = lagenhet && (s.bostadKlar || (!!s.hiss && !s.hissFranFlytten)) && (vaningKlar || !!s.hiss)
   const vaningarKlar = !hus || !!s.vaningar
-  const visaAvstand = (!!s.bostadstyp && vaningKlar && hissKlar && vaningarKlar) || harAvstand(s.avstand)
+  const visaAvstand = (!!s.bostadKlar && vaningKlar && hissKlar && vaningarKlar) || harAvstand(s.avstand)
   const visaFramkomlighet = (visaAvstand && harAvstand(s.avstand)) || !!s.framkomlighetVal
+  // Nya adressen okänd (magasin först): steget hoppas över, frågorna tas på samtalet (Nils 21 okt).
+  if (!ut && a.tillOkand)
+    return (
+      <Q p={p} idx={FIRST + 2} title="Inflytt" sub="Du har ingen ny adress ännu." foot="Svaren sparas när du går vidare.">
+        <InfoCard className="mt-5 p-4">
+          <p className="text-[14px] leading-5 text-[var(--color-text-main)]">
+            Frågorna om den nya bostaden tar vi när vi hör av oss. Behöver du förvaring under tiden väljer du det under Sista detaljerna.
+          </p>
+          <div className="mt-3">
+            <TextLink onClick={() => update({ tillOkand: false })}>Jag vet adressen nu</TextLink>
+          </div>
+        </InfoCard>
+      </Q>
+    )
   return (
     <Q
       p={p}
       idx={ut ? FIRST + 1 : FIRST + 2}
       title={ut ? `Utflytt från ${nb(home.from)}` : `Inflytt till ${nb(home.to)}`}
-      sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Ändra om något inte stämmer.' : 'Samma frågor för den nya bostaden.'}
+      sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Bekräfta eller ändra.' : 'Samma frågor för den nya bostaden.'}
       foot="Svaren sparas när du går vidare. Vet du inte, välj Vet inte."
     >
       {oppen ? (
-        <InfoCard className="mt-5 p-3.5" kvar={!s.bostadstyp}>
+        <InfoCard className="mt-5 p-3.5" kvar={!s.bostadKlar}>
           <div className="flex items-center justify-between">
             <span className={clsx(s.bostadstyp ? 'text-[12px] leading-4 text-[var(--color-inactive-dark)]' : 'text-[15px] font-bold leading-5 text-[var(--color-text-main)]')}>
-              {s.bostadstyp ? 'Bostadstyp' : 'Vilken typ av bostad är det?'}
+              {!s.bostadstyp ? 'Vilken typ av bostad är det?' : s.bostadKlar ? 'Bostadstyp' : 'Stämmer typ och boarea?'}
             </span>
           </div>
           <div className="mt-2">
@@ -750,7 +782,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
             </ChipRow>
           </div>
           <div className="mt-3">
-            <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">{ut ? 'Boarea i m²' : 'Boarea i m², om du vet den'}</span>
+            <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Boarea i m²</span>
             <div className="mt-1 w-40">
               <TextInput type="number" value={kvm} onChange={(v) => set({ kvm: v })} placeholder={ut ? '62' : 'T.ex. 78'} label="Boarea i m²" />
             </div>
@@ -758,8 +790,15 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
           {/* Klar som riktig knapp, inte en länk i hörnet (Nils 21 okt: otydlig och gömd, kortet stängdes aldrig). */}
           {s.bostadstyp && (
             <div className="mt-4">
-              <PrimaryButton tone="outline" onClick={() => setEdit(false)}>
-                Klar
+              <PrimaryButton
+                tone="outline"
+                disabled={!kvmOk}
+                onClick={() => {
+                  set({ bostadKlar: true, kvm })
+                  setEdit(false)
+                }}
+              >
+                {kvmOk ? 'Klar' : 'Ange boarea'}
               </PrimaryButton>
             </div>
           )}
@@ -769,7 +808,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
           <Row label="Bostadstyp" value={`${s.bostadstyp ? BOSTADSTYP_LABEL[s.bostadstyp] : ''}${kvm ? ` · ${kvm} m²` : ''}`} action="Ändra" onAction={() => setEdit(true)} first />
         </InfoCard>
       )}
-      {lagenhet && (
+      {lagenhet && (s.bostadKlar || (!!s.vaning && !s.vaningFranFlytten)) && (
         <>
           <Section title="Vilket våningsplan ligger lägenheten på?" kvar={!s.vaning} why="Hiss och antal trappor påverkar priset. Trappor tar tid och avgör hur många som bär.">
             {more ? (
@@ -810,7 +849,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
           </Reveal>
         </>
       )}
-      {hus && (
+      {hus && (s.bostadKlar || !!s.vaningar) && (
         <Section
           title="Hur många våningar har huset?"
           kvar={!s.vaningar}
@@ -840,7 +879,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
         <Section
           title="Är det lätt att komma fram med flyttbil och personal?"
           kvar={!s.framkomlighetVal}
-          why="Kan bilen inte komma nära bostaden tar flytten längre tid. Flyttfirman vill veta det i förväg för att planera rätt."
+          why="Vägen från flyttbilen till dörren: innergård, trappor utanför huset eller en lång gångväg tar tid. Flyttfirman vill veta det i förväg för att planera rätt."
           sub={lagenhet ? 'Hinder kan vara innergård, smal trapp, bom eller trång gata.' : 'Hinder kan vara grusväg, smal infart eller trappor i trädgården.'}
         >
           <ChipRow>
@@ -1349,6 +1388,8 @@ const TILLVAL_IKON: Record<Tillval, React.ReactNode> = {
 
 export const SistaScreen = (p: ScreenProps) => {
   const { a, update, go, home } = p
+  // Övrigt får Klar och blir en rad med Ändra, som hinder och stopp (David 21 okt).
+  const [ovrigtEdit, setOvrigtEdit] = useState(false)
   const toggleTillval = (t: Tillval) => update((prev) => ({ tillval: prev.tillval.includes(t) ? prev.tillval.filter((x) => x !== t) : [...prev.tillval, t] }))
   return (
     <Q
@@ -1389,12 +1430,35 @@ export const SistaScreen = (p: ScreenProps) => {
         </Section>
       )}
       <Section title="Något annat vi bör veta?" sub="Önskemål eller sådant som påverkar flytten.">
-        <TextField
-          value={a.ovrigt}
-          onChange={(v) => update({ ovrigt: v })}
-          placeholder="T.ex. ömtåliga saker, parkering eller tider som inte passar"
-          label="Något annat vi bör veta"
-        />
+        {ovrigtEdit || !a.ovrigt.trim() ? (
+          <div>
+            <TextField
+              value={a.ovrigt}
+              onChange={(v) => {
+                setOvrigtEdit(true)
+                update({ ovrigt: v })
+              }}
+              placeholder="T.ex. ömtåliga saker, parkering eller tider som inte passar"
+              label="Något annat vi bör veta"
+            />
+            {a.ovrigt.trim() && (
+              <div className="mt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setOvrigtEdit(false)}
+                  className="h-10 rounded-[var(--radius-button)] bg-[var(--color-secondary-main)] px-5 text-[14px] font-bold text-white"
+                >
+                  Klar
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-start justify-between gap-3 rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-inactive-main)] bg-white px-4 py-3">
+            <span className="min-w-0 whitespace-pre-wrap text-[14px] leading-5 text-[var(--color-text-main)]">{a.ovrigt}</span>
+            <TextLink onClick={() => setOvrigtEdit(true)}>Ändra</TextLink>
+          </div>
+        )}
       </Section>
       <Section
         title="Vill du ha hjälp med något mer?"
@@ -1556,10 +1620,27 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => {
         <div className="flex justify-center">
           <CheckCircle size={56} />
         </div>
-        <h1 className="mt-4 text-[20px] font-bold leading-[26px] text-[var(--color-text-main)]">Tack, allt är sparat</h1>
-        <p className="mx-auto mt-2 max-w-[300px] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
-          Vi kontaktar dig {samtalText(a.samtal)} och har priset klart. Vill du ändra något gör du det på flyttsidan fram till samtalet.
+        <h1 className="mt-4 text-[22px] font-bold leading-[28px] text-[var(--color-text-main)]">Snyggt jobbat, nu har vi allt vi behöver</h1>
+        <p className="mx-auto mt-2 max-w-[340px] text-[15px] leading-[21px] text-[var(--color-text-main)]">
+          {a.samtal?.pass && a.samtal.pass !== '2d' ? `Vi ringer dig ${samtalText(a.samtal)}` : 'Inom två arbetsdagar hör vi av oss'} med ett skräddarsytt upplägg och pris för din
+          flytt
+          {a.stad === 'ja' ? ' och städning' : ''}.
         </p>
+        {/* Belönande och säljande kvitto (David 21 okt). Påståendena är sajtens egna formuleringar, inget nytt lovas. */}
+        <ul className="mx-auto mt-5 max-w-[360px] space-y-2 text-left">
+          {[
+            'Utvald och kvalitetssäkrad flyttfirma',
+            'Färdigförhandlade priser',
+            a.stad === 'ja' ? 'Nöjd-kund-garanti på flyttstädningen' : 'Du kan ändra dina svar fram till samtalet',
+          ].map((t) => (
+            <li key={t} className="flex items-start gap-2.5 text-[14px] leading-5 text-[var(--color-text-main)]">
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D]">
+                <Check size={12} strokeWidth={3} />
+              </span>
+              {t}
+            </li>
+          ))}
+        </ul>
         <PrimaryButton className="mt-6" onClick={() => go(0)}>
           Tillbaka till flyttsidan
         </PrimaryButton>
@@ -1567,6 +1648,16 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => {
         <PrimaryButton tone="outline" className="mt-3" onClick={() => go(FIRST)}>
           Ändra mina svar
         </PrimaryButton>
+        {/* Nästa steg medan kunden väntar: elavtalet, sajtens egen formulering. */}
+        <InfoCard className="mt-5 px-4 py-3.5 text-left">
+          <p className="text-[14px] font-bold leading-5 text-[var(--color-text-main)]">Medan du väntar: elavtalet</p>
+          <p className="mt-1 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">
+            Tre minuter, sen är strömmen på när du flyttar in.{' '}
+            <TextLink className="text-[13px]" onClick={() => go(0)}>
+              Till elavtalet
+            </TextLink>
+          </p>
+        </InfoCard>
         <Eyebrow className="mt-7 text-left">Dina svar</Eyebrow>
         <div className="mt-2 overflow-hidden rounded-xl border border-[var(--color-inactive-main)] bg-white text-left">
           {groups.map((g, i) => (

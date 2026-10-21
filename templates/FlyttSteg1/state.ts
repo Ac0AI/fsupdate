@@ -41,6 +41,8 @@ export type AdressSvar = {
   vaningar?: string
   /** Boarea i m² om kunden ändrat den, annars hämtas den från flytten. */
   kvm?: string
+  /** Kunden har tryckt Klar på bostadskortet. Krävs även när typ och boarea är förifyllda (David–Nils 21 okt). */
+  bostadKlar?: boolean
 }
 
 /** kvm i steg om 5 (50 = 50 m² eller mer), fullt i fjärdedelar 25–100. klar = kunden har tryckt Klar, först då räknas kortet (David–Nils 20 okt). */
@@ -60,6 +62,8 @@ export type Answers = {
   sent: boolean
   /* 1 Adresser */
   stopp: string[]
+  /** Nya adressen är okänd, t.ex. magasin först (Nils 21 okt). Bära in hoppas över. */
+  tillOkand?: boolean
   sammaDag?: JaNejVet
   /* 2–3 Bära ut, bära in */
   fran: AdressSvar
@@ -144,7 +148,7 @@ export const EMPTY: Answers = {
   ovrigt: '',
 }
 
-const KEY = 'flyttsmart-demo-flytt-steg1-v4'
+const KEY = 'flyttsmart-demo-flytt-steg1-v5'
 
 export const TOTAL = 6
 
@@ -155,7 +159,7 @@ const adressLeft = (s: AdressSvar) => {
   // Utan bostadstyp: typen, bärsträckan och framkomligheten är minst tre frågor kvar.
   if (!s.bostadstyp) return 3
   const lagenhet = s.bostadstyp === 'lagenhet'
-  return [lagenhet && !s.vaning, lagenhet && !s.hiss, !lagenhet && !s.vaningar, !harAvstand(s.avstand), !s.framkomlighetVal].filter(Boolean).length
+  return [!s.bostadKlar, lagenhet && !s.vaning, lagenhet && !s.hiss, !lagenhet && !s.vaningar, !harAvstand(s.avstand), !s.framkomlighetVal].filter(Boolean).length
 }
 
 /** Öppnade städytor som inte klarmarkerats. */
@@ -172,7 +176,7 @@ const oppnaKort = (a: Answers) => {
 export const questionsLeft = (a: Answers): number[] => [
   a.sammaDag ? 0 : 1,
   adressLeft(a.fran),
-  adressLeft(a.till),
+  a.tillOkand ? 0 : adressLeft(a.till),
   [!a.bohag, !a.biytaSvar, !a.sakerSvar, !a.utemobler].filter(Boolean).length + oppnaKort(a),
   !a.stad ? 1 : a.stad === 'nej' ? 0 : [!a.stadYta, !a.balkong, Object.keys(a.fonster).length === 0 && !a.fonsterInga, !a.kansliga].filter(Boolean).length + oppnaStadYtor(a),
   (!a.flyttDag ? 1 : 0) + (a.stad === 'ja' && !a.stadDag ? 1 : 0),
@@ -180,13 +184,21 @@ export const questionsLeft = (a: Answers): number[] => [
 
 /** Kunden har rört steget: något som inte kom från flytten är svarat. (Förr räknades en tom adress som rörd, så Bära in låg ett steg för högt.) */
 const adressTouched = (s: AdressSvar) =>
-  !!((s.hiss && !s.hissFranFlytten) || harAvstand(s.avstand) || s.framkomlighetVal || s.vaningar || (s.vaning && !s.vaningFranFlytten) || (s.bostadstyp && !s.bostadstypFranFlytten))
+  !!(
+    s.bostadKlar ||
+    (s.hiss && !s.hissFranFlytten) ||
+    harAvstand(s.avstand) ||
+    s.framkomlighetVal ||
+    s.vaningar ||
+    (s.vaning && !s.vaningFranFlytten) ||
+    (s.bostadstyp && !s.bostadstypFranFlytten)
+  )
 
 /** En flagga per steg: har kunden svarat på något där. */
 export const answeredQuestions = (a: Answers) => [
   a.sammaDag !== undefined || a.stopp.length > 0,
   adressTouched(a.fran),
-  adressTouched(a.till),
+  !!a.tillOkand || adressTouched(a.till),
   !!a.bohag || !!a.biytaSvar || !!a.sakerSvar || a.utemobler !== undefined,
   a.stad !== undefined,
   a.tillval.length > 0 || !!a.ovrigt || !!a.flyttDag || !!a.stadDag || a.sent,
