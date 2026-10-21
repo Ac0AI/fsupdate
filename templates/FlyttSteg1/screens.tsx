@@ -783,13 +783,13 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
             </ChipRow>
           </div>
           {ut && (
-          <div className="mt-3">
-            <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Boarea i m²</span>
-            <div className="mt-1 w-40">
-              <TextInput type="number" value={kvm} onChange={(v) => set({ kvm: v })} placeholder={ut ? '62' : 'T.ex. 78'} label="Boarea i m²" />
+            <div className="mt-3">
+              <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Boarea i m²</span>
+              <div className="mt-1 w-40">
+                <TextInput type="number" value={kvm} onChange={(v) => set({ kvm: v })} placeholder="62" label="Boarea i m²" />
+              </div>
             </div>
           )}
-          </div>
           {/* Klar som riktig knapp, inte en länk i hörnet (Nils 21 okt: otydlig och gömd, kortet stängdes aldrig). */}
           {s.bostadstyp && (
             <div className="mt-4">
