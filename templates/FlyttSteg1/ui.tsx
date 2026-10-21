@@ -584,12 +584,15 @@ export const SheetHandle = () => <span className="mx-auto mb-2 mt-3 block h-1 w-
 /* Mobil: bara knappen, och "2 frågor kvar" står i den tills steget är klart (David 20 okt: raderna under tog för mycket plats). Desktop: texten bredvid. */
 const FrameFooter = ({ cta, left, foot, onNext }: { cta: string; left: number; foot: string; onNext: () => void }) => {
   const kvar = `${left} ${left === 1 ? 'fråga' : 'frågor'} kvar`
+  // Mobil: en rad under knappen om att svaren sparas per steg (21 okt). Sista steget sparar vid Klar.
+  const kort = cta === 'Klar' ? 'Sparas när du trycker Klar.' : 'Sparas när du går vidare.'
   return (
     <div className="md:flex md:items-center md:gap-5">
       <div className="md:hidden">
         <PrimaryButton onClick={onNext} disabled={left > 0}>
           {left > 0 ? kvar : cta}
         </PrimaryButton>
+        <p className="mt-1.5 text-center text-[12px] leading-4 text-[var(--color-inactive-dark)]">{kort}</p>
       </div>
       <div className="hidden md:block md:w-[240px]">
         <PrimaryButton onClick={onNext} disabled={left > 0}>
@@ -619,7 +622,7 @@ export const Frame = ({
   children,
   cta = 'Fortsätt',
   left = 0,
-  foot = 'Svaren sparas när du går vidare. Vet du inte, välj Vet inte.',
+  foot = 'Svaren sparas när du går vidare.',
   savedBadge,
   done,
   onStep,

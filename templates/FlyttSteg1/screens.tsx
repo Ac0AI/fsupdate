@@ -578,7 +578,7 @@ export const AdresserScreen = (p: ScreenProps) => {
   const [andra, setAndra] = useState<'fran' | 'till' | null>(null)
   const setStopp = (i: number, v: string) => update((prev) => ({ stopp: prev.stopp.map((s, j) => (j === i ? v : s)) }))
   return (
-    <Q p={p} idx={FIRST} title="Stämmer adresserna?" sub="Hämtade från din flytt. Ändra om något inte stämmer.">
+    <Q p={p} idx={FIRST} title="Stämmer adresserna?" sub="Hämtade från din flytt. Ändra om något inte stämmer." foot="Svaren sparas när du går vidare. Vet du inte, välj Vet inte.">
       <RouteCard className="mt-5">
         <RoutePoint
           kind="fran"
@@ -693,6 +693,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
       idx={ut ? FIRST + 1 : FIRST + 2}
       title={ut ? `Utflytt från ${nb(home.from)}` : `Inflytt till ${nb(home.to)}`}
       sub={ut ? 'Vi har fyllt i det vi redan vet om din flytt. Ändra om något inte stämmer.' : 'Samma frågor för den nya bostaden.'}
+      foot="Svaren sparas när du går vidare. Vet du inte, välj Vet inte."
     >
       {oppen ? (
         <InfoCard className="mt-5 p-3.5">
@@ -781,9 +782,9 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
       )}
       <Reveal show={visaAvstand}>
         <Section
-          title={ut ? 'Hur långt bär vi till flyttbilen?' : 'Hur långt bär vi från flyttbilen?'}
+          title="Hur nära dörren kan flyttbilen stå?"
           why="Avståndet till parkeringen påverkar priset. Sträckan mellan dörren och bilen går vi många gånger."
-          sub={ut ? 'Från dörren till närmaste plats bilen kan stå. Ungefärligt räcker.' : 'Från närmaste plats bilen kan stå till dörren. Ungefärligt räcker.'}
+          sub="Avståndet från dörren till närmaste plats bilen kan stå. Ungefärligt räcker."
         >
           <MeterSlider value={s.avstand} onChange={(v) => set({ avstand: v })} />
         </Section>
@@ -1208,7 +1209,7 @@ export const SistaScreen = (p: ScreenProps) => {
         go(DONE)
       }}
     >
-      <Section title="Vilken dag vill du flytta?" sub={`Tillträdet är ${home.moveDayLong}. Flyttar du en annan dag, välj den.`} why="Dagen avgör vilka flyttfirmor som är lediga. Vardagar är oftast billigare än helger.">
+      <Section title="Vilken dag vill du flytta?" sub={`Tillträdet är ${home.moveDayLong}. Välj dagen du vill flytta.`} why="Dagen avgör vilka flyttfirmor som är lediga. Vardagar är oftast billigare än helger.">
         <DayPicker value={a.flyttDag} start={home.moveDateIso} label="Flyttdag" placeholder="Välj dag" onChange={(iso) => update({ flyttDag: iso })} ringText="tillträdesdagen" />
       </Section>
       {a.stad === 'ja' && (
