@@ -921,7 +921,7 @@ export const BohagScreen = (p: ScreenProps) => {
         </Section>
       </Reveal>
       <Reveal show={a.biytaSvar === 'nej' || (a.biytaSvar === 'ja' && a.biytor.length > 0 && a.biytor.every((b) => b.klar)) || !!a.sakerSvar}>
-        <Section title="Har du föremål som kräver tunga lyft eller är extra ömtåliga?" why="Extra tunga föremål som piano eller kassaskåp kan kräva särskild utrustning eller fler som bär. Värdefulla föremål, över ungefär 30 000 kr, vill vi veta om i förväg för rätt hantering och försäkring.">
+        <Section title="Har du föremål som kräver tunga lyft eller är extra ömtåliga?" why="Föremål över 80 kg kan kräva fler som bär eller särskild utrustning, och det påverkar pris och planering. Värdefulla föremål över ungefär 30 000 kr behöver vi veta om i förväg, så att flytten förbereds rätt och du har fullt försäkringsskydd. Annars kan ersättningen begränsas enligt branschvillkoren Bohag 2010.">
           <ChoiceRow
             options={JA_NEJ}
             value={a.sakerSvar}
@@ -973,7 +973,7 @@ export const BohagScreen = (p: ScreenProps) => {
         </Section>
       </Reveal>
       <Reveal show={a.sakerSvar === 'nej' || (a.sakerSvar === 'ja' && a.saker.length > 0 && a.saker.every((x) => x.klar)) || a.utemobler !== undefined}>
-        <Section title="Har du utemöbler som ska med?" sub="Från balkong, altan eller trädgård." why="Trädgårds- och balkongmöbler räknas inte in i boarean men tar plats i bilen.">
+        <Section title="Har du utemöbler som ska med?" sub="T.ex. balkongmöbler, loungegrupp, grill, parasoll eller krukor." why="Utemöbler räknas inte in i boarean men tar plats i bilen, så vi vill veta om de ska med.">
           <ChoiceRow options={JA_NEJ} value={a.utemobler} onChange={(v) => update({ utemobler: v })} />
         </Section>
       </Reveal>
