@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, CalendarDays, Car, Check, Fence, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench, X } from 'lucide-react'
 import clsx from 'clsx'
 import GoogleColor from '@/public/images/GoogleColor.svg'
@@ -1281,9 +1281,82 @@ export const answerLines = (a: Answers, home: Home): string[] => {
   return L.filter((x): x is string => !!x)
 }
 
+/* Sammanfattningen på Allt sparat: svaren grupperade per steg med etikett och värde, så kunden hittar och kan ändra rätt sak (David 21 okt). */
+export type SvarRad = { label: string; value: string }
+export type SvarGrupp = { step: number; title: string; rows: SvarRad[] }
+
+const adressRows = (s: AdressSvar, kvm: number): SvarRad[] => {
+  const lagenhet = s.bostadstyp === 'lagenhet'
+  const rows: (SvarRad | null)[] = [
+    { label: 'Bostad', value: `${BOSTADSTYP_LABEL[s.bostadstyp]} · ${s.kvm || kvm} m²` },
+    lagenhet && s.vaning ? { label: 'Våning', value: s.vaning === 'vet-ej' ? 'Vet inte' : s.vaning === 'BV' ? 'Bottenvåning' : s.vaning } : null,
+    !lagenhet && s.vaningar ? { label: 'Våningar', value: s.vaningar } : null,
+    lagenhet && s.hiss ? { label: 'Hiss', value: HISS_LABEL[s.hiss] } : null,
+    harAvstand(s.avstand) ? { label: 'Bärsträcka', value: s.avstand === 'vet-ej' ? 'Vet inte' : avstandText(s.avstand) } : null,
+    s.framkomlighetVal
+      ? { label: 'Framkomlighet', value: s.framkomlighetVal === 'hinder' ? s.framkomlighet || 'Det finns hinder' : FRAMKOMLIGHET_LABEL[s.framkomlighetVal] }
+      : null,
+  ]
+  return rows.filter((r): r is SvarRad => !!r)
+}
+
+export const answerGroups = (a: Answers, home: Home): SvarGrupp[] => {
+  const adresser: SvarRad[] = [
+    { label: 'Från', value: home.from },
+    { label: 'Till', value: home.to },
+    ...a.stopp.filter(Boolean).map((s, i) => ({ label: `Stopp ${i + 1}`, value: s })),
+  ]
+  if (a.sammaDag) adresser.push({ label: 'Samma dag', value: a.sammaDag === 'ja' ? 'Ja' : a.sammaDag === 'nej' ? 'Nej, behöver förvaring' : 'Vet inte' })
+
+  const med: SvarRad[] = []
+  if (a.bohag) med.push({ label: 'Bohag', value: `${BOHAG_LABEL[a.bohag]} · ${home.fromKvm} m²` })
+  if (a.biytaSvar === 'nej') med.push({ label: 'Biytor', value: 'Inga utöver boarean' })
+  a.biytor.forEach((b) =>
+    med.push({
+      label: b.typ ? BIYTA_LABEL[b.typ] : 'Utrymme',
+      value:
+        [typeof b.kvm === 'number' ? biytaKvmText(b.kvm) : null, typeof b.fullt === 'number' ? fulltText(b.fullt).toLowerCase() : null].filter(Boolean).join(', ') || 'Ska med',
+    }),
+  )
+  if (a.sakerSvar === 'nej') med.push({ label: 'Tungt eller ömtåligt', value: 'Inget' })
+  a.saker.forEach((s) => med.push({ label: s.vad || 'Föremål', value: [s.vikt, s.varde ? `värde ${s.varde}` : null].filter(Boolean).join(', ') || 'Ska med' }))
+  if (a.utemobler) med.push({ label: 'Utemöbler', value: a.utemobler === 'ja' ? 'Ska med' : 'Inga' })
+
+  const stad: SvarRad[] = []
+  if (a.stad === 'nej') stad.push({ label: 'Flyttstädning', value: 'Nej' })
+  if (a.stad === 'ja') {
+    const mer = a.stadYtor.filter((y) => y.typ).map((y) => `${(y.typ ? BIYTA_LABEL[y.typ] : '').toLowerCase()}${typeof y.kvm === 'number' ? ` ${y.kvm} m²` : ''}`)
+    stad.push({ label: 'Flyttstädning', value: `Boarean ${home.fromKvm} m²${a.stadYta === 'mer' ? ` + ${mer.join(', ') || 'mer'}` : ''}` })
+    if (a.balkong === 'ja')
+      stad.push({
+        label: 'Inglasad balkong',
+        value: [a.balkongStorlek, a.balkongGlas ? (a.balkongGlas === 'hel' ? 'helinglasad' : 'halvinglasad') : null].filter(Boolean).join(', ') || 'Ja',
+      })
+    const f = (Object.keys(a.fonster) as FonsterTyp[]).map((t) => `${FONSTER_LABEL[t][0]} ×${a.fonster[t]}`)
+    if (f.length) stad.push({ label: 'Fönster', value: f.join(', ') })
+    else if (a.fonsterInga) stad.push({ label: 'Fönster', value: 'Inga specialfönster' })
+    if (a.kansliga === 'ja') stad.push({ label: 'Känsliga ytor', value: a.kansligaText || 'Ja' })
+  }
+
+  const sista: SvarRad[] = []
+  if (a.flyttDag) sista.push({ label: 'Flyttdag', value: fmtLongDate(fromIso(a.flyttDag)) })
+  if (a.stad === 'ja' && a.stadDag) sista.push({ label: 'Städdag', value: fmtLongDate(fromIso(a.stadDag)) })
+  if (a.tillval.length) sista.push({ label: 'Pris på', value: a.tillval.map((t) => TILLVAL_LABEL[t][0]).join(', ') })
+  if (a.ovrigt) sista.push({ label: 'Övrigt', value: a.ovrigt })
+
+  return [
+    { step: 0, title: 'Adresser', rows: adresser },
+    { step: 1, title: `Bära ut · ${home.from}`, rows: adressRows(a.fran, home.fromKvm) },
+    { step: 2, title: `Bära in · ${home.to}`, rows: adressRows(a.till, home.toKvm) },
+    { step: 3, title: 'Vad ska med', rows: med },
+    { step: 4, title: 'Städning', rows: stad },
+    { step: 5, title: 'Sista detaljerna', rows: sista },
+  ].filter((g) => g.rows.length)
+}
+
 /* 11 · Allt sparat */
 export const SparatScreen = ({ a, go, home }: ScreenProps) => {
-  const lines = answerLines(a, home)
+  const groups = answerGroups(a, home)
   return (
     <Sheet>
       <div className="px-4 pb-6 pt-4 text-center">
@@ -1297,16 +1370,27 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => {
         <PrimaryButton className="mt-6" onClick={() => go(0)}>
           Tillbaka till flyttsidan
         </PrimaryButton>
-        <div className="mt-4">
-          <TextLink onClick={() => go(FIRST)}>Ändra mina svar</TextLink>
-        </div>
-        <div className="mt-6 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4 text-left">
-          <Eyebrow>Dina svar</Eyebrow>
-          <ul className="mt-2 space-y-1 text-[14px] leading-[21px] text-[var(--color-inactive-dark)]">
-            {lines.map((l) => (
-              <li key={l}>{l}</li>
-            ))}
-          </ul>
+        {/* Svaren per steg med etikett och värde, Ändra per grupp i stället för en lista med meningar. */}
+        <Eyebrow className="mt-7 text-left">Dina svar</Eyebrow>
+        <div className="mt-2 overflow-hidden rounded-xl border border-[var(--color-inactive-main)] bg-white text-left">
+          {groups.map((g, i) => (
+            <section key={g.title} className={clsx('px-4 pb-3 pt-2', i > 0 && 'border-t border-[var(--color-inactive-main)]')}>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-[14px] font-bold leading-5 text-[var(--color-text-main)]">{g.title}</h2>
+                <TextLink className="h-11 shrink-0 text-[13px]" onClick={() => go(FIRST + g.step)}>
+                  Ändra
+                </TextLink>
+              </div>
+              <dl className="grid grid-cols-[minmax(92px,max-content)_1fr] gap-x-4 gap-y-1 text-[14px] leading-5">
+                {g.rows.map((r, j) => (
+                  <Fragment key={j}>
+                    <dt className="text-[var(--color-inactive-dark)]">{r.label}</dt>
+                    <dd className="min-w-0 break-words text-[var(--color-text-main)]">{r.value}</dd>
+                  </Fragment>
+                ))}
+              </dl>
+            </section>
+          ))}
         </div>
       </div>
     </Sheet>
