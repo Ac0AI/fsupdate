@@ -667,7 +667,7 @@ const DateInput = ({ value, onChange, label, error, onHelp }: { value: string; o
 export const detailsValid = (s: ElState) => {
   const st = dateStatus(s.startDate)
   const dateOk = st === 'ok' || (st === 'facility' && /^735999\d{12}$/.test(s.facilityId))
-  return dateOk && /^\d{4}$/.test(s.apartment) && (!s.terminate || !!s.endDate)
+  return dateOk && (s.homeType !== 'Lägenhet' || /^\d{4}$/.test(s.apartment)) && (!s.terminate || !!s.endDate)
 }
 
 export const DetaljerScreen = ({ s, set, go }: ScreenProps) => {
@@ -690,7 +690,8 @@ export const DetaljerScreen = ({ s, set, go }: ScreenProps) => {
     </button>
   )
   const [aptBlurred, setAptBlurred] = useState(false)
-  const aptError = (s.touched || aptBlurred) && !/^\d{4}$/.test(s.apartment)
+  const isApt = s.homeType === 'Lägenhet'
+  const aptError = isApt && (s.touched || aptBlurred) && !/^\d{4}$/.test(s.apartment)
   const facilityError =
     st === 'facility' && (s.touched || s.facilityId.length >= 18)
       ? !s.facilityId.startsWith('735999')
@@ -776,25 +777,29 @@ export const DetaljerScreen = ({ s, set, go }: ScreenProps) => {
                 )}
               </>
             )}
-            <Label help={s.aptHelp} onHelp={() => set({ aptHelp: !s.aptHelp })}>
-              Fyll i bostadens lägenhetsnummer
-            </Label>
-            {s.aptHelp && (
-              <div className="pb-[16px]">
-                <HelpText>Ett lägenhetsnummer består av fyra siffror och används av Skatteverket för att identifiera lägenheter.</HelpText>
-              </div>
+            {isApt && (
+              <>
+                <Label help={s.aptHelp} onHelp={() => set({ aptHelp: !s.aptHelp })}>
+                  Fyll i bostadens lägenhetsnummer
+                </Label>
+                {s.aptHelp && (
+                  <div className="pb-[16px]">
+                    <HelpText>Ett lägenhetsnummer består av fyra siffror och används av Skatteverket för att identifiera lägenheter.</HelpText>
+                  </div>
+                )}
+                <FramedField label="Lägenhetsnummer" error={aptError}>
+                  <input
+                    aria-label="Lägenhetsnummer"
+                    inputMode="numeric"
+                    className={fieldInput}
+                    value={s.apartment}
+                    onBlur={() => setAptBlurred(true)}
+                    onChange={(e) => set({ apartment: e.target.value.replace(/\D/g, '').slice(0, 4) })}
+                  />
+                </FramedField>
+                {aptError && <ErrorLine>Lägenhetsnumret måste vara 4 siffror</ErrorLine>}
+              </>
             )}
-            <FramedField label="Lägenhetsnummer" error={aptError}>
-              <input
-                aria-label="Lägenhetsnummer"
-                inputMode="numeric"
-                className={fieldInput}
-                value={s.apartment}
-                onBlur={() => setAptBlurred(true)}
-                onChange={(e) => set({ apartment: e.target.value.replace(/\D/g, '').slice(0, 4) })}
-              />
-            </FramedField>
-            {aptError && <ErrorLine>Lägenhetsnumret måste vara 4 siffror</ErrorLine>}
           </div>
           <div className="mt-[16px] flex flex-col rounded-[10px] bg-white p-[20px] shadow-[0_4px_8px_#00000014]">
             <label className="flex cursor-pointer items-start gap-[8px]">
@@ -1049,7 +1054,8 @@ export const SammanfattningScreen = ({ s, set, go }: ScreenProps) => {
                   <p>
                     <span className="whitespace-nowrap">Startar {shortDate(s.startDate)}</span> ·{' '}
                     <span className="whitespace-nowrap">
-                      {HOME.street}, lgh {s.apartment || '1102'}
+                      {HOME.street}
+                      {s.homeType === 'Lägenhet' && `, lgh ${s.apartment || '1102'}`}
                     </span>
                   </p>
                   {s.terminate && s.endDate && <p className="text-[13px] leading-[18px] text-[#2B567C]">Säg upp nuvarande elavtal {shortDate(s.endDate)}</p>}
