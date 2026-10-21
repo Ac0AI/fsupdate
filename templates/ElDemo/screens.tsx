@@ -857,10 +857,15 @@ export const DetaljerScreen = ({ s, set, go }: ScreenProps) => {
                   )}
                 </span>
               </span>
-              <span className={clsx('ml-[-13px] flex-1 text-[16px] leading-[20px] tracking-[0.32px]', navy)}>
-                Säg upp mitt nuvarande elavtal åt mig i samband med nyteckningen.
+              {/* Rubrik och varför i stället för "i samband med nyteckningen" (David 21/10, förslag 1). Samma löfte som underrubriken på steg 1. */}
+              <span className="ml-[-13px] flex min-w-0 flex-1 flex-col gap-[4px]">
+                <span className={clsx('text-[16px] leading-[20px] font-bold tracking-[0.32px]', navy)}>Vi säger upp ditt gamla elavtal</span>
+                <span className="text-[13px] leading-[18px] tracking-[0.32px] text-[#2B567C]">
+                  Så du inte fortsätter betala för den gamla adressen. Vi gör det samma dag som det nya börjar, du behöver inte kontakta din nuvarande leverantör.
+                </span>
               </span>
             </label>
+            <p className="pt-[10px] pl-[29px] text-[12px] leading-[16px] text-[#767678]">Gäller om du står på avtalet. Gör du inte det hör vi av oss.</p>
             {s.terminate && (
               <div className="flex flex-col motion-safe:animate-[rise_.3s_ease-out_both]">
                 <Label>Välj datum då elavtalet avslutas</Label>
@@ -869,9 +874,6 @@ export const DetaljerScreen = ({ s, set, go }: ScreenProps) => {
                 <FramedField label="Adress">
                   <input aria-label="Adress - nuvarande elavtal" className={fieldInput} value={s.oldAddress} onChange={(e) => set({ oldAddress: e.target.value })} />
                 </FramedField>
-                <p className="pt-[12px] text-[12px] leading-[16px] text-[#767678]">
-                  Notera att vi kan bara hjälpa dig med uppsägningen om det är du personligen som står på elavtalet.
-                </p>
               </div>
             )}
           </div>
