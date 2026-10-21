@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarDays, Check, ChevronLeft, ChevronRight, ChevronUp, Minus, Plus, X } from 'lucide-react'
+import { CalendarDays, Check, ChevronLeft, ChevronRight, ChevronUp, Info, Minus, Plus, X } from 'lucide-react'
 import clsx from 'clsx'
 import {
   useCallback,
@@ -109,13 +109,36 @@ export const ChoiceRow = <T extends string>({ options, value, onChange }: { opti
   </div>
 )
 
-export const Section = ({ title, sub, children, className, badge }: { title: string; sub?: string; children: ReactNode; className?: string; badge?: ReactNode }) => (
+/**
+ * "Varför frågar vi?" under en fråga: fälls ut vid tryck, ingen hover, så att det funkar på mobil,
+ * och säger med en mening vad svaret påverkar (David 21 okt: varför vi frågar, t.ex. kubikmeter).
+ */
+export const Why = ({ text }: { text: string }) => {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="mt-1">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="inline-flex h-7 items-center gap-1 text-[13px] font-bold text-[var(--color-secondary-main)]"
+      >
+        <Info size={14} />
+        Varför frågar vi?
+      </button>
+      {open && <p className="mt-1 rounded-[var(--radius-main)] bg-[var(--color-secondary-extra-extra-light)] px-3 py-2 text-[13px] leading-[18px] text-[var(--color-text-main)]">{text}</p>}
+    </div>
+  )
+}
+
+export const Section = ({ title, sub, why, children, className, badge }: { title: string; sub?: string; why?: string; children: ReactNode; className?: string; badge?: ReactNode }) => (
   <section className={className ?? 'mt-7'}>
     <div className="flex items-start justify-between gap-3">
       <h2 className="text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">{title}</h2>
       {badge}
     </div>
     {sub && <p className="mt-0.5 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">{sub}</p>}
+    {why && <Why text={why} />}
     <div className="mt-3">{children}</div>
   </section>
 )
@@ -580,6 +603,7 @@ export const Frame = ({
   step,
   title,
   sub,
+  why,
   children,
   cta = 'Fortsätt',
   left = 0,
@@ -594,6 +618,7 @@ export const Frame = ({
   step: number
   title: string
   sub?: string
+  why?: string
   children: ReactNode
   cta?: string
   left?: number
@@ -682,6 +707,7 @@ export const Frame = ({
       <div className="min-w-0 md:max-w-[560px]">
         <h1 className="text-[19px]! font-bold leading-[24px]! text-[var(--color-text-main)] md:text-[24px]! md:leading-[30px]!">{title}</h1>
         {sub && <p className="mt-1 text-[13px] leading-[18px] text-[var(--color-inactive-dark)] md:text-[15px] md:leading-[22px]">{sub}</p>}
+        {why && <Why text={why} />}
         {children}
       </div>
     </div>
