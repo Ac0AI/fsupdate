@@ -147,40 +147,37 @@ export const OffertScreen = ({ go, update }: ScreenProps) => {
   }
   return (
     <Sheet>
-      <div className="px-6 pb-8 pt-4 text-center md:px-8 md:text-left">
-        <div className="mx-auto max-w-[320px] md:grid md:max-w-none md:grid-cols-2 md:items-start md:gap-10">
-          <div>
-            <h1 className="mx-auto max-w-[30ch] text-[18px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:mx-0 md:text-[24px]! md:leading-[30px]!">
-              Professionell flytthjälp, enkelt och prisvärt
-            </h1>
-            <div className="mt-5 md:mt-4">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-inactive-main)] bg-white px-3 py-1.5 shadow-sm">
-                <GoogleColor width={22} height={22} aria-hidden />
-                <span className="text-[18px] font-bold tracking-tight text-[var(--color-inactive-super-dark)]">4,7</span>
-                <span className="flex items-center gap-0.5" aria-label="5 av 5">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <GoogleStar key={i} width={16} height={16} aria-hidden />
-                  ))}
-                </span>
-                <span className="text-[14px] text-[var(--color-inactive-dark)]">(1 900)</span>
-              </span>
-              <p className="mt-1 text-[14px] text-[var(--color-inactive-dark)]">Över 250 000 nöjda flyttare</p>
-            </div>
-          </div>
-          <ul className="mt-4 flex flex-col gap-3 text-left md:mt-1">
-            {[
-              'Vi kontaktar dig och går igenom din flytt',
-              'Du får offert med fast förmånligt pris, inga dolda avgifter',
-              'En kontaktperson, erfarna flyttproffs & nöjd-kundgaranti',
-            ].map((t, i) => (
-              <li key={t} className="flex items-start gap-2">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-secondary-main)] text-[14px] font-bold text-white">{i + 1}</span>
-                <span className="pt-1 text-[14px] leading-[19px] text-[var(--color-text-main)]">{t}</span>
-              </li>
-            ))}
-          </ul>
+      {/* Som dagens kort på desktop: en centrerad spalt, punkterna vänsterställda i spalten, bred knapp (David 21 okt). */}
+      <div className="px-6 pb-8 pt-4 text-center md:px-8 md:pb-10 md:pt-6">
+        <h1 className="mx-auto max-w-[30ch] text-[18px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:max-w-none md:text-[24px]! md:leading-[30px]!">
+          Professionell flytthjälp, enkelt och prisvärt
+        </h1>
+        <div className="mt-5">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-inactive-main)] bg-white px-3 py-1.5 shadow-sm">
+            <GoogleColor width={22} height={22} aria-hidden />
+            <span className="text-[18px] font-bold tracking-tight text-[var(--color-inactive-super-dark)]">4,7</span>
+            <span className="flex items-center gap-0.5" aria-label="5 av 5">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <GoogleStar key={i} width={16} height={16} aria-hidden />
+              ))}
+            </span>
+            <span className="text-[14px] text-[var(--color-inactive-dark)]">(1 900)</span>
+          </span>
+          <p className="mt-1 text-[14px] text-[var(--color-inactive-dark)]">Över 250 000 nöjda flyttare</p>
         </div>
-        <div className="mx-auto mt-8 max-w-[320px] md:mx-0 md:mt-6">
+        <ul className="mx-auto mt-6 flex max-w-[320px] flex-col gap-3 text-left md:max-w-[440px]">
+          {[
+            'Vi kontaktar dig och går igenom din flytt',
+            'Du får offert med fast förmånligt pris, inga dolda avgifter',
+            'En kontaktperson, erfarna flyttproffs & nöjd-kundgaranti',
+          ].map((t, i) => (
+            <li key={t} className="flex items-start gap-2">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-secondary-main)] text-[14px] font-bold text-white">{i + 1}</span>
+              <span className="pt-1 text-[14px] leading-[19px] text-[var(--color-text-main)]">{t}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mx-auto mt-8 max-w-[320px] md:max-w-[440px]">
           <PrimaryButton rounded onClick={begar}>
             Begär offert
           </PrimaryButton>
@@ -699,6 +696,8 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
   const set = (patch: Partial<AdressSvar>) => update((prev) => ({ [side]: { ...prev[side], ...patch } }))
   const [more, setMore] = useState(!!s.vaning && !FLOORS.includes(s.vaning) && s.vaning !== 'vet-ej')
   const [edit, setEdit] = useState(false)
+  // Hinderfältet har Klar och blir en rad med Ändra, som adress och stopp (David 21 okt: klar saknas).
+  const [hinderEdit, setHinderEdit] = useState(false)
   const ut = side === 'fran'
   const lagenhet = s.bostadstyp === 'lagenhet'
   const hus = s.bostadstyp === 'radhus' || s.bostadstyp === 'villa'
@@ -830,20 +829,44 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
         >
           <ChipRow>
             {(Object.keys(FRAMKOMLIGHET_LABEL) as Framkomlighet[]).map((v) => (
-              <Chip key={v} selected={s.framkomlighetVal === v} onClick={() => set({ framkomlighetVal: v, framkomlighet: v === 'hinder' ? s.framkomlighet : '' })}>
+              <Chip
+                key={v}
+                selected={s.framkomlighetVal === v}
+                onClick={() => {
+                  set({ framkomlighetVal: v, framkomlighet: v === 'hinder' ? s.framkomlighet : '' })
+                  setHinderEdit(v === 'hinder')
+                }}
+              >
                 {FRAMKOMLIGHET_LABEL[v]}
               </Chip>
             ))}
           </ChipRow>
           <Reveal show={s.framkomlighetVal === 'hinder'}>
-            <div className="mt-3">
-              <TextInput
-                value={s.framkomlighet}
-                onChange={(v) => set({ framkomlighet: v })}
-                placeholder={lagenhet ? 'Vad är det för hinder? T.ex. innergård, smal trapp' : 'Vad är det för hinder? T.ex. grusväg, smal infart'}
-                label="Hinder"
-              />
-            </div>
+            {hinderEdit || !s.framkomlighet.trim() ? (
+              <div className="mt-3">
+                <TextInput
+                  autoFocus
+                  value={s.framkomlighet}
+                  onChange={(v) => set({ framkomlighet: v })}
+                  placeholder={lagenhet ? 'Vad är det för hinder? T.ex. innergård, smal trapp' : 'Vad är det för hinder? T.ex. grusväg, smal infart'}
+                  label="Hinder"
+                />
+                <div className="mt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setHinderEdit(false)}
+                    className="h-10 rounded-[var(--radius-button)] bg-[var(--color-secondary-main)] px-5 text-[14px] font-bold text-white"
+                  >
+                    Klar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-3 flex items-center justify-between gap-3 rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-inactive-main)] bg-white px-4 py-3">
+                <span className="min-w-0 truncate text-[14px] text-[var(--color-text-main)]">{s.framkomlighet}</span>
+                <TextLink onClick={() => setHinderEdit(true)}>Ändra</TextLink>
+              </div>
+            )}
           </Reveal>
         </Section>
       </Reveal>
@@ -1055,6 +1078,7 @@ export const StadScreen = (p: ScreenProps) => {
   const visaKansliga = (visaFonster && fonsterKlara) || a.kansliga !== undefined
   // Balkongkortet stänger sig när båda frågorna är svarade, Ändra öppnar det igen (Nils 21 okt).
   const [balkongOppen, setBalkongOppen] = useState(false)
+  const [kansligaEdit, setKansligaEdit] = useState(false)
   const balkongText = [a.balkongStorlek === 'liten' ? 'Liten' : a.balkongStorlek === 'mellan' ? 'Mellan' : 'Stor', a.balkongGlas === 'hel' ? 'helinglasad' : 'halvinglasad'].join(
     ' · ',
   )
@@ -1215,16 +1239,39 @@ export const StadScreen = (p: ScreenProps) => {
           </Reveal>
           <Reveal show={visaKansliga}>
             <Section title="Finns det känsliga ytor?" sub="T.ex. parkett, marmor, oljat trä, natursten eller lackade luckor." why="Ytor som kräver anpassad rengöring för att undvika skador. Städfirman vill veta det i förväg.">
-              <ChoiceRow options={JA_NEJ} value={a.kansliga} onChange={(v) => update({ kansliga: v })} />
+              <ChoiceRow
+                options={JA_NEJ}
+                value={a.kansliga}
+                onChange={(v) => {
+                  update({ kansliga: v })
+                  setKansligaEdit(v === 'ja')
+                }}
+              />
               <Reveal show={a.kansliga === 'ja'}>
-                <div className="mt-3">
-                  <TextField
-                    value={a.kansligaText}
-                    onChange={(v) => update({ kansligaText: v })}
-                    placeholder="Vilka ytor och var? T.ex. marmorgolv i badrummet"
-                    label="Känsliga ytor"
-                  />
-                </div>
+                {kansligaEdit || !a.kansligaText.trim() ? (
+                  <div className="mt-3">
+                    <TextField
+                      value={a.kansligaText}
+                      onChange={(v) => update({ kansligaText: v })}
+                      placeholder="Vilka ytor och var? T.ex. marmorgolv i badrummet"
+                      label="Känsliga ytor"
+                    />
+                    <div className="mt-2 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setKansligaEdit(false)}
+                        className="h-10 rounded-[var(--radius-button)] bg-[var(--color-secondary-main)] px-5 text-[14px] font-bold text-white"
+                      >
+                        Klar
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-3 flex items-center justify-between gap-3 rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-inactive-main)] bg-white px-4 py-3">
+                    <span className="min-w-0 truncate text-[14px] text-[var(--color-text-main)]">{a.kansligaText}</span>
+                    <TextLink onClick={() => setKansligaEdit(true)}>Ändra</TextLink>
+                  </div>
+                )}
               </Reveal>
             </Section>
           </Reveal>
