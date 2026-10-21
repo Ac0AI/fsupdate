@@ -67,7 +67,7 @@ const fullDate = (iso: string) => {
  * Prototyp av flyttflödet steg 1, utan pris. Ingången är dagens flyttsida
  * (LiveMovePage, byggd från live-koden) och dagens tre skärmar är orörda.
  * Skillnaden börjar efter Ja!: bekräftelsen stannar kvar och bjuder in till
- * sex steg som sparas direkt. På mobil ligger allt i ett ark ovanpå sidan, på
+ * sex steg som sparas steg för steg. På mobil ligger allt i ett ark ovanpå sidan, på
  * desktop inuti Flytthjälp-kortet, som live gör i dag. Ren frontend.
  */
 const DemoFlyttFlow = () => {
@@ -142,7 +142,7 @@ const DemoFlyttFlow = () => {
     [params?.locale, router],
   )
 
-  /* Fortsätt: nästa steg. Ingen "Steg n sparat"-bock längre, allt sparas per fält (Nils 20 okt). */
+  /* Fortsätt: nästa steg. Ingen "Steg n sparat"-bock. Skarpt sparas steget vid Fortsätt, Tillbaka och krysset, inte per fält (tech 21 okt). */
   const next = useCallback((from: number) => go(from + 1), [go])
 
   const home: Home = useMemo(() => {

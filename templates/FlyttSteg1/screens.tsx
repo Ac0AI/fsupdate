@@ -438,7 +438,7 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
         </div>
         <h2 className="mt-5 text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">Få din offert snabbare</h2>
         <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
-          Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och allt sparas direkt.
+          Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och du kan fortsätta senare.
         </p>
         <div className="md:w-[300px]">
           <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
@@ -1186,7 +1186,7 @@ export const SistaScreen = (p: ScreenProps) => {
       idx={FIRST + 5}
       title="Sista detaljerna"
       cta="Klar"
-      foot="Allt sparas direkt. Tillvalen är frivilliga."
+      foot="Tillvalen är frivilliga. Svaren sparas när du trycker Klar."
       onNext={() => {
         update({ sent: true })
         go(DONE)
@@ -1547,7 +1547,7 @@ export const OffertCard = ({ a, go }: ScreenProps) => {
             <p className="text-[13px] leading-[18px] text-[var(--color-text-main)] md:text-[15px] md:leading-[22px]">
               {n === 0
                 ? 'Berätta mer om din flytt innan samtalet, så ringer vi med priset klart. Det tar ett par minuter.'
-                : `${cap(ORD[n - 1])} av sex steg sparade. Fortsätt när du vill, allt sparas direkt.`}
+                : `${cap(ORD[n - 1])} av sex steg sparade. Fortsätt när du vill.`}
             </p>
             <PrimaryButton className="mt-2.5 md:w-[260px]" onClick={() => go(nextUnanswered(a))}>
               {n === 0 ? 'Berätta om flytten' : 'Fortsätt berätta'}

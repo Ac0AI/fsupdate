@@ -583,7 +583,7 @@ export const Frame = ({
   children,
   cta = 'Fortsätt',
   left = 0,
-  foot = 'Allt sparas direkt. Vet du inte, välj Vet inte.',
+  foot = 'Svaren sparas när du går vidare. Vet du inte, välj Vet inte.',
   savedBadge,
   done,
   onStep,
