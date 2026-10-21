@@ -41,6 +41,8 @@ export type AdressSvar = {
   vaningar?: string
   /** Boarea i m² om kunden ändrat den, annars hämtas den från flytten. */
   kvm?: string
+  /** Nya bostaden: kunden vet inte boarean, säljaren tar den på samtalet (David 21 okt: tvingande eller vet ej). */
+  kvmVetEj?: boolean
   /** Kunden har tryckt Klar på bostadskortet. Krävs även när typ och boarea är förifyllda (David–Nils 21 okt). */
   bostadKlar?: boolean
 }

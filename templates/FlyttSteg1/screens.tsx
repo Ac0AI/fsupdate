@@ -734,8 +734,8 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
     )
   // Kortet är öppet tills kunden tryckt Klar, även när typ och boarea är förifyllda (David–Nils 21 okt: förifyllt passerar bara ögonen, fel kvadrat ger fel offert).
   const oppen = edit || !s.bostadKlar
-  // Boarea krävs bara för bostaden kunden flyttar från; för den nya räcker bostadstypen (David 21 okt).
-  const kvmOk = !ut || Number(kvm) > 0
+  // Boarea krävs på båda: förifylld och bekräftad på Bära ut, ifylld eller Vet inte på Bära in (David 21 okt: tvingande eller vet ej).
+  const kvmOk = Number(kvm) > 0 || (!ut && !!s.kvmVetEj)
   // Reveal: en fråga i taget inom steget. Nästa visas när den förra är svarad, det förifyllda räknas som svarat.
   const vaningKlar = !lagenhet || !!s.vaning
   const hissKlar = !lagenhet || !!s.hiss
@@ -782,14 +782,19 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
               ))}
             </ChipRow>
           </div>
-          {ut && (
-            <div className="mt-3">
-              <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Boarea i m²</span>
-              <div className="mt-1 w-40">
-                <TextInput type="number" value={kvm} onChange={(v) => set({ kvm: v })} placeholder="62" label="Boarea i m²" />
+          <div className="mt-3">
+            <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Boarea i m²</span>
+            <div className="mt-1 flex items-center gap-3">
+              <div className="w-40">
+                <TextInput type="number" value={kvm} onChange={(v) => set({ kvm: v, kvmVetEj: false })} placeholder={ut ? '62' : 'T.ex. 78'} label="Boarea i m²" />
               </div>
+              {!ut && (
+                <Chip small selected={!!s.kvmVetEj} onClick={() => set({ kvmVetEj: !s.kvmVetEj, kvm: '' })}>
+                  Vet inte
+                </Chip>
+              )}
             </div>
-          )}
+          </div>
           {/* Klar som riktig knapp, inte en länk i hörnet (Nils 21 okt: otydlig och gömd, kortet stängdes aldrig). */}
           {s.bostadstyp && (
             <div className="mt-4">
@@ -808,7 +813,13 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
         </InfoCard>
       ) : (
         <InfoCard className="mt-5">
-          <Row label="Bostadstyp" value={`${s.bostadstyp ? BOSTADSTYP_LABEL[s.bostadstyp] : ''}${kvm ? ` · ${kvm} m²` : ''}`} action="Ändra" onAction={() => setEdit(true)} first />
+          <Row
+            label="Bostadstyp"
+            value={`${s.bostadstyp ? BOSTADSTYP_LABEL[s.bostadstyp] : ''}${kvm ? ` · ${kvm} m²` : s.kvmVetEj ? ' · boarea: vet inte' : ''}`}
+            action="Ändra"
+            onAction={() => setEdit(true)}
+            first
+          />
         </InfoCard>
       )}
       {lagenhet && (s.bostadKlar || (!!s.vaning && !s.vaningFranFlytten)) && (
@@ -1546,7 +1557,7 @@ const adressRows = (s: AdressSvar, kvm?: number): SvarRad[] => {
   const lagenhet = s.bostadstyp === 'lagenhet'
   const yta = s.kvm || kvm
   const rows: (SvarRad | null)[] = [
-    { label: 'Bostad', value: s.bostadstyp ? `${BOSTADSTYP_LABEL[s.bostadstyp]}${yta ? ` · ${yta} m²` : ''}` : 'Ej svarat' },
+    { label: 'Bostad', value: s.bostadstyp ? `${BOSTADSTYP_LABEL[s.bostadstyp]}${yta ? ` · ${yta} m²` : s.kvmVetEj ? ' · boarea: vet inte' : ''}` : 'Ej svarat' },
     lagenhet && s.vaning ? { label: 'Våning', value: s.vaning === 'vet-ej' ? 'Vet inte' : s.vaning === 'BV' ? 'Bottenvåning' : s.vaning } : null,
     !lagenhet && s.vaningar ? { label: 'Våningar', value: s.vaningar } : null,
     lagenhet && s.hiss ? { label: 'Hiss', value: HISS_LABEL[s.hiss] } : null,
