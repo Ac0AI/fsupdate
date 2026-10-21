@@ -675,9 +675,16 @@ export const AdresserScreen = (p: ScreenProps) => {
             setStoppEdit(a.stopp.length)
             update((prev) => ({ stopp: [...prev.stopp, ''] }))
           }}
-        >{a.stopp.length ? 'Lägg till ett stopp till' : 'Lägg till ett stopp på vägen'}</MoreLink>
+        >
+          {a.stopp.length ? 'Lägg till ett stopp till' : 'Lägg till ett stopp på vägen'}
+        </MoreLink>
       </div>
-      <Section title="Flyttar du ut och in samma dag?" kvar={!a.sammaDag} sub="Om inte ordnar vi tillfällig förvaring däremellan." why="Flyttar du inte in samma dag behöver sakerna förvaras däremellan. Magasinering är ett tillval som vi kan ta med i offerten.">
+      <Section
+        title="Flyttar du ut och in samma dag?"
+        kvar={!a.sammaDag}
+        sub="Om inte ordnar vi tillfällig förvaring däremellan."
+        why="Flyttar du inte in samma dag behöver sakerna förvaras däremellan. Magasinering är ett tillval som vi kan ta med i offerten."
+      >
         <ChipRow>
           {JA_NEJ_VET.map(([v, label]) => (
             <Chip key={v} selected={a.sammaDag === v} onClick={() => update({ sammaDag: v })}>
@@ -764,7 +771,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
       )}
       {lagenhet && (
         <>
-          <Section title="Vilket våningsplan ligger lägenheten på?" kvar={!s.vaning} why="Hiss och antal trappor påverkar priset. Trappor tar tid och avgör hur många som bär." badge={s.vaningFranFlytten && s.vaning ? <GreenBadge>Från din flytt</GreenBadge> : undefined}>
+          <Section title="Vilket våningsplan ligger lägenheten på?" kvar={!s.vaning} why="Hiss och antal trappor påverkar priset. Trappor tar tid och avgör hur många som bär.">
             {more ? (
               <div className="flex items-center gap-3">
                 <div className="w-32">
@@ -791,7 +798,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
             )}
           </Section>
           <Reveal show={visaHiss}>
-            <Section title="Finns det hiss?" kvar={!s.hiss} sub="Stor hiss rymmer fem personer eller fler." badge={s.hissFranFlytten && s.hiss ? <GreenBadge>Från din flytt</GreenBadge> : undefined}>
+            <Section title="Finns det hiss?" kvar={!s.hiss} sub="Stor hiss rymmer fem personer eller fler.">
               <ChipRow>
                 {(Object.keys(HISS_LABEL) as Hiss[]).map((h) => (
                   <Chip key={h} selected={s.hiss === h} onClick={() => set({ hiss: h, hissFranFlytten: false })}>
@@ -804,7 +811,12 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
         </>
       )}
       {hus && (
-        <Section title="Hur många våningar har huset?" kvar={!s.vaningar} sub="Räkna med källare och inredd vind om vi ska bära där." why="Fler våningar betyder mer bärande inomhus innan sakerna når bilen.">
+        <Section
+          title="Hur många våningar har huset?"
+          kvar={!s.vaningar}
+          sub="Räkna med källare och inredd vind om vi ska bära där."
+          why="Fler våningar betyder mer bärande inomhus innan sakerna når bilen."
+        >
           <ChipRow>
             {VANINGAR.map((v) => (
               <Chip key={v} selected={s.vaningar === v} onClick={() => set({ vaningar: v })}>
@@ -816,7 +828,8 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
       )}
       <Reveal show={visaAvstand}>
         <Section
-          title="Hur nära dörren kan flyttbilen stå?" kvar={!harAvstand(s.avstand)}
+          title="Hur nära dörren kan flyttbilen stå?"
+          kvar={!harAvstand(s.avstand)}
           why="Avståndet till parkeringen påverkar priset. Sträckan mellan dörren och bilen går vi många gånger."
           sub="Avståndet från dörren till närmaste plats bilen kan stå. Ungefärligt räcker."
         >
@@ -825,7 +838,8 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
       </Reveal>
       <Reveal show={visaFramkomlighet}>
         <Section
-          title="Är det lätt att komma fram med flyttbil och personal?" kvar={!s.framkomlighetVal}
+          title="Är det lätt att komma fram med flyttbil och personal?"
+          kvar={!s.framkomlighetVal}
           why="Kan bilen inte komma nära bostaden tar flytten längre tid. Flyttfirman vill veta det i förväg för att planera rätt."
           sub={lagenhet ? 'Hinder kan vara innergård, smal trapp, bom eller trång gata.' : 'Hinder kan vara grusväg, smal infart eller trappor i trädgården.'}
         >
@@ -903,7 +917,13 @@ export const BohagScreen = (p: ScreenProps) => {
     update((prev) => ({ saker: [...prev.saker, { id, vad: '' }] }))
   }
   return (
-    <Q p={p} idx={FIRST + 3} title="Hur mycket ska med?" sub={`Jämfört med ett vanligt hem på ${home.fromKvm} m².`} why="Flyttfirman räknar i kubikmeter: en tvåa på 50–60 m² brukar vara 25–30 m³. Volymen avgör bilstorlek och hur många som bär, så vi vill veta om du har mer eller mindre än normalt.">
+    <Q
+      p={p}
+      idx={FIRST + 3}
+      title="Hur mycket ska med?"
+      sub={`Jämfört med ett vanligt hem på ${home.fromKvm} m².`}
+      why="Flyttfirman räknar i kubikmeter: en tvåa på 50–60 m² brukar vara 25–30 m³. Volymen avgör bilstorlek och hur många som bär, så vi vill veta om du har mer eller mindre än normalt."
+    >
       <div className="mt-5 grid grid-cols-3 gap-2" data-kvar={!a.bohag ? '1' : undefined}>
         {(
           [
@@ -916,7 +936,11 @@ export const BohagScreen = (p: ScreenProps) => {
         ))}
       </div>
       <Reveal show={!!a.bohag || !!a.biytaSvar}>
-        <Section title="Har du saker i förråd eller annat utrymme utöver boarean?" kvar={!a.biytaSvar || (a.biytaSvar === 'ja' && (a.biytor.length === 0 || a.biytor.some((b) => !b.klar)))} why="Det som ligger i förråd, vind eller källare syns inte i boarean men ska också med i bilen. Berätta ungefär hur stort och hur fullt det är, så får flyttfirman en bild av bohaget.">
+        <Section
+          title="Har du saker i förråd eller annat utrymme utöver boarean?"
+          kvar={!a.biytaSvar || (a.biytaSvar === 'ja' && (a.biytor.length === 0 || a.biytor.some((b) => !b.klar)))}
+          why="Det som ligger i förråd, vind eller källare syns inte i boarean men ska också med i bilen. Berätta ungefär hur stort och hur fullt det är, så får flyttfirman en bild av bohaget."
+        >
           <ChoiceRow
             options={JA_NEJ}
             value={a.biytaSvar}
@@ -955,27 +979,32 @@ export const BohagScreen = (p: ScreenProps) => {
                         ))}
                       </ChipRow>
                     </Field>
-                    <Field label="Ungefär hur stort?">
-                      <RangeSlider
-                        value={b.kvm}
-                        min={5}
-                        max={BIYTA_KVM_MAX}
-                        step={5}
-                        onChange={(v) => setBiyta(b.id, { kvm: v })}
-                        text={biytaKvmText}
-                        ticks={['5 m²', '25 m²', '50 m² eller mer']}
-                        label="Storlek i kvadratmeter"
-                      />
-                    </Field>
-                    <Field label="Hur fullt är det?">
-                      <ChipRow>
-                        {[25, 50, 75, 100].map((f) => (
-                          <Chip key={f} small selected={b.fullt === f} onClick={() => setBiyta(b.id, { fullt: f })}>
-                            {fulltText(f)}
-                          </Chip>
-                        ))}
-                      </ChipRow>
-                    </Field>
+                    {/* Reveal även inne i kortet: en fråga i taget (David 21 okt). */}
+                    <Reveal show={!!b.typ}>
+                      <Field label="Ungefär hur stort?">
+                        <RangeSlider
+                          value={b.kvm}
+                          min={5}
+                          max={BIYTA_KVM_MAX}
+                          step={5}
+                          onChange={(v) => setBiyta(b.id, { kvm: v })}
+                          text={biytaKvmText}
+                          ticks={['5 m²', '25 m²', '50 m² eller mer']}
+                          label="Storlek i kvadratmeter"
+                        />
+                      </Field>
+                    </Reveal>
+                    <Reveal show={!!b.typ && typeof b.kvm === 'number'}>
+                      <Field label="Hur fullt är det?">
+                        <ChipRow>
+                          {[25, 50, 75, 100].map((f) => (
+                            <Chip key={f} small selected={b.fullt === f} onClick={() => setBiyta(b.id, { fullt: f })}>
+                              {fulltText(f)}
+                            </Chip>
+                          ))}
+                        </ChipRow>
+                      </Field>
+                    </Reveal>
                   </ItemCard>
                 </Reveal>
               ))}
@@ -985,7 +1014,11 @@ export const BohagScreen = (p: ScreenProps) => {
         </Section>
       </Reveal>
       <Reveal show={a.biytaSvar === 'nej' || (a.biytaSvar === 'ja' && a.biytor.length > 0 && a.biytor.every((b) => b.klar)) || !!a.sakerSvar}>
-        <Section title="Har du föremål som kräver tunga lyft eller är extra ömtåliga?" kvar={!a.sakerSvar || (a.sakerSvar === 'ja' && (a.saker.length === 0 || a.saker.some((x) => !x.klar)))} why="Föremål över 80 kg kan kräva fler som bär eller särskild utrustning, och det påverkar pris och planering. Värdefulla föremål över ungefär 30 000 kr behöver vi veta om i förväg, så att flytten förbereds rätt och du har fullt försäkringsskydd. Annars kan ersättningen begränsas enligt branschvillkoren Bohag 2010.">
+        <Section
+          title="Har du föremål som kräver tunga lyft eller är extra ömtåliga?"
+          kvar={!a.sakerSvar || (a.sakerSvar === 'ja' && (a.saker.length === 0 || a.saker.some((x) => !x.klar)))}
+          why="Föremål över 80 kg kan kräva fler som bär eller särskild utrustning, och det påverkar pris och planering. Värdefulla föremål över ungefär 30 000 kr behöver vi veta om i förväg, så att flytten förbereds rätt och du har fullt försäkringsskydd. Annars kan ersättningen begränsas enligt branschvillkoren Bohag 2010."
+        >
           <ChoiceRow
             options={JA_NEJ}
             value={a.sakerSvar}
@@ -1015,24 +1048,28 @@ export const BohagScreen = (p: ScreenProps) => {
                     <Field label="Vad är det?">
                       <TextInput value={s.vad} onChange={(v) => setSak(s.id, { vad: v })} placeholder="T.ex. piano eller marmorbord" label="Vad är det?" />
                     </Field>
-                    <Field label="Ungefärlig vikt">
-                      <ChipRow>
-                        {VIKT.map((v) => (
-                          <Chip key={v} small selected={s.vikt === v} onClick={() => setSak(s.id, { vikt: v })}>
-                            {v}
-                          </Chip>
-                        ))}
-                      </ChipRow>
-                    </Field>
-                    <Field label="Ungefärligt värde" sub="Värdefulla föremål kan behöva extra försäkring under flytten.">
-                      <ChipRow>
-                        {VARDE.map((v) => (
-                          <Chip key={v} small selected={s.varde === v} onClick={() => setSak(s.id, { varde: v })}>
-                            {v}
-                          </Chip>
-                        ))}
-                      </ChipRow>
-                    </Field>
+                    <Reveal show={!!s.vad.trim()}>
+                      <Field label="Ungefärlig vikt">
+                        <ChipRow>
+                          {VIKT.map((v) => (
+                            <Chip key={v} small selected={s.vikt === v} onClick={() => setSak(s.id, { vikt: v })}>
+                              {v}
+                            </Chip>
+                          ))}
+                        </ChipRow>
+                      </Field>
+                    </Reveal>
+                    <Reveal show={!!s.vad.trim() && !!s.vikt}>
+                      <Field label="Ungefärligt värde" sub="Värdefulla föremål kan behöva extra försäkring under flytten.">
+                        <ChipRow>
+                          {VARDE.map((v) => (
+                            <Chip key={v} small selected={s.varde === v} onClick={() => setSak(s.id, { varde: v })}>
+                              {v}
+                            </Chip>
+                          ))}
+                        </ChipRow>
+                      </Field>
+                    </Reveal>
                   </ItemCard>
                 </Reveal>
               ))}
@@ -1042,7 +1079,12 @@ export const BohagScreen = (p: ScreenProps) => {
         </Section>
       </Reveal>
       <Reveal show={a.sakerSvar === 'nej' || (a.sakerSvar === 'ja' && a.saker.length > 0 && a.saker.every((x) => x.klar)) || a.utemobler !== undefined}>
-        <Section title="Har du utemöbler som ska med?" kvar={a.utemobler === undefined} sub="T.ex. balkongmöbler, loungegrupp, grill, parasoll eller krukor." why="Utemöbler räknas inte in i boarean men tar plats i bilen, så vi vill veta om de ska med.">
+        <Section
+          title="Har du utemöbler som ska med?"
+          kvar={a.utemobler === undefined}
+          sub="T.ex. balkongmöbler, loungegrupp, grill, parasoll eller krukor."
+          why="Utemöbler räknas inte in i boarean men tar plats i bilen, så vi vill veta om de ska med."
+        >
           <ChoiceRow options={JA_NEJ} value={a.utemobler} onChange={(v) => update({ utemobler: v })} />
         </Section>
       </Reveal>
@@ -1092,7 +1134,11 @@ export const StadScreen = (p: ScreenProps) => {
       </Section>
       {a.stad === 'ja' && (
         <>
-          <Section title="Vad ska städas?" kvar={!a.stadYta || (a.stadYta === 'mer' && (a.stadYtor.length === 0 || a.stadYtor.some((y) => !y.klar)))} why="Priset på flyttstädning utgår från bostadens totala yta.">
+          <Section
+            title="Vad ska städas?"
+            kvar={!a.stadYta || (a.stadYta === 'mer' && (a.stadYtor.length === 0 || a.stadYtor.some((y) => !y.klar)))}
+            why="Priset på flyttstädning utgår från bostadens totala yta."
+          >
             <div className="grid grid-cols-2 gap-2">
               <Tile label="Boarean" hint={`${home.fromKvm} m²`} selected={a.stadYta === 'boyta'} onClick={() => update({ stadYta: 'boyta', stadYtor: [] })} />
               <Tile
@@ -1131,18 +1177,20 @@ export const StadScreen = (p: ScreenProps) => {
                           ))}
                         </ChipRow>
                       </Field>
-                      <Field label="Ungefär hur stort?">
-                        <RangeSlider
-                          value={y.kvm}
-                          min={5}
-                          max={BIYTA_KVM_MAX}
-                          step={5}
-                          onChange={(v) => setYta(y.id, { kvm: v })}
-                          text={biytaKvmText}
-                          ticks={['5 m²', '25 m²', '50 m² eller mer']}
-                          label="Storlek"
-                        />
-                      </Field>
+                      <Reveal show={!!y.typ}>
+                        <Field label="Ungefär hur stort?">
+                          <RangeSlider
+                            value={y.kvm}
+                            min={5}
+                            max={BIYTA_KVM_MAX}
+                            step={5}
+                            onChange={(v) => setYta(y.id, { kvm: v })}
+                            text={biytaKvmText}
+                            ticks={['5 m²', '25 m²', '50 m² eller mer']}
+                            label="Storlek"
+                          />
+                        </Field>
+                      </Reveal>
                     </ItemCard>
                   </Reveal>
                 ))}
@@ -1151,7 +1199,11 @@ export const StadScreen = (p: ScreenProps) => {
             )}
           </Section>
           <Reveal show={visaBalkong}>
-            <Section title="Har du inglasad balkong?" kvar={!a.balkong} why="Balkongens yta räknas in i städytan. Glaset på en inglasad balkong putsas som fönster och kostar extra.">
+            <Section
+              title="Har du inglasad balkong?"
+              kvar={!a.balkong}
+              why="Balkongens yta räknas in i städytan. Glaset på en inglasad balkong putsas som fönster och kostar extra."
+            >
               <ChoiceRow options={JA_NEJ} value={a.balkong} onChange={(v) => update({ balkong: v })} />
               {a.balkong === 'ja' && balkongSvarad && !balkongOppen && (
                 <div className="mt-3 flex items-center justify-between gap-3 rounded-[var(--radius-main)] border-[1.5px] border-[var(--color-inactive-main)] bg-white px-4 py-3">
@@ -1200,7 +1252,12 @@ export const StadScreen = (p: ScreenProps) => {
             </Section>
           </Reveal>
           <Reveal show={visaFonster}>
-            <Section title="Har du fönster som tar extra tid att putsa?" kvar={Object.keys(a.fonster).length === 0 && !a.fonsterInga} sub="Ange antal per typ, eller välj att det inte finns några." why="Vanlig fönsterputs ingår. Fönster med flera bågar, spröjs, stora glaspartier eller som är svåra att nå tar längre tid och räknas som extra.">
+            <Section
+              title="Har du fönster som tar extra tid att putsa?"
+              kvar={Object.keys(a.fonster).length === 0 && !a.fonsterInga}
+              sub="Ange antal per typ, eller välj att det inte finns några."
+              why="Vanlig fönsterputs ingår. Fönster med flera bågar, spröjs, stora glaspartier eller som är svåra att nå tar längre tid och räknas som extra."
+            >
               <div className="flex flex-col gap-2">
                 {(Object.keys(FONSTER_LABEL) as FonsterTyp[]).map((t) => {
                   const n = a.fonster[t] ?? 0
@@ -1233,7 +1290,12 @@ export const StadScreen = (p: ScreenProps) => {
             </Section>
           </Reveal>
           <Reveal show={visaKansliga}>
-            <Section title="Finns det känsliga ytor?" kvar={!a.kansliga} sub="T.ex. parkett, marmor, oljat trä, natursten eller lackade luckor." why="Ytor som kräver anpassad rengöring för att undvika skador. Städfirman vill veta det i förväg.">
+            <Section
+              title="Finns det känsliga ytor?"
+              kvar={!a.kansliga}
+              sub="T.ex. parkett, marmor, oljat trä, natursten eller lackade luckor."
+              why="Ytor som kräver anpassad rengöring för att undvika skador. Städfirman vill veta det i förväg."
+            >
               <ChoiceRow
                 options={JA_NEJ}
                 value={a.kansliga}
@@ -1300,11 +1362,21 @@ export const SistaScreen = (p: ScreenProps) => {
         go(DONE)
       }}
     >
-      <Section title="Vilken dag vill du flytta?" kvar={!a.flyttDag} sub={`Tillträdet är ${home.moveDayLong}. Välj dagen du vill flytta.`} why="Dagen avgör vilka flyttfirmor som är lediga. Vardagar är oftast billigare än helger.">
+      <Section
+        title="Vilken dag vill du flytta?"
+        kvar={!a.flyttDag}
+        sub={`Tillträdet är ${home.moveDayLong}. Välj dagen du vill flytta.`}
+        why="Dagen avgör vilka flyttfirmor som är lediga. Vardagar är oftast billigare än helger."
+      >
         <DayPicker value={a.flyttDag} start={home.moveDateIso} label="Flyttdag" placeholder="Välj dag" onChange={(iso) => update({ flyttDag: iso })} ringText="tillträdesdagen" />
       </Section>
       {a.stad === 'ja' && (
-        <Section title="Vilken dag vill du ha flyttstädningen?" kvar={!a.stadDag} sub="Oftast dagen efter flytten, när bostaden är tömd." why="Är du inte hemma när det städas behöver städfirman veta hur de kommer in. Det tar vi i samtalet.">
+        <Section
+          title="Vilken dag vill du ha flyttstädningen?"
+          kvar={!a.stadDag}
+          sub="Oftast dagen efter flytten, när bostaden är tömd."
+          why="Är du inte hemma när det städas behöver städfirman veta hur de kommer in. Det tar vi i samtalet."
+        >
           <DayPicker
             value={a.stadDag}
             start={a.flyttDag ?? home.moveDateIso}
@@ -1324,7 +1396,11 @@ export const SistaScreen = (p: ScreenProps) => {
           label="Något annat vi bör veta"
         />
       </Section>
-      <Section title="Vill du ha hjälp med något mer?" sub="Kryssa i så tar vi med det i offerten." why="Flyttlådor: räkna med ungefär 0,8 lådor per kvadratmeter boarea. Att låna dem ingår i flytten, hemleverans kostar extra. Vid bortforsling ger återbruk RUT-avdrag, återvinning gör det inte.">
+      <Section
+        title="Vill du ha hjälp med något mer?"
+        sub="Kryssa i så tar vi med det i offerten."
+        why="Flyttlådor: räkna med ungefär 0,8 lådor per kvadratmeter boarea. Att låna dem ingår i flytten, hemleverans kostar extra. Vid bortforsling ger återbruk RUT-avdrag, återvinning gör det inte."
+      >
         <div className="flex flex-col gap-2">
           {(Object.keys(TILLVAL_LABEL) as Tillval[]).map((t) => (
             <CheckTile key={t} label={TILLVAL_LABEL[t][0]} hint={TILLVAL_LABEL[t][1]} selected={a.tillval.includes(t)} onClick={() => toggleTillval(t)} icon={TILLVAL_IKON[t]} />
@@ -1344,7 +1420,13 @@ const adressLine = (label: string, s: AdressSvar) => {
     lagenhet ? vaningText(s.vaning) : null,
     lagenhet && s.hiss ? HISS_LABEL[s.hiss].toLowerCase().replace('vet inte', 'hiss: vet inte') : null,
     harAvstand(s.avstand) ? (s.avstand === 'vet-ej' ? 'bärsträcka: vet inte' : `${avstandText(s.avstand)} att bära`) : null,
-    s.framkomlighetVal === 'hinder' ? s.framkomlighet || 'hinder på vägen' : s.framkomlighetVal === 'vet-ej' ? 'framkomlighet: vet inte' : s.framkomlighetVal === 'god' ? 'inga hinder' : null,
+    s.framkomlighetVal === 'hinder'
+      ? s.framkomlighet || 'hinder på vägen'
+      : s.framkomlighetVal === 'vet-ej'
+        ? 'framkomlighet: vet inte'
+        : s.framkomlighetVal === 'god'
+          ? 'inga hinder'
+          : null,
   ].filter(Boolean)
   return `${label}: ${parts.join(', ')}`
 }
@@ -1527,11 +1609,13 @@ export const SaljareScreen = ({ a, home, update }: ScreenProps) => {
           </span>
         </div>
         <div className="mt-4 rounded-xl bg-[var(--color-secondary-extra-extra-light)] p-4">
-          <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">{a.samtal ? (a.samtal.pass === '2d' ? 'Lovat: svar inom två arbetsdagar' : `Samtal bokat ${samtalText(a.samtal)}`) : 'Inget samtal bokat'}</p>
+          <p className="text-[18px] font-bold text-[var(--color-secondary-main)]">
+            {a.samtal ? (a.samtal.pass === '2d' ? 'Lovat: svar inom två arbetsdagar' : `Samtal bokat ${samtalText(a.samtal)}`) : 'Inget samtal bokat'}
+          </p>
           <p className="text-[13px] text-[var(--color-inactive-dark)]">
             Flytthjälp{a.stad === 'ja' ? ' och flyttstäd' : ''}.{' '}
-            {n === 0 ? 'Kunden har inte börjat svara.' : left > 0 ? `${left} frågor kvar att ställa i samtalet.` : 'Alla frågor besvarade.'} Svaren ligger på Opportunityn, guiden hoppar
-            över det som redan är svarat.
+            {n === 0 ? 'Kunden har inte börjat svara.' : left > 0 ? `${left} frågor kvar att ställa i samtalet.` : 'Alla frågor besvarade.'} Svaren ligger på Opportunityn, guiden
+            hoppar över det som redan är svarat.
           </p>
         </div>
         <Eyebrow className="mt-5">Kundens svar</Eyebrow>
