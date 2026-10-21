@@ -367,12 +367,46 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
         <p className="mt-2 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
           {vald ? 'Samtalet tar inte mer än tio minuter.' : 'Vi tar fram rätt underlag för din flytt och tittar på lediga flyttbilar, så att du får ett bra erbjudande.'}
         </p>
+        {/* Telefonen som en rad, inte en låda: kunden ska förstå att vi kontaktar dem, inte stanna vid numret (David 21 okt). */}
+        {andraNr ? (
+          <div className="mt-3 flex items-end gap-3 md:max-w-[400px]">
+            <div className="max-w-[220px] flex-1">
+              <TextInput type="tel" value={tel} onChange={setTel} placeholder="070-123 45 67" label="Telefonnummer" />
+            </div>
+            <TextLink
+              className="mb-3 text-[14px]"
+              onClick={() => {
+                if (tel.trim()) update({ telefon: tel.trim() })
+                setAndraNr(false)
+              }}
+            >
+              Spara
+            </TextLink>
+          </div>
+        ) : (
+          <p className="mt-3 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
+            Vi kontaktar dig på <span className="font-bold text-[var(--color-text-main)]">{a.telefon}</span>.{' '}
+            <TextLink muted className="text-[14px]" onClick={() => setAndraNr(true)}>
+              Ändra
+            </TextLink>
+          </p>
+        )}
+        {/* Huvud-CTA: ett eget kort så att det tar mest plats på skärmen (David 21 okt). */}
+        <InfoCard className="mt-5 px-4 pb-4 pt-4 md:max-w-[420px]">
+          <h2 className="text-[17px] font-bold leading-[22px] text-[var(--color-text-main)]">Få din offert snabbare</h2>
+          <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
+            Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och du kan fortsätta senare.
+          </p>
+          <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
+            Berätta om flytten
+          </PrimaryButton>
+        </InfoCard>
         {/* En riktig knapp, inte en länk i texten (Nils 21 okt: "Ändra tid är inte tydlig knapp"). */}
         <button
           type="button"
           aria-expanded={andraTid}
           onClick={() => setAndraTid((v) => !v)}
-          className="mt-3 inline-flex h-10 items-center gap-2 rounded-[var(--radius-button)] border-[1.5px] border-[var(--color-secondary-main)] bg-white px-4 text-[14px] font-bold text-[var(--color-secondary-main)]"
+          className="mt-5 inline-flex h-10 items-center gap-2 rounded-[var(--radius-button)] border-[1.5px] border-[var(--color-secondary-main)] bg-white px-4 text-[14px] font-bold text-[var(--color-secondary-main)]"
         >
           <CalendarDays size={16} />
           {andraTid ? 'Stäng' : vald ? 'Ändra tid' : 'Välj en tid som passar dig'}
@@ -409,38 +443,6 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
         <p className="mt-3 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">
           Är det brådskande? Ring oss på <span className="font-bold text-[var(--color-text-main)]">08-12 00 88 22</span>, vardagar 9–17.
         </p>
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-[var(--color-inactive-main)] bg-[#F8FAFC] px-4 py-3 md:max-w-[400px]">
-          <div className="min-w-0 flex-1">
-            <p className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Vi kontaktar dig på</p>
-            {andraNr ? (
-              <div className="mt-1 max-w-[220px]">
-                <TextInput type="tel" value={tel} onChange={setTel} placeholder="070-123 45 67" label="Telefonnummer" />
-              </div>
-            ) : (
-              <p className="text-[16px] font-bold leading-6 text-[var(--color-text-main)]">{a.telefon}</p>
-            )}
-          </div>
-          {/* Dämpad tills kunden öppnar den, Spara i färg (Nils 21 okt: Ändra tog för mycket uppmärksamhet). */}
-          <TextLink
-            muted={!andraNr}
-            className="text-[13px]"
-            onClick={() => {
-              if (andraNr && tel.trim()) update({ telefon: tel.trim() })
-              setAndraNr((v) => !v)
-            }}
-          >
-            {andraNr ? 'Spara' : 'Ändra'}
-          </TextLink>
-        </div>
-        <h2 className="mt-5 text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">Få din offert snabbare</h2>
-        <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
-          Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och du kan fortsätta senare.
-        </p>
-        <div className="md:w-[300px]">
-          <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
-            Berätta om flytten
-          </PrimaryButton>
-        </div>
         <div className="mt-4 text-center text-[13px] text-[var(--color-inactive-grey-light)] md:text-left">
           {avbryt ? (
             <div className="rounded-lg bg-[var(--color-inactive-quite-light)] p-3 text-left">
