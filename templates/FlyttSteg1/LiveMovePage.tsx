@@ -224,12 +224,7 @@ const LiveMovePage = ({ home, inline, card, onOffer }: Props) => {
               <div className="flex w-full flex-col">
                 <p className="text-left text-[16px] leading-5 text-[var(--color-secondary-dark)]">Dags att göra din flytt smidig och stressfri.</p>
                 <p className="text-left text-[16px] leading-5 text-[var(--color-secondary-dark)]">Börja med att få en kostnadsfri offert på flytthjälp och flyttstädning.</p>
-                <div className="flex items-end pt-[13px]">
-                  <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full border border-[#bfbfbf]">
-                    <Image src="/demo/flyttkoordinator.jpg" alt="" fill sizes="32px" className="object-cover object-center" />
-                  </span>
-                  <span className="pl-1 text-[16px] font-bold leading-5 text-[var(--color-secondary-main)]">/Joel, flyttkoordinator</span>
-                </div>
+                {/* Ingen namngiven koordinator: löftet är att vi hör av oss, och den som ringer är sällan samma person (David 21 okt). */}
               </div>
               <button
                 type="button"

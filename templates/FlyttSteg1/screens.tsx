@@ -346,17 +346,18 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
   }
   return (
     <Sheet>
-      <div className="px-4 pb-6 pt-1 md:px-2 md:pb-2">
+      {/* Desktop: centrerad kolumn som Begär offert, samma innehåll som mobilen (David 21 okt: lyft den ordentligt). */}
+      <div className="px-4 pb-6 pt-1 md:mx-auto md:max-w-[560px] md:px-2 md:pb-2 md:text-center">
         {/* Bocken och stängknappen på en rad, rubriken under, allt i samma vänsterkant på alla bredder. En bock i rad med en tvåradig rubrik hängde i luften på desktop (David 21 okt). */}
-        <div className="flex items-start justify-between md:gap-4">
-          <span className="mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D]">
+        <div className="flex items-start justify-between md:relative md:justify-center md:gap-4">
+          <span className="mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D] md:h-12 md:w-12">
             <Check size={18} strokeWidth={3} />
           </span>
           <button
             type="button"
             aria-label="Stäng"
             onClick={() => go(0)}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[var(--color-inactive-dark)]"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[var(--color-inactive-dark)] md:absolute md:-right-2 md:top-0"
           >
             <X size={20} />
           </button>
@@ -368,7 +369,7 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
         </h1>
         {/* Telefonen som en rad, inte en låda: kunden ska förstå att vi kontaktar dem, inte stanna vid numret (David 21 okt). */}
         {andraNr ? (
-          <div className="mt-3 flex items-end gap-3 md:max-w-[400px]">
+          <div className="mt-3 flex items-end gap-3 md:mx-auto md:max-w-[400px] md:justify-center">
             <div className="max-w-[220px] flex-1">
               <TextInput type="tel" value={tel} onChange={setTel} placeholder="070-123 45 67" label="Telefonnummer" />
             </div>
@@ -391,7 +392,7 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
           </p>
         )}
         {/* Huvud-CTA: ett eget kort så att det tar mest plats på skärmen (David 21 okt). */}
-        <InfoCard className="mt-5 px-4 pb-4 pt-4 md:max-w-[420px]">
+        <InfoCard className="mt-5 px-4 pb-4 pt-4 md:mx-auto md:max-w-[420px]">
           <h2 className="text-[17px] font-bold leading-[22px] text-[var(--color-text-main)]">Få din offert snabbare</h2>
           <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
             Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och du kan fortsätta senare.
@@ -411,7 +412,7 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
           {andraTid ? 'Stäng' : vald ? 'Ändra tid' : 'Välj en tid som passar dig'}
         </button>
         {andraTid && (
-          <InfoCard className="mt-3 px-3 pb-4 pt-3 md:max-w-[400px]">
+          <InfoCard className="mt-3 px-3 pb-4 pt-3 md:mx-auto md:max-w-[400px] md:text-left">
             <p className="text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">Vi ringer inom det pass du väljer. Samtalet tar inte mer än tio minuter.</p>
             <div className="mt-3">
               <WeekPicker value={date} onChange={setDate} />
@@ -442,7 +443,7 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
         <p className="mt-3 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">
           Är det brådskande? Ring oss på <span className="font-bold text-[var(--color-text-main)]">08-12 00 88 22</span>, vardagar 9–17.
         </p>
-        <div className="mt-4 text-center text-[13px] text-[var(--color-inactive-grey-light)] md:text-left">
+        <div className="mt-4 text-center text-[13px] text-[var(--color-inactive-grey-light)]">
           {avbryt ? (
             <div className="rounded-lg bg-[var(--color-inactive-quite-light)] p-3 text-left">
               <p className="text-[14px] font-bold text-[var(--color-text-main)]">Varför vill du inte ha offert?</p>
