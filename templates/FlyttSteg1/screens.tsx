@@ -348,17 +348,11 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
   return (
     <Sheet>
       <div className="px-4 pb-6 pt-1 md:px-2 md:pb-2">
-        {/* Desktop: bocken i rad med rubriken och allt vänsterställt i en smal spalt, annars spretar det i kortet (David 20 okt). */}
+        {/* Bocken och stängknappen på en rad, rubriken under, allt i samma vänsterkant på alla bredder. En bock i rad med en tvåradig rubrik hängde i luften på desktop (David 21 okt). */}
         <div className="flex items-start justify-between md:gap-4">
-          <div className="md:flex md:items-start md:gap-3">
-            <span className="mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D] md:mt-1">
-              <Check size={18} strokeWidth={3} />
-            </span>
-            <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:mt-1 md:text-[22px]! md:leading-[28px]! md:hidden">
-              Tack! Vi kontaktar dig {samtalText(a.samtal)}.
-            </h1>
-            <h1 className="hidden text-[22px]! font-bold leading-[28px]! text-[var(--color-text-main)] md:block">Tack! Vi kontaktar dig {samtalText(a.samtal)}.</h1>
-          </div>
+          <span className="mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D]">
+            <Check size={18} strokeWidth={3} />
+          </span>
           <button
             type="button"
             aria-label="Stäng"
@@ -368,14 +362,17 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
             <X size={20} />
           </button>
         </div>
-        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:mt-1 md:pl-12">
+        <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:text-[22px]! md:leading-[28px]!">
+          Tack! Vi kontaktar dig {samtalText(a.samtal)}.
+        </h1>
+        <p className="mt-2 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
           Då går vi igenom din offert. Passar inte tiden?{' '}
           <TextLink className="text-[14px]" onClick={() => setAndraTid((v) => !v)}>
             {andraTid ? 'Stäng' : 'Ändra tid'}
           </TextLink>
         </p>
         {andraTid && (
-          <InfoCard className="mt-3 px-3 pb-4 pt-3 md:ml-12 md:max-w-[400px]">
+          <InfoCard className="mt-3 px-3 pb-4 pt-3 md:max-w-[400px]">
             <button
               type="button"
               onClick={() => valj(nu ? 'nu' : 'flexibel')}
@@ -410,7 +407,7 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
             </div>
           </InfoCard>
         )}
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-[var(--color-inactive-main)] bg-[#F8FAFC] px-4 py-3 md:ml-12 md:max-w-[400px]">
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-[var(--color-inactive-main)] bg-[#F8FAFC] px-4 py-3 md:max-w-[400px]">
           <div className="min-w-0 flex-1">
             <p className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Vi kontaktar dig på</p>
             {andraNr ? (
@@ -431,16 +428,16 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
             {andraNr ? 'Spara' : 'Ändra'}
           </TextLink>
         </div>
-        <h2 className="mt-5 text-[16px] font-bold leading-[22px] text-[var(--color-text-main)] md:ml-12">Få din offert snabbare</h2>
-        <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)] md:ml-12">
+        <h2 className="mt-5 text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">Få din offert snabbare</h2>
+        <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
           Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och allt sparas direkt.
         </p>
-        <div className="md:ml-12 md:w-[300px]">
+        <div className="md:w-[300px]">
           <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
             Berätta om flytten
           </PrimaryButton>
         </div>
-        <div className="mt-4 text-center text-[13px] text-[var(--color-inactive-grey-light)] md:ml-12 md:text-left">
+        <div className="mt-4 text-center text-[13px] text-[var(--color-inactive-grey-light)] md:text-left">
           {avbryt ? (
             <div className="rounded-lg bg-[var(--color-inactive-quite-light)] p-3 text-left">
               <p className="text-[14px] font-bold text-[var(--color-text-main)]">Varför vill du inte ha offert?</p>
@@ -548,7 +545,18 @@ export const AdresserScreen = (p: ScreenProps) => {
   return (
     <Q p={p} idx={FIRST} title="Stämmer adresserna?" sub="Hämtade från din flytt. Ändra om något inte stämmer.">
       <RouteCard className="mt-5">
-        <RoutePoint kind="fran" label="Från" value={`${home.from}, ${move.fromAddress.city}`} action={andra === 'fran' ? undefined : <TextLink className="h-[44px]" onClick={() => setAndra('fran')}>Ändra</TextLink>}>
+        <RoutePoint
+          kind="fran"
+          label="Från"
+          value={`${home.from}, ${move.fromAddress.city}`}
+          action={
+            andra === 'fran' ? undefined : (
+              <TextLink className="h-[44px]" onClick={() => setAndra('fran')}>
+                Ändra
+              </TextLink>
+            )
+          }
+        >
           {andra === 'fran' && (
             <div className="mt-2">
               <AddressForm
@@ -577,7 +585,18 @@ export const AdresserScreen = (p: ScreenProps) => {
             </div>
           </RoutePoint>
         ))}
-        <RoutePoint kind="till" label="Till" value={`${home.to}, ${move.toAddress.city}`} action={andra === 'till' ? undefined : <TextLink className="h-[44px]" onClick={() => setAndra('till')}>Ändra</TextLink>}>
+        <RoutePoint
+          kind="till"
+          label="Till"
+          value={`${home.to}, ${move.toAddress.city}`}
+          action={
+            andra === 'till' ? undefined : (
+              <TextLink className="h-[44px]" onClick={() => setAndra('till')}>
+                Ändra
+              </TextLink>
+            )
+          }
+        >
           {andra === 'till' && (
             <div className="mt-2">
               <AddressForm
