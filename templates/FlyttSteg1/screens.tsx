@@ -1374,9 +1374,11 @@ export const answerGroups = (a: Answers, home: Home): SvarGrupp[] => {
 /* 11 · Allt sparat */
 export const SparatScreen = ({ a, go, home }: ScreenProps) => {
   const groups = answerGroups(a, home)
+  // Egen scroll här: på desktop ligger sidan i ett kort med fast höjd (gick inte att scrolla, David 21 okt), på mobil i arket.
   return (
-    <Sheet>
-      <div className="px-4 pb-6 pt-4 text-center">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto overscroll-contain bg-white">
+      <SheetHandle />
+      <div className="mx-auto w-full max-w-[560px] px-4 pb-6 pt-4 text-center md:py-6">
         <div className="flex justify-center">
           <CheckCircle size={56} />
         </div>
@@ -1387,17 +1389,15 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => {
         <PrimaryButton className="mt-6" onClick={() => go(0)}>
           Tillbaka till flyttsidan
         </PrimaryButton>
-        {/* Svaren per steg med etikett och värde, Ändra per grupp i stället för en lista med meningar. */}
+        {/* En enda Ändra, inte en per grupp (David 21 okt). Öppnar steg 1 med svaren ifyllda. */}
+        <PrimaryButton tone="outline" className="mt-3" onClick={() => go(FIRST)}>
+          Ändra mina svar
+        </PrimaryButton>
         <Eyebrow className="mt-7 text-left">Dina svar</Eyebrow>
         <div className="mt-2 overflow-hidden rounded-xl border border-[var(--color-inactive-main)] bg-white text-left">
           {groups.map((g, i) => (
             <section key={g.title} className={clsx('px-4 pb-3 pt-2', i > 0 && 'border-t border-[var(--color-inactive-main)]')}>
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[14px] font-bold leading-5 text-[var(--color-text-main)]">{g.title}</h2>
-                <TextLink className="h-11 shrink-0 text-[13px]" onClick={() => go(FIRST + g.step)}>
-                  Ändra
-                </TextLink>
-              </div>
+              <h2 className="py-2 text-[14px] font-bold leading-5 text-[var(--color-text-main)]">{g.title}</h2>
               <dl className="grid grid-cols-[minmax(92px,max-content)_1fr] gap-x-4 gap-y-1 text-[14px] leading-5">
                 {g.rows.map((r, j) => (
                   <Fragment key={j}>
@@ -1410,7 +1410,7 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => {
           ))}
         </div>
       </div>
-    </Sheet>
+    </div>
   )
 }
 

@@ -199,7 +199,7 @@ const DemoFlyttFlow = () => {
         <div className="flex w-full flex-1 flex-col bg-white md:mx-auto md:my-6 md:max-w-[430px] md:flex-none md:overflow-clip md:rounded-[28px] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{screen}</div>
       ) : sida ? (
         /* Egen sida: kortet fyller höjden och stegen scrollar inuti, så att Fortsätt alltid syns. */
-        <div className="mx-auto my-6 flex min-h-0 w-full max-w-[880px] flex-1 flex-col overflow-clip rounded-2xl bg-white shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{screen}</div>
+        <div className={clsx('mx-auto my-6 flex min-h-0 w-full flex-1 flex-col overflow-clip rounded-2xl bg-white shadow-[0_12px_40px_rgba(33,71,102,0.12)]', step === SALJARE - 1 ? 'max-w-[640px]' : 'max-w-[880px]')}>{screen}</div>
       ) : (
         <>
           <LiveMovePage home={home} inline={inline ? screen : null} card={card} onOffer={() => go(answers.samtal ? nextUnanswered(answers) : 1)} />

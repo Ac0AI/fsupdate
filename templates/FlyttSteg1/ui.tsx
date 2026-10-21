@@ -110,35 +110,47 @@ export const ChoiceRow = <T extends string>({ options, value, onChange }: { opti
 )
 
 /**
- * "Varför frågar vi?" under en fråga: fälls ut vid tryck, ingen hover, så att det funkar på mobil,
- * och säger med en mening vad svaret påverkar (David 21 okt: varför vi frågar, t.ex. kubikmeter).
+ * Varför vi frågar: en i-ikon direkt efter frågan, ingen text (David 21 okt: "räcker med en tooltip").
+ * Desktop visar bubblan vid hover, mobil vid tryck. Bubblan läggs under rubriken, från dess vänsterkant,
+ * så rubriken måste vara relative. Texterna är stämda mot hjälpcentret.
  */
 export const Why = ({ text }: { text: string }) => {
   const [open, setOpen] = useState(false)
   return (
-    <div className="mt-1">
+    <span className="group inline-block align-middle">
       <button
         type="button"
+        aria-label="Varför frågar vi?"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-7 items-center gap-1 text-[13px] font-bold text-[var(--color-secondary-main)]"
+        onBlur={() => setOpen(false)}
+        className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full align-middle text-[var(--color-inactive-dark)] hover:text-[var(--color-secondary-main)]"
       >
-        <Info size={14} />
-        Varför frågar vi?
+        <Info size={16} />
       </button>
-      {open && <p className="mt-1 rounded-[var(--radius-main)] bg-[var(--color-secondary-extra-extra-light)] px-3 py-2 text-[13px] leading-[18px] text-[var(--color-text-main)]">{text}</p>}
-    </div>
+      <span
+        role="tooltip"
+        className={clsx(
+          'absolute left-0 top-full z-20 mt-1 w-[320px] max-w-full rounded-[var(--radius-main)] bg-[var(--color-text-main)] px-3 py-2 text-left text-[13px] font-normal leading-[18px] text-white shadow-[0_8px_24px_rgba(0,0,0,0.18)]',
+          open ? 'block' : 'hidden md:group-hover:block',
+        )}
+      >
+        {text}
+      </span>
+    </span>
   )
 }
 
 export const Section = ({ title, sub, why, children, className, badge }: { title: string; sub?: string; why?: string; children: ReactNode; className?: string; badge?: ReactNode }) => (
   <section className={className ?? 'mt-7'}>
     <div className="flex items-start justify-between gap-3">
-      <h2 className="text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">{title}</h2>
+      <h2 className="relative text-[16px] font-bold leading-[22px] text-[var(--color-text-main)]">
+        {title}
+        {why && <Why text={why} />}
+      </h2>
       {badge}
     </div>
     {sub && <p className="mt-0.5 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">{sub}</p>}
-    {why && <Why text={why} />}
     <div className="mt-3">{children}</div>
   </section>
 )
@@ -161,8 +173,8 @@ export const InfoNote = ({ children }: { children: ReactNode }) => (
 
 /** Grön pill: "Från din flytt", "Steg 1 sparat". */
 export const GreenBadge = ({ children }: { children: ReactNode }) => (
-  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#DCFCE7] px-2 py-1 text-[11px] font-bold leading-[14px] text-[#15803D]">
-    <Check size={12} strokeWidth={3} />
+  <span className="inline-flex h-6 shrink-0 items-center gap-1 rounded-full bg-[#DCFCE7] px-2 text-[12px] font-bold leading-4 text-[#15803D]">
+    <Check size={13} strokeWidth={3} />
     {children}
   </span>
 )
@@ -705,9 +717,11 @@ export const Frame = ({
         </ol>
       </nav>
       <div className="min-w-0 md:max-w-[560px]">
-        <h1 className="text-[19px]! font-bold leading-[24px]! text-[var(--color-text-main)] md:text-[24px]! md:leading-[30px]!">{title}</h1>
+        <h1 className="relative text-[19px]! font-bold leading-[24px]! text-[var(--color-text-main)] md:text-[24px]! md:leading-[30px]!">
+          {title}
+          {why && <Why text={why} />}
+        </h1>
         {sub && <p className="mt-1 text-[13px] leading-[18px] text-[var(--color-inactive-dark)] md:text-[15px] md:leading-[22px]">{sub}</p>}
-        {why && <Why text={why} />}
         {children}
       </div>
     </div>
