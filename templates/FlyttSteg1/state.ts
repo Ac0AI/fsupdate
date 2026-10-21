@@ -272,7 +272,8 @@ export const BIYTA_KVM_MAX = 50
 export const biytaKvmText = (n: number) => (n >= BIYTA_KVM_MAX ? `${BIYTA_KVM_MAX} m² eller mer` : `${n} m²`)
 export const FULLT_LABEL: Record<number, string> = { 25: 'En fjärdedel', 50: 'Halvfullt', 75: 'Trekvart', 100: 'Fullt' }
 export const fulltText = (n: number) => FULLT_LABEL[n] ?? `${n} %`
-export const VIKT = ['0–80 kg', '80–150 kg', '150–200 kg', '200+ kg']
+// Samma intervall som Harrys tunga lyft (80-100, 101-150, 151-200, 200+), så att svaret mappar rakt av (Nils mappning 21 okt).
+export const VIKT = ['Under 80 kg', '80–100 kg', '101–150 kg', '151–200 kg', 'Över 200 kg']
 export const VARDE = ['0–30 000 kr', '30 000–50 000 kr', '50 000–100 000 kr', '100 000+ kr']
 export const VANINGAR = ['1', '1,5', '2', '3', '4+']
 export const FRAMKOMLIGHET_LABEL: Record<Framkomlighet, string> = { god: 'Inga hinder', hinder: 'Det finns hinder', 'vet-ej': 'Vet inte' }
