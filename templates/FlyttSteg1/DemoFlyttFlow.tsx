@@ -83,9 +83,10 @@ const DemoFlyttFlow = () => {
 
   const step = Math.min(LAST, Math.max(0, Number(search.get('s') ?? 0) || 0))
   const inSheet = step > 0 && step < SALJARE
-  /* Desktop: dagens skärmar och Samtal bokat ligger i Flytthjälp-kortet som live. Frågestegen får en egen ruta ovanpå sidan. */
-  const dialog = desktop && step >= FIRST_QUESTION && step < SALJARE
-  const inline = inSheet && desktop && !dialog
+  /* Desktop: dagens skärmar och Samtal bokat ligger i Flytthjälp-kortet som live. Frågestegen och Allt sparat är egna sidor
+     med samma adress som på mobil, inte en ruta ovanpå flyttsidan (David 21 okt). */
+  const sida = desktop && step >= FIRST_QUESTION && step < SALJARE
+  const inline = inSheet && desktop && !sida
   /* Mobil: de sex frågestegen tar hela skärmen (David 20 okt i Paper: "Låt denna ta hela skärmen?"). Arket behålls för dagens skärmar, Samtal bokat och Allt sparat. */
   const helskarm = !desktop && step >= FIRST_QUESTION && step < FIRST_QUESTION + 6
 
@@ -97,8 +98,8 @@ const DemoFlyttFlow = () => {
   /* Desktop: nytt steg börjar högst upp i kortet. Flyttsidan och Säljaren börjar högst upp på sidan. */
   useEffect(() => {
     if (inline) document.getElementById('flytt-inline')?.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior })
-    else if (!inSheet) window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
-  }, [step, inline, inSheet])
+    else if (!inSheet || sida) window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+  }, [step, inline, inSheet, sida])
 
   useEffect(() => {
     if (!helskarm) return
@@ -190,21 +191,24 @@ const DemoFlyttFlow = () => {
   )
 
   return (
-    <div className="flex min-h-[calc(100dvh-52px)] flex-1 flex-col bg-[#E7ECF0]">
+    <div className={clsx('flex flex-1 flex-col bg-[#E7ECF0]', sida ? 'h-[calc(100dvh-52px)]' : 'min-h-[calc(100dvh-52px)]')}>
       {demoBar}
       {step >= SALJARE ? (
         <div className="flex w-full flex-1 flex-col bg-white md:mx-auto md:my-6 md:max-w-[430px] md:flex-none md:overflow-clip md:rounded-[28px] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{screen}</div>
+      ) : sida ? (
+        /* Egen sida: kortet fyller höjden och stegen scrollar inuti, så att Fortsätt alltid syns. */
+        <div className="mx-auto my-6 flex min-h-0 w-full max-w-[880px] flex-1 flex-col overflow-clip rounded-2xl bg-white shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{screen}</div>
       ) : (
         <>
           <LiveMovePage home={home} inline={inline ? screen : null} card={card} onOffer={() => go(answers.samtal ? nextUnanswered(answers) : 1)} />
-          {/* Mobil: arket. Desktop: frågestegen i en egen ruta. Via portal, annars fastnar fixed i demons animerade ram. */}
+          {/* Mobil: arket eller helskärm. Via portal, annars fastnar fixed i demons animerade ram. */}
           {inSheet &&
             mounted &&
-            (!desktop || dialog) &&
+            !desktop &&
             createPortal(
-              <div className={clsx('fixed inset-x-0 bottom-0 z-50 flex flex-col', helskarm ? 'top-[52px]' : 'top-0', dialog ? 'items-center justify-center p-6' : 'justify-end')} style={panelStyle} role="dialog" aria-modal>
-                {!helskarm && <button type="button" aria-label="Stäng" className={clsx('absolute inset-0', dialog ? 'bg-black/40' : 'bg-black/30')} onClick={() => go(0)} />}
-                <div className={clsx('relative flex w-full flex-col overflow-clip bg-white', dialog ? 'max-h-[88dvh] max-w-[840px] rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.25)]' : helskarm ? 'h-full' : 'mx-auto max-h-[90dvh] max-w-[430px] rounded-t-[20px] shadow-[0_-4px_24px_rgba(0,0,0,0.15)]')}>{screen}</div>
+              <div className={clsx('fixed inset-x-0 bottom-0 z-50 flex flex-col justify-end', helskarm ? 'top-[52px]' : 'top-0')} style={panelStyle} role="dialog" aria-modal>
+                {!helskarm && <button type="button" aria-label="Stäng" className="absolute inset-0 bg-black/30" onClick={() => go(0)} />}
+                <div className={clsx('relative flex w-full flex-col overflow-clip bg-white', helskarm ? 'h-full' : 'mx-auto max-h-[90dvh] max-w-[430px] rounded-t-[20px] shadow-[0_-4px_24px_rgba(0,0,0,0.15)]')}>{screen}</div>
               </div>,
               document.body,
             )}
