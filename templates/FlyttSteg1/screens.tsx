@@ -734,7 +734,8 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
     )
   // Kortet är öppet tills kunden tryckt Klar, även när typ och boarea är förifyllda (David–Nils 21 okt: förifyllt passerar bara ögonen, fel kvadrat ger fel offert).
   const oppen = edit || !s.bostadKlar
-  const kvmOk = Number(kvm) > 0
+  // Boarea krävs bara för bostaden kunden flyttar från; för den nya räcker bostadstypen (David 21 okt).
+  const kvmOk = !ut || Number(kvm) > 0
   // Reveal: en fråga i taget inom steget. Nästa visas när den förra är svarad, det förifyllda räknas som svarat.
   const vaningKlar = !lagenhet || !!s.vaning
   const hissKlar = !lagenhet || !!s.hiss
@@ -769,7 +770,7 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
         <InfoCard className="mt-5 p-3.5" kvar={!s.bostadKlar}>
           <div className="flex items-center justify-between">
             <span className={clsx(s.bostadstyp ? 'text-[12px] leading-4 text-[var(--color-inactive-dark)]' : 'text-[15px] font-bold leading-5 text-[var(--color-text-main)]')}>
-              {!s.bostadstyp ? 'Vilken typ av bostad är det?' : s.bostadKlar ? 'Bostadstyp' : 'Stämmer typ och boarea?'}
+              {!s.bostadstyp ? 'Vilken typ av bostad är det?' : s.bostadKlar || !ut ? 'Bostadstyp' : 'Stämmer typ och boarea?'}
             </span>
           </div>
           <div className="mt-2">
@@ -781,11 +782,13 @@ const BaraScreen = ({ side, ...p }: ScreenProps & { side: 'fran' | 'till' }) => 
               ))}
             </ChipRow>
           </div>
+          {ut && (
           <div className="mt-3">
             <span className="text-[12px] leading-4 text-[var(--color-inactive-dark)]">Boarea i m²</span>
             <div className="mt-1 w-40">
               <TextInput type="number" value={kvm} onChange={(v) => set({ kvm: v })} placeholder={ut ? '62' : 'T.ex. 78'} label="Boarea i m²" />
             </div>
+          )}
           </div>
           {/* Klar som riktig knapp, inte en länk i hörnet (Nils 21 okt: otydlig och gömd, kortet stängdes aldrig). */}
           {s.bostadstyp && (
