@@ -1696,17 +1696,6 @@ export const SparatScreen = ({ a, go, home }: ScreenProps) => {
           </div>
         </div>
 
-        {/* Nästa steg medan kunden väntar: elavtalet, sajtens egen formulering. */}
-        <div className={clsx(kort, 'mt-4 px-[20px] py-[16px]')}>
-          <p className="text-[15px] font-bold leading-[20px] text-[#214766]">Medan du väntar: elavtalet</p>
-          <p className="mt-1 text-[14px] leading-[18px] text-[#2B567C]">
-            Tre minuter, sen är strömmen på när du flyttar in.{' '}
-            <TextLink className="text-[14px]" onClick={() => go(0)}>
-              Till elavtalet
-            </TextLink>
-          </p>
-        </div>
-
         {/* Alla svar, grupperade per steg, i samma kvittorader. En enda Ändra, inte en per grupp (David 21 okt): öppnar steg 1 med svaren ifyllda. */}
         <div className={clsx(kort, 'mt-4 px-[20px] pb-[8px] pt-[16px]')}>
           <div className="flex items-center justify-between gap-3">
