@@ -1244,7 +1244,7 @@ export const KlartScreen = ({ s, grid }: ScreenProps) => {
           <p className={clsx('pb-[14px] text-[16px] leading-[20px] font-bold', navy)}>Det här händer nu</p>
           <ol className="flex flex-col">
             {[
-              'Du får en bekräftelse på mejl inom kort.',
+              'Du får ett sms med din beställning direkt.',
               `Vi ordnar elnätet${grid ? ` hos ${grid}` : ''} till din nya adress med fullmakten${s.terminate ? ' och säger upp ditt nuvarande elavtal' : ''}.`,
               `Elen är på från ${longDate(s.startDate)}. Vi skickar ett sms när allt är klart.`,
             ].map((text, i, all) => (
