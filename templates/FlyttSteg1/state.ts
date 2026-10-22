@@ -49,6 +49,7 @@ export type AdressSvar = {
 
 /** kvm i steg om 5 (50 = 50 m² eller mer), fullt i fjärdedelar 25–100. klar = kunden har tryckt Klar, först då räknas kortet (David–Nils 20 okt). */
 export type Biyta = { id: string; typ?: BiytaTyp; kvm?: number; fullt?: number; klar?: boolean }
+/** varde = belopp i kronor som siffror ('40000'). */
 export type Sak = { id: string; vad: string; vikt?: string; varde?: string; klar?: boolean }
 /** dag som text ('fredag 23/10'); iso YYYY-MM-DD när tiden satts av det nya flödet (förvald eller ändrad i bekräftelsen). */
 export type Samtal = { dag: string; pass: string; iso?: string }
@@ -150,7 +151,7 @@ export const EMPTY: Answers = {
   ovrigt: '',
 }
 
-const KEY = 'flyttsmart-demo-flytt-steg1-v5'
+const KEY = 'flyttsmart-demo-flytt-steg1-v6'
 
 export const TOTAL = 6
 
@@ -274,7 +275,8 @@ export const FULLT_LABEL: Record<number, string> = { 25: 'En fjärdedel', 50: 'H
 export const fulltText = (n: number) => FULLT_LABEL[n] ?? `${n} %`
 // Samma intervall som Harrys tunga lyft (80-100, 101-150, 151-200, 200+), så att svaret mappar rakt av (Nils mappning 21 okt).
 export const VIKT = ['Under 80 kg', '80–100 kg', '101–150 kg', '151–200 kg', 'Över 200 kg']
-export const VARDE = ['0–30 000 kr', '30 000–50 000 kr', '50 000–100 000 kr', '100 000+ kr']
+/** Belopp i kronor som text med tusentalsavstånd: '40000' → '40 000 kr'. Beloppsfält i stället för intervall (Nils + David 22 okt), Harry sparar belopp i SEK. */
+export const vardeText = (v?: string) => (v && Number(v) > 0 ? `${Number(v).toLocaleString('sv-SE')} kr` : '')
 export const VANINGAR = ['1', '1,5', '2', '3', '4+']
 export const FRAMKOMLIGHET_LABEL: Record<Framkomlighet, string> = { god: 'Inga hinder', hinder: 'Det finns hinder', 'vet-ej': 'Vet inte' }
 export const FONSTER_LABEL: Record<FonsterTyp, [string, string]> = {

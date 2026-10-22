@@ -23,8 +23,8 @@ import {
   VANINGAR,
   TILLVAL_LABEL,
   TOTAL,
-  VARDE,
   VIKT,
+  vardeText,
   answeredCount,
   answeredQuestions,
   newId,
@@ -957,7 +957,7 @@ export const BohagScreen = (p: ScreenProps) => {
   // Ett kort är öppet tills kunden trycker Klar, sedan en rad med Ändra. Klar finns först när allt är ifyllt,
   // och ett öppet kort räknas som obesvarat så att Fortsätt väntar (David–Nils 20 okt).
   const biytaKlar = (b: Answers['biytor'][number]) => !!b.typ && typeof b.kvm === 'number' && typeof b.fullt === 'number'
-  const sakKlar = (s: Answers['saker'][number]) => !!s.vad.trim() && !!s.vikt && !!s.varde
+  const sakKlar = (s: Answers['saker'][number]) => !!s.vad.trim() && !!s.vikt && Number(s.varde) > 0
   // Senast skapade kortet scrollas till mitten när det dyker upp (Nils pdf 20 okt: autoscroll vid Ja på tunga lyft).
   const nytt = useRef<string | null>(null)
   const nyBiyta = () => {
@@ -1095,7 +1095,7 @@ export const BohagScreen = (p: ScreenProps) => {
                       })
                     }
                     collapsed={!!s.klar && sakKlar(s)}
-                    summary={[s.vikt, s.varde].filter(Boolean).join(' · ')}
+                    summary={[s.vikt, vardeText(s.varde)].filter(Boolean).join(' · ')}
                     onDone={sakKlar(s) ? () => setSak(s.id, { klar: true }) : undefined}
                     onEdit={() => setSak(s.id, { klar: false })}
                   >
@@ -1114,14 +1114,19 @@ export const BohagScreen = (p: ScreenProps) => {
                       </Field>
                     </Reveal>
                     <Reveal show={!!s.vad.trim() && !!s.vikt}>
-                      <Field label="Ungefärligt värde" sub="Värdefulla föremål kan behöva extra försäkring under flytten.">
-                        <ChipRow>
-                          {VARDE.map((v) => (
-                            <Chip key={v} small selected={s.varde === v} onClick={() => setSak(s.id, { varde: v })}>
-                              {v}
-                            </Chip>
-                          ))}
-                        </ChipRow>
+                      {/* Belopp i kronor, inte intervall (Nils + David 22 okt): Harry sparar ett belopp i SEK, 30 000 kr eller mer räknas som värdefullt. */}
+                      <Field label="Ungefärligt värde i kronor" sub="Värdefulla föremål kan behöva extra försäkring under flytten.">
+                        <div className="relative max-w-[220px]">
+                          {/* Textfält med sifferknappsats, så att beloppet kan visas med tusentalsavstånd medan man skriver. Sparas som siffror. */}
+                          <TextInput
+                            type="tel"
+                            value={(s.varde ?? '').replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+                            onChange={(v) => setSak(s.id, { varde: v.replace(/\D/g, '').slice(0, 9) })}
+                            placeholder="T.ex. 40 000"
+                            label="Ungefärligt värde i kronor"
+                          />
+                          <span aria-hidden className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[15px] text-[var(--color-inactive-dark)]">kr</span>
+                        </div>
                       </Field>
                     </Reveal>
                   </ItemCard>
@@ -1524,7 +1529,7 @@ export const answerLines = (a: Answers, home: Home): string[] => {
     ),
   )
   if (a.sakerSvar === 'nej') L.push('Inga tunga eller ömtåliga föremål')
-  a.saker.forEach((s) => L.push(`${s.vad || 'Föremål'}${s.vikt ? `, ${s.vikt}` : ''}${s.varde ? `, värde ${s.varde}` : ''}`))
+  a.saker.forEach((s) => L.push(`${s.vad || 'Föremål'}${s.vikt ? `, ${s.vikt}` : ''}${vardeText(s.varde) ? `, värde ${vardeText(s.varde)}` : ''}`))
   if (a.utemobler) L.push(a.utemobler === 'ja' ? 'Utemöbler ska med' : 'Inga utemöbler')
   if (a.stad === 'nej') L.push('Ingen flyttstädning')
   if (a.stad === 'ja') {
@@ -1589,7 +1594,7 @@ export const answerGroups = (a: Answers, home: Home): SvarGrupp[] => {
     }),
   )
   if (a.sakerSvar === 'nej') med.push({ label: 'Tungt eller ömtåligt', value: 'Inget' })
-  a.saker.forEach((s) => med.push({ label: s.vad || 'Föremål', value: [s.vikt, s.varde ? `värde ${s.varde}` : null].filter(Boolean).join(', ') || 'Ska med' }))
+  a.saker.forEach((s) => med.push({ label: s.vad || 'Föremål', value: [s.vikt, vardeText(s.varde) ? `värde ${vardeText(s.varde)}` : null].filter(Boolean).join(', ') || 'Ska med' }))
   if (a.utemobler) med.push({ label: 'Utemöbler', value: a.utemobler === 'ja' ? 'Ska med' : 'Inga' })
 
   const stad: SvarRad[] = []
