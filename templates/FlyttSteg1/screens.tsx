@@ -422,8 +422,10 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
               Berätta om flytten
             </PrimaryButton>
           </InfoCard>
+          {/* Raden säger varför man väljer tid (David 22 okt). Försvinner när tiden är vald, då bär rubriken tiden. */}
+          {!vald && <p className="mt-6 text-[14px] leading-[20px] text-[#2B567C]">Vill du veta exakt när vi ringer? Välj en dag och ett pass, så ringer vi då.</p>}
           {/* En riktig knapp, inte en länk i texten (Nils 21 okt: "Ändra tid är inte tydlig knapp"). */}
-          <div className="mt-4">
+          <div className={vald ? 'mt-4' : 'mt-3'}>
             <button type="button" aria-expanded={andraTid} onClick={() => setAndraTid((v) => !v)} className={pill}>
               {andraTid ? <ChevronUp size={18} className="text-[#214766]" /> : <CalendarDays size={18} className="text-[#214766]" />}
               <span className="text-[16px] font-bold text-[#214766]">{vald ? 'Ändra tid' : 'Välj en tid som passar dig'}</span>
