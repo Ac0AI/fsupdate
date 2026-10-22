@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, CalendarDays, Car, Check, Fence, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench, X } from 'lucide-react'
 import clsx from 'clsx'
 import GoogleColor from '@/public/images/GoogleColor.svg'
@@ -1609,8 +1609,8 @@ export const answerGroups = (a: Answers, home: Home): SvarGrupp[] => {
   }
 
   const sista: SvarRad[] = []
-  if (a.flyttDag) sista.push({ label: 'Flyttdag', value: fmtLongDate(fromIso(a.flyttDag)) })
-  if (a.stad === 'ja' && a.stadDag) sista.push({ label: 'Städdag', value: fmtLongDate(fromIso(a.stadDag)) })
+  if (a.flyttDag) sista.push({ label: 'Flyttdag', value: cap(fmtLongDate(fromIso(a.flyttDag))) })
+  if (a.stad === 'ja' && a.stadDag) sista.push({ label: 'Städdag', value: cap(fmtLongDate(fromIso(a.stadDag))) })
   if (a.tillval.length) sista.push({ label: 'Pris på', value: a.tillval.map((t) => TILLVAL_LABEL[t][0]).join(', ') })
   if (a.ovrigt) sista.push({ label: 'Övrigt', value: a.ovrigt })
 
@@ -1625,67 +1625,102 @@ export const answerGroups = (a: Answers, home: Home): SvarGrupp[] => {
 }
 
 /* 11 · Allt sparat */
+/* Samma uttryck som elflödets Klart (David 22 okt): vitt kort på ljus botten, rubrik med turkost ord, kvittorader med etikett till vänster och värde till höger, numrerade steg under Det här händer nu och en rund kantknapp. */
+const kort = 'rounded-[16px] bg-white shadow-[0_4px_8px_#00000014]'
+const KvittoRad = ({ label, value }: SvarRad) => (
+  <div className="flex items-start justify-between gap-[12px] border-b border-[#EEEEF0] py-[12px]">
+    <span className="shrink-0 text-[15px] leading-[20px] font-bold text-[#214766]">{label}</span>
+    <span className="min-w-0 text-right text-[15px] leading-[20px] break-words text-[#214766]">{value}</span>
+  </div>
+)
+
 export const SparatScreen = ({ a, go, home }: ScreenProps) => {
   const groups = answerGroups(a, home)
-  // Egen scroll här: på desktop ligger sidan i ett kort med fast höjd (gick inte att scrolla, David 21 okt), på mobil i arket.
+  const stad = a.stad === 'ja'
+  const vald = !!a.samtal?.pass && a.samtal.pass !== '2d'
+  // Påståendena är sajtens egna formuleringar (utvald firma, färdigförhandlade priser, nöjd-kund-garanti, inga dolda avgifter), inget nytt lovas.
+  const steg = [
+    `Vi matchar din flytt${stad ? ' och städning' : ''} med en utvald och kvalitetssäkrad flyttfirma och tar fram ett upplägg till färdigförhandlat pris.`,
+    `${vald ? `Vi ringer dig ${samtalText(a.samtal)}` : 'Inom två arbetsdagar ringer vi dig'} och går igenom allt med dig. Samtalet tar inte mer än tio minuter.`,
+    `Du får offerten på mejl och här på flyttsidan. Fast pris, inga dolda avgifter${stad ? ' och nöjd-kund-garanti på städningen' : ''}. Du bestämmer själv om du vill boka.`,
+  ]
+  // Egen scroll på mobil: arket har fast höjd. På desktop ligger kortet på sidan och sidan scrollar som vanligt.
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto overscroll-contain bg-white">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto overscroll-contain bg-[#F8FAF9] md:h-auto md:overflow-visible md:bg-transparent">
       <SheetHandle />
-      <div className="mx-auto w-full max-w-[560px] px-4 pb-6 pt-4 text-center md:py-6">
-        <div className="flex justify-center">
-          <CheckCircle size={56} />
+      <div className="mx-auto w-full max-w-[560px] px-4 pb-8 pt-2 md:py-6">
+        <div className={clsx(kort, 'flex flex-col items-center p-[20px] motion-safe:animate-[rise_.4s_ease-out_both]')}>
+          <div role="heading" aria-level={1} className="pb-6 text-center text-[24px] leading-[28px] font-black text-[#214766]">
+            Snyggt jobbat, nu har vi <span className="text-[#51C8B4]">allt vi behöver</span>
+          </div>
+          <div className="h-px w-full bg-[#E1E1E3]" />
+          <p className="py-6 text-center text-[15px] leading-[20px] font-bold text-[#214766]">
+            Vi har tagit emot din förfrågan om flytthjälp{stad ? ' och flyttstädning' : ''} från {nb(home.from)}.
+          </p>
+          <div className="flex w-full flex-col">
+            {[
+              { label: 'Flyttdag', value: a.flyttDag ? cap(fmtLongDate(fromIso(a.flyttDag))) : null },
+              { label: 'Städdag', value: stad && a.stadDag ? cap(fmtLongDate(fromIso(a.stadDag))) : null },
+              { label: 'Från', value: home.from },
+              { label: 'Till', value: a.tillOkand ? 'Vet inte ännu' : home.to },
+              { label: 'Vi ringer', value: vald ? cap(samtalText(a.samtal)) : 'Inom två arbetsdagar' },
+            ]
+              .filter((r): r is SvarRad => !!r.value)
+              .map((r) => (
+                <KvittoRad key={r.label} {...r} />
+              ))}
+          </div>
+          <div className="flex w-full flex-col pt-[24px] text-left">
+            <p className="pb-[14px] text-[16px] leading-[20px] font-bold text-[#214766]">Det här händer nu</p>
+            <ol className="flex flex-col">
+              {steg.map((text, i, all) => (
+                <li key={i} className="flex gap-[12px]">
+                  <span className="flex flex-col items-center">
+                    <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#ECF9F7] text-[12px] leading-none font-bold text-[#1F6156]">{i + 1}</span>
+                    {i < all.length - 1 && <span aria-hidden className="w-px flex-1 bg-[#9EE0D5]" />}
+                  </span>
+                  <span className={clsx('pt-[2px] text-[15px] leading-[20px] text-[#214766]', i < all.length - 1 && 'pb-[16px]')}>{text}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="pt-[14px] text-[14px] leading-[18px] text-[#2B567C]">Du behöver inte göra något mer. Vill du ändra något kan du göra det fram till samtalet.</p>
+          </div>
+          <div className="mt-6">
+            <button
+              type="button"
+              onClick={() => go(0)}
+              className="flex h-12 items-center justify-center rounded-full border-2 border-[#214766] bg-white px-10 transition-[background-color,transform] duration-200 hover:bg-[#F8FAF9] motion-safe:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3879AD] focus-visible:ring-offset-2"
+            >
+              <span className="text-[16px] font-bold text-[#214766]">Till flyttsidan</span>
+            </button>
+          </div>
         </div>
-        <h1 className="mt-4 text-[22px] font-bold leading-[28px] text-[var(--color-text-main)]">Snyggt jobbat, nu har vi allt vi behöver</h1>
-        <p className="mx-auto mt-2 max-w-[340px] text-[15px] leading-[21px] text-[var(--color-text-main)]">
-          {a.samtal?.pass && a.samtal.pass !== '2d' ? `Vi ringer dig ${samtalText(a.samtal)}` : 'Inom två arbetsdagar hör vi av oss'} med ett skräddarsytt upplägg och pris för din
-          flytt
-          {a.stad === 'ja' ? ' och städning' : ''}.
-        </p>
-        {/* Belönande och säljande kvitto (David 21 okt). Påståendena är sajtens egna formuleringar, inget nytt lovas. */}
-        <ul className="mx-auto mt-5 max-w-[360px] space-y-2 text-left">
-          {[
-            'Utvald och kvalitetssäkrad flyttfirma',
-            'Färdigförhandlade priser',
-            a.stad === 'ja' ? 'Nöjd-kund-garanti på flyttstädningen' : 'Du kan ändra dina svar fram till samtalet',
-          ].map((t) => (
-            <li key={t} className="flex items-start gap-2.5 text-[14px] leading-5 text-[var(--color-text-main)]">
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D]">
-                <Check size={12} strokeWidth={3} />
-              </span>
-              {t}
-            </li>
-          ))}
-        </ul>
-        <PrimaryButton className="mt-6" onClick={() => go(0)}>
-          Tillbaka till flyttsidan
-        </PrimaryButton>
-        {/* En enda Ändra, inte en per grupp (David 21 okt). Öppnar steg 1 med svaren ifyllda. */}
-        <PrimaryButton tone="outline" className="mt-3" onClick={() => go(FIRST)}>
-          Ändra mina svar
-        </PrimaryButton>
+
         {/* Nästa steg medan kunden väntar: elavtalet, sajtens egen formulering. */}
-        <InfoCard className="mt-5 px-4 py-3.5 text-left">
-          <p className="text-[14px] font-bold leading-5 text-[var(--color-text-main)]">Medan du väntar: elavtalet</p>
-          <p className="mt-1 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">
+        <div className={clsx(kort, 'mt-4 px-[20px] py-[16px]')}>
+          <p className="text-[15px] font-bold leading-[20px] text-[#214766]">Medan du väntar: elavtalet</p>
+          <p className="mt-1 text-[14px] leading-[18px] text-[#2B567C]">
             Tre minuter, sen är strömmen på när du flyttar in.{' '}
-            <TextLink className="text-[13px]" onClick={() => go(0)}>
+            <TextLink className="text-[14px]" onClick={() => go(0)}>
               Till elavtalet
             </TextLink>
           </p>
-        </InfoCard>
-        <Eyebrow className="mt-7 text-left">Dina svar</Eyebrow>
-        <div className="mt-2 overflow-hidden rounded-xl border border-[var(--color-inactive-main)] bg-white text-left">
-          {groups.map((g, i) => (
-            <section key={g.title} className={clsx('px-4 pb-3 pt-2', i > 0 && 'border-t border-[var(--color-inactive-main)]')}>
-              <h2 className="py-2 text-[14px] font-bold leading-5 text-[var(--color-text-main)]">{g.title}</h2>
-              <dl className="grid grid-cols-[minmax(92px,max-content)_1fr] gap-x-4 gap-y-1 text-[14px] leading-5">
-                {g.rows.map((r, j) => (
-                  <Fragment key={j}>
-                    <dt className="text-[var(--color-inactive-dark)]">{r.label}</dt>
-                    <dd className="min-w-0 break-words text-[var(--color-text-main)]">{r.value}</dd>
-                  </Fragment>
-                ))}
-              </dl>
+        </div>
+
+        {/* Alla svar, grupperade per steg, i samma kvittorader. En enda Ändra, inte en per grupp (David 21 okt): öppnar steg 1 med svaren ifyllda. */}
+        <div className={clsx(kort, 'mt-4 px-[20px] pb-[8px] pt-[16px]')}>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[16px] font-bold leading-[20px] text-[#214766]">Dina svar</p>
+            <TextLink className="text-[14px]" onClick={() => go(FIRST)}>
+              Ändra mina svar
+            </TextLink>
+          </div>
+          {groups.map((g) => (
+            <section key={g.title}>
+              <h2 className="pb-[2px] pt-[18px] text-[12px] font-bold uppercase leading-[16px] tracking-[0.1em] text-[#767678]">{g.title}</h2>
+              {g.rows.map((r, j) => (
+                <KvittoRad key={j} {...r} />
+              ))}
             </section>
           ))}
         </div>

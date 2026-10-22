@@ -32,6 +32,7 @@ import {
 const STEPS = ['Flyttsidan', 'Begär offert', 'Välj tid (gammal)', 'Numret (gammal)', 'Tack, vi kontaktar dig', 'Adresser', 'Bära ut', 'Bära in', 'Vad ska med', 'Städning', 'Sista detaljerna', 'Allt sparat', 'Säljaren', 'Offerten']
 const LAST = STEPS.length - 1
 const FIRST_QUESTION = 5
+const DONE = 11
 const SALJARE = 12
 
 const parse = (iso: string, plusDays = 0) => {
@@ -87,6 +88,8 @@ const DemoFlyttFlow = () => {
      med samma adress som på mobil, inte en ruta ovanpå flyttsidan (David 21 okt). */
   const sida = desktop && step >= FIRST_QUESTION && step < SALJARE
   const inline = inSheet && desktop && !sida
+  /* Allt sparat på desktop: kvittot är ett kort på sidans bakgrund, som elflödets Klart, och sidan scrollar som vanligt. */
+  const kvitto = sida && step === DONE
   /* Mobil: de sex frågestegen tar hela skärmen (David 20 okt i Paper: "Låt denna ta hela skärmen?"). Arket behålls för dagens skärmar, Samtal bokat och Allt sparat. */
   const helskarm = !desktop && step >= FIRST_QUESTION && step < FIRST_QUESTION + 6
 
@@ -193,13 +196,15 @@ const DemoFlyttFlow = () => {
   )
 
   return (
-    <div className={clsx('flex flex-1 flex-col bg-[#E7ECF0]', sida ? 'h-[calc(100dvh-52px)]' : 'min-h-[calc(100dvh-52px)]')}>
+    <div className={clsx('flex flex-1 flex-col bg-[#E7ECF0]', sida && !kvitto ? 'h-[calc(100dvh-52px)]' : 'min-h-[calc(100dvh-52px)]')}>
       {demoBar}
       {step >= SALJARE ? (
         <div className="flex w-full flex-1 flex-col bg-white md:mx-auto md:my-6 md:max-w-[430px] md:flex-none md:overflow-clip md:rounded-[28px] md:shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{screen}</div>
+      ) : kvitto ? (
+        <div className="mx-auto w-full max-w-[600px]">{screen}</div>
       ) : sida ? (
         /* Egen sida: kortet fyller höjden och stegen scrollar inuti, så att Fortsätt alltid syns. */
-        <div className={clsx('mx-auto my-6 flex min-h-0 w-full flex-1 flex-col overflow-clip rounded-2xl bg-white shadow-[0_12px_40px_rgba(33,71,102,0.12)]', step === SALJARE - 1 ? 'max-w-[640px]' : 'max-w-[1080px]')}>{screen}</div>
+        <div className="mx-auto my-6 flex min-h-0 w-full max-w-[1080px] flex-1 flex-col overflow-clip rounded-2xl bg-white shadow-[0_12px_40px_rgba(33,71,102,0.12)]">{screen}</div>
       ) : (
         <>
           <LiveMovePage home={home} inline={inline ? screen : null} card={card} onOffer={() => go(answers.samtal ? nextUnanswered(answers) : 1)} />
