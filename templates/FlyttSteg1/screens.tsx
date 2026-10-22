@@ -423,7 +423,7 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
             </PrimaryButton>
           </InfoCard>
           {/* Raden säger varför man väljer tid (David 22 okt). Försvinner när tiden är vald, då bär rubriken tiden. */}
-          {!vald && <p className="mt-6 text-[14px] leading-[20px] text-[#2B567C]">Vill du veta exakt när vi ringer? Välj en dag och ett pass, så ringer vi då.</p>}
+          {!vald && <p className="mt-6 text-[14px] leading-[20px] text-[#2B567C]">Vill du veta exakt när vi ringer? Välj en dag och tid, så ringer vi då.</p>}
           {/* En riktig knapp, inte en länk i texten (Nils 21 okt: "Ändra tid är inte tydlig knapp"). */}
           <div className={vald ? 'mt-4' : 'mt-3'}>
             <button type="button" aria-expanded={andraTid} onClick={() => setAndraTid((v) => !v)} className={pill}>
@@ -434,7 +434,7 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
           {andraTid && (
             <SubCard className="mt-3 w-full p-[16px]">
               <TidValjare dag={date} pass={a.samtal?.iso === toIso(date) ? a.samtal?.pass : undefined} onDag={setDate} onPass={valj} />
-              <p className="mt-4 text-[13px] leading-[18px] text-[#2B567C]">Vi ringer inom det pass du väljer. Samtalet tar inte mer än tio minuter.</p>
+              <p className="mt-4 text-[13px] leading-[18px] text-[#2B567C]">Vi ringer inom tiden du väljer. Samtalet tar inte mer än tio minuter.</p>
             </SubCard>
           )}
           <p className="mt-6 text-[14px] leading-[20px] text-[#2B567C]">
