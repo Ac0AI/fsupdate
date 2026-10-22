@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, CalendarDays, Car, Check, Fence, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench, X } from 'lucide-react'
+import { ArrowDownToLine, ArrowUpToLine, Archive, Boxes, CalendarDays, Car, Check, ChevronUp, Fence, MoreHorizontal, Package, Sun, Trash2, Truck, Warehouse, Wrench, X } from 'lucide-react'
 import clsx from 'clsx'
 import GoogleColor from '@/public/images/GoogleColor.svg'
 import GoogleStar from '@/public/images/GoogleStar.svg'
@@ -69,6 +69,7 @@ import {
   TextField,
   TextInput,
   TextLink,
+  TidValjare,
   Tile,
   DayPicker,
   MeterSlider,
@@ -80,7 +81,7 @@ import {
 import { useDemoUser } from '@/common/data/useDemoUser'
 import { writeDemoSession, type DemoAddress } from '@/common/data/demoPersona'
 import { ChevronDown } from './LiveMovePage'
-import { canCallNow, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable, slotsFor, toIso } from './datum'
+import { canCallNow, fmtLong, fmtLongDate, fromIso, hideMorning, isSlotPassed, nextSelectable, toIso } from './datum'
 
 export type Home = {
   from: string
@@ -135,6 +136,15 @@ const Sheet = ({ children }: { children: React.ReactNode }) => (
   <div className="flex h-full min-h-0 flex-col bg-white md:h-auto">
     <SheetHandle />
     <div className="min-h-0 flex-1 overflow-y-auto md:mx-auto md:w-full md:max-w-[560px] md:overflow-visible md:py-2">{children}</div>
+  </div>
+)
+
+/* Kvittokortet från elflödets Klart: vitt kort med skugga och rader med etikett till vänster och värde till höger. Används av bekräftelsen och Allt sparat. */
+const kort = 'rounded-[16px] bg-white shadow-[0_4px_8px_#00000014]'
+const KvittoRad = ({ label, value }: { label: string; value: React.ReactNode }) => (
+  <div className="flex items-start justify-between gap-[12px] border-b border-[#EEEEF0] py-[12px]">
+    <span className="shrink-0 text-[15px] leading-[20px] font-bold text-[#214766]">{label}</span>
+    <span className="min-w-0 text-right text-[15px] leading-[20px] break-words text-[#214766]">{value}</span>
   </div>
 )
 
@@ -326,6 +336,7 @@ export const NummerScreen = ({ a, update, go }: ScreenProps) => {
 
 /* 4 · Nytt: bekräftelsen direkt efter Begär offert (David 20 okt). Tiden är förvald, numret förifyllt, båda går att ändra på plats. */
 const AVBRYT_SKAL = ['Har hittat en firma', 'Flyttar själv', 'Vill inte bli kontaktad', 'Annat']
+/* Samma uppbyggnad som Allt sparat och elflödets Klart: rubrik med löftet i turkost, linje, kvittorader, ett kort för huvudvalet, rund kantknapp för tidsvalet. Jämna avstånd mellan delarna (David 22 okt: "sitter ihop lite mycket"). */
 export const BokatScreen = ({ a, update, go }: ScreenProps) => {
   const [andraTid, setAndraTid] = useState(false)
   const [andraNr, setAndraNr] = useState(false)
@@ -339,142 +350,127 @@ export const BokatScreen = ({ a, update, go }: ScreenProps) => {
   }, [a.samtal, update])
   // Löftet är två arbetsdagar utan klockslag. Kunden kan välja ett tvåtimmarspass från i morgon, och den tiden prioriteras (21 okt).
   const vald = !!a.samtal && a.samtal.pass !== '2d'
-  const slots = slotsFor(date)
   const valj = (pass: string) => {
     update({ samtal: { dag: fmtLong(date), pass, iso: toIso(date) } })
     setAndraTid(false)
   }
+  const sparaNr = () => {
+    if (tel.trim()) update({ telefon: tel.trim() })
+    setAndraNr(false)
+  }
+  const pill =
+    'flex h-12 items-center justify-center gap-2 rounded-full border-2 border-[#214766] bg-white px-8 transition-[background-color,transform] duration-200 hover:bg-[#F8FAF9] motion-safe:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3879AD] focus-visible:ring-offset-2'
   return (
-    <Sheet>
-      {/* Desktop: centrerad kolumn som Begär offert, samma innehåll som mobilen (David 21 okt: lyft den ordentligt). */}
-      <div className="px-4 pb-6 pt-1 md:mx-auto md:max-w-[560px] md:px-2 md:pb-2 md:text-center">
-        {/* Bocken och stängknappen på en rad, rubriken under, allt i samma vänsterkant på alla bredder. En bock i rad med en tvåradig rubrik hängde i luften på desktop (David 21 okt). */}
-        <div className="flex items-start justify-between md:relative md:justify-center md:gap-4">
-          <span className="mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DCFCE7] text-[#15803D] md:h-12 md:w-12">
-            <Check size={18} strokeWidth={3} />
-          </span>
+    // Mobil: ett kort på ljus botten som Allt sparat. Desktop: innehållet ligger direkt i flyttsidans kort under Kvar att göra.
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto overscroll-contain bg-[#F8FAF9] md:h-auto md:overflow-visible md:bg-transparent">
+      <SheetHandle />
+      <div className="mx-auto w-full max-w-[560px] px-4 pb-8 pt-2 md:px-0 md:py-2">
+        <div className={clsx(kort, 'relative flex flex-col items-center p-[20px] text-center motion-safe:animate-[rise_.4s_ease-out_both] md:rounded-none md:bg-transparent md:p-0 md:shadow-none')}>
           <button
             type="button"
             aria-label="Stäng"
             onClick={() => go(0)}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[var(--color-inactive-dark)] md:absolute md:-right-2 md:top-0"
+            className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center rounded-full text-[#2B567C] hover:bg-[#F8FAF9] md:-right-3 md:-top-3"
           >
             <X size={20} />
           </button>
-        </div>
-        <h1 className="mt-2 text-[20px]! font-bold leading-[26px]! text-[var(--color-text-main)] md:text-[22px]! md:leading-[28px]!">
-          {vald
-            ? `Tack! Vi ringer dig ${samtalText(a.samtal)} med ett skräddarsytt upplägg för din flytt.`
-            : 'Tack! Inom två arbetsdagar hör vi av oss med ett skräddarsytt upplägg för din flytt.'}
-        </h1>
-        {/* Telefonen som en rad, inte en låda: kunden ska förstå att vi kontaktar dem, inte stanna vid numret (David 21 okt). */}
-        {andraNr ? (
-          <div className="mt-3 flex items-end gap-3 md:mx-auto md:max-w-[400px] md:justify-center">
-            <div className="max-w-[220px] flex-1">
-              <TextInput type="tel" value={tel} onChange={setTel} placeholder="070-123 45 67" label="Telefonnummer" />
-            </div>
-            <TextLink
-              className="mb-3 text-[14px]"
-              onClick={() => {
-                if (tel.trim()) update({ telefon: tel.trim() })
-                setAndraNr(false)
-              }}
-            >
-              Klar
-            </TextLink>
+          <span className="mt-2 flex size-12 items-center justify-center rounded-full bg-[#ECF9F7] text-[#1F6156]">
+            <Check size={22} strokeWidth={3} />
+          </span>
+          <div role="heading" aria-level={1} className="max-w-[26ch] pb-6 pt-4 text-[24px] leading-[28px] font-black text-[#214766]">
+            {vald ? (
+              <>
+                Tack! Vi ringer dig <span className="text-[#51C8B4]">{samtalText(a.samtal)}</span> med ett skräddarsytt upplägg för din flytt.
+              </>
+            ) : (
+              <>
+                Tack! <span className="text-[#51C8B4]">Inom två arbetsdagar</span> hör vi av oss med ett skräddarsytt upplägg för din flytt.
+              </>
+            )}
           </div>
-        ) : (
-          <p className="mt-3 text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
-            Vi kontaktar dig på <span className="font-bold text-[var(--color-text-main)]">{a.telefon}</span>.{' '}
-            <TextLink muted className="text-[14px]" onClick={() => setAndraNr(true)}>
-              Ändra
-            </TextLink>
-          </p>
-        )}
-        {/* Huvud-CTA: ett eget kort så att det tar mest plats på skärmen (David 21 okt). */}
-        <InfoCard className="mt-5 px-4 pb-4 pt-4 md:mx-auto md:max-w-[420px]">
-          <h2 className="text-[17px] font-bold leading-[22px] text-[var(--color-text-main)]">Få din offert snabbare</h2>
-          <p className="mt-1 max-w-[46ch] text-[14px] leading-[20px] text-[var(--color-inactive-dark)]">
-            Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och du kan fortsätta senare.
-          </p>
-          <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
-            Berätta om flytten
-          </PrimaryButton>
-        </InfoCard>
-        {/* En riktig knapp, inte en länk i texten (Nils 21 okt: "Ändra tid är inte tydlig knapp"). */}
-        <button
-          type="button"
-          aria-expanded={andraTid}
-          onClick={() => setAndraTid((v) => !v)}
-          className="mt-5 inline-flex h-10 items-center gap-2 rounded-[var(--radius-button)] border-[1.5px] border-[var(--color-secondary-main)] bg-white px-4 text-[14px] font-bold text-[var(--color-secondary-main)]"
-        >
-          <CalendarDays size={16} />
-          {andraTid ? 'Stäng' : vald ? 'Ändra tid' : 'Välj en tid som passar dig'}
-        </button>
-        {andraTid && (
-          <InfoCard className="mt-3 px-3 pb-4 pt-3 md:mx-auto md:max-w-[400px] md:text-left">
-            <p className="text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">Vi ringer inom det pass du väljer. Samtalet tar inte mer än tio minuter.</p>
-            <div className="mt-3">
-              <WeekPicker value={date} onChange={setDate} />
-            </div>
-            <div className="mt-3 grid grid-cols-3 gap-2">
-              {slots.map((pass) => {
-                const passed = isSlotPassed(pass, date)
-                const vald = a.samtal?.pass === pass && a.samtal?.iso === toIso(date)
-                return (
-                  <button
-                    key={pass}
-                    type="button"
-                    disabled={passed}
-                    onClick={() => valj(pass)}
-                    className={clsx(
-                      'h-11 rounded-lg border bg-white text-[15px] font-bold text-[var(--color-text-main)]',
-                      vald ? 'border-2 border-[var(--color-secondary-main)] bg-[var(--color-secondary-extra-extra-light)]' : 'border-[var(--color-inactive-main)]',
-                      passed && 'opacity-40',
-                    )}
-                  >
-                    {pass}
-                  </button>
-                )
-              })}
-            </div>
-          </InfoCard>
-        )}
-        <p className="mt-3 text-[13px] leading-[18px] text-[var(--color-inactive-dark)]">
-          Är det brådskande? Ring oss på <span className="font-bold text-[var(--color-text-main)]">08-12 00 88 22</span>, vardagar 9–17.
-        </p>
-        <div className="mt-4 text-center text-[13px] text-[var(--color-inactive-grey-light)]">
-          {avbryt ? (
-            <div className="rounded-lg bg-[var(--color-inactive-quite-light)] p-3 text-left">
-              <p className="text-[14px] font-bold text-[var(--color-text-main)]">Varför vill du inte ha offert?</p>
-              <div className="mt-2">
-                <ChipRow>
-                  {AVBRYT_SKAL.map((r) => (
-                    <Chip
-                      key={r}
-                      small
-                      onClick={() => {
-                        update({ samtal: undefined })
-                        go(0)
-                      }}
-                    >
-                      {r}
-                    </Chip>
-                  ))}
-                </ChipRow>
+          <div className="h-px w-full bg-[#E1E1E3]" />
+          <div className="flex w-full flex-col text-left">
+            {andraNr ? (
+              <div className="flex items-end gap-3 border-b border-[#EEEEF0] py-[12px]">
+                <div className="max-w-[220px] flex-1">
+                  <TextInput type="tel" value={tel} onChange={setTel} placeholder="070-123 45 67" label="Telefonnummer" />
+                </div>
+                <TextLink className="mb-3" onClick={sparaNr}>
+                  Klar
+                </TextLink>
               </div>
-            </div>
-          ) : (
-            <>
-              Vill du inte ha offert?{' '}
-              <TextLink muted className="text-[13px]" onClick={() => setAvbryt(true)}>
-                Avbryt
-              </TextLink>
-            </>
+            ) : (
+              <KvittoRad
+                label="Telefon"
+                value={
+                  <span className="inline-flex items-baseline gap-2">
+                    {a.telefon}
+                    <TextLink onClick={() => setAndraNr(true)}>Ändra</TextLink>
+                  </span>
+                }
+              />
+            )}
+            <KvittoRad label="Vi ringer" value={vald ? cap(samtalText(a.samtal)) : 'Inom två arbetsdagar'} />
+          </div>
+          {/* Huvudvalet: ett eget kort så att det tar mest plats på skärmen (David 21 okt). */}
+          <InfoCard className="mt-6 w-full p-[20px]">
+            <h2 className="text-[17px] font-bold leading-[22px] text-[#214766]">Få din offert snabbare</h2>
+            <p className="mx-auto mt-2 max-w-[44ch] text-[14px] leading-[20px] text-[#2B567C]">
+              Berätta lite om flytten redan nu, så har vi offerten klar när vi hör av oss. Det tar ett par minuter och du kan fortsätta senare.
+            </p>
+            <PrimaryButton className="mt-4" onClick={() => go(nextUnanswered(a))}>
+              Berätta om flytten
+            </PrimaryButton>
+          </InfoCard>
+          {/* En riktig knapp, inte en länk i texten (Nils 21 okt: "Ändra tid är inte tydlig knapp"). */}
+          <div className="mt-4">
+            <button type="button" aria-expanded={andraTid} onClick={() => setAndraTid((v) => !v)} className={pill}>
+              {andraTid ? <ChevronUp size={18} className="text-[#214766]" /> : <CalendarDays size={18} className="text-[#214766]" />}
+              <span className="text-[16px] font-bold text-[#214766]">{vald ? 'Ändra tid' : 'Välj en tid som passar dig'}</span>
+            </button>
+          </div>
+          {andraTid && (
+            <SubCard className="mt-3 w-full p-[16px]">
+              <TidValjare dag={date} pass={a.samtal?.iso === toIso(date) ? a.samtal?.pass : undefined} onDag={setDate} onPass={valj} />
+              <p className="mt-4 text-[13px] leading-[18px] text-[#2B567C]">Vi ringer inom det pass du väljer. Samtalet tar inte mer än tio minuter.</p>
+            </SubCard>
           )}
+          <p className="mt-6 text-[14px] leading-[20px] text-[#2B567C]">
+            Är det brådskande? Ring oss på <span className="font-bold text-[#214766]">08-12 00 88 22</span>, vardagar 9–17.
+          </p>
+          <div className="mt-3 w-full text-[13px] leading-[18px] text-[#767678]">
+            {avbryt ? (
+              <div className="rounded-lg bg-[var(--color-inactive-quite-light)] p-3 text-left">
+                <p className="text-[14px] font-bold text-[#214766]">Varför vill du inte ha offert?</p>
+                <div className="mt-2">
+                  <ChipRow>
+                    {AVBRYT_SKAL.map((r) => (
+                      <Chip
+                        key={r}
+                        small
+                        onClick={() => {
+                          update({ samtal: undefined })
+                          go(0)
+                        }}
+                      >
+                        {r}
+                      </Chip>
+                    ))}
+                  </ChipRow>
+                </div>
+              </div>
+            ) : (
+              <>
+                Vill du inte ha offert?{' '}
+                <TextLink muted className="text-[13px]" onClick={() => setAvbryt(true)}>
+                  Avbryt
+                </TextLink>
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </Sheet>
+    </div>
   )
 }
 
@@ -1631,13 +1627,6 @@ export const answerGroups = (a: Answers, home: Home): SvarGrupp[] => {
 
 /* 11 · Allt sparat */
 /* Samma uttryck som elflödets Klart (David 22 okt): vitt kort på ljus botten, rubrik med turkost ord, kvittorader med etikett till vänster och värde till höger, numrerade steg under Det här händer nu och en rund kantknapp. */
-const kort = 'rounded-[16px] bg-white shadow-[0_4px_8px_#00000014]'
-const KvittoRad = ({ label, value }: SvarRad) => (
-  <div className="flex items-start justify-between gap-[12px] border-b border-[#EEEEF0] py-[12px]">
-    <span className="shrink-0 text-[15px] leading-[20px] font-bold text-[#214766]">{label}</span>
-    <span className="min-w-0 text-right text-[15px] leading-[20px] break-words text-[#214766]">{value}</span>
-  </div>
-)
 
 export const SparatScreen = ({ a, go, home }: ScreenProps) => {
   const groups = answerGroups(a, home)

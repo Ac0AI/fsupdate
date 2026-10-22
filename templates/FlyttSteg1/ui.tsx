@@ -17,7 +17,7 @@ import { createPortal } from 'react-dom'
 import Button from '@/components/atoms/Button'
 import SiteChip from '@/components/atoms/Chip'
 import { AVSTAND_MAX, AVSTAND_STEG, FLOORS, TOTAL, avstandText, harAvstand, type Avstand, type FonsterTyp } from './state'
-import { addDays, fmtLongDate, fmtMonth, fmtShort, fmtWeekTitle, fmtWeekday, fromIso, isSelectable, maxDay, monthGrid, sameDay, startOfWeek, toIso, weekDays } from './datum'
+import { addDays, fmtLongDate, fmtMonth, fmtShort, fmtWeekTitle, fmtWeekday, fromIso, isSelectable, isSlotPassed, maxDay, monthGrid, sameDay, slotsFor, startOfWeek, toIso, weekDays } from './datum'
 
 /*
  * Byggstenar för arket och frågestegen, i sajtens tokens och atomer. Frågan
@@ -840,6 +840,48 @@ export const WeekPicker = ({ value, onChange }: { value: Date; onChange: (d: Dat
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/**
+ * Tidsvalet på bekräftelsen: alla dagar som går att välja (vardagar från i morgon, högst nästa vecka) som
+ * rutor, passen som knappar under. Inga gråa dagar, ingen veckobläddring, ingen rullgardin (David 22 okt:
+ * tidsvalet satt ihop och såg risigt ut). Ett tryck på ett pass är valet, kortet stängs av föräldern.
+ */
+export const TidValjare = ({ dag, pass, onDag, onPass }: { dag: Date; pass?: string; onDag: (d: Date) => void; onPass: (p: string) => void }) => {
+  const days: Date[] = []
+  for (let d = addDays(new Date(), 1); d <= maxDay(); d = addDays(d, 1)) if (isSelectable(d)) days.push(d)
+  const rubrik = 'text-[12px] font-bold uppercase leading-[16px] tracking-[0.1em] text-[#767678]'
+  const ruta = (selected: boolean) =>
+    clsx('border-2 transition-colors duration-150', selected ? 'border-[#214766] bg-[#214766] text-white' : 'border-[#E1E1E3] bg-white text-[#214766] hover:border-[#214766]')
+  return (
+    <div className="w-full text-left">
+      <span className={clsx(rubrik, 'block')}>Dag</span>
+      <div className="mt-2 grid grid-cols-5 gap-2">
+        {days.map((day) => {
+          const selected = sameDay(day, dag)
+          return (
+            <button key={day.toISOString()} type="button" aria-pressed={selected} onClick={() => onDag(day)} className={clsx('flex h-[56px] flex-col items-center justify-center rounded-[12px]', ruta(selected))}>
+              <span className="text-[12px] capitalize leading-[16px]">{fmtWeekday(day)}</span>
+              <span className="text-[16px] font-bold leading-[20px]">
+                {day.getDate()}/{day.getMonth() + 1}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+      <span className={clsx(rubrik, 'mt-4 block')}>Tid</span>
+      <div className="mt-2 flex gap-2">
+        {slotsFor(dag).map((p) => {
+          const passed = isSlotPassed(p, dag)
+          return (
+            <button key={p} type="button" disabled={passed} aria-pressed={pass === p} onClick={() => onPass(p)} className={clsx('h-12 flex-1 rounded-full text-[15px] font-bold', ruta(pass === p), passed && 'pointer-events-none opacity-40')}>
+              {p.replace('-', '–')}
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
